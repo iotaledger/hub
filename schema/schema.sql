@@ -31,8 +31,8 @@ CREATE TABLE IF NOT EXISTS hub_address (
 CREATE TABLE IF NOT EXISTS hub_address_balance (
   id INTEGER PRIMARY KEY AUTOINCREMENT,
   hub_address INTEGER NOT NULL,
-  diff INTEGER NOT NULL,
-  reason INTEGER NOT NULL
+  amount INTEGER NOT NULL,
+  reason INTEGER NOT NULL,
   sweep INTEGER NOT NULL,
   occured_at DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
   CHECK (reason >= 0 and reason < 2),
@@ -56,7 +56,7 @@ CREATE TABLE IF NOT EXISTS sweep (
 CREATE TABLE IF NOT EXISTS user_address_balance (
   id INTEGER PRIMARY KEY AUTOINCREMENT,
   user_address INTEGER NOT NULL,
-  diff INTEGER NOT NULL,
+  amount INTEGER NOT NULL,
   reason INTEGER NOT NULL,
   -- confirmed tail's hash
   tail_hash CHAR(81) DEFAULT NULL UNIQUE,
