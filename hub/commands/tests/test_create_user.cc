@@ -1,4 +1,5 @@
 #include <gtest/gtest.h>
+
 #include <sqlpp11/select.h>
 #include <sqlpp11/functions.h>
 
@@ -7,36 +8,23 @@
 
 #include "hub/commands/create_user.h"
 #include "hub/db/db.h"
-#include "hub/stats/session.h"
+
+#include "runner.h"
 
 using namespace iota;
 using namespace sqlpp;
 
 namespace {
-class CommandTest : public ::testing::Test {
- public:
-  virtual void SetUp() {
-    auto db = iota::db::DBManager::get();
-    db.resetConnection();
-    db.loadSchema(true);
-  }
-};
+class CreateUserTest : public CommandTest {};
 
-TEST_F(CommandTest, ErrorOnDuplicate) {
-  rpc::CreateUserRequest req;
-  rpc::CreateUserReply res;
-  rpc::Error err;
+TEST_F(CreateUserTest, ErrorOnDuplicate) {
   db::sql::UserAccount tbl;
 
-  auto session = std::make_shared<ClientSession>();
   auto& conn = iota::db::DBManager::get().connection();
 
-  req.set_identifier("User1");
-
-  cmd::CreateUser command(session);
-  command.doProcess(&req, &res);
-  auto status = command.doProcess(&req, &res);
-  err.ParseFromString(status.error_details());
+  createUser(session(), "User1");
+  auto status = createUser(session(), "User1");
+  auto err = errorFromStatus(status);
 
   EXPECT_EQ(grpc::StatusCode::FAILED_PRECONDITION, status.error_code());
   EXPECT_EQ(err.code(), rpc::ErrorCode::USER_EXISTS);
@@ -45,26 +33,13 @@ TEST_F(CommandTest, ErrorOnDuplicate) {
                    .count);
 }
 
-TEST_F(CommandTest, CreateUsers) {
-  rpc::CreateUserRequest req;
-  rpc::CreateUserReply res;
+TEST_F(CreateUserTest, CreateUsers) {
   db::sql::UserAccount tbl;
 
-  auto session = std::make_shared<ClientSession>();
   auto& conn = iota::db::DBManager::get().connection();
 
-  req.set_identifier("User1");
-
-  {
-    cmd::CreateUser command(session);
-    command.doProcess(&req, &res);
-  }
-
-  req.set_identifier("User2");
-  {
-    cmd::CreateUser command(session);
-    command.doProcess(&req, &res);
-  }
+  EXPECT_TRUE(createUser(session(), "User1").ok());
+  EXPECT_TRUE(createUser(session(), "User2").ok());
 
   EXPECT_EQ(2, conn(select(count(tbl.identifier)).from(tbl).unconditionally())
                    .front()
