@@ -17,7 +17,7 @@ namespace iota {
 namespace cmd {
 
 grpc::Status CreateUser::doProcess(const iota::rpc::CreateUserRequest* request,
-                                   iota::rpc::CreateUserReply* response) {
+                                   iota::rpc::CreateUserReply* response) noexcept {
   db::sql::UserAccount userAccount;
 
   auto& connection = db::DBManager::get().connection();

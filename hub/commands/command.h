@@ -17,7 +17,7 @@ class Command {
   explicit Command(std::shared_ptr<ClientSession> session)
       : _clientSession(std::move(session)) {}
 
-  grpc::Status process(const REQ* request, RES* response) {
+  grpc::Status process(const REQ* request, RES* response) noexcept {
     VLOG(3) << *_clientSession << name() << "::process()";
 
     return doProcess(request, response);
@@ -26,7 +26,7 @@ class Command {
   virtual const std::string name() = 0;
 
  protected:
-  virtual grpc::Status doProcess(const REQ* request, RES* response) = 0;
+  virtual grpc::Status doProcess(const REQ* request, RES* response) noexcept = 0;
   ClientSession& session() const { return *_clientSession; }
 
   const std::shared_ptr<ClientSession> _clientSession;
