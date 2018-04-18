@@ -1,5 +1,6 @@
 build --cxxopt='-std=c++17'
-test --copt='-ggdb3'
+test --copt='-ggdb3' 
+test --test_output=errors
 
 # --config asan: Address sanitizer
 build:asan --strip=never
