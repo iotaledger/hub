@@ -17,6 +17,7 @@ namespace iota {
 namespace db {
 
 DEFINE_string(db, "hub.db", "Path to sqlite3 database");
+DEFINE_bool(dbInit, false, "Initialise db on startup");
 
 DBManager& DBManager::get() {
   static DBManager instance;
@@ -34,6 +35,8 @@ void DBManager::loadSchema(bool removeExisting) {
   std::ifstream fSchema("schema/schema.sql");
   std::string schema((std::istreambuf_iterator<char>(fSchema)),
                      std::istreambuf_iterator<char>());
+
+  LOG(INFO) << "Populating database with schema.";
 
   connection().execute(schema);
 }
@@ -57,10 +60,13 @@ Connection& DBManager::connection() {
   tl_connection->set_default_isolation_level(
       sqlpp::isolation_level::serializable);
 
+  if (FLAGS_dbInit) {
+    loadSchema(false);
+    FLAGS_dbInit = false;
+  }
+
   return *tl_connection;
 }
-
-void testsql() {}
 
 }  // namespace db
 }  // namespace iota
