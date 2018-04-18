@@ -32,13 +32,31 @@ void DBManager::setConnection(std::unique_ptr<Connection> ptr) {
 }
 
 void DBManager::loadSchema(bool removeExisting) {
+  auto& conn = connection();
+  
   std::ifstream fSchema("schema/schema.sql");
   std::string schema((std::istreambuf_iterator<char>(fSchema)),
                      std::istreambuf_iterator<char>());
+  std::stringstream ss(schema);
 
-  LOG(INFO) << "Populating database with schema.";
+  std::string line;
+  std::string cmd;
 
-  connection().execute(schema);
+  while (std::getline(ss, line, '\n')) {
+    if (line[line.find_first_not_of(' ')] == '-') {
+      continue;
+    }
+
+    cmd += line;
+
+    if(line.find(';') != std::string::npos) {
+      conn.execute(cmd);
+      cmd = "";
+    }
+  }
+
+
+  LOG(INFO) << "Populated database with schema.";
 }
 
 Connection& DBManager::connection() {
