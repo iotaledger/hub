@@ -32,9 +32,10 @@ CREATE TABLE IF NOT EXISTS hub_address_balance (
   id INTEGER PRIMARY KEY AUTOINCREMENT,
   hub_address INTEGER NOT NULL,
   diff INTEGER NOT NULL,
-  reason INTEGER NOT NULL CHECK (reason >= 0 and reason < 2),
+  reason INTEGER NOT NULL
   sweep INTEGER NOT NULL,
   occured_at DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  CHECK (reason >= 0 and reason < 2),
   FOREIGN KEY (hub_address) REFERENCES hub_address(id),
   FOREIGN KEY (sweep) REFERENCES sweep(id)
 );
@@ -56,12 +57,15 @@ CREATE TABLE IF NOT EXISTS user_address_balance (
   id INTEGER PRIMARY KEY AUTOINCREMENT,
   user_address INTEGER NOT NULL,
   diff INTEGER NOT NULL,
-  reason INTEGER NOT NULL CHECK (reason >= 0 and reason < 2),
+  reason INTEGER NOT NULL,
   -- confirmed tail's hash
-  tail_hash CHAR(81) DEFAULT NULL UNIQUE CHECK(reason = 0 and tail_hash not null),
+  tail_hash CHAR(81) DEFAULT NULL UNIQUE,
   -- nullable if not swept yet
-  sweep INTEGER DEFAULT NULL CHECK(reason = 1 and sweep not null),
+  sweep INTEGER DEFAULT NULL,
   occured_at DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  CHECK (reason = 0 and tail_hash not null),
+  CHECK (reason = 1 and sweep not null),
+  CHECK (reason >= 0 and reason < 2),
   FOREIGN KEY (user_address) REFERENCES user_address(id),
   FOREIGN KEY (sweep) REFERENCES sweep(id)
 );
@@ -71,12 +75,13 @@ CREATE INDEX IF NOT EXISTS idx_user_address_reason ON user_address_balance(user_
 CREATE TABLE IF NOT EXISTS withdrawal (
   id INTEGER PRIMARY KEY AUTOINCREMENT,
   user_account INTEGER NOT NULL,
-  amount INTEGER NOT NULL CHECK(amount > 0),
+  amount INTEGER NOT NULL,
   -- payout address
   to_address CHAR(81) NOT NULL,
   -- sweep that processes this withdrawal
   sweep INTEGER DEFAULT NULL,
   requested_at DATETIME DEFAULT CURRENT_TIMESTAMP NOT NULL,
+  CHECK (amount > 0),
   FOREIGN KEY (sweep) REFERENCES sweep(id),
   FOREIGN KEY (user_account) REFERENCES user_account(id)
 );
@@ -84,10 +89,12 @@ CREATE TABLE IF NOT EXISTS withdrawal (
 CREATE TABLE IF NOT EXISTS user_account_balance (
   user_account INTEGER NOT NULL,
   amount INTEGER NOT NULL,
-  reason INTEGER NOT NULL CHECK (reason >= 0 and reason < 3),
-  sweep INTEGER CHECK (reason = 0 and sweep not null),
+  reason INTEGER NOT NULL,
+  sweep INTEGER,
   withdrawal INTEGER CHECK (reason = 1 and withdrawal not null),
   occured_at DATETIME DEFAULT CURRENT_TIMESTAMP NOT NULL,
+  CHECK (reason = 0 and sweep not null),
+  CHECK (reason >= 0 and reason < 3),
   FOREIGN KEY (user_account) REFERENCES user_account(id),
   FOREIGN KEY (sweep) REFERENCES sweep(id),
   FOREIGN KEY (withdrawal) REFERENCES withdrawal(id)
