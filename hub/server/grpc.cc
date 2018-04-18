@@ -17,15 +17,12 @@ grpc::Status HubImpl::CreateUser(grpc::ServerContext* context,
                                  rpc::CreateUserReply* response) {
   auto clientSession = std::make_shared<ClientSession>();
 
-  cmd::CreateUser cmd(clientSession);
-  
-  cmd.process(request, response);
-  
   std::string jsonReq;
   google::protobuf::util::MessageToJsonString(*request, &jsonReq, {});
+  LOG(INFO) << *clientSession << "request: " << jsonReq;
+
+  cmd::CreateUser cmd(clientSession);
   
-  LOG(INFO) << "json: " << jsonReq;
-  
-  return grpc::Status::OK;
+  return cmd.process(request, response);
 }
 }  // namespace iota
