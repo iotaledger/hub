@@ -1,0 +1,9 @@
+cc_binary(name="hub",
+          srcs=["main.cc"],
+          deps=[
+              "//hub/server:server",
+              "//hub/db:db",
+              "@com_github_gflags_gflags//:gflags",
+              "@com_github_google_glog//:glog",
+          ], 
+          visibility=["//visibility:public"])

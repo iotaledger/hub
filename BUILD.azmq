@@ -1,0 +1,7 @@
+cc_library(name="azmq",
+           hdrs=glob(["azmq/**/*.hpp"]),
+           srcs=[],
+           strip_include_prefix="azmq",
+           include_prefix="azmq",
+           visibility=["//visibility:public"],
+           deps=["@boost//:asio", "@libzmq//:zmq"])

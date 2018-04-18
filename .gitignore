@@ -1,0 +1,6 @@
+bazel-*
+compile_commands.json
+GPATH
+GTAGS
+GRTAGS
+.#*

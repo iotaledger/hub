@@ -1,0 +1,8 @@
+cc_library(
+    name="sqlpp11sqlite",
+    linkopts=["-lsqlite3"],
+    hdrs=glob(["include/**"]),
+    srcs=glob(["src/**/*.cpp", "src/**/*.h"]),
+    strip_include_prefix="include",
+    deps=["@sqlpp11//:sqlpp11"],
+    visibility=["//visibility:public"])

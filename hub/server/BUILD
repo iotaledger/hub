@@ -1,0 +1,11 @@
+cc_library(name="server",
+           hdrs=glob(["**/*.h"]),
+           srcs=glob(["**/*.cc"]),
+           deps=["//proto:cpp",
+                 "//hub/db:db",
+                 "//hub/stats:stats",
+                 "//hub/commands:commands",
+                 "@com_github_gflags_gflags//:gflags",
+                 "@com_github_google_glog//:glog",
+                 "@boost//:uuid"],
+           visibility=["//visibility:public"])
