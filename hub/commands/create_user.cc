@@ -26,7 +26,7 @@ grpc::Status CreateUser::doProcess(const iota::rpc::CreateUserRequest* request,
 
   try {
     connection(insert_into(userAccount)
-                      .set(userAccount.identifier = request->identifier()));
+                      .set(userAccount.identifier = request->userid()));
     transaction.commit();
   } catch (sqlpp::exception& ex) {
     LOG(ERROR) << session() << " Commit failed: " << ex.what();

@@ -12,21 +12,21 @@ message Error {
 }
 
 message CreateUserRequest {
-  string identifier = 1;
+  string userId = 1;
 }
 
 message CreateUserReply {}
 
-message BalanceRequest {
-  string uuid = 1;
+message GetBalanceRequest {
+  string userId = 1;
 }
 
-message BalanceReply {
-  int64 balance = 1;
+message GetBalanceReply {
+  int64 available = 1;
 }
 
 message DepositAddressRequest {
-  string uuid = 1;
+  string userId = 1;
 }
 
 message DepositAddressReply {
@@ -34,7 +34,7 @@ message DepositAddressReply {
 }
 
 message UserWithdrawRequest {
-  string uuid    = 1;
+  string userId  = 1;
   string address = 2;
   uint64 amount  = 3;
   string note    = 4;
@@ -64,7 +64,7 @@ message ScheduleSweepReply {}
 
 service Hub {
   rpc CreateUser              (CreateUserRequest             ) returns (       CreateUserReply    );
-  rpc GetBalance              (BalanceRequest                ) returns (       BalanceReply       );
+  rpc GetBalance              (GetBalanceRequest             ) returns (       GetBalanceReply    );
   rpc GetDepositAddress       (DepositAddressRequest         ) returns (       DepositAddressReply);
   rpc ScheduleSweep           (ScheduleSweepRequest          ) returns (       ScheduleSweepReply );
   rpc UserWithdraw            (UserWithdrawRequest           ) returns (       UserWithdrawReply  );
