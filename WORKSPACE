@@ -1,7 +1,5 @@
 workspace(name="org_iota_hub")
 
-# Global config
-
 # EXTERNAL RULES
 git_repository(
     name="org_pubref_rules_protobuf",
@@ -70,18 +68,16 @@ new_git_repository(
     build_file="BUILD.libzmq", )
 
 load("@com_github_nelhage_rules_boost//:boost/boost.bzl", "boost_deps")
-boost_deps()
-
 load("@org_pubref_rules_protobuf//cpp:rules.bzl", "cpp_proto_repositories")
-cpp_proto_repositories()
-
 load("@io_bazel_rules_go//go:def.bzl", "go_rules_dependencies",
-     "go_register_toolchains")
-go_rules_dependencies()
-go_register_toolchains()
-
+     "go_register_toolchains", "go_prefix")
 load("@org_pubref_rules_protobuf//go:rules.bzl", "go_proto_repositories")
-go_proto_repositories()
 load("@org_pubref_rules_protobuf//grpc_gateway:rules.bzl",
      "grpc_gateway_proto_repositories")
+
+boost_deps()
+cpp_proto_repositories()
+go_rules_dependencies()
+go_register_toolchains()
+go_proto_repositories()
 grpc_gateway_proto_repositories()

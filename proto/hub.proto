@@ -1,66 +1,7 @@
 syntax = "proto3";
 
 package iota.rpc;
-
-enum ErrorCode {
-  UNKNOWN             = 0;
-  USER_EXISTS         = 1;
-  USER_DOES_NOT_EXIST = 2;
-}
-message Error {
-  ErrorCode code = 1;
-}
-
-message CreateUserRequest {
-  string userId = 1;
-}
-
-message CreateUserReply {}
-
-message GetBalanceRequest {
-  string userId = 1;
-}
-
-message GetBalanceReply {
-  int64 available = 1;
-}
-
-message DepositAddressRequest {
-  string userId = 1;
-}
-
-message DepositAddressReply {
-  string address = 1;
-}
-
-message UserWithdrawRequest {
-  string userId  = 1;
-  string address = 2;
-  uint64 amount  = 3;
-  string note    = 4;
-}
-
-message UserWithdrawReply {
-  uint32 error      = 1;
-  string bundleHash = 2;
-}
-
-message StatsRequest {}
-
-message StatsReply {}
-
-message GetUserHistoryRequest {}
-
-message GetUserHistoryReply {}
-
-message UserBalanceSubscriptionRequest {}
-
-message UserBalanceEvent {}
-
-message ScheduleSweepRequest {}
-
-message ScheduleSweepReply {}
-
+import "proto/messages.proto";
 
 service Hub {
   rpc CreateUser              (CreateUserRequest             ) returns (       CreateUserReply    );
