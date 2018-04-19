@@ -16,8 +16,9 @@ using namespace sqlpp;
 namespace iota {
 namespace cmd {
 
-grpc::Status CreateUser::doProcess(const iota::rpc::CreateUserRequest* request,
-                                   iota::rpc::CreateUserReply* response) noexcept {
+grpc::Status CreateUser::doProcess(
+    const iota::rpc::CreateUserRequest* request,
+    iota::rpc::CreateUserReply* response) noexcept {
   db::sql::UserAccount userAccount;
 
   auto& connection = db::DBManager::get().connection();
@@ -26,7 +27,7 @@ grpc::Status CreateUser::doProcess(const iota::rpc::CreateUserRequest* request,
 
   try {
     connection(insert_into(userAccount)
-                      .set(userAccount.identifier = request->userid()));
+                   .set(userAccount.identifier = request->userid()));
     transaction.commit();
   } catch (sqlpp::exception& ex) {
     LOG(ERROR) << session() << " Commit failed: " << ex.what();

@@ -17,8 +17,9 @@ class GetBalance
   using Command<iota::rpc::GetBalanceRequest,
                 iota::rpc::GetBalanceReply>::Command;
 
-  grpc::Status doProcess(const iota::rpc::GetBalanceRequest* request,
-                         iota::rpc::GetBalanceReply* response) noexcept override;
+  grpc::Status doProcess(
+      const iota::rpc::GetBalanceRequest* request,
+      iota::rpc::GetBalanceReply* response) noexcept override;
 
   const std::string name() override { return "GetBalance"; }
 };

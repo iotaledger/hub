@@ -1,7 +1,7 @@
 #include <gtest/gtest.h>
 
-#include <sqlpp11/select.h>
 #include <sqlpp11/functions.h>
+#include <sqlpp11/select.h>
 
 #include "proto/hub.pb.h"
 #include "schema/schema.h"

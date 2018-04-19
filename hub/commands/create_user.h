@@ -17,8 +17,9 @@ class CreateUser
   using Command<iota::rpc::CreateUserRequest,
                 iota::rpc::CreateUserReply>::Command;
 
-  grpc::Status doProcess(const iota::rpc::CreateUserRequest* request,
-                         iota::rpc::CreateUserReply* response) noexcept override;
+  grpc::Status doProcess(
+      const iota::rpc::CreateUserRequest* request,
+      iota::rpc::CreateUserReply* response) noexcept override;
 
   const std::string name() override { return "CreateUser"; }
 };
