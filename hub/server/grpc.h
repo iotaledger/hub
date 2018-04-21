@@ -18,18 +18,16 @@ class HubImpl final : public iota::rpc::Hub::Service {
                           const rpc::CreateUserRequest* request,
                           rpc::CreateUserReply* response) override;
 
-#if 0
   grpc::Status GetBalance(grpc::ServerContext* context,
-                          const iota::rpc::BalanceRequest* request,
-                          iota::rpc::BalanceReply* response) override {
-    return grpc::Status::CANCELLED;
-  }
+                          const iota::rpc::GetBalanceRequest* request,
+                          iota::rpc::GetBalanceReply* response) override;
+
   grpc::Status GetDepositAddress(
       grpc::ServerContext* context,
-      const iota::rpc::DepositAddressRequest* request,
-      iota::rpc::DepositAddressReply* response) override {
-    return grpc::Status::CANCELLED;
-  }
+      const iota::rpc::GetDepositAddressRequest* request,
+      iota::rpc::GetDepositAddressReply* response) override;
+
+#if 0
   grpc::Status ScheduleSweep(grpc::ServerContext* context,
                              const iota::rpc::ScheduleSweepRequest* request,
                              iota::rpc::ScheduleSweepReply* response) override {

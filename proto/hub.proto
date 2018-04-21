@@ -6,7 +6,7 @@ import "proto/messages.proto";
 service Hub {
   rpc CreateUser              (CreateUserRequest             ) returns (       CreateUserReply       );
   rpc GetBalance              (GetBalanceRequest             ) returns (       GetBalanceReply       );
-  rpc GetGetDepositAddress    (GetDepositAddressRequest      ) returns (       GetDepositAddressReply);
+  rpc GetDepositAddress    (GetDepositAddressRequest      ) returns (       GetDepositAddressReply);
   rpc ScheduleSweep           (ScheduleSweepRequest          ) returns (       ScheduleSweepReply    );
   rpc UserWithdraw            (UserWithdrawRequest           ) returns (       UserWithdrawReply     );
   rpc GetStats                (StatsRequest                  ) returns (       StatsReply            );
