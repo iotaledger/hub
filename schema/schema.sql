@@ -8,24 +8,24 @@ CREATE INDEX IF NOT EXISTS idx_user_account_identifier ON user_account(identifie
 
 CREATE TABLE IF NOT EXISTS user_address (
   id INTEGER PRIMARY KEY AUTOINCREMENT,
+  address CHAR(81) NOT NULL,
   user_account INTEGER NOT NULL,
-  seed CHAR(81) NOT NULL,
   seed_uuid TEXT NOT NULL,
-  seed_idx INTEGER DEFAULT (0) NOT NULL,
-  sec_level INTEGER DEFAULT(2) NOT NULL,
+  created_at DATETIME DEFAULT CURRENT_TIMESTAMP NOT NULL,
   FOREIGN KEY (user_account) REFERENCES user_account(id)
 );
 
+CREATE INDEX IF NOT EXISTS idx_user_address_address ON user_address(address);
+
 CREATE TABLE IF NOT EXISTS hub_address (
   id INTEGER PRIMARY KEY AUTOINCREMENT,
-  seed CHAR(81) NOT NULL,
-  -- used for tracking with Multi-Signature party
+  address CHAR(81) NOT NULL,
   seed_uuid TEXT NOT NULL,
-  seed_idx INTEGER DEFAULT (0) NOT NULL,
-  sec_level INTEGER DEFAULT (2) NOT NULL,
   is_cold_storage INTEGER DEFAULT 0 NOT NULL,
   created_at DATETIME DEFAULT CURRENT_TIMESTAMP NOT NULL
 );
+
+CREATE INDEX IF NOT EXISTS idx_hub_address_address ON hub_address(address);
 
 -- reason: 0 INBOUND 1 OUTBOUND
 CREATE TABLE IF NOT EXISTS hub_address_balance (
@@ -40,7 +40,7 @@ CREATE TABLE IF NOT EXISTS hub_address_balance (
   FOREIGN KEY (sweep) REFERENCES sweep(id)
 );
 
-CREATE INDEX IF NOT EXISTS idx_hub_address_reason ON hub_address_balance(hub_address, reason);
+CREATE INDEX IF NOT EXISTS idx_hub_address_balance_reason ON hub_address_balance(hub_address, reason);
 
 CREATE TABLE IF NOT EXISTS sweep (
   id INTEGER PRIMARY KEY AUTOINCREMENT,
@@ -85,7 +85,7 @@ CREATE TABLE IF NOT EXISTS withdrawal (
   FOREIGN KEY (sweep) REFERENCES sweep(id),
   FOREIGN KEY (user_account) REFERENCES user_account(id)
 );
--- reason: 0 SWEEP 1 WITHDRAWAL 2 TRADE
+-- reason: 0 SWEEP 1 WITHDRAWAL 2 SELL 3 BUY 
 CREATE TABLE IF NOT EXISTS user_account_balance (
   user_account INTEGER NOT NULL,
   amount INTEGER NOT NULL,
@@ -94,7 +94,7 @@ CREATE TABLE IF NOT EXISTS user_account_balance (
   withdrawal INTEGER CHECK (reason = 1 and withdrawal not null),
   occured_at DATETIME DEFAULT CURRENT_TIMESTAMP NOT NULL,
   CHECK (reason = 0 and sweep not null),
-  CHECK (reason >= 0 and reason < 3),
+  CHECK (reason >= 0 and reason < 4),
   FOREIGN KEY (user_account) REFERENCES user_account(id),
   FOREIGN KEY (sweep) REFERENCES sweep(id),
   FOREIGN KEY (withdrawal) REFERENCES withdrawal(id)
