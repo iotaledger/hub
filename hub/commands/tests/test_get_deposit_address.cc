@@ -1,18 +1,20 @@
+#include <gmock/gmock.h>
 #include <gtest/gtest.h>
 #include <sqlpp11/functions.h>
 #include <sqlpp11/select.h>
 
-#include "proto/hub.pb.h"
-#include "schema/schema.h"
-
 #include "hub/commands/get_deposit_address.h"
 #include "hub/db/db.h"
+#include "hub/db/helper.h"
 #include "hub/stats/session.h"
+#include "proto/hub.pb.h"
+#include "schema/schema.h"
 
 #include "runner.h"
 
 using namespace hub;
 using namespace sqlpp;
+using namespace testing;
 
 namespace {
 class GetDepositAddressTest : public CommandTest {};
@@ -47,7 +49,6 @@ TEST_F(GetDepositAddressTest, AddressCountInDatabaseShouldChange) {
 
   cmd::GetDepositAddress command(session());
 
-
   ASSERT_TRUE(command.doProcess(&req, &res).ok());
   std::string address1 = res.address();
   ASSERT_EQ(res.address().length(), 81);
@@ -55,10 +56,23 @@ TEST_F(GetDepositAddressTest, AddressCountInDatabaseShouldChange) {
   ASSERT_EQ(res.address().length(), 81);
   ASSERT_NE(address1, res.address());
 
-  ASSERT_EQ(2, conn(select(count(tbl.id)).from(tbl).unconditionally())
-            .front()
-            .count);
+  ASSERT_EQ(
+      2, conn(select(count(tbl.id)).from(tbl).unconditionally()).front().count);
 
+  auto unswept = hub::db::unsweptUserAddresses(conn);
+
+  ASSERT_EQ(2, unswept.size());
+  ASSERT_NE(std::find_if(unswept.begin(), unswept.end(),
+                         [&address1](auto& ref) {
+                           return std::get<1>(ref) == address1;
+                         }),
+            unswept.end());
+
+  ASSERT_NE(std::find_if(unswept.begin(), unswept.end(),
+                         [&res](auto& ref) {
+                           return std::get<1>(ref) == res.address();
+                         }),
+            unswept.end());
 }
 
 TEST_F(GetDepositAddressTest, AddressShouldHaveCorrectLength) {
