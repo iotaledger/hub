@@ -36,6 +36,8 @@ CREATE TABLE IF NOT EXISTS hub_address_balance (
   sweep INTEGER NOT NULL,
   occured_at DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
   CHECK (reason >= 0 and reason < 2),
+  CHECK (reason = 0 and amount > 0),
+  CHECK (reason = 1 and amount < 0),
   FOREIGN KEY (hub_address) REFERENCES hub_address(id),
   FOREIGN KEY (sweep) REFERENCES sweep(id)
 );
@@ -63,8 +65,8 @@ CREATE TABLE IF NOT EXISTS user_address_balance (
   -- nullable if not swept yet
   sweep INTEGER DEFAULT NULL,
   occured_at DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
-  CHECK (reason = 0 and tail_hash not null),
-  CHECK (reason = 1 and sweep not null),
+  CHECK (reason = 0 and tail_hash not null and amount > 0),
+  CHECK (reason = 1 and sweep not null and amount < 0),
   CHECK (reason >= 0 and reason < 2),
   FOREIGN KEY (user_address) REFERENCES user_address(id),
   FOREIGN KEY (sweep) REFERENCES sweep(id)
@@ -85,16 +87,19 @@ CREATE TABLE IF NOT EXISTS withdrawal (
   FOREIGN KEY (sweep) REFERENCES sweep(id),
   FOREIGN KEY (user_account) REFERENCES user_account(id)
 );
--- reason: 0 SWEEP 1 WITHDRAWAL 2 SELL 3 BUY 
+-- reason: 0 SWEEP 1 BUY 2 WITHDRAWAL 3 SELL
 CREATE TABLE IF NOT EXISTS user_account_balance (
   user_account INTEGER NOT NULL,
   amount INTEGER NOT NULL,
   reason INTEGER NOT NULL,
   sweep INTEGER,
-  withdrawal INTEGER CHECK (reason = 1 and withdrawal not null),
+  withdrawal INTEGER
   occured_at DATETIME DEFAULT CURRENT_TIMESTAMP NOT NULL,
   CHECK (reason = 0 and sweep not null),
+  CHECK (reason = 2 and withdrawal not null),
   CHECK (reason >= 0 and reason < 4),
+  CHECK (reason < 2 and amount > 0),
+  CHECK (reason >= 2 and amount < 0),
   FOREIGN KEY (user_account) REFERENCES user_account(id),
   FOREIGN KEY (sweep) REFERENCES sweep(id),
   FOREIGN KEY (withdrawal) REFERENCES withdrawal(id)
