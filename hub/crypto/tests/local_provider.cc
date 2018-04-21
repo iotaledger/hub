@@ -7,7 +7,7 @@
 #include <boost/uuid/uuid_generators.hpp>
 #include <boost/uuid/uuid_io.hpp>
 
-#include "local_provider.h"
+#include "hub/crypto/local_provider.h"
 
 using namespace hub;
 using namespace hub::crypto;

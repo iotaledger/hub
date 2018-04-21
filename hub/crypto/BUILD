@@ -23,4 +23,4 @@ cc_test(
         ":local_provider", "@com_google_googletest//:gtest",
         "@com_google_googletest//:gtest_main"
     ],
-    srcs=["test_local_provider.cc"])
+    srcs=["tests/local_provider.cc"])
