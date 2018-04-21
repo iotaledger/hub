@@ -8,8 +8,8 @@
 #include "proto/hub.grpc.pb.h"
 #include "proto/hub.pb.h"
 
-namespace iota {
-class HubImpl final : public iota::rpc::Hub::Service {
+namespace hub {
+class HubImpl final : public hub::rpc::Hub::Service {
  public:
   explicit HubImpl() {}
   ~HubImpl() override {}
@@ -19,45 +19,45 @@ class HubImpl final : public iota::rpc::Hub::Service {
                           rpc::CreateUserReply* response) override;
 
   grpc::Status GetBalance(grpc::ServerContext* context,
-                          const iota::rpc::GetBalanceRequest* request,
-                          iota::rpc::GetBalanceReply* response) override;
+                          const hub::rpc::GetBalanceRequest* request,
+                          hub::rpc::GetBalanceReply* response) override;
 
   grpc::Status GetDepositAddress(
       grpc::ServerContext* context,
-      const iota::rpc::GetDepositAddressRequest* request,
-      iota::rpc::GetDepositAddressReply* response) override;
+      const hub::rpc::GetDepositAddressRequest* request,
+      hub::rpc::GetDepositAddressReply* response) override;
 
 #if 0
   grpc::Status ScheduleSweep(grpc::ServerContext* context,
-                             const iota::rpc::ScheduleSweepRequest* request,
-                             iota::rpc::ScheduleSweepReply* response) override {
+                             const hub::rpc::ScheduleSweepRequest* request,
+                             hub::rpc::ScheduleSweepReply* response) override {
     return grpc::Status::CANCELLED;
   }
   grpc::Status UserWithdraw(grpc::ServerContext* context,
-                            const iota::rpc::UserWithdrawRequest* request,
-                            iota::rpc::UserWithdrawReply* response) override {
+                            const hub::rpc::UserWithdrawRequest* request,
+                            hub::rpc::UserWithdrawReply* response) override {
     return grpc::Status::CANCELLED;
   }
   grpc::Status GetStats(grpc::ServerContext* context,
-                        const iota::rpc::StatsRequest* request,
-                        iota::rpc::StatsReply* response) override {
+                        const hub::rpc::StatsRequest* request,
+                        hub::rpc::StatsReply* response) override {
     return grpc::Status::CANCELLED;
   }
   grpc::Status GetUserHistory(
       grpc::ServerContext* context,
-      const iota::rpc::GetUserHistoryRequest* request,
-      iota::rpc::GetUserHistoryReply* response) override {
+      const hub::rpc::GetUserHistoryRequest* request,
+      hub::rpc::GetUserHistoryReply* response) override {
     return grpc::Status::CANCELLED;
   }
   grpc::Status UserBalanceSubscription(
       grpc::ServerContext* context,
-      const iota::rpc::UserBalanceSubscriptionRequest* request,
-      grpc::ServerWriter<iota::rpc::UserBalanceEvent>* writer) override {
+      const hub::rpc::UserBalanceSubscriptionRequest* request,
+      grpc::ServerWriter<hub::rpc::UserBalanceEvent>* writer) override {
     return grpc::Status::CANCELLED;
   }
 #endif
 };
 
-}  // namespace iota
+}  // namespace hub
 
 #endif /* __HUB_GRPC_H__ */

@@ -12,7 +12,7 @@ int main(int argc, char **argv) {
 
   LOG(INFO) << "Hub starting up.";
 
-  iota::HubServer server;
+  hub::HubServer server;
 
   server.initialise();
   server.runAndWait();

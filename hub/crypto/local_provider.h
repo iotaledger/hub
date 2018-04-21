@@ -8,7 +8,7 @@
 
 #include "provider.h"
 
-namespace iota {
+namespace hub {
 namespace crypto {
 
 class LocalProvider : public CryptoProvider {
@@ -26,5 +26,5 @@ class LocalProvider : public CryptoProvider {
 };
 
 }  // namespace crypto
-}  // namespace iota
+}  // namespace hub
 #endif /* __HUB_CRYPTO_LOCAL_PROVIDER_H_ */

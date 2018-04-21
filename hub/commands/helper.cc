@@ -4,11 +4,11 @@
 
 #include "proto/hub.pb.h"
 
-namespace iota {
+namespace hub {
 namespace cmd {
-std::string errorToString(const iota::rpc::ErrorCode& e) {
+std::string errorToString(const hub::rpc::ErrorCode& e) {
   std::ostringstream ss;
-  iota::rpc::Error error;
+  hub::rpc::Error error;
 
   error.set_code(e);
   error.SerializeToOstream(&ss);
@@ -16,4 +16,4 @@ std::string errorToString(const iota::rpc::ErrorCode& e) {
   return ss.str();
 }
 }  // namespace cmd
-}  // namespace iota
+}  // namespace hub

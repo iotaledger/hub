@@ -10,7 +10,7 @@
 #include <boost/uuid/uuid_generators.hpp>
 #include <boost/uuid/uuid_io.hpp>
 
-namespace iota {
+namespace hub {
 class ClientSession {
  public:
   explicit ClientSession()
@@ -23,7 +23,7 @@ class ClientSession {
 
  private:
   friend std::ostream& operator<<(std::ostream& os,
-                                  const iota::ClientSession& stats);
+                                  const hub::ClientSession& stats);
 
   std::string rep_str() const {
     std::ostringstream ostr;
@@ -35,6 +35,6 @@ class ClientSession {
   const std::string _str;
 };
 
-};  // namespace iota
+};  // namespace hub
 
 #endif

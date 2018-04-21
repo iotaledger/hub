@@ -25,12 +25,12 @@ namespace {
 SQLPP_ALIAS_PROVIDER(total);
 }
 
-namespace iota {
+namespace hub {
 namespace cmd {
 
 grpc::Status GetDepositAddress::doProcess(
-    const iota::rpc::GetDepositAddressRequest* request,
-    iota::rpc::GetDepositAddressReply* response) noexcept {
+    const hub::rpc::GetDepositAddressRequest* request,
+    hub::rpc::GetDepositAddressReply* response) noexcept {
   db::sql::UserAddress userAddress;
 
   uint64_t userId;
@@ -43,7 +43,7 @@ grpc::Status GetDepositAddress::doProcess(
     if (!maybeUserId) {
       return grpc::Status(
           grpc::StatusCode::FAILED_PRECONDITION, "",
-          errorToString(iota::rpc::ErrorCode::USER_DOES_NOT_EXIST));
+          errorToString(hub::rpc::ErrorCode::USER_DOES_NOT_EXIST));
     }
 
     userId = maybeUserId.value();
@@ -51,12 +51,12 @@ grpc::Status GetDepositAddress::doProcess(
 
   boost::uuids::uuid uuid = boost::uuids::random_generator()();
   auto address =
-      iota::crypto::CryptoManager::get().provider().getAddressForUUID(uuid);
+      hub::crypto::CryptoManager::get().provider().getAddressForUUID(uuid);
 
   response->set_address(address);
 
   // Add new user address.
-  transaction_t<iota::db::Connection> transaction(connection, true);
+  transaction_t<hub::db::Connection> transaction(connection, true);
   try {
     connection(insert_into(userAddress)
                    .set(userAddress.address = address,
@@ -68,7 +68,7 @@ grpc::Status GetDepositAddress::doProcess(
     transaction.rollback();
 
     return grpc::Status(grpc::StatusCode::FAILED_PRECONDITION, "",
-                        errorToString(iota::rpc::ErrorCode::UNKNOWN));
+                        errorToString(hub::rpc::ErrorCode::UNKNOWN));
   }
 
   return grpc::Status::OK;
@@ -76,4 +76,4 @@ grpc::Status GetDepositAddress::doProcess(
 
 }  // namespace cmd
 
-}  // namespace iota
+}  // namespace hub

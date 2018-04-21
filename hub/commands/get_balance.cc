@@ -20,12 +20,12 @@ namespace {
 SQLPP_ALIAS_PROVIDER(total);
 }
 
-namespace iota {
+namespace hub {
 namespace cmd {
 
 grpc::Status GetBalance::doProcess(
-    const iota::rpc::GetBalanceRequest* request,
-    iota::rpc::GetBalanceReply* response) noexcept {
+    const hub::rpc::GetBalanceRequest* request,
+    hub::rpc::GetBalanceReply* response) noexcept {
   db::sql::UserAccountBalance bal;
 
   auto& connection = db::DBManager::get().connection();
@@ -37,7 +37,7 @@ grpc::Status GetBalance::doProcess(
     if (!maybeUserId) {
       return grpc::Status(
           grpc::StatusCode::FAILED_PRECONDITION, "",
-          errorToString(iota::rpc::ErrorCode::USER_DOES_NOT_EXIST));
+          errorToString(hub::rpc::ErrorCode::USER_DOES_NOT_EXIST));
     }
 
     userId = maybeUserId.value();
@@ -51,7 +51,7 @@ grpc::Status GetBalance::doProcess(
 
     if (result.empty()) {
       return grpc::Status(grpc::StatusCode::FAILED_PRECONDITION, "",
-                          errorToString(iota::rpc::ErrorCode::UNKNOWN));
+                          errorToString(hub::rpc::ErrorCode::UNKNOWN));
     }
 
     response->set_available(result.front().total);
@@ -62,4 +62,4 @@ grpc::Status GetBalance::doProcess(
 
 }  // namespace cmd
 
-}  // namespace iota
+}  // namespace hub

@@ -1,6 +1,6 @@
 #include "manager.h"
 
-namespace iota {
+namespace hub {
 namespace crypto {
 
 CryptoManager& CryptoManager::get() {
@@ -14,4 +14,4 @@ CryptoProvider& CryptoManager::provider() {
 }
 
 }  // namespace crypto
-}  // namespace iota
+}  // namespace hub

@@ -13,7 +13,7 @@
 #include <sqlpp11/type_traits.h>
 #include <sqlpp11/sqlite3/connection.h>
 
-namespace iota {
+namespace hub {
 namespace db {
 DECLARE_string(db);
 
@@ -40,6 +40,6 @@ class DBManager {
 };
 
 }  // namespace db
-}  // namespace iota
+}  // namespace hub
 
 #endif /* __HUB_DB_DB_H_ */

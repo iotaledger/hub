@@ -11,7 +11,7 @@
 
 #include "runner.h"
 
-using namespace iota;
+using namespace hub;
 using namespace sqlpp;
 
 namespace {
@@ -39,7 +39,7 @@ TEST_F(GetDepositAddressTest, AddressCountInDatabaseShouldChange) {
   db::sql::UserAddress tbl;
 
   constexpr auto username = "User1";
-  auto& conn = iota::db::DBManager::get().connection();
+  auto& conn = hub::db::DBManager::get().connection();
 
   createUser(session(), username);
 

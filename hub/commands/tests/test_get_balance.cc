@@ -11,7 +11,7 @@
 
 #include "runner.h"
 
-using namespace iota;
+using namespace hub;
 using namespace sqlpp;
 
 namespace {

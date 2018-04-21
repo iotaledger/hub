@@ -1,6 +1,6 @@
 syntax = "proto3";
 
-package iota.rpc;
+package hub.rpc;
 import "proto/messages.proto";
 
 service Hub {

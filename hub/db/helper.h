@@ -18,7 +18,7 @@
 #include "db.h"
 #include "schema/schema.h"
 
-namespace iota {
+namespace hub {
 namespace db {
 
 inline std::optional<int64_t> userIdFromIdentifier(Connection& connection,
@@ -38,6 +38,6 @@ inline std::optional<int64_t> userIdFromIdentifier(Connection& connection,
 }
 
 }  // namespace db
-}  // namespace iota
+}  // namespace hub
 
 #endif /* __HUB_DB_HELPER_H_ */

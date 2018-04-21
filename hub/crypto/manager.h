@@ -6,7 +6,7 @@
 #include "provider.h"
 
 
-namespace iota {
+namespace hub {
 namespace crypto {
 
 class CryptoManager {
@@ -27,5 +27,5 @@ class CryptoManager {
 };
 
 }  // namespace crypto
-}  // namespace iota
+}  // namespace hub
 #endif /* __HUB_CRYPTO_MANAGER_H_ */

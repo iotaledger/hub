@@ -12,7 +12,7 @@
 #include "hub/db/db.h"
 #include "hub/stats/session.h"
 
-namespace iota {
+namespace hub {
 
 grpc::Status HubImpl::CreateUser(grpc::ServerContext* context,
                                  const rpc::CreateUserRequest* request,
@@ -38,4 +38,4 @@ grpc::Status HubImpl::GetDepositAddress(
   return cmd.process(request, response);
 }
 
-}  // namespace iota
+}  // namespace hub

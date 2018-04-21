@@ -4,7 +4,7 @@
 #include <boost/uuid/uuid.hpp>
 #include <string>
 
-namespace iota {
+namespace hub {
 namespace crypto {
 
 class CryptoProvider {
@@ -14,5 +14,5 @@ class CryptoProvider {
 };
 
 }  // namespace crypto
-}  // namespace iota
+}  // namespace hub
 #endif /* __HUB_CRYPTO_PROVIDER_H_ */

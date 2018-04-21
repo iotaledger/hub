@@ -15,7 +15,7 @@ class Server;
 class ServerBuilder;
 }  // namespace grpc
 
-namespace iota {
+namespace hub {
 
 class HubServer {
  public:
@@ -26,8 +26,8 @@ class HubServer {
 
  private:
   std::unique_ptr<grpc::Server> _server;
-  iota::HubImpl _service;
+  hub::HubImpl _service;
 };
 
-}  // namespace iota
+}  // namespace hub
 #endif /* __HUB_SERVER_H__ */

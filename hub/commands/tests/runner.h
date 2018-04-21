@@ -10,13 +10,13 @@
 #include "hub/crypto/manager.h"
 #include "proto/hub.pb.h"
 
-namespace iota {
+namespace hub {
 class CommandTest : public ::testing::Test {
  public:
   virtual void SetUp() {
-    iota::crypto::CryptoManager::get().setProvider(std::make_unique<crypto::LocalProvider>("abcdefghij"));
+    hub::crypto::CryptoManager::get().setProvider(std::make_unique<crypto::LocalProvider>("abcdefghij"));
     
-    auto db = iota::db::DBManager::get();
+    auto db = hub::db::DBManager::get();
     db.resetConnection();
     db.loadSchema(true);
 
@@ -48,5 +48,5 @@ class CommandTest : public ::testing::Test {
   std::shared_ptr<ClientSession> _session;
 };
 
-}  // namespace iota
+}  // namespace hub
 #endif /* __HUB_COMMANDS_TESTS_RUNNER_H_ */

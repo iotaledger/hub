@@ -2,7 +2,7 @@ genrule(name="headers",
         srcs=["ddl2cpp", "schema.sql"],
         outs=["schema.h"],
         cmd="""
-      $(location ddl2cpp) $(location schema.sql) schema iota::db::sql
+      $(location ddl2cpp) $(location schema.sql) schema hub::db::sql
       cp schema.h $@
         """)
 

@@ -3,11 +3,11 @@
 
 #include "proto/hub.pb.h"
 
-namespace iota {
+namespace hub {
 
 namespace cmd {
-std::string errorToString(const iota::rpc::ErrorCode& e);
+std::string errorToString(const hub::rpc::ErrorCode& e);
 }
-}  // namespace iota
+}  // namespace hub
 
 #endif /* __HUB_COMMANDS_HELPER_H_ */

@@ -6,7 +6,7 @@
 #include <glog/logging.h>
 #include <grpc++/grpc++.h>
 
-namespace iota {
+namespace hub {
 class ClientSession;
 
 namespace cmd {
@@ -33,6 +33,6 @@ class Command {
 };
 
 }  // namespace cmd
-}  // namespace iota
+}  // namespace hub
 
 #endif /* __HUB_COMMANDS_COMMAND_H_ */

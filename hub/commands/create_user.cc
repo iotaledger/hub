@@ -13,17 +13,17 @@
 #include "helper.h"
 using namespace sqlpp;
 
-namespace iota {
+namespace hub {
 namespace cmd {
 
 grpc::Status CreateUser::doProcess(
-    const iota::rpc::CreateUserRequest* request,
-    iota::rpc::CreateUserReply* response) noexcept {
+    const hub::rpc::CreateUserRequest* request,
+    hub::rpc::CreateUserReply* response) noexcept {
   db::sql::UserAccount userAccount;
 
   auto& connection = db::DBManager::get().connection();
 
-  transaction_t<iota::db::Connection> transaction(connection, true);
+  transaction_t<hub::db::Connection> transaction(connection, true);
 
   try {
     connection(insert_into(userAccount)
@@ -34,7 +34,7 @@ grpc::Status CreateUser::doProcess(
     transaction.rollback();
 
     return grpc::Status(grpc::StatusCode::FAILED_PRECONDITION, "",
-                        errorToString(iota::rpc::ErrorCode::USER_EXISTS));
+                        errorToString(hub::rpc::ErrorCode::USER_EXISTS));
   }
 
   return grpc::Status::OK;
@@ -42,4 +42,4 @@ grpc::Status CreateUser::doProcess(
 
 }  // namespace cmd
 
-}  // namespace iota
+}  // namespace hub

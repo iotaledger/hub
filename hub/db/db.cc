@@ -10,10 +10,10 @@
 #include "sqlite3.h"
 
 namespace {
-thread_local static std::unique_ptr<iota::db::Connection> tl_connection;
+thread_local static std::unique_ptr<hub::db::Connection> tl_connection;
 }
 
-namespace iota {
+namespace hub {
 namespace db {
 
 DEFINE_string(db, "hub.db", "Path to sqlite3 database");
@@ -87,4 +87,4 @@ Connection& DBManager::connection() {
 }
 
 }  // namespace db
-}  // namespace iota
+}  // namespace hub

@@ -3,7 +3,7 @@
 
 #include "command.h"
 
-namespace iota {
+namespace hub {
 namespace rpc {
 class GetDepositAddressRequest;
 class GetDepositAddressReply;
@@ -12,18 +12,18 @@ class GetDepositAddressReply;
 namespace cmd {
 
 class GetDepositAddress
-    : public Command<iota::rpc::GetDepositAddressRequest, iota::rpc::GetDepositAddressReply> {
+    : public Command<hub::rpc::GetDepositAddressRequest, hub::rpc::GetDepositAddressReply> {
  public:
-  using Command<iota::rpc::GetDepositAddressRequest,
-                iota::rpc::GetDepositAddressReply>::Command;
+  using Command<hub::rpc::GetDepositAddressRequest,
+                hub::rpc::GetDepositAddressReply>::Command;
 
   grpc::Status doProcess(
-      const iota::rpc::GetDepositAddressRequest* request,
-      iota::rpc::GetDepositAddressReply* response) noexcept override;
+      const hub::rpc::GetDepositAddressRequest* request,
+      hub::rpc::GetDepositAddressReply* response) noexcept override;
 
   const std::string name() override { return "GetDepositAddress"; }
 };
 }  // namespace cmd
-}  // namespace iota
+}  // namespace hub
 
 #endif /* __HUB_COMMANDS_GET_DEPOSIT_ADDRESS_H_ */

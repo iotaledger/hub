@@ -25,7 +25,7 @@ void trits_to_trytes(trit_t*, tryte_t*, size_t);
 void trytes_to_trits(tryte_t*, trit_t*, size_t);
 }
 
-namespace iota {
+namespace hub {
 namespace crypto {
 LocalProvider::LocalProvider(std::string salt) : _salt(std::move(salt)) {
   using namespace std::string_literals;
@@ -59,4 +59,4 @@ std::string LocalProvider::getAddressForUUID(
   return address;
 }
 }  // namespace crypto
-}  // namespace iota
+}  // namespace hub

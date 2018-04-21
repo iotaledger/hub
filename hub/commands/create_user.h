@@ -3,7 +3,7 @@
 
 #include "command.h"
 
-namespace iota {
+namespace hub {
 namespace rpc {
 class CreateUserRequest;
 class CreateUserReply;
@@ -12,18 +12,18 @@ class CreateUserReply;
 namespace cmd {
 
 class CreateUser
-    : public Command<iota::rpc::CreateUserRequest, iota::rpc::CreateUserReply> {
+    : public Command<hub::rpc::CreateUserRequest, hub::rpc::CreateUserReply> {
  public:
-  using Command<iota::rpc::CreateUserRequest,
-                iota::rpc::CreateUserReply>::Command;
+  using Command<hub::rpc::CreateUserRequest,
+                hub::rpc::CreateUserReply>::Command;
 
   grpc::Status doProcess(
-      const iota::rpc::CreateUserRequest* request,
-      iota::rpc::CreateUserReply* response) noexcept override;
+      const hub::rpc::CreateUserRequest* request,
+      hub::rpc::CreateUserReply* response) noexcept override;
 
   const std::string name() override { return "CreateUser"; }
 };
 }  // namespace cmd
-}  // namespace iota
+}  // namespace hub
 
 #endif /* __HUB_COMMANDS_CREATE_USER_H_ */

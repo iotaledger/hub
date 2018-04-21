@@ -10,7 +10,7 @@ DEFINE_string(authMode, "none", "credentials to use. can be {none}");
 using grpc::Server;
 using grpc::ServerBuilder;
 
-namespace iota {
+namespace hub {
 HubServer::HubServer() {}
 
 void HubServer::initialise() {
@@ -26,4 +26,4 @@ void HubServer::initialise() {
 }
 
 void HubServer::runAndWait() { _server->Wait(); }
-}  // namespace iota
+}  // namespace hub

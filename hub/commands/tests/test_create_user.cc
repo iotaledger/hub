@@ -11,7 +11,7 @@
 
 #include "runner.h"
 
-using namespace iota;
+using namespace hub;
 using namespace sqlpp;
 
 namespace {
@@ -20,7 +20,7 @@ class CreateUserTest : public CommandTest {};
 TEST_F(CreateUserTest, ErrorOnDuplicate) {
   db::sql::UserAccount tbl;
 
-  auto& conn = iota::db::DBManager::get().connection();
+  auto& conn = hub::db::DBManager::get().connection();
 
   createUser(session(), "User1");
   auto status = createUser(session(), "User1");
@@ -36,7 +36,7 @@ TEST_F(CreateUserTest, ErrorOnDuplicate) {
 TEST_F(CreateUserTest, CreateUsers) {
   db::sql::UserAccount tbl;
 
-  auto& conn = iota::db::DBManager::get().connection();
+  auto& conn = hub::db::DBManager::get().connection();
 
   ASSERT_TRUE(createUser(session(), "User1").ok());
   ASSERT_TRUE(createUser(session(), "User2").ok());

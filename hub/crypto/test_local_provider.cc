@@ -9,8 +9,8 @@
 
 #include "local_provider.h"
 
-using namespace iota;
-using namespace iota::crypto;
+using namespace hub;
+using namespace hub::crypto;
 
 namespace {
 
