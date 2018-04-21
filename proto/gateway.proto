@@ -1,7 +1,6 @@
 syntax = "proto3";
 
 package iota.rpc;
-
 import "proto/messages.proto";
 import "google/api/annotations.proto";
 

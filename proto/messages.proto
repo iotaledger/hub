@@ -23,16 +23,14 @@ message GetBalanceRequest {
 
 message GetBalanceReply {
   int64 available = 1;
-
   // TODO(th0br0): pendingSweep
-
 }
 
-message DepositAddressRequest {
+message GetDepositAddressRequest {
   string userId = 1;
 }
 
-message DepositAddressReply {
+message GetDepositAddressReply {
   string address = 1;
 }
 
@@ -63,3 +61,4 @@ message UserBalanceEvent {}
 message ScheduleSweepRequest {}
 
 message ScheduleSweepReply {}
+
