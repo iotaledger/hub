@@ -5,3 +5,4 @@ GTAGS
 GRTAGS
 .#*
 hub.db
+.gdb_history

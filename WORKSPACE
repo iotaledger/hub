@@ -67,6 +67,37 @@ new_git_repository(
     tag="v4.2.5",
     build_file="BUILD.libzmq", )
 
+new_http_archive(
+    name="argon2",
+    url="https://github.com/P-H-C/phc-winner-argon2/archive/20171227.tar.gz",
+    sha256="eaea0172c1f4ee4550d1b6c9ce01aab8d1ab66b4207776aa67991eb5872fdcd8",
+    strip_prefix="phc-winner-argon2-20171227",
+    build_file="BUILD.argon2"
+)
+
+git_repository(
+    name="rules_iota",
+    remote="https://gitlab.com/iota-foundation/software/rules_iota.git",
+    commit="5622593910361262b248ad165aaf60bc87d0fa16")
+
+
+http_archive(
+    name="org_iota_entangled",
+    url="https://gitlab.com/iota-foundation/software/entangled/-/archive/develop/entangled-develop.tar.gz",
+    strip_prefix="entangled-develop"
+)
+
+new_http_archive(
+        name="keccak",
+        url=
+        "https://github.com/gvanas/KeccakCodePackage/archive/c737139c81fd191699886a9a74d3220f6e300b29.zip",
+        strip_prefix=
+        "KeccakCodePackage-c737139c81fd191699886a9a74d3220f6e300b29",
+        build_file="@rules_iota//:build/BUILD.keccak",
+        sha256=
+        "35c63620721ac4da418d4bb427ba7ae9aae76b4a1bea7758d6694a29f6e6488a")
+
+
 load("@com_github_nelhage_rules_boost//:boost/boost.bzl", "boost_deps")
 load("@org_pubref_rules_protobuf//cpp:rules.bzl", "cpp_proto_repositories")
 load("@io_bazel_rules_go//go:def.bzl", "go_rules_dependencies",
