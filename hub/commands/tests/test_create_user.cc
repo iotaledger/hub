@@ -26,9 +26,9 @@ TEST_F(CreateUserTest, ErrorOnDuplicate) {
   auto status = createUser(session(), "User1");
   auto err = errorFromStatus(status);
 
-  EXPECT_EQ(grpc::StatusCode::FAILED_PRECONDITION, status.error_code());
-  EXPECT_EQ(err.code(), rpc::ErrorCode::USER_EXISTS);
-  EXPECT_EQ(1, conn(select(count(tbl.identifier)).from(tbl).unconditionally())
+  ASSERT_EQ(grpc::StatusCode::FAILED_PRECONDITION, status.error_code());
+  ASSERT_EQ(err.code(), rpc::ErrorCode::USER_EXISTS);
+  ASSERT_EQ(1, conn(select(count(tbl.identifier)).from(tbl).unconditionally())
                    .front()
                    .count);
 }
@@ -38,10 +38,10 @@ TEST_F(CreateUserTest, CreateUsers) {
 
   auto& conn = iota::db::DBManager::get().connection();
 
-  EXPECT_TRUE(createUser(session(), "User1").ok());
-  EXPECT_TRUE(createUser(session(), "User2").ok());
+  ASSERT_TRUE(createUser(session(), "User1").ok());
+  ASSERT_TRUE(createUser(session(), "User2").ok());
 
-  EXPECT_EQ(2, conn(select(count(tbl.identifier)).from(tbl).unconditionally())
+  ASSERT_EQ(2, conn(select(count(tbl.identifier)).from(tbl).unconditionally())
                    .front()
                    .count);
 }

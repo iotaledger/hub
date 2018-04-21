@@ -6,12 +6,16 @@
 #include "hub/commands/create_user.h"
 #include "hub/db/db.h"
 #include "hub/stats/session.h"
+#include "hub/crypto/local_provider.h"
+#include "hub/crypto/manager.h"
 #include "proto/hub.pb.h"
 
 namespace iota {
 class CommandTest : public ::testing::Test {
  public:
   virtual void SetUp() {
+    iota::crypto::CryptoManager::get().setProvider(std::make_unique<crypto::LocalProvider>("abcdefghij"));
+    
     auto db = iota::db::DBManager::get();
     db.resetConnection();
     db.loadSchema(true);

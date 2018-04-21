@@ -7,6 +7,7 @@
 #include <sqlpp11/select.h>
 
 #include "hub/db/db.h"
+#include "hub/db/helper.h"
 #include "hub/stats/session.h"
 #include "proto/hub.pb.h"
 #include "schema/schema.h"
@@ -25,25 +26,21 @@ namespace cmd {
 grpc::Status GetBalance::doProcess(
     const iota::rpc::GetBalanceRequest* request,
     iota::rpc::GetBalanceReply* response) noexcept {
-  db::sql::UserAccount acc;
   db::sql::UserAccountBalance bal;
 
-  uint64_t userId;
-
   auto& connection = db::DBManager::get().connection();
+  uint64_t userId;
 
   // Get userId for identifier
   {
-    const auto result = connection(
-        select(acc.id).from(acc).where(acc.identifier == request->userid()));
-
-    if (result.empty()) {
+    auto maybeUserId = db::userIdFromIdentifier(connection, request->userid());
+    if (!maybeUserId) {
       return grpc::Status(
           grpc::StatusCode::FAILED_PRECONDITION, "",
           errorToString(iota::rpc::ErrorCode::USER_DOES_NOT_EXIST));
     }
 
-    userId = result.front().id;
+    userId = maybeUserId.value();
   }
 
   // Summarise all amounts for user_account_balance changes
