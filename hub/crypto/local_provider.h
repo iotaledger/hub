@@ -13,6 +13,7 @@ namespace crypto {
 
 class LocalProvider : public CryptoProvider {
  public:
+  LocalProvider() = delete;
   explicit LocalProvider(std::string salt);
 
   std::string getAddressForUUID(const boost::uuids::uuid& uuid) const override;
