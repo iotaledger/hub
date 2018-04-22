@@ -11,6 +11,7 @@ cc_library(
     hdrs=["address_monitor.h"],
     deps=[
         ":scheduled_service",
+        "//hub/iota:api",
         "@com_github_google_glog//:glog",
     ],
     visibility=["//visibility:public"])

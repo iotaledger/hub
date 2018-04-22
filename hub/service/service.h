@@ -19,6 +19,10 @@ class Service {
 
   virtual const std::string name() const = 0;
 
+ protected:
+  virtual void onStart(){}
+  virtual void onStop() {}
+
   // Order of destruction matters for the below
  private:
   std::unique_ptr<std::thread> _thread;

@@ -1,8 +1,9 @@
 #include "scheduled_service.h"
 
-#include <memory>
 #include <iostream>
+#include <memory>
 
+#include <glog/logging.h>
 #include <boost/asio/io_service.hpp>
 #include <boost/asio/steady_timer.hpp>
 #include <boost/bind.hpp>
@@ -22,6 +23,8 @@ void ScheduledService::start() {
 }
 
 void ScheduledService::tick() {
+  VLOG(3) << name() << "::tick()";
+
   auto ret = doTick();
 
   if (ret) {

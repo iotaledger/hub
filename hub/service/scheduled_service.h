@@ -14,16 +14,17 @@ namespace service {
 class ScheduledService : public Service {
  public:
   ScheduledService() = delete;
-  
+
   explicit ScheduledService(std::chrono::milliseconds interval)
       : _interval(interval) {}
 
-  virtual void start() override;
-  virtual void stop() override;
+  void start() override;
+  void stop() override;
   void tick();
 
+ protected:
   //! Should return false if it wants to stop.
-  virtual bool  doTick() = 0;
+  virtual bool doTick() = 0;
 
  protected:
   using Timer = boost::asio::basic_waitable_timer<std::chrono::steady_clock>;

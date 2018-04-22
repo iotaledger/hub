@@ -16,12 +16,17 @@ void Service::start() {
   _work = std::make_unique<boost::asio::io_service::work>(_service);
   _thread = std::make_unique<std::thread>(
       boost::bind(&boost::asio::io_service::run, &_service));
+
+  onStart();
 }
 
 void Service::stop() {
   if (!_thread) {
     throw std::runtime_error{name() + "::stop called but was not running."};
   }
+
+  onStop();
+
   _work = nullptr;
   _service.stop();
   _thread->join();

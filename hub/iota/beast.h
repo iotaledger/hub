@@ -22,7 +22,7 @@ class BeastIotaAPI : public IotaAPI {
       : _host(std::move(host)), _port(port) {}
 
   virtual std::unordered_map<std::string, uint64_t> getBalances(
-      const std::unordered_set<std::string> addresses) override {
+      const std::vector<std::string> addresses) override {
     return {};
   }
 
@@ -32,7 +32,7 @@ class BeastIotaAPI : public IotaAPI {
   }
 
   virtual std::unordered_set<std::string> filterConfirmedTails(
-      const std::unordered_set<std::string> tails) override {
+      const std::vector<std::string> tails) override {
     return {};
   }
 
