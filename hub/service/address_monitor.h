@@ -6,7 +6,7 @@
 #include <string>
 #include <tuple>
 #include <unordered_map>
-#include <unordered_set>
+#include <vector>
 
 #include "scheduled_service.h"
 
@@ -25,14 +25,14 @@ class AddressMonitor : public ScheduledService {
       : ScheduledService(interval) {}
 
   bool doTick() override;
-  virtual std::unordered_set<std::tuple<uint64_t, std::string>>
-  monitoredAddresses() = 0;
-  virtual void onBalancesChanged(std::unordered_set<BalanceChange> changed) = 0;
 
-  const std::string name() const override { return "AddressMonitor"; }
+  virtual std::vector<std::tuple<uint64_t, std::string>>
+  monitoredAddresses() = 0;
+
+  virtual void onBalancesChanged(std::vector<BalanceChange> changed) = 0;
 
  private:
-  std::unordered_map<std::string, uint64_t> _balances;
+  std::unordered_map<uint64_t, uint64_t> _balances;
 };
 
 }  // namespace service

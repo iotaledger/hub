@@ -13,6 +13,8 @@ namespace service {
 
 class ScheduledService : public Service {
  public:
+  ScheduledService() = delete;
+  
   explicit ScheduledService(std::chrono::milliseconds interval)
       : _interval(interval) {}
 
