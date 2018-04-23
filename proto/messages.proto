@@ -3,9 +3,10 @@ syntax = "proto3";
 package hub.rpc;
 
 enum ErrorCode {
-  UNKNOWN             = 0;
-  USER_EXISTS         = 1;
-  USER_DOES_NOT_EXIST = 2;
+  UNKNOWN                   = 0;
+  USER_EXISTS               = 1;
+  USER_DOES_NOT_EXIST       = 2;
+  CANCELLATION_NOT_POSSIBLE = 3;
 }
 message Error {
   ErrorCode code = 1;
@@ -23,7 +24,9 @@ message GetBalanceRequest {
 
 message GetBalanceReply {
   int64 available = 1;
+
   // TODO(th0br0): pendingSweep
+
 }
 
 message GetDepositAddressRequest {
@@ -35,15 +38,22 @@ message GetDepositAddressReply {
 }
 
 message UserWithdrawRequest {
-  string userId  = 1;
-  string address = 2;
-  uint64 amount  = 3;
-  string note    = 4;
+  string userId        = 1;
+  string payoutAddress = 2;
+  uint64 amount        = 3;
+  string note          = 4;
 }
 
 message UserWithdrawReply {
-  uint32 error      = 1;
-  string bundleHash = 2;
+  string uuid = 1;
+}
+
+message UserWithdrawCancelRequest {
+  string uuid = 1;
+}
+
+message UserWithdrawCancelReply {
+  bool success = 1;
 }
 
 message StatsRequest {}

@@ -76,6 +76,7 @@ CREATE INDEX IF NOT EXISTS idx_user_address_reason ON user_address_balance(user_
 
 CREATE TABLE IF NOT EXISTS withdrawal (
   id INTEGER PRIMARY KEY AUTOINCREMENT,
+  uuid TEXT NOT NULL,
   user_account INTEGER NOT NULL,
   amount INTEGER NOT NULL,
   -- payout address
@@ -83,11 +84,12 @@ CREATE TABLE IF NOT EXISTS withdrawal (
   -- sweep that processes this withdrawal
   sweep INTEGER DEFAULT NULL,
   requested_at DATETIME DEFAULT CURRENT_TIMESTAMP NOT NULL,
+  cancelled_at DATETIME DEFAULT NULL,
   CHECK (amount > 0),
   FOREIGN KEY (sweep) REFERENCES sweep(id),
   FOREIGN KEY (user_account) REFERENCES user_account(id)
 );
--- reason: 0 SWEEP 1 BUY 2 WITHDRAWAL 3 SELL
+-- reason: 0 SWEEP 1 BUY 2 WITHDRAW_CANCEL 3 WITHDRAW 4 SELL
 CREATE TABLE IF NOT EXISTS user_account_balance (
   user_account INTEGER NOT NULL,
   amount INTEGER NOT NULL,
@@ -97,9 +99,10 @@ CREATE TABLE IF NOT EXISTS user_account_balance (
   occured_at DATETIME DEFAULT CURRENT_TIMESTAMP NOT NULL,
   CHECK (reason = 0 and sweep not null),
   CHECK (reason = 2 and withdrawal not null),
-  CHECK (reason >= 0 and reason < 4),
-  CHECK (reason < 2 and amount > 0),
-  CHECK (reason >= 2 and amount < 0),
+  CHECK (reason = 3 and withdrawal not null),
+  CHECK (reason >= 0 and reason < 5),
+  CHECK (reason < 3 and amount > 0),
+  CHECK (reason >= 3 and amount < 0),
   FOREIGN KEY (user_account) REFERENCES user_account(id),
   FOREIGN KEY (sweep) REFERENCES sweep(id),
   FOREIGN KEY (withdrawal) REFERENCES withdrawal(id)
