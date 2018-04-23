@@ -9,10 +9,10 @@ CREATE INDEX IF NOT EXISTS idx_user_account_identifier ON user_account(identifie
 CREATE TABLE IF NOT EXISTS user_address (
   id INTEGER PRIMARY KEY AUTOINCREMENT,
   address CHAR(81) NOT NULL,
-  user_account INTEGER NOT NULL,
+  user_id INTEGER NOT NULL,
   seed_uuid TEXT NOT NULL,
   created_at DATETIME DEFAULT CURRENT_TIMESTAMP NOT NULL,
-  FOREIGN KEY (user_account) REFERENCES user_account(id)
+  FOREIGN KEY (user_id) REFERENCES user_account(id)
 );
 
 CREATE INDEX IF NOT EXISTS idx_user_address_address ON user_address(address);
@@ -77,21 +77,24 @@ CREATE INDEX IF NOT EXISTS idx_user_address_reason ON user_address_balance(user_
 CREATE TABLE IF NOT EXISTS withdrawal (
   id INTEGER PRIMARY KEY AUTOINCREMENT,
   uuid TEXT NOT NULL,
-  user_account INTEGER NOT NULL,
+  user_id INTEGER NOT NULL,
   amount INTEGER NOT NULL,
   -- payout address
-  to_address CHAR(81) NOT NULL,
+  payout_address CHAR(81) NOT NULL,
   -- sweep that processes this withdrawal
   sweep INTEGER DEFAULT NULL,
   requested_at DATETIME DEFAULT CURRENT_TIMESTAMP NOT NULL,
   cancelled_at DATETIME DEFAULT NULL,
   CHECK (amount > 0),
   FOREIGN KEY (sweep) REFERENCES sweep(id),
-  FOREIGN KEY (user_account) REFERENCES user_account(id)
+  FOREIGN KEY (user_id) REFERENCES user_account(id)
 );
+
+CREATE INDEX IF NOT EXISTS idx_withdrawal_uuid ON withdrawal(uuid);
+
 -- reason: 0 SWEEP 1 BUY 2 WITHDRAW_CANCEL 3 WITHDRAW 4 SELL
 CREATE TABLE IF NOT EXISTS user_account_balance (
-  user_account INTEGER NOT NULL,
+  user_id INTEGER NOT NULL,
   amount INTEGER NOT NULL,
   reason INTEGER NOT NULL,
   sweep INTEGER,
@@ -103,12 +106,12 @@ CREATE TABLE IF NOT EXISTS user_account_balance (
   CHECK (reason >= 0 and reason < 5),
   CHECK (reason < 3 and amount > 0),
   CHECK (reason >= 3 and amount < 0),
-  FOREIGN KEY (user_account) REFERENCES user_account(id),
+  FOREIGN KEY (user_id) REFERENCES user_account(id),
   FOREIGN KEY (sweep) REFERENCES sweep(id),
   FOREIGN KEY (withdrawal) REFERENCES withdrawal(id)
 );
 
-CREATE INDEX IF NOT EXISTS idx_user_account_balance_by_user_account ON user_account_balance(user_account);
+CREATE INDEX IF NOT EXISTS idx_user_account_balance_by_user_id ON user_account_balance(user_id);
 
 CREATE TABLE IF NOT EXISTS sweep_tails (
   hash CHAR(81) PRIMARY KEY NOT NULL,

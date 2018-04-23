@@ -9,7 +9,7 @@
 #include "hub/commands/create_user.h"
 #include "hub/commands/get_balance.h"
 #include "hub/commands/get_deposit_address.h"
-#include "hub/db/db.h"
+#include "hub/commands/user_withdraw.h"
 #include "hub/stats/session.h"
 
 namespace hub {
@@ -35,6 +35,14 @@ grpc::Status HubImpl::GetDepositAddress(
     rpc::GetDepositAddressReply* response) {
   auto clientSession = std::make_shared<ClientSession>();
   cmd::GetDepositAddress cmd(clientSession);
+  return cmd.process(request, response);
+}
+
+grpc::Status HubImpl::UserWithdraw(grpc::ServerContext* context,
+                                   const hub::rpc::UserWithdrawRequest* request,
+                                   hub::rpc::UserWithdrawReply* response) {
+  auto clientSession = std::make_shared<ClientSession>();
+  cmd::UserWithdraw cmd(clientSession);
   return cmd.process(request, response);
 }
 

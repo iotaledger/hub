@@ -27,35 +27,9 @@ class HubImpl final : public hub::rpc::Hub::Service {
       const hub::rpc::GetDepositAddressRequest* request,
       hub::rpc::GetDepositAddressReply* response) override;
 
-#if 0
-  grpc::Status ScheduleSweep(grpc::ServerContext* context,
-                             const hub::rpc::ScheduleSweepRequest* request,
-                             hub::rpc::ScheduleSweepReply* response) override {
-    return grpc::Status::CANCELLED;
-  }
   grpc::Status UserWithdraw(grpc::ServerContext* context,
                             const hub::rpc::UserWithdrawRequest* request,
-                            hub::rpc::UserWithdrawReply* response) override {
-    return grpc::Status::CANCELLED;
-  }
-  grpc::Status GetStats(grpc::ServerContext* context,
-                        const hub::rpc::StatsRequest* request,
-                        hub::rpc::StatsReply* response) override {
-    return grpc::Status::CANCELLED;
-  }
-  grpc::Status GetUserHistory(
-      grpc::ServerContext* context,
-      const hub::rpc::GetUserHistoryRequest* request,
-      hub::rpc::GetUserHistoryReply* response) override {
-    return grpc::Status::CANCELLED;
-  }
-  grpc::Status UserBalanceSubscription(
-      grpc::ServerContext* context,
-      const hub::rpc::UserBalanceSubscriptionRequest* request,
-      grpc::ServerWriter<hub::rpc::UserBalanceEvent>* writer) override {
-    return grpc::Status::CANCELLED;
-  }
-#endif
+                            hub::rpc::UserWithdrawReply* response) override;
 };
 
 }  // namespace hub

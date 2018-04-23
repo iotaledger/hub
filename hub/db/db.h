@@ -13,6 +13,8 @@
 #include <sqlpp11/type_traits.h>
 #include <sqlpp11/sqlite3/connection.h>
 
+#include "types.h"
+
 namespace hub {
 namespace db {
 DECLARE_string(db);

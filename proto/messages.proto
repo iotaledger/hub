@@ -7,6 +7,7 @@ enum ErrorCode {
   USER_EXISTS               = 1;
   USER_DOES_NOT_EXIST       = 2;
   CANCELLATION_NOT_POSSIBLE = 3;
+  INSUFFICIENT_BALANCE      = 4;
 }
 message Error {
   ErrorCode code = 1;

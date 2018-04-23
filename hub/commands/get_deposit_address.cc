@@ -60,7 +60,7 @@ grpc::Status GetDepositAddress::doProcess(
   try {
     connection(insert_into(userAddress)
                    .set(userAddress.address = address,
-                        userAddress.userAccount = userId,
+                        userAddress.userId = userId,
                         userAddress.seedUuid = (char*) uuid.data));
     transaction.commit();
   } catch (sqlpp::exception& ex) {

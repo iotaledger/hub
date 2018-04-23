@@ -7,12 +7,15 @@
 #include <vector>
 
 #include <sqlpp11/functions.h>
+#include <sqlpp11/insert.h>
 #include <sqlpp11/schema.h>
 #include <sqlpp11/select.h>
 #include <sqlpp11/transaction.h>
+#include <boost/uuid/uuid.hpp>
 
 #include "db.h"
 #include "schema/schema.h"
+#include "types.h"
 
 namespace hub {
 namespace db {
@@ -56,19 +59,54 @@ inline std::vector<AddressWithID> unsweptUserAddresses(Connection& connection) {
   return addresses;
 }
 
- inline std::optional<uint64_t> availableBalanceForUser(Connection& connection, uint64_t userId) {
-   db::sql::UserAccountBalance bal;
-   
-   const auto result = connection(select(sum(bal.amount).as(sqlpp::alias::a))
-                                  .from(bal)
-                                  .where(bal.userAccount == userId));
+inline std::optional<uint64_t> availableBalanceForUser(Connection& connection,
+                                                       uint64_t userId) {
+  db::sql::UserAccountBalance bal;
 
-   if (result.empty()) {
-     return {};
-   }
+  const auto result = connection(select(sum(bal.amount).as(sqlpp::alias::a))
+                                     .from(bal)
+                                     .where(bal.userId == userId));
 
-   return result.front().a;
- }
+  if (result.empty()) {
+    return {};
+  }
+
+  return result.front().a;
+}
+
+inline void createUserAccountBalanceEntry(Connection& connection,
+                                          uint64_t userId, int64_t amount,
+                                          const UserAccountBalanceReason reason,
+                                          const std::optional<uint64_t> fkey = {}) {
+  db::sql::UserAccountBalance bal;
+
+  if (reason == UserAccountBalanceReason::SWEEP) {
+    connection(insert_into(bal).set(bal.userId = userId, bal.amount = amount,
+                                    bal.reason = static_cast<int>(reason),
+                                    bal.sweep = fkey.value()));
+  } else if (reason == UserAccountBalanceReason::WITHDRAWAL ||
+             reason == UserAccountBalanceReason::WITHDRAWAL_CANCEL) {
+    connection(insert_into(bal).set(bal.userId = userId, bal.amount = amount,
+                                    bal.reason = static_cast<int>(reason),
+                                    bal.withdrawal = fkey.value()));
+  } else {
+    connection(
+        insert_into(bal).set(bal.userId = userId, bal.amount = amount,
+                             bal.reason = static_cast<int>(reason)));
+  }
+}
+
+inline uint64_t createWithdrawal(Connection& connection,
+                                 const boost::uuids::uuid& uuid, uint64_t userId,
+                                 uint64_t amount, const std::string& payoutAddress) {
+  db::sql::Withdrawal tbl;
+
+  connection(insert_into(tbl).set(tbl.uuid = std::string(uuid.data, uuid.data + uuid.size()), tbl.userId = userId,
+                                  tbl.amount = amount,
+                                  tbl.payoutAddress = payoutAddress));
+
+  return connection.last_insert_id();
+}
 
 }  // namespace db
 }  // namespace hub
