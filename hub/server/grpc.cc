@@ -10,6 +10,7 @@
 #include "hub/commands/get_balance.h"
 #include "hub/commands/get_deposit_address.h"
 #include "hub/commands/user_withdraw.h"
+#include "hub/commands/user_withdraw_cancel.h"
 #include "hub/stats/session.h"
 
 namespace hub {
@@ -43,6 +44,15 @@ grpc::Status HubImpl::UserWithdraw(grpc::ServerContext* context,
                                    hub::rpc::UserWithdrawReply* response) {
   auto clientSession = std::make_shared<ClientSession>();
   cmd::UserWithdraw cmd(clientSession);
+  return cmd.process(request, response);
+}
+
+grpc::Status HubImpl::UserWithdrawCancel(
+    grpc::ServerContext* context,
+    const hub::rpc::UserWithdrawCancelRequest* request,
+    hub::rpc::UserWithdrawCancelReply* response) {
+  auto clientSession = std::make_shared<ClientSession>();
+  cmd::UserWithdrawCancel cmd(clientSession);
   return cmd.process(request, response);
 }
 

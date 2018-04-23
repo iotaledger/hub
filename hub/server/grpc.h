@@ -30,6 +30,11 @@ class HubImpl final : public hub::rpc::Hub::Service {
   grpc::Status UserWithdraw(grpc::ServerContext* context,
                             const hub::rpc::UserWithdrawRequest* request,
                             hub::rpc::UserWithdrawReply* response) override;
+
+  grpc::Status UserWithdrawCancel(
+      grpc::ServerContext* context,
+      const hub::rpc::UserWithdrawCancelRequest* request,
+      hub::rpc::UserWithdrawCancelReply* response) override;
 };
 
 }  // namespace hub

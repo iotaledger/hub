@@ -25,9 +25,7 @@ message GetBalanceRequest {
 
 message GetBalanceReply {
   int64 available = 1;
-
   // TODO(th0br0): pendingSweep
-
 }
 
 message GetDepositAddressRequest {

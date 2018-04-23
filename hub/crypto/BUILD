@@ -11,6 +11,7 @@ cc_library(
     hdrs=["local_provider.h"],
     deps=[
         ":crypto", "@argon2//:argon2",
+        "@com_github_google_glog//:glog",
         "@org_iota_entangled//common/kerl:converter",
         "@org_iota_entangled//common/helpers:sign",
         "@org_iota_entangled//common/trinary:trit_tryte"

@@ -7,6 +7,9 @@
 #include <stdexcept>
 
 #include <argon2.h>
+#include <glog/logging.h>
+#include <boost/uuid/uuid_io.hpp>
+
 #include "common/helpers/sign.h"
 #include "common/kerl/converter.h"
 #include "common/trinary/trits.h"
@@ -72,6 +75,7 @@ LocalProvider::LocalProvider(std::string salt) : _salt(std::move(salt)) {
 
 std::string LocalProvider::getAddressForUUID(
     const boost::uuids::uuid& uuid) const {
+  LOG(INFO) << "Generating address for: " << uuid;
   return {iota_sign_address_gen((const char*)seedFromUUID(uuid, _salt)->data(),
                                 KEY_IDX, KEY_SEC)};
 }

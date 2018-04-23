@@ -76,7 +76,7 @@ CREATE INDEX IF NOT EXISTS idx_user_address_reason ON user_address_balance(user_
 
 CREATE TABLE IF NOT EXISTS withdrawal (
   id INTEGER PRIMARY KEY AUTOINCREMENT,
-  uuid TEXT NOT NULL,
+  uuid TEXT UNIQUE NOT NULL,
   user_id INTEGER NOT NULL,
   amount INTEGER NOT NULL,
   -- payout address
@@ -91,6 +91,7 @@ CREATE TABLE IF NOT EXISTS withdrawal (
 );
 
 CREATE INDEX IF NOT EXISTS idx_withdrawal_uuid ON withdrawal(uuid);
+CREATE INDEX IF NOT EXISTS idx_withdrawal_cancelled_at ON withdrawal(cancelled_at);
 
 -- reason: 0 SWEEP 1 BUY 2 WITHDRAW_CANCEL 3 WITHDRAW 4 SELL
 CREATE TABLE IF NOT EXISTS user_account_balance (

@@ -11,8 +11,8 @@ class UserWithdrawReply;
 
 namespace cmd {
 
-class UserWithdraw
-    : public Command<hub::rpc::UserWithdrawRequest, hub::rpc::UserWithdrawReply> {
+class UserWithdraw : public Command<hub::rpc::UserWithdrawRequest,
+                                    hub::rpc::UserWithdrawReply> {
  public:
   using Command<hub::rpc::UserWithdrawRequest,
                 hub::rpc::UserWithdrawReply>::Command;

@@ -8,6 +8,7 @@
 
 #include <sqlpp11/functions.h>
 #include <sqlpp11/insert.h>
+#include <sqlpp11/update.h>
 #include <sqlpp11/schema.h>
 #include <sqlpp11/select.h>
 #include <sqlpp11/transaction.h>
@@ -74,10 +75,10 @@ inline std::optional<uint64_t> availableBalanceForUser(Connection& connection,
   return result.front().a;
 }
 
-inline void createUserAccountBalanceEntry(Connection& connection,
-                                          uint64_t userId, int64_t amount,
-                                          const UserAccountBalanceReason reason,
-                                          const std::optional<uint64_t> fkey = {}) {
+inline void createUserAccountBalanceEntry(
+    Connection& connection, uint64_t userId, int64_t amount,
+    const UserAccountBalanceReason reason,
+    const std::optional<uint64_t> fkey = {}) {
   db::sql::UserAccountBalance bal;
 
   if (reason == UserAccountBalanceReason::SWEEP) {
@@ -90,22 +91,36 @@ inline void createUserAccountBalanceEntry(Connection& connection,
                                     bal.reason = static_cast<int>(reason),
                                     bal.withdrawal = fkey.value()));
   } else {
-    connection(
-        insert_into(bal).set(bal.userId = userId, bal.amount = amount,
-                             bal.reason = static_cast<int>(reason)));
+    connection(insert_into(bal).set(bal.userId = userId, bal.amount = amount,
+                                    bal.reason = static_cast<int>(reason)));
   }
 }
 
 inline uint64_t createWithdrawal(Connection& connection,
-                                 const boost::uuids::uuid& uuid, uint64_t userId,
-                                 uint64_t amount, const std::string& payoutAddress) {
+                                 const boost::uuids::uuid& uuid,
+                                 uint64_t userId, uint64_t amount,
+                                 const std::string& payoutAddress) {
   db::sql::Withdrawal tbl;
 
-  connection(insert_into(tbl).set(tbl.uuid = std::string(uuid.data, uuid.data + uuid.size()), tbl.userId = userId,
-                                  tbl.amount = amount,
-                                  tbl.payoutAddress = payoutAddress));
+  connection(insert_into(tbl).set(
+      tbl.uuid = std::string(uuid.data, uuid.data + uuid.size()),
+      tbl.userId = userId, tbl.amount = amount,
+      tbl.payoutAddress = payoutAddress));
 
   return connection.last_insert_id();
+}
+
+inline size_t cancelWithdrawal(Connection& connection,
+                                        const boost::uuids::uuid& uuid) {
+  db::sql::Withdrawal tbl;
+  auto now = ::sqlpp::chrono::floor<::std::chrono::milliseconds>(
+      std::chrono::system_clock::now());
+
+  return connection(
+      update(tbl)
+          .set(tbl.cancelledAt = now)
+          .where(tbl.uuid == std::string(uuid.data, uuid.data + uuid.size()) and
+                 tbl.sweep.is_null()));
 }
 
 }  // namespace db
