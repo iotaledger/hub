@@ -6,6 +6,8 @@
 #include <glog/logging.h>
 #include <grpc++/grpc++.h>
 
+#include "hub/stats/session.h"
+
 namespace hub {
 class ClientSession;
 
