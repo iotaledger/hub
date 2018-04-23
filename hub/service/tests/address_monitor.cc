@@ -24,7 +24,7 @@ class MockMonitor : public AddressMonitor {
 
   MOCK_METHOD0(monitoredAddresses,
                std::vector<std::tuple<uint64_t, std::string>>(void));
-  MOCK_METHOD1(onBalancesChanged, void(std::vector<BalanceChange> changed));
+  MOCK_METHOD1(onBalancesChanged, bool(std::vector<BalanceChange>& changed));
 
   const std::string name() const override { return "MockMonitor"; }
 };
@@ -73,7 +73,7 @@ TEST_F(AddressMonitorTest, Tick) {
   monitor.onStart();
 
   EXPECT_CALL(monitor, monitoredAddresses())
-      .Times(3)
+      .Times(5)
       .WillRepeatedly(Return(monitored));
 
   EXPECT_CALL(api, getBalances(std::vector<std::string>{address}))
@@ -88,22 +88,42 @@ TEST_F(AddressMonitorTest, Tick) {
       .WillOnce(
           Return(std::unordered_map<std::string, uint64_t>{{address, 1000}}));
 
+  // Test new balance arrival
+  std::vector<AddressMonitor::BalanceChange> ex1 = {{0, address, 1000, 1000}};
   EXPECT_CALL(monitor,
-              onBalancesChanged(std::vector<AddressMonitor::BalanceChange>{
-                  {0, address, 1000, 1000}}))
-      .Times(1);
+              onBalancesChanged(ElementsAreArray(ex1.cbegin(), ex1.cend())))
+      .Times(1)
+      .WillOnce(Return(true));
 
   monitor.doTick();
 
   EXPECT_CALL(api, getBalances(std::vector<std::string>{address}))
-      .Times(1)
-      .WillOnce(
-          Return(std::unordered_map<std::string, uint64_t>{{address, 0}}));
+    .Times(3)
+    .WillRepeatedly(
+              Return(std::unordered_map<std::string, uint64_t>{{address, 0}}));
 
+  // Update is refused
+  std::vector<AddressMonitor::BalanceChange> ex2 = {{0, address, 0, -1000}};
   EXPECT_CALL(monitor,
-              onBalancesChanged(std::vector<AddressMonitor::BalanceChange>{
-                  {0, address, 0, -1000}}))
-      .Times(1);
+              onBalancesChanged(ElementsAreArray(ex2.cbegin(), ex2.cend())))
+    .Times(1)
+    .WillOnce(Return(false));
+
+
+  monitor.doTick();
+
+  // Update is accepted
+  EXPECT_CALL(monitor,
+              onBalancesChanged(ElementsAreArray(ex2.cbegin(), ex2.cend())))
+    .Times(1)
+    .WillOnce(Return(true));
+
+  monitor.doTick();
+
+  // No change
+  EXPECT_CALL(monitor,
+              onBalancesChanged(_))
+    .Times(0);
 
   monitor.doTick();
 }

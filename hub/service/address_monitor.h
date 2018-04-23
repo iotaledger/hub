@@ -37,18 +37,21 @@ class AddressMonitor : public ScheduledService {
   explicit AddressMonitor(std::shared_ptr<hub::iota::IotaAPI> api,
                           std::chrono::milliseconds interval)
       : ScheduledService(interval), _api(std::move(api)) {}
+  virtual ~AddressMonitor() {}
 
   virtual std::vector<std::tuple<uint64_t, std::string>>
   monitoredAddresses() = 0;
 
-  virtual void onBalancesChanged(std::vector<BalanceChange> changed) = 0;
+  //! @return true if balance changes are accepted
+  virtual bool onBalancesChanged(std::vector<BalanceChange>& changed) = 0;
 
   void onStart() override;
 
  protected:
   bool doTick() override;
 
-  std::vector<BalanceChange> updateBalances();
+  std::vector<BalanceChange> calculateBalanceChanges();
+  void persistBalanceChanges(std::vector<BalanceChange> changes);
 
  private:
   const std::shared_ptr<hub::iota::IotaAPI> _api;

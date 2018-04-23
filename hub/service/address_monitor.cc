@@ -11,7 +11,8 @@
 namespace hub {
 namespace service {
 
-std::vector<AddressMonitor::BalanceChange> AddressMonitor::updateBalances() {
+std::vector<AddressMonitor::BalanceChange>
+AddressMonitor::calculateBalanceChanges() {
   auto monitored = monitoredAddresses();
 
   std::unordered_map<std::string, uint64_t> addressToIDs;
@@ -39,8 +40,6 @@ std::vector<AddressMonitor::BalanceChange> AddressMonitor::updateBalances() {
 
     // This will create current (= 0) if the element does not exist.
     int64_t prev = _balances[id];
-    _balances[id] = pair.second;
-
     int64_t delta = ((int64_t)pair.second) - prev;
 
     if (delta) {
@@ -51,13 +50,22 @@ std::vector<AddressMonitor::BalanceChange> AddressMonitor::updateBalances() {
   return changes;
 }
 
-void AddressMonitor::onStart() { updateBalances(); }
+  void AddressMonitor::onStart() { persistBalanceChanges(calculateBalanceChanges()); }
+
+void AddressMonitor::persistBalanceChanges(
+    std::vector<AddressMonitor::BalanceChange> changes) {
+  for (const auto& chg : changes) {
+    _balances[chg.id] = chg.balance;
+  }
+}
 
 bool AddressMonitor::doTick() {
-  auto changes = updateBalances();
+  auto changes = calculateBalanceChanges();
 
   if (!changes.empty()) {
-    onBalancesChanged(std::move(changes));
+    if(onBalancesChanged(changes)) {
+      persistBalanceChanges(std::move(changes));
+    };
   }
 
   return true;

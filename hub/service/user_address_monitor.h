@@ -16,8 +16,10 @@ class UserAddressMonitor : public AddressMonitor {
   using AddressMonitor::AddressMonitor;
 
   std::vector<std::tuple<uint64_t, std::string>> monitoredAddresses() override;
-  void onBalancesChanged(
-      std::vector<AddressMonitor::BalanceChange> changed) override {}
+  bool onBalancesChanged(
+      std::vector<AddressMonitor::BalanceChange>& changed) override {
+    return true;
+  }
 
   const std::string name() const override { return "UserAddressMonitor"; }
 };
