@@ -16,17 +16,12 @@
 
 using namespace sqlpp;
 
-namespace {
-SQLPP_ALIAS_PROVIDER(total);
-}
-
 namespace hub {
 namespace cmd {
 
 grpc::Status GetBalance::doProcess(
     const hub::rpc::GetBalanceRequest* request,
     hub::rpc::GetBalanceReply* response) noexcept {
-  db::sql::UserAccountBalance bal;
 
   auto& connection = db::DBManager::get().connection();
   uint64_t userId;
@@ -45,16 +40,14 @@ grpc::Status GetBalance::doProcess(
 
   // Summarise all amounts for user_account_balance changes
   {
-    const auto result = connection(select(sum(bal.amount).as(total))
-                                       .from(bal)
-                                       .where(bal.userAccount == userId));
+    auto maybeAmount = db::availableBalanceForUser(connection, userId);
 
-    if (result.empty()) {
+    if (!maybeAmount) {
       return grpc::Status(grpc::StatusCode::FAILED_PRECONDITION, "",
                           errorToString(hub::rpc::ErrorCode::UNKNOWN));
     }
 
-    response->set_available(result.front().total);
+    response->set_available(maybeAmount.value());
   }
 
   return grpc::Status::OK;

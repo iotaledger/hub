@@ -56,6 +56,20 @@ inline std::vector<AddressWithID> unsweptUserAddresses(Connection& connection) {
   return addresses;
 }
 
+ inline std::optional<uint64_t> availableBalanceForUser(Connection& connection, uint64_t userId) {
+   db::sql::UserAccountBalance bal;
+   
+   const auto result = connection(select(sum(bal.amount).as(sqlpp::alias::a))
+                                  .from(bal)
+                                  .where(bal.userAccount == userId));
+
+   if (result.empty()) {
+     return {};
+   }
+
+   return result.front().a;
+ }
+
 }  // namespace db
 }  // namespace hub
 
