@@ -177,11 +177,10 @@ std::vector<Bundle> IotaJsonAPI::getConfirmedBundlesForAddress(
 
   // 4. Filter unconfirmed bundles [getNodeInfo, getInclusionStates]
   std::vector<std::string> tails;
-  boost::copy(
-      transactions | filtered([](const Transaction& tx) {
-        return tx.currentIndex == 0;
-      }) | transformed([](const Transaction& tx) { return tx.bundleHash; }),
-      boost::back_move_inserter(tails));
+  boost::copy(transactions | filtered([](const Transaction& tx) {
+                return tx.currentIndex == 0;
+              }) | transformed([](const Transaction& tx) { return tx.hash; }),
+              boost::back_move_inserter(tails));
 
   auto confirmedTails = filterConfirmedTails(tails);
 
@@ -204,6 +203,7 @@ std::vector<Bundle> IotaJsonAPI::getConfirmedBundlesForAddress(
       tx = std::move(next);
     }
     bundle.push_back(std::move(tx));
+    confirmedBundles.push_back(std::move(bundle));
   }
 
   return confirmedBundles;
