@@ -7,10 +7,16 @@ cc_library(
     srcs=["beast.cc"],
     hdrs=["beast.h"],
     deps=[
-        ":api", ":json", "@boost//:beast",
+        ":api_json", ":json", "@boost//:beast",
         "@org_iota_entangled//common/model:transaction"
     ],
     visibility=["//visibility:public"])
+
+cc_library(
+    name="api_json",
+    srcs=["api_json.cc"],
+    hdrs=["api_json.h"],
+    deps=[":json", ":api"], )
 
 cc_library(
     name="api",
@@ -22,6 +28,6 @@ cc_test(
     srcs=glob(["tests/**/*.cc"]),
     deps=[
         ":beast",
+        "//hub/tests:tests",
         "@com_google_googletest//:gtest",
-        "@com_google_googletest//:gtest_main",
     ])

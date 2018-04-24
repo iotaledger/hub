@@ -1,5 +1,5 @@
-#ifndef __HUB_IOTA_IOTA_H_
-#define __HUB_IOTA_IOTA_H_
+#ifndef __HUB_IOTA_API_H_
+#define __HUB_IOTA_API_H_
 
 #include <cstdint>
 #include <string>
@@ -32,4 +32,4 @@ class IotaAPI {
 }  // namespace iota
 }  // namespace hub
 
-#endif /* __HUB_IOTA_IOTA_H_ */
+#endif /* __HUB_IOTA_API_H_ */
