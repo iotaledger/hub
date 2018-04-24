@@ -61,7 +61,7 @@ CREATE TABLE IF NOT EXISTS user_address_balance (
   amount INTEGER NOT NULL,
   reason INTEGER NOT NULL,
   -- confirmed tail's hash
-  tail_hash CHAR(81) DEFAULT NULL UNIQUE,
+  tail_hash CHAR(81) DEFAULT NULL,
   -- nullable if not swept yet
   sweep INTEGER DEFAULT NULL,
   occured_at DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,

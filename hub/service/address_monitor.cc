@@ -50,12 +50,14 @@ AddressMonitor::calculateBalanceChanges() {
   return changes;
 }
 
-  void AddressMonitor::onStart() { persistBalanceChanges(calculateBalanceChanges()); }
+void AddressMonitor::onStart() {
+  persistBalanceChanges(calculateBalanceChanges());
+}
 
 void AddressMonitor::persistBalanceChanges(
     std::vector<AddressMonitor::BalanceChange> changes) {
   for (const auto& chg : changes) {
-    _balances[chg.id] = chg.balance;
+    _balances[chg.addressId] = chg.balance;
   }
 }
 
@@ -63,7 +65,7 @@ bool AddressMonitor::doTick() {
   auto changes = calculateBalanceChanges();
 
   if (!changes.empty()) {
-    if(onBalancesChanged(changes)) {
+    if (onBalancesChanged(changes)) {
       persistBalanceChanges(std::move(changes));
     };
   }

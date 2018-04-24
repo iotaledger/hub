@@ -20,7 +20,13 @@ cc_library(
     name="user_address_monitor",
     srcs=["user_address_monitor.cc"],
     hdrs=["user_address_monitor.h"],
-    deps=[":address_monitor", "//hub/db:db"],
+    deps=[
+        ":address_monitor",
+        "//hub/db:db",
+        "@boost//:multi_index",
+        "@boost//:range",
+        "@boost//:move",
+    ],
     visibility=["//visibility:public"])
 
 cc_library(
@@ -37,6 +43,6 @@ cc_test(
         ":scheduled_service",
         ":address_monitor",
         ":user_address_monitor",
+        "//hub/tests:tests",
         "@com_google_googletest//:gtest",
-        "@com_google_googletest//:gtest_main",
     ])

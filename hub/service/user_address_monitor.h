@@ -7,6 +7,7 @@
 #include <vector>
 
 #include "address_monitor.h"
+#include "hub/iota/api.h"
 
 namespace hub {
 namespace service {
@@ -17,9 +18,7 @@ class UserAddressMonitor : public AddressMonitor {
 
   std::vector<std::tuple<uint64_t, std::string>> monitoredAddresses() override;
   bool onBalancesChanged(
-      std::vector<AddressMonitor::BalanceChange>& changed) override {
-    return true;
-  }
+      std::vector<AddressMonitor::BalanceChange>& changed) override;
 
   const std::string name() const override { return "UserAddressMonitor"; }
 };

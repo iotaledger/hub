@@ -20,13 +20,15 @@ class AddressMonitor : public ScheduledService {
  public:
   struct BalanceChange {
    public:
-    const uint64_t id;
+    const uint64_t addressId;
     const std::string address;
     const uint64_t balance;
     const int64_t delta;
 
    private:
-    inline auto tie() const { return std::tie(id, address, balance, delta); }
+    inline auto tie() const {
+      return std::tie(addressId, address, balance, delta);
+    }
 
    public:
     inline bool operator==(const BalanceChange& rhs) const {
@@ -53,8 +55,10 @@ class AddressMonitor : public ScheduledService {
   std::vector<BalanceChange> calculateBalanceChanges();
   void persistBalanceChanges(std::vector<BalanceChange> changes);
 
- private:
+ protected:
   const std::shared_ptr<hub::iota::IotaAPI> _api;
+
+ private:
   std::unordered_map<uint64_t, uint64_t> _balances;
 };
 

@@ -1,0 +1,12 @@
+cc_library(
+    name="tests",
+    srcs=["runner.cc"],
+    hdrs=["runner.h"],
+    deps=[
+        "//hub/db:db",
+        "//hub/stats:stats",
+        "//hub/crypto:local_provider",
+        "@com_github_google_glog//:glog",
+        "@com_google_googletest//:gtest",
+    ],
+    visibility=["//visibility:public"])

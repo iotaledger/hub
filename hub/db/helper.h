@@ -8,10 +8,10 @@
 
 #include <sqlpp11/functions.h>
 #include <sqlpp11/insert.h>
-#include <sqlpp11/update.h>
 #include <sqlpp11/schema.h>
 #include <sqlpp11/select.h>
 #include <sqlpp11/transaction.h>
+#include <sqlpp11/update.h>
 #include <boost/uuid/uuid.hpp>
 
 #include "db.h"
@@ -60,6 +60,23 @@ inline std::vector<AddressWithID> unsweptUserAddresses(Connection& connection) {
   return addresses;
 }
 
+inline std::vector<std::string> tailsForAddress(Connection& connection,
+                                                uint64_t userId) {
+  using namespace sqlpp;
+  db::sql::UserAddressBalance bal;
+
+  std::vector<std::string> tails;
+
+  auto result = connection(
+      select(bal.tailHash).from(bal).where(bal.userAddress == userId));
+
+  for (const auto& row : result) {
+    tails.push_back(std::move(row.tailHash));
+  }
+
+  return tails;
+}
+
 inline std::optional<uint64_t> availableBalanceForUser(Connection& connection,
                                                        uint64_t userId) {
   db::sql::UserAccountBalance bal;
@@ -73,6 +90,25 @@ inline std::optional<uint64_t> availableBalanceForUser(Connection& connection,
   }
 
   return result.front().a;
+}
+
+inline void createUserAddressBalanceEntry(Connection& connection,
+                                          uint64_t addressId, int64_t amount,
+                                          const UserAddressBalanceReason reason,
+                                          std::optional<std::string> tailHash,
+                                          std::optional<uint64_t> sweepId) {
+  db::sql::UserAddressBalance bal;
+
+  if (reason == UserAddressBalanceReason::DEPOSIT) {
+    connection(insert_into(bal).set(bal.userAddress = addressId,
+                                    bal.amount = amount,
+                                    bal.reason = static_cast<int>(reason),
+                                    bal.tailHash = std::move(tailHash.value())));
+  } else {
+    connection(insert_into(bal).set(
+        bal.userAddress = addressId, bal.amount = amount,
+        bal.reason = static_cast<int>(reason), bal.sweep = sweepId.value()));
+  }
 }
 
 inline void createUserAccountBalanceEntry(
@@ -111,7 +147,7 @@ inline uint64_t createWithdrawal(Connection& connection,
 }
 
 inline size_t cancelWithdrawal(Connection& connection,
-                                        const boost::uuids::uuid& uuid) {
+                               const boost::uuids::uuid& uuid) {
   db::sql::Withdrawal tbl;
   auto now = ::sqlpp::chrono::floor<::std::chrono::milliseconds>(
       std::chrono::system_clock::now());

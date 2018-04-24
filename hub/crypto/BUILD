@@ -22,6 +22,6 @@ cc_test(
     name="test_local_provider",
     deps=[
         ":local_provider", "@com_google_googletest//:gtest",
-        "@com_google_googletest//:gtest_main"
+        "//hub/tests:tests"
     ],
     srcs=["tests/local_provider.cc"])

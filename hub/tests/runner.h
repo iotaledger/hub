@@ -1,0 +1,34 @@
+#ifndef __HUB_TESTS_RUNNER_H_
+#define __HUB_TESTS_RUNNER_H_
+
+#include <gtest/gtest.h>
+
+#include "hub/crypto/local_provider.h"
+#include "hub/crypto/manager.h"
+#include "hub/db/db.h"
+#include "hub/stats/session.h"
+
+namespace hub {
+class Test : public ::testing::Test {
+ public:
+  virtual void SetUp() {
+    hub::crypto::CryptoManager::get().setProvider(
+        std::make_unique<crypto::LocalProvider>("abcdefghij"));
+
+    auto db = hub::db::DBManager::get();
+    db.resetConnection();
+    db.loadSchema(true);
+
+    _session = std::make_shared<ClientSession>();
+  }
+
+  virtual void TearDown() { _session = nullptr; }
+
+  std::shared_ptr<ClientSession> session() { return _session; }
+
+ private:
+  std::shared_ptr<ClientSession> _session;
+};
+
+}  // namespace hub
+#endif /* __HUB_TESTS_RUNNER_H_ */
