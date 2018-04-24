@@ -8,7 +8,7 @@ int main(int argc, char **argv) {
 
   auto programName = argc && argv && argc > 0 ? argv[0] : "unknown";
   google::InitGoogleLogging(programName);
-  gflags::ParseCommandLineFlags(&argc, &argv, false);
+  gflags::ParseCommandLineFlags(&argc, &argv, true);
 
   LOG(INFO) << "Hub starting up.";
 

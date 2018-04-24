@@ -63,6 +63,7 @@ TryteSeedPtr seedFromUUID(const boost::uuids::uuid& uuid,
 
 namespace hub {
 namespace crypto {
+
 LocalProvider::LocalProvider(std::string salt) : _salt(std::move(salt)) {
   using namespace std::string_literals;
 

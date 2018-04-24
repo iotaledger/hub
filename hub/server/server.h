@@ -5,6 +5,8 @@
 
 #include <grpc++/grpc++.h>
 
+#include "hub/iota/api.h"
+#include "hub/service/user_address_monitor.h"
 #include "proto/hub.grpc.pb.h"
 #include "proto/hub.pb.h"
 
@@ -27,6 +29,9 @@ class HubServer {
  private:
   std::unique_ptr<grpc::Server> _server;
   hub::HubImpl _service;
+
+  std::shared_ptr<hub::iota::IotaAPI> _api;
+  std::unique_ptr<hub::service::UserAddressMonitor> _userAddressMonitor;
 };
 
 }  // namespace hub
