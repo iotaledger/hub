@@ -15,15 +15,15 @@
 namespace hub {
 namespace iota {
 
-class BeastIotaAPI : public IotaJsonAPI {
+class BeastIotaAPI : virtual public IotaAPI, public IotaJsonAPI {
  public:
   BeastIotaAPI() = delete;
-
   BeastIotaAPI(std::string host, uint32_t port)
       : _host(std::move(host)), _port(port) {}
+  virtual ~BeastIotaAPI() {}
 
  protected:
-  virtual std::optional<nlohmann::json> post(const nlohmann::json& input);
+  std::optional<nlohmann::json> post(const nlohmann::json& input) override;
 
  private:
   const std::string _host;

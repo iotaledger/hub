@@ -1,5 +1,5 @@
-#ifndef __HUB_IOTA_API_MIXIN_H_
-#define __HUB_IOTA_API_MIXIN_H_
+#ifndef __HUB_IOTA_API_JSON_H_
+#define __HUB_IOTA_API_JSON_H_
 
 #include <cstdint>
 #include <string>
@@ -13,16 +13,16 @@
 namespace hub {
 namespace iota {
 
-class IotaJsonAPI : public IotaAPI {
+class IotaJsonAPI : virtual public IotaAPI {
  public:
-  virtual std::unordered_map<std::string, uint64_t> getBalances(
-      const std::vector<std::string> addresses) override;
+  std::unordered_map<std::string, uint64_t> getBalances(
+      const std::vector<std::string>& addresses) override;
 
-  virtual std::vector<Bundle> getConfirmedBundlesForAddress(
+  std::vector<Bundle> getConfirmedBundlesForAddress(
       const std::string& address) override;
 
-  virtual std::unordered_set<std::string> filterConfirmedTails(
-      const std::vector<std::string> tails) override;
+  std::unordered_set<std::string> filterConfirmedTails(
+      const std::vector<std::string>& tails) override;
 
  protected:
   virtual std::optional<nlohmann::json> post(const nlohmann::json& input) = 0;
@@ -30,4 +30,4 @@ class IotaJsonAPI : public IotaAPI {
 }  // namespace iota
 }  // namespace hub
 
-#endif /* __HUB_IOTA_API_MIXIN_H_ */
+#endif /* __HUB_IOTA_API_JSON_H_ */

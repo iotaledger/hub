@@ -34,13 +34,14 @@ class MockAPI : public iota::IotaAPI {
   virtual ~MockAPI() {}
 
   MOCK_METHOD1(getBalances, std::unordered_map<std::string, uint64_t>(
-                                const std::vector<std::string> addresses));
+                                const std::vector<std::string>& addresses));
 
   MOCK_METHOD1(getConfirmedBundlesForAddress,
                std::vector<Bundle>(const std::string& address));
 
-  MOCK_METHOD1(filterConfirmedTails, std::unordered_set<std::string>(
-                                         const std::vector<std::string> tails));
+  MOCK_METHOD1(
+      filterConfirmedTails,
+      std::unordered_set<std::string>(const std::vector<std::string>& tails));
 };
 
 TEST_F(AddressMonitorTest, OnStartShouldInitialise) {
@@ -98,32 +99,29 @@ TEST_F(AddressMonitorTest, Tick) {
   monitor.doTick();
 
   EXPECT_CALL(api, getBalances(std::vector<std::string>{address}))
-    .Times(3)
-    .WillRepeatedly(
-              Return(std::unordered_map<std::string, uint64_t>{{address, 0}}));
+      .Times(3)
+      .WillRepeatedly(
+          Return(std::unordered_map<std::string, uint64_t>{{address, 0}}));
 
   // Update is refused
   std::vector<AddressMonitor::BalanceChange> ex2 = {{0, address, 0, -1000}};
   EXPECT_CALL(monitor,
               onBalancesChanged(ElementsAreArray(ex2.cbegin(), ex2.cend())))
-    .Times(1)
-    .WillOnce(Return(false));
-
+      .Times(1)
+      .WillOnce(Return(false));
 
   monitor.doTick();
 
   // Update is accepted
   EXPECT_CALL(monitor,
               onBalancesChanged(ElementsAreArray(ex2.cbegin(), ex2.cend())))
-    .Times(1)
-    .WillOnce(Return(true));
+      .Times(1)
+      .WillOnce(Return(true));
 
   monitor.doTick();
 
   // No change
-  EXPECT_CALL(monitor,
-              onBalancesChanged(_))
-    .Times(0);
+  EXPECT_CALL(monitor, onBalancesChanged(_)).Times(0);
 
   monitor.doTick();
 }

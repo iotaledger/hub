@@ -32,7 +32,9 @@ AddressMonitor::calculateBalanceChanges() {
                  [](const auto& pair) { return pair.first; });
 
   // TODO(th0br0) Remove unmonitored addresses from internal list.
-
+  // TODO(th0br0) Figure out better failure pattern.
+  //              At the moment, on failure, getBalances will return an empty
+  //              list. Therefore, nothing will happen.
   auto balances = _api->getBalances(std::move(addresses));
 
   for (auto& pair : balances) {
