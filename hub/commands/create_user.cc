@@ -37,6 +37,8 @@ grpc::Status CreateUser::doProcess(
                         errorToString(hub::rpc::ErrorCode::USER_EXISTS));
   }
 
+  LOG(INFO) << session() << " Created user: " << request->userid();
+
   return grpc::Status::OK;
 }
 

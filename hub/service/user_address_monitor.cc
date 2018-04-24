@@ -79,6 +79,9 @@ bool UserAddressMonitor::onBalancesChanged(
               // TODO (th0br0) verify that this was a sweep. Else we've got a
               // problem.
             } else {
+              LOG(INFO) << "Creating UserAddressBalance(" << change.addressId
+                        << "," << tx.value << ",DEPOSIT," << tail << ")";
+
               db::createUserAddressBalanceEntry(
                   connection, change.addressId, tx.value,
                   db::UserAddressBalanceReason::DEPOSIT, tail, {});
@@ -97,6 +100,8 @@ bool UserAddressMonitor::onBalancesChanged(
     error = false;
   cleanup:
     if (error) {
+      LOG(ERROR) << "Controlled rollback.";
+
       transaction.rollback();
     } else {
       transaction.commit();
