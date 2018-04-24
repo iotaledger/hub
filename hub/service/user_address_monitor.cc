@@ -16,7 +16,6 @@
 
 using boost::adaptors::filtered;
 using boost::adaptors::transformed;
-using boost::adaptors::uniqued;
 
 namespace tags {
 struct ByAddressID {};

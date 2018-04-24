@@ -1,9 +1,10 @@
-#include <gmock/gmock.h>
-#include <gtest/gtest.h>
-
 #include <chrono>
 #include <iostream>
 #include <thread>
+
+#include <glog/logging.h>
+#include <gmock/gmock.h>
+#include <gtest/gtest.h>
 
 #include "hub/iota/beast.h"
 #include "hub/iota/json.h"

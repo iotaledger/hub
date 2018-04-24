@@ -25,13 +25,7 @@ class MockAPI : public IotaJsonAPI {
   json req;
   json res;
 
-  std::optional<json> post(const json& in) override {
-    LOG(ERROR) << "helllo";
-
-    EXPECT_EQ(req, in);
-    req = json{};
-    return std::move(res);
-  }
+  MOCK_METHOD1(post, std::optional<json>(const json&));
 };
 
 TEST_F(IotaJsonAPITest, GetBalances) {
@@ -45,11 +39,14 @@ TEST_F(IotaJsonAPITest, GetBalances) {
   std::vector<std::string> addresses = {address};
   std::unordered_map<std::string, uint64_t> expected = {{address, 1000}};
 
-  api.req["command"] = "getBalances";
-  api.req["threshold"] = 100;
-  api.req["addresses"] = addresses;
+  json req;
+  req["command"] = "getBalances";
+  req["threshold"] = 100;
+  req["addresses"] = addresses;
+  json res;
+  res["balances"] = std::vector<std::string>{"1000"};
 
-  api.res["balances"] = std::vector<std::string>{"1000"};
+  EXPECT_CALL(api, post(req)).Times(1).WillOnce(Return(res));
 
   auto response = api.getBalances(addresses);
 

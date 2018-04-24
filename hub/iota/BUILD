@@ -16,7 +16,12 @@ cc_library(
     name="api_json",
     srcs=["api_json.cc"],
     hdrs=["api_json.h"],
-    deps=[":json", ":api"], )
+    deps=[
+        ":json",
+        ":api",
+        "@org_iota_entangled//common/helpers:digest",
+        "@org_iota_entangled//common/model:transaction",
+    ], )
 
 cc_library(
     name="api",

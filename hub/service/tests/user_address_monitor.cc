@@ -33,6 +33,8 @@ class MockAPI : public iota::IotaAPI {
  public:
   virtual ~MockAPI() {}
 
+  MOCK_METHOD0(isNodeSolid, bool());
+
   MOCK_METHOD1(getBalances, std::unordered_map<std::string, uint64_t>(
                                 const std::vector<std::string>& addresses));
 
