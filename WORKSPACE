@@ -27,7 +27,7 @@ git_repository(
     remote="https://github.com/google/glog.git")
 git_repository(
     name="com_google_googletest",
-    commit="fdb57f85710ccb17076acb1870a881964f5e04af",
+    commit="a6f06bf2fd3b832822cd4e9e554b7d47f32ec084",
     remote="https://github.com/google/googletest.git")
 
 new_git_repository(
