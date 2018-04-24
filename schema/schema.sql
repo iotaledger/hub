@@ -35,9 +35,7 @@ CREATE TABLE IF NOT EXISTS hub_address_balance (
   reason INTEGER NOT NULL,
   sweep INTEGER NOT NULL,
   occured_at DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
-  CHECK (reason >= 0 and reason < 2),
-  CHECK (reason = 0 and amount > 0),
-  CHECK (reason = 1 and amount < 0),
+  CONSTRAINT reason_amount CHECK ((reason = 0 and amount > 0) or (reason = 1 and amount < 0)),
   FOREIGN KEY (hub_address) REFERENCES hub_address(id),
   FOREIGN KEY (sweep) REFERENCES sweep(id)
 );
@@ -65,9 +63,7 @@ CREATE TABLE IF NOT EXISTS user_address_balance (
   -- nullable if not swept yet
   sweep INTEGER DEFAULT NULL,
   occured_at DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
-  CHECK (reason = 0 and tail_hash not null and amount > 0),
-  CHECK (reason = 1 and sweep not null and amount < 0),
-  CHECK (reason >= 0 and reason < 2),
+  CONSTRAINT reason_amount CHECK ((reason = 0 and tail_hash not null and amount > 0) or (reason = 1 and sweep not null and amount < 0)),
   FOREIGN KEY (user_address) REFERENCES user_address(id),
   FOREIGN KEY (sweep) REFERENCES sweep(id)
 );
@@ -85,7 +81,7 @@ CREATE TABLE IF NOT EXISTS withdrawal (
   sweep INTEGER DEFAULT NULL,
   requested_at DATETIME DEFAULT CURRENT_TIMESTAMP NOT NULL,
   cancelled_at DATETIME DEFAULT NULL,
-  CHECK (amount > 0),
+  CONSTRAINT amount CHECK ((amount > 0)),
   FOREIGN KEY (sweep) REFERENCES sweep(id),
   FOREIGN KEY (user_id) REFERENCES user_account(id)
 );
@@ -101,12 +97,13 @@ CREATE TABLE IF NOT EXISTS user_account_balance (
   sweep INTEGER,
   withdrawal INTEGER
   occured_at DATETIME DEFAULT CURRENT_TIMESTAMP NOT NULL,
-  CHECK (reason = 0 and sweep not null),
-  CHECK (reason = 2 and withdrawal not null),
-  CHECK (reason = 3 and withdrawal not null),
-  CHECK (reason >= 0 and reason < 5),
-  CHECK (reason < 3 and amount > 0),
-  CHECK (reason >= 3 and amount < 0),
+  CONSTRAINT reason_amount CHECK (
+    (reason = 0 and sweep not null and amount > 0) or
+    (reason = 1 and amount > 0) or
+    (reason = 2 and withdrawal not null and amount > 0) or
+    (reason = 3 and withdrawal not null and amount < 0) or
+    (reason = 4 and amount < 0)
+  ),
   FOREIGN KEY (user_id) REFERENCES user_account(id),
   FOREIGN KEY (sweep) REFERENCES sweep(id),
   FOREIGN KEY (withdrawal) REFERENCES withdrawal(id)
