@@ -49,25 +49,6 @@ new_git_repository(
     build_file="BUILD.sqlpp11sqlite")
 
 new_http_archive(
-    name="libsodium",
-    url="https://github.com/jedisct1/libsodium/archive/1.0.16.tar.gz",
-    strip_prefix="libsodium-1.0.16",
-    sha256="0c14604bbeab2e82a803215d65c3b6e74bb28291aaee6236d65c699ccfe1a98c",
-    build_file="BUILD.libsodium")
-
-new_git_repository(
-    name="azmq",
-    remote="https://github.com/zeromq/azmq.git",
-    commit="a8f54cc8c9672da7d6301fe1d2719b1436ab4816",
-    build_file="BUILD.azmq")
-
-new_git_repository(
-    name="libzmq",
-    remote="https://github.com/zeromq/libzmq.git",
-    tag="v4.2.5",
-    build_file="BUILD.libzmq", )
-
-new_http_archive(
     name="argon2",
     url="https://github.com/P-H-C/phc-winner-argon2/archive/20171227.tar.gz",
     sha256="eaea0172c1f4ee4550d1b6c9ce01aab8d1ab66b4207776aa67991eb5872fdcd8",
