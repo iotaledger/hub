@@ -3,7 +3,6 @@
    - Modern GCC or Clang
    - [[https://github.com/bazelbuild/bazel/releases][bazel]]
    - sqlite3
-   - boost
    - pyparsing (pip install pyparsing)
 ** How to run
    - `bazel run -c opt //hub:hub -- <parameters>`
@@ -12,6 +11,5 @@
   
 ** Useful things
    - Use `clang-format`
-   - Use `protofmt` from `go get -u -v github.com/emicklei/proto-contrib/cmd/protofmt` to format
    - Use `protofmt` from `go get -u -v github.com/emicklei/proto-contrib/cmd/protofmt` to format
    - Use `grpcc` to test: `grpcc -i -a localhost:50051 - p proto/hub.protoc`
