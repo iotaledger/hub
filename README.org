@@ -3,6 +3,8 @@
    - Modern GCC or Clang
    - [[https://github.com/bazelbuild/bazel/releases][bazel]]
    - sqlite3
+   - boost
+   - python,pyparsing
 ** How to run
    - `bazel run -c opt //hub:hub -- <parameters>`
   
