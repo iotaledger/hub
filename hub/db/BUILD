@@ -6,5 +6,6 @@ cc_library(name="db",
                "@sqlpp11//:sqlpp11",
                "@sqlpp11sqlite//:sqlpp11sqlite",
                "@com_github_gflags_gflags//:gflags",
+               "@com_github_google_glog//:glog",
            ],
            visibility=["//visibility:public"])

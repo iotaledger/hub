@@ -33,7 +33,7 @@ cc_library(
     name="scheduled_service",
     srcs=["scheduled_service.cc"],
     hdrs=["scheduled_service.h"],
-    deps=[":service", "@boost//:asio"],
+    deps=[":service", "@boost//:asio","@com_github_google_glog//:glog"],
     visibility=["//visibility:public"])
 
 cc_test(
