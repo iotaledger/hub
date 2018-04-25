@@ -56,6 +56,14 @@ new_http_archive(
     build_file="BUILD.argon2"
 )
 
+new_http_archive(
+    name="sqlite3",
+    url="https://www.sqlite.org/2018/sqlite-amalgamation-3230100.zip",
+    sha256="4239a1f69e5721d07d9a374eb84d594225229e54be4ee628da2995f4315d8dfc",
+    strip_prefix="sqlite-amalgamation-3230100",
+    build_file="BUILD.sqlite3"
+)
+
 git_repository(
     name="rules_iota",
     remote="https://gitlab.com/iota-foundation/software/rules_iota.git",
