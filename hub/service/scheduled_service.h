@@ -1,12 +1,14 @@
-#ifndef __HUB_SERVICE_SCHEDULED_SERVICE_H_
-#define __HUB_SERVICE_SCHEDULED_SERVICE_H_
+// Copyright 2018 IOTA Foundation
+
+#ifndef HUB_SERVICE_SCHEDULED_SERVICE_H_
+#define HUB_SERVICE_SCHEDULED_SERVICE_H_
 
 #include <chrono>
 #include <memory>
 
 #include <boost/asio/basic_waitable_timer.hpp>
 
-#include "service.h"
+#include "hub/service/service.h"
 
 namespace hub {
 namespace service {
@@ -37,4 +39,4 @@ class ScheduledService : public Service {
 
 }  // namespace hub
 
-#endif /*__HUB_SERVICE_SCHEDULED_SERVICE_H_ */
+#endif  // HUB_SERVICE_SCHEDULED_SERVICE_H_

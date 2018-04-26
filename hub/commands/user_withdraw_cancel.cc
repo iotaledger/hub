@@ -1,4 +1,6 @@
-#include "user_withdraw_cancel.h"
+// Copyright 2018 IOTA Foundation
+
+#include "hub/commands/user_withdraw_cancel.h"
 
 #include <cstdint>
 
@@ -15,9 +17,7 @@
 #include "proto/hub.pb.h"
 #include "schema/schema.h"
 
-#include "helper.h"
-
-using namespace sqlpp;
+#include "hub/commands/helper.h"
 
 namespace hub {
 namespace cmd {
@@ -26,7 +26,7 @@ grpc::Status UserWithdrawCancel::doProcess(
     const hub::rpc::UserWithdrawCancelRequest* request,
     hub::rpc::UserWithdrawCancelReply* response) noexcept {
   auto& connection = db::DBManager::get().connection();
-  transaction_t<hub::db::Connection> transaction(connection, true);
+  sqlpp::transaction_t<hub::db::Connection> transaction(connection, true);
 
   std::optional<hub::rpc::ErrorCode> errorCode;
   boost::uuids::uuid uuid = boost::uuids::string_generator()(request->uuid());

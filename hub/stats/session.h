@@ -1,8 +1,11 @@
-#ifndef __HUB_STATS_SESSION_H__
-#define __HUB_STATS_SESSION_H__
+// Copyright 2018 IOTA Foundation
+
+#ifndef HUB_STATS_SESSION_H_
+#define HUB_STATS_SESSION_H_
 
 #include <cstdint>
 #include <ostream>
+#include <string>
 
 #include <glog/logging.h>
 
@@ -13,8 +16,7 @@
 namespace hub {
 class ClientSession {
  public:
-  explicit ClientSession()
-      : _tag(boost::uuids::random_generator()()), _str(rep_str()) {}
+  ClientSession() : _tag(boost::uuids::random_generator()()), _str(rep_str()) {}
 
   ~ClientSession() { LOG(INFO) << *this << "destroyed."; }
 
@@ -37,4 +39,4 @@ class ClientSession {
 
 };  // namespace hub
 
-#endif
+#endif  // HUB_STATS_SESSION_H_

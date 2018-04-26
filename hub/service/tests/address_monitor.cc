@@ -1,3 +1,5 @@
+// Copyright 2018 IOTA Foundation
+
 #include <gmock/gmock.h>
 #include <gtest/gtest.h>
 
@@ -24,7 +26,8 @@ class MockMonitor : public AddressMonitor {
 
   MOCK_METHOD0(monitoredAddresses,
                std::vector<std::tuple<uint64_t, std::string>>(void));
-  MOCK_METHOD1(onBalancesChanged, bool(std::vector<BalanceChange>& changed));
+  MOCK_METHOD1(onBalancesChanged,
+               bool(const std::vector<BalanceChange>& changed));
 
   const std::string name() const override { return "MockMonitor"; }
 };

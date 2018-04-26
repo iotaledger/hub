@@ -1,5 +1,7 @@
-#ifndef __HUB_SERVICE_ADDRESS_MONITOR_H_
-#define __HUB_SERVICE_ADDRESS_MONITOR_H_
+// Copyright 2018 IOTA Foundation
+
+#ifndef HUB_SERVICE_ADDRESS_MONITOR_H_
+#define HUB_SERVICE_ADDRESS_MONITOR_H_
 
 #include <chrono>
 #include <cstdint>
@@ -7,11 +9,11 @@
 #include <string>
 #include <tuple>
 #include <unordered_map>
+#include <utility>
 #include <vector>
 
 #include "hub/iota/api.h"
-
-#include "scheduled_service.h"
+#include "hub/service/scheduled_service.h"
 
 namespace hub {
 namespace service {
@@ -45,7 +47,7 @@ class AddressMonitor : public ScheduledService {
   monitoredAddresses() = 0;
 
   //! @return true if balance changes are accepted
-  virtual bool onBalancesChanged(std::vector<BalanceChange>& changed) = 0;
+  virtual bool onBalancesChanged(const std::vector<BalanceChange>& changed) = 0;
 
   void onStart() override;
 
@@ -63,7 +65,6 @@ class AddressMonitor : public ScheduledService {
 };
 
 }  // namespace service
-
 }  // namespace hub
 
-#endif /*__HUB_SERVICE_ADDRESS_MONITOR_H_ */
+#endif  // HUB_SERVICE_ADDRESS_MONITOR_H_

@@ -1,4 +1,6 @@
-#include "beast.h"
+// Copyright 2018 IOTA Foundation
+
+#include "hub/iota/beast.h"
 
 #include <optional>
 
@@ -7,8 +9,7 @@
 #include <boost/beast/core.hpp>
 #include <boost/beast/http.hpp>
 #include <boost/beast/version.hpp>
-
-#include "json.h"
+#include <nlohmann/json.hpp>
 
 using json = nlohmann::json;
 

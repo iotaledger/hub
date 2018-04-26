@@ -1,6 +1,9 @@
-#include "helper.h"
+// Copyright 2018 IOTA Foundation
+
+#include "hub/commands/helper.h"
 
 #include <sstream>
+#include <string>
 
 #include "proto/hub.pb.h"
 

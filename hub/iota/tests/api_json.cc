@@ -1,14 +1,16 @@
-#include <glog/logging.h>
-#include <gmock/gmock.h>
-#include <gtest/gtest.h>
+// Copyright 2018 IOTA Foundation
 
 #include <chrono>
 #include <iostream>
 #include <optional>
 #include <thread>
 
+#include <glog/logging.h>
+#include <gmock/gmock.h>
+#include <gtest/gtest.h>
+#include <nlohmann/json.hpp>
+
 #include "hub/iota/api_json.h"
-#include "hub/iota/json.h"
 
 using namespace testing;
 

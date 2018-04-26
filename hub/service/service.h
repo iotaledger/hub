@@ -1,6 +1,10 @@
-#ifndef __HUB_SERVICE_SERVICE_H_
-#define __HUB_SERVICE_SERVICE_H_
+// Copyright 2018 IOTA Foundation
 
+#ifndef HUB_SERVICE_SERVICE_H_
+#define HUB_SERVICE_SERVICE_H_
+
+#include <memory>
+#include <string>
 #include <thread>
 
 #include <boost/asio/io_service.hpp>
@@ -11,7 +15,7 @@ namespace service {
 
 class Service {
  public:
-  explicit Service() {}
+  Service() {}
 
   virtual void start();
   virtual void stop();
@@ -20,7 +24,7 @@ class Service {
   virtual const std::string name() const = 0;
 
  protected:
-  virtual void onStart(){}
+  virtual void onStart() {}
   virtual void onStop() {}
 
   // Order of destruction matters for the below
@@ -39,4 +43,4 @@ class Service {
 
 }  // namespace hub
 
-#endif /*__HUB_SERVICE_SERVICE_H_ */
+#endif  // HUB_SERVICE_SERVICE_H_

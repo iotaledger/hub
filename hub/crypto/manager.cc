@@ -1,4 +1,6 @@
-#include "manager.h"
+// Copyright 2018 IOTA Foundation
+
+#include "hub/crypto/manager.h"
 
 namespace hub {
 namespace crypto {
@@ -9,9 +11,7 @@ CryptoManager& CryptoManager::get() {
   return instance;
 }
 
-CryptoProvider& CryptoManager::provider() {
-  return *_provider;
-}
+CryptoProvider& CryptoManager::provider() { return *_provider; }
 
 }  // namespace crypto
 }  // namespace hub

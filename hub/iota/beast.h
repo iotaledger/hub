@@ -1,16 +1,18 @@
-#ifndef __HUB_IOTA_BEAST_H_
-#define __HUB_IOTA_BEAST_H_
+// Copyright 2018 IOTA Foundation
+
+#ifndef HUB_IOTA_BEAST_H_
+#define HUB_IOTA_BEAST_H_
 
 #include <cstdint>
 #include <optional>
 #include <string>
-#include <unordered_map>
-#include <unordered_set>
+#include <utility>
 #include <vector>
 
-#include "api.h"
-#include "api_json.h"
-#include "json.h"
+#include <nlohmann/json_fwd.hpp>
+
+#include "hub/iota/api.h"
+#include "hub/iota/api_json.h"
 
 namespace hub {
 namespace iota {
@@ -32,4 +34,4 @@ class BeastIotaAPI : virtual public IotaAPI, public IotaJsonAPI {
 }  // namespace iota
 }  // namespace hub
 
-#endif /* __HUB_IOTA_BEAST_H_ */
+#endif  // HUB_IOTA_BEAST_H_

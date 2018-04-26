@@ -1,5 +1,7 @@
-#ifndef __HUB_DB_DB_H_
-#define __HUB_DB_DB_H_
+// Copyright 2018 IOTA Foundation
+
+#ifndef HUB_DB_DB_H_
+#define HUB_DB_DB_H_
 
 #include <memory>
 #include <sstream>
@@ -9,11 +11,11 @@
 #include <sqlpp11/connection.h>
 #include <sqlpp11/schema.h>
 #include <sqlpp11/serialize.h>
+#include <sqlpp11/sqlite3/connection.h>
 #include <sqlpp11/transaction.h>
 #include <sqlpp11/type_traits.h>
-#include <sqlpp11/sqlite3/connection.h>
 
-#include "types.h"
+#include "hub/db/types.h"
 
 namespace hub {
 namespace db {
@@ -27,7 +29,7 @@ using Connection = sqlpp::sqlite3::connection;
 ***/
 class DBManager {
  private:
-  explicit DBManager() {}
+  DBManager() {}
 
  public:
   static DBManager& get();
@@ -44,4 +46,4 @@ class DBManager {
 }  // namespace db
 }  // namespace hub
 
-#endif /* __HUB_DB_DB_H_ */
+#endif  // HUB_DB_DB_H_

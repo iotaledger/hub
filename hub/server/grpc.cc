@@ -1,4 +1,6 @@
-#include "grpc.h"
+// Copyright 2018 IOTA Foundation
+
+#include "hub/server/grpc.h"
 
 #include <memory>
 #include <string>

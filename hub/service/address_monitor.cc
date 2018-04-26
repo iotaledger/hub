@@ -1,9 +1,13 @@
-#include "address_monitor.h"
+// Copyright 2018 IOTA Foundation
 
+#include "hub/service/address_monitor.h"
+
+#include <algorithm>
 #include <iterator>
 #include <stdexcept>
 #include <tuple>
 #include <unordered_map>
+#include <utility>
 
 #include <boost/asio/io_service.hpp>
 #include <boost/bind.hpp>
@@ -69,7 +73,7 @@ bool AddressMonitor::doTick() {
   if (!changes.empty()) {
     if (onBalancesChanged(changes)) {
       persistBalanceChanges(std::move(changes));
-    };
+    }
   }
 
   return true;

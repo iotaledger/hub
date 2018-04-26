@@ -1,7 +1,11 @@
-#ifndef __HUB_COMMANDS_USER_WITHDRAW_H_
-#define __HUB_COMMANDS_USER_WITHDRAW_H_
+// Copyright 2018 IOTA Foundation
 
-#include "command.h"
+#ifndef HUB_COMMANDS_USER_WITHDRAW_H_
+#define HUB_COMMANDS_USER_WITHDRAW_H_
+
+#include <string>
+
+#include "hub/commands/command.h"
 
 namespace hub {
 namespace rpc {
@@ -26,4 +30,4 @@ class UserWithdraw : public Command<hub::rpc::UserWithdrawRequest,
 }  // namespace cmd
 }  // namespace hub
 
-#endif /* __HUB_COMMANDS_USER_WITHDRAW_H_ */
+#endif  // HUB_COMMANDS_USER_WITHDRAW_H_

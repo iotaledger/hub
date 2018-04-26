@@ -4,6 +4,7 @@
    - [[https://github.com/bazelbuild/bazel/releases][bazel]]
    - sqlite3
    - pyparsing (pip install pyparsing)
+   - buildifier: (`go get -u github.com/bazelbuild/buildtools/buildifier`)
 
 ** How to run
    - `bazel run -c opt //hub:hub -- <parameters>`

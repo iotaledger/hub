@@ -1,8 +1,14 @@
+// Copyright 2018 IOTA Foundation
+
+#include "hub/iota/api_json.h"
+
+#include <algorithm>
 #include <cstdint>
 #include <string>
 #include <tuple>
 #include <unordered_map>
 #include <unordered_set>
+#include <utility>
 #include <vector>
 
 #include <glog/logging.h>
@@ -10,11 +16,9 @@
 #include <boost/range/adaptors.hpp>
 #include <boost/range/algorithm/copy.hpp>
 #include <boost/range/combine.hpp>
+#include <nlohmann/json.hpp>
 #include "common/helpers/digest.h"
 #include "common/model/transaction.h"
-
-#include "api_json.h"
-#include "json.h"
 
 using json = nlohmann::json;
 using boost::adaptors::filtered;
@@ -45,7 +49,7 @@ NodeInfo IotaJsonAPI::getNodeInfo() {
   json req;
   req["command"] = "getNodeInfo";
 
-  // TODO (th0br0) proper failure mechanism
+  // TODO(th0br0) proper failure mechanism
   auto response = post(std::move(req)).value();
 
   return {response["latestMilestone"], response["latestMilestoneIndex"],
@@ -126,31 +130,33 @@ std::vector<Transaction> IotaJsonAPI::getTrytes(
   std::chrono::system_clock::time_point epoch;
 
   boost::copy(
-      trytes |
-          transformed([&tx, &epoch](const std::string& trytes) -> Transaction {
-            transaction_deserialize_from_trytes(tx, (tryte_t*)trytes.c_str());
+      trytes | transformed([&tx,
+                            &epoch](const std::string& trytes) -> Transaction {
+        transaction_deserialize_from_trytes(
+            tx, reinterpret_cast<const tryte_t*>(trytes.c_str()));
 
-            // We could also rely on the ordering of the hashes argument here.
-            auto hash = iota_digest(trytes.c_str());
-            std::string sHash = std::string((char*)hash, 81);
-            auto address = transaction_address(tx);
-            std::string sAddress = std::string((char*)address, 81);
-            auto bundle = transaction_bundle(tx);
-            std::string sBundle = std::string((char*)bundle, 81);
-            auto trunk = transaction_trunk(tx);
-            std::string sTrunk = std::string((char*)trunk, 81);
+        // We could also rely on the ordering of the hashes argument here.
+        auto hash = iota_digest(trytes.c_str());
+        std::string sHash = std::string(reinterpret_cast<char*>(hash), 81);
+        auto address = transaction_address(tx);
+        std::string sAddress =
+            std::string(reinterpret_cast<char*>(address), 81);
+        auto bundle = transaction_bundle(tx);
+        std::string sBundle = std::string(reinterpret_cast<char*>(bundle), 81);
+        auto trunk = transaction_trunk(tx);
+        std::string sTrunk = std::string(reinterpret_cast<char*>(trunk), 81);
 
-            std::chrono::seconds sinceEpoch(transaction_timestamp(tx));
+        std::chrono::seconds sinceEpoch(transaction_timestamp(tx));
 
-            return {sHash,
-                    sAddress,
-                    transaction_value(tx),
-                    epoch + sinceEpoch,
-                    transaction_current_index(tx),
-                    transaction_last_index(tx),
-                    sBundle,
-                    sTrunk};
-          }),
+        return {sHash,
+                sAddress,
+                transaction_value(tx),
+                epoch + sinceEpoch,
+                transaction_current_index(tx),
+                transaction_last_index(tx),
+                sBundle,
+                sTrunk};
+      }),
       boost::back_move_inserter(txs));
 
   transaction_free(tx);

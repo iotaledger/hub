@@ -1,4 +1,6 @@
-#include "server.h"
+// Copyright 2018 IOTA Foundation
+
+#include "hub/server/server.h"
 
 #include <chrono>
 

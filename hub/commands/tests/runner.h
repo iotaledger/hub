@@ -1,5 +1,7 @@
-#ifndef __HUB_COMMANDS_TESTS_RUNNER_H_
-#define __HUB_COMMANDS_TESTS_RUNNER_H_
+// Copyright 2018 IOTA Foundation
+
+#ifndef HUB_COMMANDS_TESTS_RUNNER_H_
+#define HUB_COMMANDS_TESTS_RUNNER_H_
 
 #include <gtest/gtest.h>
 
@@ -33,4 +35,4 @@ class CommandTest : public hub::Test {
 };
 
 }  // namespace hub
-#endif /* __HUB_COMMANDS_TESTS_RUNNER_H_ */
+#endif // HUB_COMMANDS_TESTS_RUNNER_H_

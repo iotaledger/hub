@@ -1,5 +1,7 @@
-#ifndef __HUB_IOTA_API_H_
-#define __HUB_IOTA_API_H_
+// Copyright 2018 IOTA Foundation
+
+#ifndef HUB_IOTA_API_H_
+#define HUB_IOTA_API_H_
 
 #include <chrono>
 #include <cstdint>
@@ -41,4 +43,4 @@ class IotaAPI {
 }  // namespace iota
 }  // namespace hub
 
-#endif /* __HUB_IOTA_API_H_ */
+#endif // HUB_IOTA_API_H_

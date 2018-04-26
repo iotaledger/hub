@@ -1,3 +1,5 @@
+// Copyright 2018 IOTA Foundation
+
 #include <gflags/gflags.h>
 #include <glog/logging.h>
 
