@@ -1,12 +1,14 @@
-#ifndef __HUB_CRYPTO_LOCAL_PROVIDER_H_
-#define __HUB_CRYPTO_LOCAL_PROVIDER_H_
+// Copyright 2018 IOTA Foundation
+
+#ifndef HUB_CRYPTO_LOCAL_PROVIDER_H_
+#define HUB_CRYPTO_LOCAL_PROVIDER_H_
 
 #include <cstdint>
 #include <string>
 
 #include <boost/uuid/uuid.hpp>
 
-#include "provider.h"
+#include "hub/crypto/provider.h"
 
 namespace hub {
 namespace crypto {
@@ -28,4 +30,4 @@ class LocalProvider : public CryptoProvider {
 
 }  // namespace crypto
 }  // namespace hub
-#endif /* __HUB_CRYPTO_LOCAL_PROVIDER_H_ */
+#endif  // HUB_CRYPTO_LOCAL_PROVIDER_H_

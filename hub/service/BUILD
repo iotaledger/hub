@@ -32,8 +32,7 @@ cc_library(
         "@boost//:move",
         "@boost//:multi_index",
         "@boost//:range",
-        "@boost//:move",
-        "@boost//:uuid"
+        "@boost//:uuid",
     ],
 )
 

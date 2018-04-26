@@ -1,4 +1,6 @@
-#include "create_user.h"
+// Copyright 2018 IOTA Foundation
+
+#include "hub/commands/create_user.h"
 
 #include <sqlpp11/connection.h>
 #include <sqlpp11/insert.h>
@@ -10,8 +12,7 @@
 #include "hub/db/db.h"
 #include "hub/stats/session.h"
 
-#include "helper.h"
-using namespace sqlpp;
+#include "hub/commands/helper.h"
 
 namespace hub {
 namespace cmd {
@@ -23,7 +24,7 @@ grpc::Status CreateUser::doProcess(
 
   auto& connection = db::DBManager::get().connection();
 
-  transaction_t<hub::db::Connection> transaction(connection, true);
+  sqlpp::transaction_t<hub::db::Connection> transaction(connection, true);
 
   try {
     connection(insert_into(userAccount)

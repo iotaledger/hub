@@ -1,17 +1,19 @@
-#ifndef __HUB_CRYPTO_MANAGER_H_
-#define __HUB_CRYPTO_MANAGER_H_
+// Copyright 2018 IOTA Foundation
+
+#ifndef HUB_CRYPTO_MANAGER_H_
+#define HUB_CRYPTO_MANAGER_H_
 
 #include <memory>
+#include <utility>
 
-#include "provider.h"
-
+#include "hub/crypto/provider.h"
 
 namespace hub {
 namespace crypto {
 
 class CryptoManager {
  private:
-  explicit CryptoManager() {}
+  CryptoManager() {}
 
  public:
   static CryptoManager& get();
@@ -20,7 +22,6 @@ class CryptoManager {
   void setProvider(std::unique_ptr<CryptoProvider> provider) {
     _provider = std::move(provider);
   }
-  
 
  private:
   std::unique_ptr<CryptoProvider> _provider;
@@ -28,4 +29,4 @@ class CryptoManager {
 
 }  // namespace crypto
 }  // namespace hub
-#endif /* __HUB_CRYPTO_MANAGER_H_ */
+#endif  // HUB_CRYPTO_MANAGER_H_

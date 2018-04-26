@@ -1,10 +1,13 @@
-#include "local_provider.h"
+// Copyright 2018 IOTA Foundation
+
+#include "hub/crypto/local_provider.h"
 
 #include <array>
 #include <cstdint>
 #include <functional>
 #include <memory>
 #include <stdexcept>
+#include <utility>
 
 #include <argon2.h>
 #include <glog/logging.h>
@@ -65,7 +68,7 @@ namespace hub {
 namespace crypto {
 
 LocalProvider::LocalProvider(std::string salt) : _salt(std::move(salt)) {
-  using namespace std::string_literals;
+  using std::string_literals::operator""s;
 
   if (_salt.length() < ARGON2_MIN_SALT_LENGTH) {
     throw std::runtime_error(

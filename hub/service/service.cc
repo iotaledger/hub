@@ -1,4 +1,6 @@
-#include "service.h"
+// Copyright 2018 IOTA Foundation
+
+#include "hub/service/service.h"
 
 #include <stdexcept>
 

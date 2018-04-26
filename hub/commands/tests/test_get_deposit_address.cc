@@ -1,3 +1,5 @@
+// Copyright 2018 IOTA Foundation
+
 #include <gmock/gmock.h>
 #include <gtest/gtest.h>
 #include <sqlpp11/functions.h>

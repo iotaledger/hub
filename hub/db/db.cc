@@ -1,13 +1,14 @@
-#include "db.h"
+// Copyright 2018 IOTA Foundation
+
+#include "hub/db/db.h"
 
 #include <fstream>
+#include <utility>
 
 #include <gflags/gflags.h>
 #include <glog/logging.h>
 #include <sqlpp11/sqlite3/sqlite3.h>
 #include <sqlpp11/sqlpp11.h>
-
-#include "sqlite3.h"
 
 namespace {
 thread_local static std::unique_ptr<hub::db::Connection> tl_connection;
@@ -33,7 +34,7 @@ void DBManager::setConnection(std::unique_ptr<Connection> ptr) {
 
 void DBManager::loadSchema(bool removeExisting) {
   auto& conn = connection();
-  
+
   std::ifstream fSchema("schema/schema.sql");
   std::string schema((std::istreambuf_iterator<char>(fSchema)),
                      std::istreambuf_iterator<char>());
@@ -49,12 +50,11 @@ void DBManager::loadSchema(bool removeExisting) {
 
     cmd += line;
 
-    if(line.find(';') != std::string::npos) {
+    if (line.find(';') != std::string::npos) {
       conn.execute(cmd);
       cmd = "";
     }
   }
-
 
   LOG(INFO) << "Populated database with schema.";
 }

@@ -1,16 +1,17 @@
-#ifndef __HUB_SERVER_H__
-#define __HUB_SERVER_H__
+// Copyright 2018 IOTA Foundation
+
+#ifndef HUB_SERVER_SERVER_H_
+#define HUB_SERVER_SERVER_H_
 
 #include <memory>
 
 #include <grpc++/grpc++.h>
 
 #include "hub/iota/api.h"
+#include "hub/server/grpc.h"
 #include "hub/service/user_address_monitor.h"
 #include "proto/hub.grpc.pb.h"
 #include "proto/hub.pb.h"
-
-#include "grpc.h"
 
 namespace grpc {
 class Server;
@@ -21,7 +22,7 @@ namespace hub {
 
 class HubServer {
  public:
-  explicit HubServer();
+  HubServer();
 
   void initialise();
   void runAndWait();
@@ -35,4 +36,4 @@ class HubServer {
 };
 
 }  // namespace hub
-#endif /* __HUB_SERVER_H__ */
+#endif  // HUB_SERVER_SERVER_H_

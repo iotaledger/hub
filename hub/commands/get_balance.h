@@ -1,7 +1,11 @@
-#ifndef __HUB_COMMANDS_GET_BALANCE_H_
-#define __HUB_COMMANDS_GET_BALANCE_H_
+// Copyright 2018 IOTA Foundation
 
-#include "command.h"
+#ifndef HUB_COMMANDS_GET_BALANCE_H_
+#define HUB_COMMANDS_GET_BALANCE_H_
+
+#include <string>
+
+#include "hub/commands/command.h"
 
 namespace hub {
 namespace rpc {
@@ -17,13 +21,12 @@ class GetBalance
   using Command<hub::rpc::GetBalanceRequest,
                 hub::rpc::GetBalanceReply>::Command;
 
-  grpc::Status doProcess(
-      const hub::rpc::GetBalanceRequest* request,
-      hub::rpc::GetBalanceReply* response) noexcept override;
+  grpc::Status doProcess(const hub::rpc::GetBalanceRequest* request,
+                         hub::rpc::GetBalanceReply* response) noexcept override;
 
   const std::string name() override { return "GetBalance"; }
 };
 }  // namespace cmd
 }  // namespace hub
 
-#endif /* __HUB_COMMANDS_GET_BALANCE_H_ */
+#endif  // HUB_COMMANDS_GET_BALANCE_H_

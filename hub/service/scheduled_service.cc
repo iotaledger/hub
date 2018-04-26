@@ -1,4 +1,6 @@
-#include "scheduled_service.h"
+// Copyright 2018 IOTA Foundation
+
+#include "hub/service/scheduled_service.h"
 
 #include <iostream>
 #include <memory>
@@ -7,8 +9,6 @@
 #include <boost/asio/io_service.hpp>
 #include <boost/asio/steady_timer.hpp>
 #include <boost/bind.hpp>
-
-#include "service.h"
 
 namespace hub {
 namespace service {

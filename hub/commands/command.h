@@ -1,7 +1,11 @@
-#ifndef __HUB_COMMANDS_COMMAND_H_
-#define __HUB_COMMANDS_COMMAND_H_
+// Copyright 2018 IOTA Foundation
+
+#ifndef HUB_COMMANDS_COMMAND_H_
+#define HUB_COMMANDS_COMMAND_H_
 
 #include <memory>
+#include <string>
+#include <utility>
 
 #include <glog/logging.h>
 #include <grpc++/grpc++.h>
@@ -28,7 +32,8 @@ class Command {
   virtual const std::string name() = 0;
 
  protected:
-  virtual grpc::Status doProcess(const REQ* request, RES* response) noexcept = 0;
+  virtual grpc::Status doProcess(const REQ* request,
+                                 RES* response) noexcept = 0;
   ClientSession& session() const { return *_clientSession; }
 
   const std::shared_ptr<ClientSession> _clientSession;
@@ -37,4 +42,4 @@ class Command {
 }  // namespace cmd
 }  // namespace hub
 
-#endif /* __HUB_COMMANDS_COMMAND_H_ */
+#endif  // HUB_COMMANDS_COMMAND_H_

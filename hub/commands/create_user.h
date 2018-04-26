@@ -1,7 +1,11 @@
-#ifndef __HUB_COMMANDS_CREATE_USER_H_
-#define __HUB_COMMANDS_CREATE_USER_H_
+// Copyright 2018 IOTA Foundation
 
-#include "command.h"
+#ifndef HUB_COMMANDS_CREATE_USER_H_
+#define HUB_COMMANDS_CREATE_USER_H_
+
+#include <string>
+
+#include "hub/commands/command.h"
 
 namespace hub {
 namespace rpc {
@@ -17,13 +21,12 @@ class CreateUser
   using Command<hub::rpc::CreateUserRequest,
                 hub::rpc::CreateUserReply>::Command;
 
-  grpc::Status doProcess(
-      const hub::rpc::CreateUserRequest* request,
-      hub::rpc::CreateUserReply* response) noexcept override;
+  grpc::Status doProcess(const hub::rpc::CreateUserRequest* request,
+                         hub::rpc::CreateUserReply* response) noexcept override;
 
   const std::string name() override { return "CreateUser"; }
 };
 }  // namespace cmd
 }  // namespace hub
 
-#endif /* __HUB_COMMANDS_CREATE_USER_H_ */
+#endif  // HUB_COMMANDS_CREATE_USER_H_

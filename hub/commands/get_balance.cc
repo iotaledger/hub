@@ -1,4 +1,6 @@
-#include "get_balance.h"
+// Copyright 2018 IOTA Foundation
+
+#include "hub/commands/get_balance.h"
 
 #include <cstdint>
 
@@ -12,9 +14,7 @@
 #include "proto/hub.pb.h"
 #include "schema/schema.h"
 
-#include "helper.h"
-
-using namespace sqlpp;
+#include "hub/commands/helper.h"
 
 namespace hub {
 namespace cmd {
@@ -22,7 +22,6 @@ namespace cmd {
 grpc::Status GetBalance::doProcess(
     const hub::rpc::GetBalanceRequest* request,
     hub::rpc::GetBalanceReply* response) noexcept {
-
   auto& connection = db::DBManager::get().connection();
   uint64_t userId;
 

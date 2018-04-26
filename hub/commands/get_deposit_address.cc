@@ -1,4 +1,6 @@
-#include "get_deposit_address.h"
+// Copyright 2018 IOTA Foundation
+
+#include "hub/commands/get_deposit_address.h"
 
 #include <cstdint>
 
@@ -10,16 +12,13 @@
 #include <boost/uuid/uuid.hpp>
 #include <boost/uuid/uuid_generators.hpp>
 
+#include "hub/commands/helper.h"
 #include "hub/crypto/manager.h"
 #include "hub/db/db.h"
 #include "hub/db/helper.h"
 #include "hub/stats/session.h"
 #include "proto/hub.pb.h"
 #include "schema/schema.h"
-
-#include "helper.h"
-
-using namespace sqlpp;
 
 namespace {
 SQLPP_ALIAS_PROVIDER(total);
@@ -56,12 +55,12 @@ grpc::Status GetDepositAddress::doProcess(
   response->set_address(address);
 
   // Add new user address.
-  transaction_t<hub::db::Connection> transaction(connection, true);
+  sqlpp::transaction_t<hub::db::Connection> transaction(connection, true);
   try {
-    connection(insert_into(userAddress)
-                   .set(userAddress.address = address,
-                        userAddress.userId = userId,
-                        userAddress.seedUuid = (char*) uuid.data));
+    connection(
+        insert_into(userAddress)
+            .set(userAddress.address = address, userAddress.userId = userId,
+                 userAddress.seedUuid = reinterpret_cast<char*>(uuid.data)));
     transaction.commit();
   } catch (sqlpp::exception& ex) {
     LOG(ERROR) << session() << " Commit failed: " << ex.what();

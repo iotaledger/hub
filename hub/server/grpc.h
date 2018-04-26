@@ -1,5 +1,7 @@
-#ifndef __HUB_GRPC_H__
-#define __HUB_GRPC_H__
+// Copyright 2018 IOTA Foundation
+
+#ifndef HUB_SERVER_GRPC_H_
+#define HUB_SERVER_GRPC_H_
 
 #include <memory>
 
@@ -11,7 +13,7 @@
 namespace hub {
 class HubImpl final : public hub::rpc::Hub::Service {
  public:
-  explicit HubImpl() {}
+  HubImpl() {}
   ~HubImpl() override {}
 
   grpc::Status CreateUser(grpc::ServerContext* context,
@@ -39,4 +41,4 @@ class HubImpl final : public hub::rpc::Hub::Service {
 
 }  // namespace hub
 
-#endif /* __HUB_GRPC_H__ */
+#endif  // HUB_SERVER_GRPC_H_

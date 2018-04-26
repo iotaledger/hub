@@ -1,4 +1,6 @@
-#include "user_address_monitor.h"
+// Copyright 2018 IOTA Foundation
+
+#include "hub/service/user_address_monitor.h"
 
 #include <iterator>
 #include <vector>
@@ -21,17 +23,6 @@ namespace tags {
 struct ByAddressID {};
 }  // namespace tags
 
-namespace {
-using namespace boost::multi_index;
-
-using BalanceChange = hub::service::AddressMonitor::BalanceChange;
-using BalanceMap = boost::multi_index_container<
-    BalanceChange,
-    indexed_by<ordered_non_unique<
-        tag<tags::ByAddressID>,
-        member<BalanceChange, const uint64_t, &BalanceChange::addressId>>>>;
-}  // namespace
-
 namespace hub {
 namespace service {
 
@@ -41,7 +32,7 @@ UserAddressMonitor::monitoredAddresses() {
 }
 
 bool UserAddressMonitor::onBalancesChanged(
-    std::vector<AddressMonitor::BalanceChange>& changes) {
+    const std::vector<AddressMonitor::BalanceChange>& changes) {
   LOG(INFO) << "Processing changes. Total: " << changes.size();
   auto& connection = db::DBManager::get().connection();
   bool error = true;
@@ -76,7 +67,7 @@ bool UserAddressMonitor::onBalancesChanged(
             aggregateSum += tx.value;
 
             if (tx.value < 0) {
-              // TODO (th0br0) verify that this was a sweep. Else we've got a
+              // TODO(th0br0) verify that this was a sweep. Else we've got a
               // problem.
             } else {
               LOG(INFO) << "Creating UserAddressBalance(" << change.addressId

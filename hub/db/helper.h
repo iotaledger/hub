@@ -1,9 +1,13 @@
-#ifndef __HUB_DB_HELPER_H_
-#define __HUB_DB_HELPER_H_
+// Copyright 2018 IOTA Foundation
+
+#ifndef HUB_DB_HELPER_H_
+#define HUB_DB_HELPER_H_
 
 #include <cstdint>
 #include <optional>
 #include <string>
+#include <tuple>
+#include <utility>
 #include <vector>
 
 #include <sqlpp11/functions.h>
@@ -14,17 +18,15 @@
 #include <sqlpp11/update.h>
 #include <boost/uuid/uuid.hpp>
 
-#include "db.h"
+#include "hub/db/db.h"
+#include "hub/db/types.h"
 #include "schema/schema.h"
-#include "types.h"
 
 namespace hub {
 namespace db {
 
 inline std::optional<int64_t> userIdFromIdentifier(
     Connection& connection, const std::string& identifier) {
-  using namespace sqlpp;
-
   db::sql::UserAccount acc;
 
   const auto result =
@@ -39,9 +41,8 @@ inline std::optional<int64_t> userIdFromIdentifier(
 
 using AddressWithID = std::tuple<uint64_t, std::string>;
 
-inline std::vector<AddressWithID> unsweptUserAddresses(Connection& connection) {
-  using namespace sqlpp;
-
+inline std::vector<AddressWithID> unsweptUserAddresses(
+    Connection& connection) {
   db::sql::UserAddress addr;
   db::sql::UserAddressBalance bal;
 
@@ -50,8 +51,8 @@ inline std::vector<AddressWithID> unsweptUserAddresses(Connection& connection) {
   auto result =
       connection(select(addr.id, addr.address)
                      .from(addr)
-                     .where(not(exists(select(bal.id).from(bal).where(
-                         bal.userAddress == addr.id and bal.reason == 1)))));
+                     .where(!(exists(select(bal.id).from(bal).where(
+                         bal.userAddress == addr.id && bal.reason == 1)))));
 
   for (const auto& row : result) {
     addresses.push_back({row.id, row.address});
@@ -62,7 +63,6 @@ inline std::vector<AddressWithID> unsweptUserAddresses(Connection& connection) {
 
 inline std::vector<std::string> tailsForAddress(Connection& connection,
                                                 uint64_t userId) {
-  using namespace sqlpp;
   db::sql::UserAddressBalance bal;
 
   std::vector<std::string> tails;
@@ -77,8 +77,8 @@ inline std::vector<std::string> tailsForAddress(Connection& connection,
   return tails;
 }
 
-inline std::optional<uint64_t> availableBalanceForUser(Connection& connection,
-                                                       uint64_t userId) {
+inline std::optional<uint64_t> availableBalanceForUser(
+    Connection& connection, uint64_t userId) {
   db::sql::UserAccountBalance bal;
 
   const auto result = connection(select(sum(bal.amount).as(sqlpp::alias::a))
@@ -100,10 +100,10 @@ inline void createUserAddressBalanceEntry(Connection& connection,
   db::sql::UserAddressBalance bal;
 
   if (reason == UserAddressBalanceReason::DEPOSIT) {
-    connection(insert_into(bal).set(bal.userAddress = addressId,
-                                    bal.amount = amount,
-                                    bal.reason = static_cast<int>(reason),
-                                    bal.tailHash = std::move(tailHash.value())));
+    connection(
+        insert_into(bal).set(bal.userAddress = addressId, bal.amount = amount,
+                             bal.reason = static_cast<int>(reason),
+                             bal.tailHash = std::move(tailHash.value())));
   } else {
     connection(insert_into(bal).set(
         bal.userAddress = addressId, bal.amount = amount,
@@ -155,11 +155,11 @@ inline size_t cancelWithdrawal(Connection& connection,
   return connection(
       update(tbl)
           .set(tbl.cancelledAt = now)
-          .where(tbl.uuid == std::string(uuid.data, uuid.data + uuid.size()) and
+          .where(tbl.uuid == std::string(uuid.data, uuid.data + uuid.size()) &&
                  tbl.sweep.is_null()));
 }
 
 }  // namespace db
 }  // namespace hub
 
-#endif /* __HUB_DB_HELPER_H_ */
+#endif  // HUB_DB_HELPER_H_

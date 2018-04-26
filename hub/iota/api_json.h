@@ -1,5 +1,7 @@
-#ifndef __HUB_IOTA_API_JSON_H_
-#define __HUB_IOTA_API_JSON_H_
+// Copyright 2018 IOTA Foundation
+
+#ifndef HUB_IOTA_API_JSON_H_
+#define HUB_IOTA_API_JSON_H_
 
 #include <cstdint>
 #include <optional>
@@ -8,8 +10,9 @@
 #include <unordered_set>
 #include <vector>
 
-#include "api.h"
-#include "json.h"
+#include <nlohmann/json_fwd.hpp>
+
+#include "hub/iota/api.h"
 
 namespace hub {
 namespace iota {
@@ -46,4 +49,4 @@ class IotaJsonAPI : virtual public IotaAPI {
 }  // namespace iota
 }  // namespace hub
 
-#endif /* __HUB_IOTA_API_JSON_H_ */
+#endif  // HUB_IOTA_API_JSON_H_

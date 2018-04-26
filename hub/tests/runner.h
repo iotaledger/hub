@@ -1,5 +1,9 @@
-#ifndef __HUB_TESTS_RUNNER_H_
-#define __HUB_TESTS_RUNNER_H_
+// Copyright 2018 IOTA Foundation
+
+#ifndef HUB_TESTS_RUNNER_H_
+#define HUB_TESTS_RUNNER_H_
+
+#include <memory>
 
 #include <gtest/gtest.h>
 
@@ -30,5 +34,5 @@ class Test : public ::testing::Test {
   std::shared_ptr<ClientSession> _session;
 };
 
-}  // namespace hub
-#endif /* __HUB_TESTS_RUNNER_H_ */
+}  //  namespace hub
+#endif  // HUB_TESTS_RUNNER_H_
