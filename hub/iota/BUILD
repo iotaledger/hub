@@ -22,6 +22,11 @@ cc_library(
         "@org_iota_entangled//common/helpers:digest",
         "@org_iota_entangled//common/model:transaction",
         "@com_github_google_glog//:glog",
+        "@boost//:config",
+        "@boost//:core",
+        "@boost//:fusion",
+        "@boost//:move",
+        "@boost//:range"
     ], )
 
 cc_library(
