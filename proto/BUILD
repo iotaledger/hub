@@ -1,18 +1,28 @@
-package(default_visibility=["//visibility:public"])
+package(default_visibility = ["//visibility:public"])
 
 load("@org_pubref_rules_protobuf//protobuf:rules.bzl", "proto_language")
 load("@org_pubref_rules_protobuf//cpp:rules.bzl", "cc_proto_library")
 load("@org_pubref_rules_protobuf//go:rules.bzl", "go_proto_library")
-load("@org_pubref_rules_protobuf//grpc_gateway:rules.bzl",
-     "grpc_gateway_proto_library", "GRPC_GATEWAY_DEPS")
+load(
+    "@org_pubref_rules_protobuf//grpc_gateway:rules.bzl",
+    "grpc_gateway_proto_library",
+    "GRPC_GATEWAY_DEPS",
+)
 
-filegroup(name="protos", srcs=["messages.proto"])
+filegroup(
+    name = "protos",
+    srcs = ["messages.proto"],
+)
 
 cc_proto_library(
-    name="cpp",
-    protos=[":protos", "hub.proto"],
-    verbose=0,
-    with_grpc=True, )
+    name = "cpp",
+    protos = [
+        "hub.proto",
+        ":protos",
+    ],
+    verbose = 0,
+    with_grpc = True,
+)
 
 # Currently broken in rules_protobuf.
 #grpc_gateway_proto_library(

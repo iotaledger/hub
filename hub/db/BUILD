@@ -1,11 +1,13 @@
-cc_library(name="db",
-           srcs=glob(["**/*.cc"]),
-           hdrs=glob(["**/*.h"]),
-           deps=[
-               "//schema:schema",
-               "@sqlpp11//:sqlpp11",
-               "@sqlpp11sqlite//:sqlpp11sqlite",
-               "@com_github_gflags_gflags//:gflags",
-               "@com_github_google_glog//:glog",
-           ],
-           visibility=["//visibility:public"])
+cc_library(
+    name = "db",
+    srcs = glob(["**/*.cc"]),
+    hdrs = glob(["**/*.h"]),
+    visibility = ["//visibility:public"],
+    deps = [
+        "//schema",
+        "@com_github_gflags_gflags//:gflags",
+        "@com_github_google_glog//:glog",
+        "@sqlpp11",
+        "@sqlpp11sqlite",
+    ],
+)
