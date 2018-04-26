@@ -18,6 +18,11 @@ git_repository(
 
 # DEPENDENCIES
 git_repository(
+    name="io_bazel_rules_docker",
+    remote="https://github.com/bazelbuild/rules_docker.git",
+    tag="v0.4.0", )
+
+git_repository(
     name="com_github_gflags_gflags",
     commit="e292e0452fcfd5a8ae055b59052fc041cbab4abf",
     remote="https://github.com/gflags/gflags.git")
@@ -53,40 +58,41 @@ new_http_archive(
     url="https://github.com/P-H-C/phc-winner-argon2/archive/20171227.tar.gz",
     sha256="eaea0172c1f4ee4550d1b6c9ce01aab8d1ab66b4207776aa67991eb5872fdcd8",
     strip_prefix="phc-winner-argon2-20171227",
-    build_file="BUILD.argon2"
-)
+    build_file="BUILD.argon2")
 
 new_http_archive(
     name="sqlite3",
     url="https://www.sqlite.org/2018/sqlite-amalgamation-3230100.zip",
     sha256="4239a1f69e5721d07d9a374eb84d594225229e54be4ee628da2995f4315d8dfc",
     strip_prefix="sqlite-amalgamation-3230100",
-    build_file="BUILD.sqlite3"
-)
+    build_file="BUILD.sqlite3")
 
 git_repository(
     name="rules_iota",
     remote="https://gitlab.com/iota-foundation/software/rules_iota.git",
     commit="5622593910361262b248ad165aaf60bc87d0fa16")
 
-
 http_archive(
     name="org_iota_entangled",
-    url="https://gitlab.com/iota-foundation/software/entangled/-/archive/develop/entangled-develop.tar.gz",
-    strip_prefix="entangled-develop"
-)
+    url=
+    "https://gitlab.com/iota-foundation/software/entangled/-/archive/develop/entangled-develop.tar.gz",
+    strip_prefix="entangled-develop")
 
 new_http_archive(
-        name="keccak",
-        url=
-        "https://github.com/gvanas/KeccakCodePackage/archive/c737139c81fd191699886a9a74d3220f6e300b29.zip",
-        strip_prefix=
-        "KeccakCodePackage-c737139c81fd191699886a9a74d3220f6e300b29",
-        build_file="@rules_iota//:build/BUILD.keccak",
-        sha256=
-        "35c63620721ac4da418d4bb427ba7ae9aae76b4a1bea7758d6694a29f6e6488a")
+    name="keccak",
+    url=
+    "https://github.com/gvanas/KeccakCodePackage/archive/c737139c81fd191699886a9a74d3220f6e300b29.zip",
+    strip_prefix="KeccakCodePackage-c737139c81fd191699886a9a74d3220f6e300b29",
+    build_file="@rules_iota//:build/BUILD.keccak",
+    sha256="35c63620721ac4da418d4bb427ba7ae9aae76b4a1bea7758d6694a29f6e6488a")
 
-
+load(
+    "@io_bazel_rules_docker//container:container.bzl",
+    "container_pull",
+    container_repositories="repositories", )
+load(
+    "@io_bazel_rules_docker//cc:image.bzl",
+    _cc_image_repos="repositories", )
 load("@com_github_nelhage_rules_boost//:boost/boost.bzl", "boost_deps")
 load("@org_pubref_rules_protobuf//cpp:rules.bzl", "cpp_proto_repositories")
 load("@io_bazel_rules_go//go:def.bzl", "go_rules_dependencies",
@@ -95,6 +101,7 @@ load("@org_pubref_rules_protobuf//go:rules.bzl", "go_proto_repositories")
 load("@org_pubref_rules_protobuf//grpc_gateway:rules.bzl",
      "grpc_gateway_proto_repositories")
 
+_cc_image_repos()
 boost_deps()
 cpp_proto_repositories()
 go_rules_dependencies()
