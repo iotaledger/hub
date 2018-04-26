@@ -4,5 +4,6 @@ cc_library(
     srcs=glob(["**/*.cc"]),
     deps=[
         "@com_github_google_glog//:glog",
+        "@boost//:uuid"
     ],
     visibility=["//visibility:public"])

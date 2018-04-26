@@ -26,6 +26,7 @@ cc_library(
         "@boost//:multi_index",
         "@boost//:range",
         "@boost//:move",
+        "@boost//:uuid"
     ],
     visibility=["//visibility:public"])
 
