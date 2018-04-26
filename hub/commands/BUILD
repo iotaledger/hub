@@ -1,22 +1,33 @@
 cc_library(
-    name="commands",
-    srcs=glob(["**/*.cc"], exclude=["tests/**/*"]),
-    hdrs=glob(["**/*.h"], exclude=["tests/**/*"]),
-    deps=[
-        "//proto:cpp",
-        "//hub/stats:stats",
-        "//hub/db:db",
-        "//hub/crypto:crypto",
+    name = "commands",
+    srcs = glob(
+        ["**/*.cc"],
+        exclude = ["tests/**/*"],
+    ),
+    hdrs = glob(
+        ["**/*.h"],
+        exclude = ["tests/**/*"],
+    ),
+    visibility = ["//visibility:public"],
+    deps = [
+        "//hub/crypto",
         "//hub/crypto:local_provider",
+        "//hub/db",
+        "//hub/stats",
+        "//proto:cpp",
         "@boost//:uuid",
     ],
-    visibility=["//visibility:public"])
+)
 
 cc_test(
-    name="tests",
-    deps=[
+    name = "tests",
+    srcs = glob([
+        "tests/**/*.cc",
+        "tests/**/*.h",
+    ]),
+    deps = [
         ":commands",
-        "//hub/tests:tests",
+        "//hub/tests",
         "@com_google_googletest//:gtest",
     ],
-    srcs=glob(["tests/**/*.cc", "tests/**/*.h"]), )
+)
