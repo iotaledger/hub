@@ -34,7 +34,7 @@ namespace {
         std::vector<uint64_t> hubAddressIds;
         for (auto b : balances) {
             auto hubAddressId =
-                    connection.createHubAddress(uuid, hubOutputAddress.str());
+                    connection.createHubAddress(uuid, hubOutputAddress);
             hubAddressIds.push_back(hubAddressId);
         }
 

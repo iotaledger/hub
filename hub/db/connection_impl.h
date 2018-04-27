@@ -164,7 +164,7 @@ class ConnectionImpl : public Connection {
   }
 
   int64_t createHubAddress(const hub::crypto::UUID& uuid,
-                           const std::string& address) override {
+                           const hub::crypto::Address& address) override {
     return db::helper<Conn>::createHubAddress(*_conn, uuid, address);
   }
 
@@ -182,6 +182,32 @@ class ConnectionImpl : public Connection {
   int64_t getUserAddressBalance(uint64_t userAddress) override {
     return db::helper<Conn>::getUserAddressBalance(*_conn, userAddress);
   }
+
+  int64_t createSweep(const hub::crypto::Hash& bundleHash,
+                      const std::string& bundleTrytes,
+                      uint64_t intoHubAddress) override {
+    return db::helper<Conn>::createSweep(*_conn, bundleHash, bundleTrytes,
+                                         intoHubAddress);
+  };
+
+  std::vector<TransferOutput> getWithdrawalsForSweep(
+      size_t max,
+      const std::chrono::system_clock::time_point& olderThan) override {
+    return db::helper<Conn>::getWithdrawalsForSweep(*_conn, max, olderThan);
+  };
+
+  std::vector<TransferInput> getDepositsForSweep(
+      size_t max,
+      const std::chrono::system_clock::time_point& olderThan) override {
+    return db::helper<Conn>::getDepositsForSweep(*_conn, max, olderThan);
+  };
+
+  std::vector<TransferInput> getHubInputsForSweep(
+      uint64_t requiredAmount,
+      const std::chrono::system_clock::time_point& olderThan) override {
+    return db::helper<Conn>::getHubInputsForSweep(*_conn, requiredAmount,
+                                                  olderThan);
+  };
 
   void execute(const std::string& what) override { _conn->execute(what); }
 

@@ -56,6 +56,7 @@ CREATE TABLE IF NOT EXISTS hub_address_balance (
 
 CREATE TRIGGER hub_address_balance_insert AFTER INSERT ON hub_address_balance FOR EACH ROW BEGIN UPDATE hub_address SET balance = (SELECT SUM(amount) FROM hub_address_balance WHERE hub_address = NEW.hub_address) WHERE id = NEW.hub_address; END;
 
+CREATE INDEX idx_hub_address_balance_hub_address ON hub_address_balance(hub_address);
 CREATE INDEX idx_hub_address_balance_reason ON hub_address_balance(hub_address, reason);
 
 -- reason: 0 DEPOSIT 1 SWEEP
@@ -77,8 +78,8 @@ CREATE TABLE IF NOT EXISTS user_address_balance (
 
 CREATE TRIGGER user_address_balance_insert AFTER INSERT ON user_address_balance FOR EACH ROW BEGIN UPDATE user_address SET balance = (SELECT SUM(amount) FROM user_address_balance WHERE user_address = NEW.user_address) WHERE id = NEW.user_address; END;
 
-
-CREATE INDEX idx_user_address_reason ON user_address_balance(user_address, reason);
+CREATE INDEX idx_user_address_balance_reason ON user_address_balance(user_address, reason);
+CREATE INDEX idx_user_address_occuredAt ON user_address_balance(occured_at);
 
 CREATE TABLE IF NOT EXISTS withdrawal (
   id INTEGER PRIMARY KEY /*!40101 AUTO_INCREMENT */,
@@ -98,6 +99,7 @@ CREATE TABLE IF NOT EXISTS withdrawal (
 
 CREATE INDEX idx_withdrawal_uuid ON withdrawal(uuid);
 CREATE INDEX idx_withdrawal_cancelled_at ON withdrawal(cancelled_at);
+CREATE INDEX idx_withdrawal_by_request_ts ON withdrawal(requested_at ASC);
 
 -- reason: 0 SWEEP 1 BUY 2 WITHDRAW_CANCEL 3 WITHDRAW 4 SELL
 CREATE TABLE IF NOT EXISTS user_account_balance (

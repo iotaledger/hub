@@ -73,13 +73,29 @@ struct helper {
                                                   const std::string& uuid);
 
   static int64_t createHubAddress(C& connection, const hub::crypto::UUID& uuid,
-                                  const std::string& address);
+                                  const hub::crypto::Address& address);
   static void createHubAddressBalanceEntry(C& connection, uint64_t hubAddress,
                                            int64_t amount,
                                            const HubAddressBalanceReason reason,
                                            uint64_t sweepId);
   static int64_t getHubAddressBalance(C& connection, uint64_t hubAddress);
   static int64_t getUserAddressBalance(C& connection, uint64_t userAddress);
+
+  static int64_t createSweep(C& connection, const hub::crypto::Hash& bundleHash,
+                             const std::string& bundleTrytes,
+                             uint64_t intoHubAddress);
+
+  static std::vector<TransferOutput> getWithdrawalsForSweep(
+      C& connection, size_t max,
+      const std::chrono::system_clock::time_point& olderThan);
+
+  static std::vector<TransferInput> getDepositsForSweep(
+      C& connection, size_t max,
+      const std::chrono::system_clock::time_point& olderThan);
+
+  static std::vector<TransferInput> getHubInputsForSweep(
+      C& connection, uint64_t requiredAmount,
+      const std::chrono::system_clock::time_point& olderThan);
 };
 
 }  // namespace db

@@ -10,6 +10,7 @@
 #include <sstream>
 #include <string>
 #include <string_view>
+#include <utility>
 
 namespace hub {
 namespace crypto {
@@ -33,7 +34,7 @@ class UUID {
   static std::array<uint8_t, UUID_SIZE> generate();
   static std::array<uint8_t, UUID_SIZE> fromStringView(
       const std::string_view& sv);
-  const std::array<uint8_t, UUID_SIZE> _data;
+  std::array<uint8_t, UUID_SIZE> _data;
 };
 
 bool operator==(const hub::crypto::UUID& lhs, const hub::crypto::UUID& rhs);
