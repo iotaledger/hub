@@ -76,13 +76,27 @@ class Connection {
   virtual WithdrawalInfo getWithdrawalInfoFromUUID(const std::string& uuid) = 0;
 
   virtual int64_t createHubAddress(const hub::crypto::UUID& uuid,
-                                   const std::string& address) = 0;
+                                   const hub::crypto::Address& address) = 0;
   virtual void createHubAddressBalanceEntry(
       uint64_t hubAddress, int64_t amount, const HubAddressBalanceReason reason,
       uint64_t sweepId) = 0;
 
   virtual int64_t getHubAddressBalance(uint64_t hubAddress) = 0;
   virtual int64_t getUserAddressBalance(uint64_t userAddress) = 0;
+
+  virtual int64_t createSweep(const hub::crypto::Hash& bundleHash,
+                              const std::string& bundleTrytes,
+                              uint64_t intoHubAddress) = 0;
+
+  virtual std::vector<TransferOutput> getWithdrawalsForSweep(
+      size_t max, const std::chrono::system_clock::time_point& olderThan) = 0;
+
+  virtual std::vector<TransferInput> getDepositsForSweep(
+      size_t max, const std::chrono::system_clock::time_point& olderThan) = 0;
+
+  virtual std::vector<TransferInput> getHubInputsForSweep(
+      uint64_t requiredAmount,
+      const std::chrono::system_clock::time_point& olderThan) = 0;
 
  private:
   friend class DBManager;

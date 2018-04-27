@@ -392,11 +392,11 @@ WithdrawalInfo helper<C>::getWithdrawalInfoFromUUID(C& connection,
 template <typename C>
 int64_t helper<C>::createHubAddress(C& connection,
                                     const hub::crypto::UUID& uuid,
-                                    const std::string& address) {
+                                    const hub::crypto::Address& address) {
   db::sql::HubAddress tbl;
 
-  return connection(
-      insert_into(tbl).set(tbl.seedUuid = uuid.str(), tbl.address = address));
+  return connection(insert_into(tbl).set(tbl.seedUuid = uuid.str(),
+                                         tbl.address = address.str()));
 }
 
 template <typename C>
@@ -425,6 +425,162 @@ int64_t helper<C>::getUserAddressBalance(C& connection,
   auto result =
       connection(select(tbl.balance).from(tbl).where(tbl.id == userAddressId));
   return result.front().balance;
+}
+
+template <typename C>
+int64_t helper<C>::createSweep(C& connection,
+                               const hub::crypto::Hash& bundleHash,
+                               const std::string& bundleTrytes,
+                               uint64_t intoHubAddress) {
+  db::sql::Sweep tbl;
+
+  return connection(insert_into(tbl).set(tbl.bundleHash = bundleHash.str(),
+                                         tbl.trytes = bundleTrytes,
+                                         tbl.intoHubAddress = intoHubAddress));
+}
+
+template <typename C>
+std::vector<TransferOutput> helper<C>::getWithdrawalsForSweep(
+    C& connection, size_t max,
+    const std::chrono::system_clock::time_point& olderThan) {
+  db::sql::Withdrawal tbl;
+
+  std::vector<TransferOutput> outputs;
+
+  auto result = connection(select(tbl.id, tbl.amount, tbl.payoutAddress)
+                               .from(tbl)
+                               .where(tbl.requestedAt <= olderThan)
+                               .order_by(tbl.requestedAt.asc())
+                               .limit(max));
+
+  for (const auto& row : result) {
+    outputs.emplace_back(
+        TransferOutput{row.id, static_cast<uint64_t>(row.amount),
+                       hub::crypto::Address(row.payoutAddress.value())});
+  }
+
+  return outputs;
+}
+
+template <typename C>
+std::vector<TransferInput> helper<C>::getDepositsForSweep(
+    C& connection, size_t max,
+    const std::chrono::system_clock::time_point& olderThan) {
+  db::sql::UserAddress add;
+  db::sql::UserAddressBalance bal;
+
+  const auto balA = bal.as(sqlpp::alias::a);
+  const auto balB = bal.as(sqlpp::alias::b);
+  const auto query =
+      select(balA.userAddress, sum(balA.amount))
+          .from(balA)
+          .where(balA.occuredAt <= olderThan &&
+                 !exists(select(balB.id).from(balB).where(
+                     balB.userAddress == balA.userAddress &&
+                     balB.reason ==
+                         static_cast<int>(UserAddressBalanceReason::SWEEP))))
+          .group_by(balA.userAddress)
+
+          .limit(max);
+
+  auto result = connection(query);
+  std::vector<TransferInput> deposits;
+
+  for (const auto& row : result) {
+    // Inefficient. Would need to use dynamic joins for sqlpp, can't do join as
+    // is right now.
+    auto uuidResult = connection(select(add.address, add.userId, add.seedUuid)
+                                     .from(add)
+                                     .where(add.id == row.userAddress));
+
+    const auto& front = uuidResult.front();
+
+    TransferInput input = {std::move(row.userAddress), front.userId,
+                           hub::crypto::Address(front.address.value()),
+                           hub::crypto::UUID(front.seedUuid.value()),
+                           static_cast<uint64_t>(row.sum)};
+
+    deposits.emplace_back(std::move(input));
+  }
+
+  return deposits;
+}
+
+template <typename C>
+std::vector<TransferInput> helper<C>::getHubInputsForSweep(
+    C& connection, uint64_t requiredAmount,
+    const std::chrono::system_clock::time_point& olderThan) {
+  db::sql::HubAddress add;
+  db::sql::HubAddressBalance bal;
+  db::sql::Sweep swp;
+  db::sql::SweepTails tls;
+
+  // 1. Get all available unused Hub addresses
+  auto availableAddresses = connection(
+      select(add.id, add.address, add.seedUuid)
+          .from(add)
+          .where(add.createdAt < olderThan && !(add.isColdStorage > 0) &&
+                 !exists(select(bal.id).from(bal).where(
+                     bal.hubAddress == add.id &&
+                     bal.reason == static_cast<int>(
+                                       HubAddressBalanceReason::OUTBOUND)))));
+
+  std::vector<int64_t> addressIds;
+
+  for (const auto& row : availableAddresses) {
+    addressIds.push_back(row.id);
+  }
+
+  // 2. Only select those with a confirmed INBOUND sweep
+  auto confirmedAddresses = connection(
+      select(swp.intoHubAddress)
+          .from(swp)
+          .where(swp.intoHubAddress.in(sqlpp::value_list(addressIds)) &&
+                 exists(select(tls.hash).from(tls).where(tls.sweep == swp.id &&
+                                                         tls.confirmed == 1))));
+
+  addressIds.clear();
+
+  for (const auto& row : confirmedAddresses) {
+    addressIds.push_back(row.intoHubAddress);
+  }
+
+  std::vector<TransferInput> availableInputs;
+
+  // 3. Figure out the balance on each of these
+  for (const auto& row : availableAddresses) {
+    auto id = row.id;
+
+    if (std::find(addressIds.begin(), addressIds.end(), id) ==
+        addressIds.end()) {
+      continue;
+    }
+
+    auto availableBalance = connection(
+        select(sum(bal.amount)).from(bal).where(bal.hubAddress == id));
+
+    TransferInput input = {id, 0, hub::crypto::Address(row.address.value()),
+                           hub::crypto::UUID(row.seedUuid.value()),
+                           static_cast<uint64_t>(availableBalance.front().sum)};
+
+    availableInputs.emplace_back(std::move(input));
+  }
+
+  // Sort lowest to highest
+  std::sort(availableInputs.begin(), availableInputs.end(),
+            [](const auto& a, const auto& b) { return a.amount < b.amount; });
+
+  std::vector<TransferInput> selectedInputs;
+  auto it = availableInputs.begin();
+  uint64_t total;
+
+  do {
+    total += it->amount;
+    selectedInputs.emplace_back(std::move(*it));
+    it++;
+  } while (total < requiredAmount);
+
+  return selectedInputs;
 }
 
 template struct helper<sqlpp::mysql::connection>;

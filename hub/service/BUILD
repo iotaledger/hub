@@ -27,6 +27,23 @@ cc_library(
 )
 
 cc_library(
+    name = "sweep_service",
+    srcs = ["sweep_service.cc"],
+    hdrs = ["sweep_service.h"],
+    visibility = ["//visibility:public"],
+    deps = [
+        ":scheduled_service",
+        "//hub/crypto",
+        "//hub/db",
+        "//hub/iota:api",
+        "@boost//:range",
+        "@boost//:uuid",
+        "@com_github_gflags_gflags//:gflags",
+        "@com_github_google_glog//:glog",
+    ],
+)
+
+cc_library(
     name = "address_monitor",
     srcs = ["address_monitor.cc"],
     hdrs = ["address_monitor.h"],
@@ -47,7 +64,6 @@ cc_library(
         ":address_monitor",
         "//hub/db",
         "@boost//:move",
-        "@boost//:multi_index",
         "@boost//:range",
     ],
 )
@@ -70,6 +86,7 @@ cc_test(
     deps = [
         ":address_monitor",
         ":scheduled_service",
+        ":sweep_service",
         ":user_address_monitor",
         "//hub/tests",
         "@com_google_googletest//:gtest",

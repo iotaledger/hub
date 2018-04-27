@@ -27,9 +27,9 @@ std::array<uint8_t, UUID::UUID_SIZE> UUID::fromStringView(
   return res;
 }
 
-UUID::UUID() : _data(std::move(UUID::generate())) {}
+UUID::UUID() : _data(UUID::generate()) {}
 
-UUID::UUID(const std::string_view& sv) : _data(std::move(fromStringView(sv))) {}
+UUID::UUID(const std::string_view& sv) : _data(fromStringView(sv)) {}
 
 std::string UUID::str() const { return std::string(str_view()); }
 

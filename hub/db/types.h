@@ -8,6 +8,8 @@
 #include <tuple>
 #include <vector>
 
+#include "hub/crypto/types.h"
+
 namespace hub {
 namespace db {
 enum class UserAddressBalanceReason { DEPOSIT = 0, SWEEP = 1 };
@@ -52,6 +54,22 @@ struct UserTransfer {
 struct WithdrawalInfo {
   uint64_t userId;
   int64_t amount;
+};
+
+struct TransferInput {
+ public:
+  int64_t addressId;
+  int64_t userId;
+  hub::crypto::Address address;
+  hub::crypto::UUID uuid;
+  uint64_t amount;
+};
+
+struct TransferOutput {
+ public:
+  int64_t id;
+  uint64_t amount;
+  hub::crypto::Address payoutAddress;
 };
 
 }  // namespace db
