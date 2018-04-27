@@ -48,19 +48,4 @@ class MockAPI : public iota::IotaAPI {
       std::unordered_set<std::string>(const std::vector<std::string>& tails));
 };
 
-TEST_F(UserAddressMonitorTest, OnStartShouldInitialise) {
-  auto sapi = std::make_shared<MockAPI>();
-  auto& api = *sapi;
-  MockMonitor monitor(sapi, std::chrono::milliseconds(1));
-
-  std::vector<AddressMonitor::BalanceChange> changes = {
-      {1, "ABC", 0, -1000},
-      {2, "ADDRESS", 10000, 5000},
-      {1, "BCD", 1000, 1000}};
-
-  monitor.onBalancesChanged(changes);
-
-  EXPECT_EQ(1, 0);
-}
-
 }  // namespace
