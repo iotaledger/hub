@@ -7,9 +7,11 @@
 #include <gflags/gflags.h>
 #include <glog/logging.h>
 #include <grpc++/grpc++.h>
-
 #include "hub/crypto/local_provider.h"
 #include "hub/crypto/manager.h"
+#include "hub/db/db.h"
+#include "hub/db/helper.h"
+#include "hub/db/uuid.h"
 #include "hub/iota/beast.h"
 #include "hub/service/user_address_monitor.h"
 
@@ -33,6 +35,11 @@ void HubServer::initialise() {
   }
   crypto::CryptoManager::get().setProvider(
       std::make_unique<crypto::LocalProvider>(FLAGS_salt));
+
+  if (!authenticateSalt()) {
+    LOG(FATAL) << "The provided salt is not valid for "
+                  "this database. Did you mistype?";
+  }
 
   {
     size_t portIdx = FLAGS_apiAddress.find(':');
@@ -58,4 +65,18 @@ void HubServer::initialise() {
 }
 
 void HubServer::runAndWait() { _server->Wait(); }
+
+bool HubServer::authenticateSalt() const {
+  auto& connection = db::DBManager::get().connection();
+  auto addAndUuidRes = db::selectFirstUserAddress(connection);
+
+  if (!addAndUuidRes.has_value()) return true;
+
+  const auto& provider = crypto::CryptoManager::get().provider();
+  const auto& [existantAddress, uuidStr] = addAndUuidRes.value();
+  auto address = provider.getAddressForUUID(hub::db::uuidFromData(uuidStr));
+
+  return address == existantAddress;
+}
+
 }  // namespace hub
