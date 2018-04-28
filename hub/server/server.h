@@ -4,6 +4,7 @@
 #define HUB_SERVER_SERVER_H_
 
 #include <memory>
+#include <string>
 
 #include <grpc++/grpc++.h>
 
@@ -33,6 +34,8 @@ class HubServer {
 
   std::shared_ptr<hub::iota::IotaAPI> _api;
   std::unique_ptr<hub::service::UserAddressMonitor> _userAddressMonitor;
+
+  bool authenticateSalt() const;
 };
 
 }  // namespace hub

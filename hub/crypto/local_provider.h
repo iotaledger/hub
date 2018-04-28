@@ -18,7 +18,7 @@ class LocalProvider : public CryptoProvider {
   LocalProvider() = delete;
   explicit LocalProvider(std::string salt);
 
-  std::string getAddressForUUID(const boost::uuids::uuid& uuid) const override;
+  std::string getAddressForUUID(const boost::uuids::uuid &uuid) const override;
 
  private:
   const std::string _salt;

@@ -159,6 +159,26 @@ inline size_t cancelWithdrawal(Connection& connection,
                  tbl.sweep.is_null()));
 }
 
+using AddressWithUUID = std::tuple<std::string, std::string>;
+inline std::optional<AddressWithUUID> selectFirstUserAddress(
+    Connection& connection) {
+  db::sql::UserAddress addr;
+  AddressWithUUID t;
+
+  auto result = connection(select(addr.seedUuid, addr.address)
+                               .from(addr)
+                               .unconditionally()
+                               .limit(1U));
+
+  if (result.empty()) {
+    return {};
+  }
+
+  const auto& row = *result.begin();
+  return std::move(
+      std::make_tuple(std::move(row.address), std::move(row.seedUuid)));
+}
+
 }  // namespace db
 }  // namespace hub
 
