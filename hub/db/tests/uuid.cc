@@ -17,7 +17,8 @@ class UUIDTest : public ::testing::Test {};
 
 TEST_F(UUIDTest, UUIDFromDataIsConsistent) {
   auto originalUuid = boost::uuids::random_generator()();
-  auto recreatedUuid = hub::db::uuidFromData((char*)originalUuid.data);
+  auto recreatedUuid =
+      hub::db::uuidFromData(hub::db::dataFromUuid(originalUuid));
   EXPECT_EQ(originalUuid, recreatedUuid);
 }
 }  // namespace

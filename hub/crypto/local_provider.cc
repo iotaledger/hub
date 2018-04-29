@@ -80,17 +80,25 @@ LocalProvider::LocalProvider(std::string salt) : _salt(std::move(salt)) {
 std::string LocalProvider::getAddressForUUID(
     const boost::uuids::uuid& uuid) const {
   LOG(INFO) << "Generating address for: " << uuid;
-  return {iota_sign_address_gen((const char*)seedFromUUID(uuid, _salt)->data(),
-                                KEY_IDX, KEY_SEC)};
+
+  auto add = iota_sign_address_gen(
+      (const char*)seedFromUUID(uuid, _salt)->data(), KEY_IDX, KEY_SEC);
+  std::string ret = add;
+  std::free(add);
+  return ret;
 }
 
 std::string LocalProvider::doGetSignatureForUUID(
     const boost::uuids::uuid& uuid, const std::string& bundleHash) const {
   LOG(INFO) << "Generating signature for: " << uuid;
 
-  return {
+  auto sig =
       iota_sign_signature_gen((const char*)seedFromUUID(uuid, _salt)->data(),
-                              KEY_IDX, KEY_SEC, bundleHash.data())};
+                              KEY_IDX, KEY_SEC, bundleHash.data());
+  std::string ret = sig;
+  std::free(sig);
+
+  return ret;
 }
 
 }  // namespace crypto
