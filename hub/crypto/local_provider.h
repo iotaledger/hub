@@ -9,7 +9,6 @@
 #include <boost/uuid/uuid.hpp>
 
 #include "hub/crypto/provider.h"
-#include "hub/db/db.h"
 
 namespace hub {
 namespace crypto {
@@ -20,9 +19,11 @@ class LocalProvider : public CryptoProvider {
   explicit LocalProvider(std::string salt);
 
   std::string getAddressForUUID(const boost::uuids::uuid& uuid) const override;
-  std::string getSignatureForUUID(const boost::uuids::uuid& uuid,
-                                  hub::db::Connection& connection,
-                                  const std::string& bundleHash) const override;
+
+ protected:
+  std::string doGetSignatureForUUID(
+      const boost::uuids::uuid& uuid,
+      const std::string& bundleHash) const override;
 
  private:
   const std::string _salt;

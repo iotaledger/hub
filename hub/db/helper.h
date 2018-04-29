@@ -174,8 +174,7 @@ inline std::optional<AddressWithUUID> selectFirstUserAddress(
   }
 
   const auto& row = *result.begin();
-  return std::move(
-      std::make_tuple(std::move(row.address), std::move(row.seedUuid)));
+  return std::make_tuple(std::move(row.address), std::move(row.seedUuid));
 }
 
 inline void markUUIDAsSigned(Connection& connection,
