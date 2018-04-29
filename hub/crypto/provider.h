@@ -7,6 +7,8 @@
 
 #include <boost/uuid/uuid.hpp>
 
+#include "hub/db/db.h"
+
 namespace hub {
 namespace crypto {
 
@@ -15,6 +17,10 @@ class CryptoProvider {
   virtual ~CryptoProvider() {}
   virtual std::string getAddressForUUID(
       const boost::uuids::uuid& uuid) const = 0;
+
+  virtual std::string getSignatureForUUID(
+      const boost::uuids::uuid& uuid, hub::db::Connection& connection,
+      const std::string& bundleHash) const = 0;
 };
 
 }  // namespace crypto

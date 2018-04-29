@@ -41,8 +41,7 @@ inline std::optional<int64_t> userIdFromIdentifier(
 
 using AddressWithID = std::tuple<uint64_t, std::string>;
 
-inline std::vector<AddressWithID> unsweptUserAddresses(
-    Connection& connection) {
+inline std::vector<AddressWithID> unsweptUserAddresses(Connection& connection) {
   db::sql::UserAddress addr;
   db::sql::UserAddressBalance bal;
 
@@ -77,8 +76,8 @@ inline std::vector<std::string> tailsForAddress(Connection& connection,
   return tails;
 }
 
-inline std::optional<uint64_t> availableBalanceForUser(
-    Connection& connection, uint64_t userId) {
+inline std::optional<uint64_t> availableBalanceForUser(Connection& connection,
+                                                       uint64_t userId) {
   db::sql::UserAccountBalance bal;
 
   const auto result = connection(select(sum(bal.amount).as(sqlpp::alias::a))
@@ -177,6 +176,14 @@ inline std::optional<AddressWithUUID> selectFirstUserAddress(
   const auto& row = *result.begin();
   return std::move(
       std::make_tuple(std::move(row.address), std::move(row.seedUuid)));
+}
+
+inline void markUUIDAsSigned(Connection& connection,
+                             const boost::uuids::uuid& uuid) {
+  db::sql::SignedUuids tbl;
+
+  connection(insert_into(tbl).set(
+      tbl.uuid = std::string(uuid.data, uuid.data + uuid.size())));
 }
 
 }  // namespace db
