@@ -62,7 +62,7 @@ new_git_repository(
 new_git_repository(
     name = "sqlpp11sqlite",
     build_file = "BUILD.sqlpp11sqlite",
-    commit = "8d4ea283fa891c3f1eb7e45d012bdd4c0838e13a",
+    commit = "cf37829fc9828a36afa050f960d09abcaf6aeb6a",
     remote = "https://github.com/rbock/sqlpp11-connector-sqlite3.git",
 )
 
