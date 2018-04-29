@@ -20,6 +20,7 @@
 
 #include "hub/db/db.h"
 #include "hub/db/types.h"
+#include "hub/db/uuid.h"
 #include "schema/schema.h"
 
 namespace hub {
@@ -137,10 +138,9 @@ inline uint64_t createWithdrawal(Connection& connection,
                                  const std::string& payoutAddress) {
   db::sql::Withdrawal tbl;
 
-  connection(insert_into(tbl).set(
-      tbl.uuid = std::string(uuid.data, uuid.data + uuid.size()),
-      tbl.userId = userId, tbl.amount = amount,
-      tbl.payoutAddress = payoutAddress));
+  connection(insert_into(tbl).set(tbl.uuid = dataFromUuid(uuid),
+                                  tbl.userId = userId, tbl.amount = amount,
+                                  tbl.payoutAddress = payoutAddress));
 
   return connection.last_insert_id();
 }
@@ -154,11 +154,10 @@ inline size_t cancelWithdrawal(Connection& connection,
   return connection(
       update(tbl)
           .set(tbl.cancelledAt = now)
-          .where(tbl.uuid == std::string(uuid.data, uuid.data + uuid.size()) &&
-                 tbl.sweep.is_null()));
+          .where(tbl.uuid == dataFromUuid(uuid) && tbl.sweep.is_null()));
 }
 
-using AddressWithUUID = std::tuple<std::string, std::string>;
+using AddressWithUUID = std::tuple<std::string, boost::uuids::uuid>;
 inline std::optional<AddressWithUUID> selectFirstUserAddress(
     Connection& connection) {
   db::sql::UserAddress addr;
@@ -174,15 +173,14 @@ inline std::optional<AddressWithUUID> selectFirstUserAddress(
   }
 
   const auto& row = *result.begin();
-  return std::make_tuple(std::move(row.address), std::move(row.seedUuid));
+  return std::make_tuple(std::move(row.address), uuidFromData(row.seedUuid));
 }
 
 inline void markUUIDAsSigned(Connection& connection,
                              const boost::uuids::uuid& uuid) {
   db::sql::SignedUuids tbl;
 
-  connection(insert_into(tbl).set(
-      tbl.uuid = std::string(uuid.data, uuid.data + uuid.size())));
+  connection(insert_into(tbl).set(tbl.uuid = dataFromUuid(uuid)));
 }
 
 }  // namespace db
