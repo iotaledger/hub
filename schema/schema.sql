@@ -120,3 +120,7 @@ CREATE TABLE IF NOT EXISTS sweep_tails (
 );
 
 CREATE INDEX IF NOT EXISTS idx_pending_tails_by_sweep ON sweep_tails(sweep);
+
+CREATE TABLE IF NOT EXISTS signed_uuids(
+  uuid TEXT PRIMARY KEY NOT NULL UNIQUE
+);

@@ -6,7 +6,10 @@ cc_library(
         "provider.h",
     ],
     visibility = ["//visibility:public"],
-    deps = ["@boost//:uuid"],
+    deps = [
+        "//hub/db",
+        "@boost//:uuid",
+    ],
 )
 
 cc_library(
@@ -16,6 +19,7 @@ cc_library(
     visibility = ["//visibility:public"],
     deps = [
         ":crypto",
+        "//hub/db",
         "@argon2",
         "@com_github_google_glog//:glog",
         "@org_iota_entangled//common/helpers:sign",
