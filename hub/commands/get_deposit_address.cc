@@ -16,6 +16,7 @@
 #include "hub/crypto/manager.h"
 #include "hub/db/db.h"
 #include "hub/db/helper.h"
+#include "hub/db/uuid.h"
 #include "hub/stats/session.h"
 #include "proto/hub.pb.h"
 #include "schema/schema.h"
@@ -57,10 +58,10 @@ grpc::Status GetDepositAddress::doProcess(
   // Add new user address.
   sqlpp::transaction_t<hub::db::Connection> transaction(connection, true);
   try {
-    connection(
-        insert_into(userAddress)
-            .set(userAddress.address = address, userAddress.userId = userId,
-                 userAddress.seedUuid = reinterpret_cast<char*>(uuid.data)));
+    connection(insert_into(userAddress)
+                   .set(userAddress.address = address,
+                        userAddress.userId = userId,
+                        userAddress.seedUuid = db::dataFromUuid(uuid)));
     transaction.commit();
   } catch (sqlpp::exception& ex) {
     LOG(ERROR) << session() << " Commit failed: " << ex.what();

@@ -44,7 +44,8 @@ void DBManager::loadSchema(bool removeExisting) {
   std::string cmd;
 
   while (std::getline(ss, line, '\n')) {
-    if (line[line.find_first_not_of(' ')] == '-') {
+    auto pos = line.find_first_not_of(' ');
+    if (pos != std::string::npos && line[pos] == '-') {
       continue;
     }
 
