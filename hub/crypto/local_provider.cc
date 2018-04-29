@@ -18,8 +18,6 @@
 #include "common/trinary/trits.h"
 #include "common/trinary/tryte.h"
 
-#include "hub/db/helper.h"
-
 // FIXME (th0br0) fix up entangled
 extern "C" {
 void trits_to_trytes(trit_t*, tryte_t*, size_t);
@@ -86,11 +84,8 @@ std::string LocalProvider::getAddressForUUID(
                                 KEY_IDX, KEY_SEC)};
 }
 
-std::string LocalProvider::getSignatureForUUID(
-    const boost::uuids::uuid& uuid, hub::db::Connection& connection,
-    const std::string& bundleHash) const {
-  db::markUUIDAsSigned(connection, uuid);
-
+std::string LocalProvider::doGetSignatureForUUID(
+    const boost::uuids::uuid& uuid, const std::string& bundleHash) const {
   LOG(INFO) << "Generating signature for: " << uuid;
 
   return {
