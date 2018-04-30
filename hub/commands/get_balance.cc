@@ -43,7 +43,7 @@ grpc::Status GetBalance::doProcess(
 
     if (!maybeAmount) {
       return grpc::Status(grpc::StatusCode::FAILED_PRECONDITION, "",
-                          errorToString(hub::rpc::ErrorCode::UNKNOWN));
+                          errorToString(hub::rpc::ErrorCode::EC_UNKNOWN));
     }
 
     response->set_available(maybeAmount.value());
