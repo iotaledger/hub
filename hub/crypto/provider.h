@@ -17,8 +17,8 @@ class CryptoProvider {
   virtual ~CryptoProvider() {}
   virtual Address getAddressForUUID(const UUID& uuid) const = 0;
 
-  std::string getSignatureForUUID(const UUID& uuid,
-                                  hub::db::Connection& connection,
+  std::string getSignatureForUUID(hub::db::Connection& connection,
+                                  const UUID& uuid,
                                   const Hash& bundleHash) const {
     connection.markUUIDAsSigned(uuid);
 

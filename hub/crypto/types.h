@@ -7,6 +7,7 @@
 #include <array>
 #include <cassert>
 #include <cstring>
+#include <functional>
 #include <sstream>
 #include <string>
 #include <string_view>
@@ -106,5 +107,15 @@ using Address = TryteArray<81, AddressTag>;
 
 };  // namespace crypto
 }  // namespace hub
+
+namespace std {
+template <>
+struct hash<hub::crypto::UUID> {
+ public:
+  std::size_t operator()(const hub::crypto::UUID& k) const {
+    return std::hash<std::string_view>()(k.str_view());
+  }
+};
+}  // namespace std
 
 #endif  // HUB_CRYPTO_TYPES_H_

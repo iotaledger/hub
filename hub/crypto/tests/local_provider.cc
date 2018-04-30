@@ -58,13 +58,13 @@ TEST_F(LocalProviderTest, ShouldOnlySignOnce) {
 
   // First time should work.
   provider.getSignatureForUUID(
-      uuid, connection,
+      connection, uuid,
       Hash("AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA"
            "AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA"));
 
   // Second time should fail.
   ASSERT_THROW(provider.getSignatureForUUID(
-                   uuid, connection,
+                   connection, uuid,
                    Hash("BBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBB"
                         "BBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBB")),
                std::exception);

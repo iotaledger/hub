@@ -2,6 +2,8 @@
 
 #include "hub/db/helper.h"
 
+#include <algorithm>
+
 #include <sqlpp11/functions.h>
 #include <sqlpp11/insert.h>
 #include <sqlpp11/schema.h>
