@@ -51,11 +51,18 @@ class AddressMonitor : public ScheduledService {
 
   void onStart() override;
 
+  //copy
+  inline std::unordered_map<uint64_t, uint64_t> balances() const {
+      return _balances;
+  }
+
  protected:
   bool doTick() override;
 
   std::vector<BalanceChange> calculateBalanceChanges();
   void persistBalanceChanges(std::vector<BalanceChange> changes);
+  void removeUnmonitoredAddresses(
+      const std::unordered_map<std::string, uint64_t>& addressToIds);
 
  protected:
   const std::shared_ptr<hub::iota::IotaAPI> _api;

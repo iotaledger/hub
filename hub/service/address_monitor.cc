@@ -7,10 +7,13 @@
 #include <stdexcept>
 #include <tuple>
 #include <unordered_map>
+#include <set>
 #include <utility>
 
 #include <boost/asio/io_service.hpp>
 #include <boost/bind.hpp>
+#include <boost/range/algorithm/copy.hpp>
+#include <boost/range/adaptors.hpp>
 
 namespace hub {
 namespace service {
@@ -35,7 +38,7 @@ AddressMonitor::calculateBalanceChanges() {
                  std::back_inserter(addresses),
                  [](const auto& pair) { return pair.first; });
 
-  // TODO(th0br0) Remove unmonitored addresses from internal list.
+  removeUnmonitoredAddresses(addressToIDs);
   // TODO(th0br0) Figure out better failure pattern.
   //              At the moment, on failure, getBalances will return an empty
   //              list. Therefore, nothing will happen.
@@ -77,6 +80,26 @@ bool AddressMonitor::doTick() {
   }
 
   return true;
+}
+
+void AddressMonitor::removeUnmonitoredAddresses(
+    const std::unordered_map<std::string, uint64_t>& addressToIds) {
+  std::set<uint64_t> monitoredIds;
+  boost::copy(addressToIds | boost::adaptors::map_values,
+              std::inserter(monitoredIds, monitoredIds.begin()));
+
+  std::set<uint64_t> balancesIds;
+  boost::copy(_balances | boost::adaptors::map_keys,
+              std::inserter(balancesIds, balancesIds.begin()));
+
+  std::vector<uint64_t> unmonitoredBalances;
+  std::set_difference(balancesIds.begin(), balancesIds.end(),
+                      monitoredIds.begin(), monitoredIds.end(),
+                      std::back_inserter(unmonitoredBalances));
+
+  for (auto id : unmonitoredBalances) {
+    _balances.erase(id);
+  }
 }
 
 }  // namespace service
