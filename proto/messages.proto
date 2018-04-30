@@ -1,73 +1,196 @@
+
+/*
+ * Hub related messages.
+ 
+ */
+
 syntax = "proto3";
 
 package hub.rpc;
 
+
+/*
+  Error codes that can be returned by the hub.
+ 
+ */
 enum ErrorCode {
-  UNKNOWN                   = 0;
-  USER_EXISTS               = 1;
-  USER_DOES_NOT_EXIST       = 2;
-  CANCELLATION_NOT_POSSIBLE = 3;
-  INSUFFICIENT_BALANCE      = 4;
+  // Unused.
+  EC_UNKNOWN = 0;
+  // UserId already exists.
+  USER_EXISTS = 1;
+  // UserId does not exist.
+  USER_DOES_NOT_EXIST = 2;
+  // The user has insufficient balance for this operation.
+  INSUFFICIENT_BALANCE = 3;
+  // The batch is invalid (does not sum to 0 or user ids not unique)
+  BATCH_INVALID = 4;
+  // The batch is inconsistent (attempt to remove funds from a user's account without sufficient balance)
+  BATCH_INCONSISTENT = 5;
 }
+
+/*
+ * The generic Error that will be used to return an error code on, e.g. Status::CANCELLED.
+ *
+ * The error will be serialised and stored in the Status' detail field.
+ 
+ */
 message Error {
   ErrorCode code = 1;
 }
 
+
+/*
+ * Request for creating a new user.  
+ 
+ */
 message CreateUserRequest {
   string userId = 1;
 }
 
+
+/*
+ * Reply for creating a new user.
+ *
+ * Currently unused.
+ 
+ */
 message CreateUserReply {}
 
+
+/*
+ * Request for requesting a user's currently available balance.
+ 
+ */
 message GetBalanceRequest {
   string userId = 1;
 }
 
+
+/*
+ * Reply containing a user's currently available balanc.e
+ 
+ */
 message GetBalanceReply {
+  // User balance that is currently available for withdrawal / trades
   int64 available = 1;
+
   // TODO(th0br0): pendingSweep
+
 }
 
+
+/*
+ * Request for creating a new deposit address for a user.
+ 
+ */
 message GetDepositAddressRequest {
   string userId = 1;
 }
 
+
+/*
+ * Reply containing the new deposit address.
+ 
+ */
 message GetDepositAddressReply {
+  // Newly created deposit address
   string address = 1;
 }
 
+
+/*
+ * Requests a user-submitted withdrawal.
+ *
+ * This will fail if the user does not have sufficient balance available.
+ 
+ */
 message UserWithdrawRequest {
-  string userId        = 1;
+  string userId = 1;
+  // Address the user requests payout to. Should be without checksum.
   string payoutAddress = 2;
-  uint64 amount        = 3;
-  string note          = 4;
+  // Requested withdrawal amount
+  uint64 amount = 3;
 }
 
 message UserWithdrawReply {
+  // This withdrawal's UUID
   string uuid = 1;
 }
 
+
+/*
+ * Request to cancel an already submitted withdrawal.
+ 
+ */
 message UserWithdrawCancelRequest {
+  // Withdrawal UUID that is to be canceled
   string uuid = 1;
 }
 
+
+/*
+ * Reply for withdrawal cancellation.
+ 
+ */
 message UserWithdrawCancelReply {
+  // True if withdrawal could be canceled
   bool success = 1;
 }
 
 message StatsRequest {}
 
-message StatsReply {}
+message StatsReply {
+  // Total balance currently managed by the hub.
+  uint64 totalBalance = 1;
+}
 
-message GetUserHistoryRequest {}
+message GetUserHistoryRequest {
+  // UserId
+  string userId = 1;
+}
 
-message GetUserHistoryReply {}
+enum UserBalanceEventType {
+  // Unused
+  UE_UNKNOWN = 0;
+  // Deposit into user account (positive amount)
+  DEPOSIT = 1;
+  // User received tokens as part of a transfer batch (positive amount)
+  BUY = 2;
+  // User withdrawal request (negative amount)
+  WITHDRAWAL = 3;
+  // Cancelled user withdrawal request (positive amount)
+  WITHDRAWAL_CANCELED = 4;
+  // User lost tokens as part of a transfer batch (negative amount)
+  SELL = 5;
+}
+message UserBalanceEvent {
+  // Time since epoch in MS when the balance change occured
+                uint64 timestamp = 1;
+  UserBalanceEventType type      = 2;
+                 int64 amount    = 3;
+}
+
+message GetUserHistoryReply {
+  // List of all user balance events for given user
+  repeated UserBalanceEvent events = 1;
+}
+
+
+/*
+  This request contains a netted transfer batch. 
+  UserIds must be unique.
+ 
+ */
+message ProcessTransferBatchRequest {
+  message Transfer {
+    string userId = 1;
+     int64 amount = 2;
+  }
+
+  repeated Transfer transfers = 1;
+}
+
+message ProcessTransferBatchReply {}
 
 message UserBalanceSubscriptionRequest {}
-
-message UserBalanceEvent {}
-
-message ScheduleSweepRequest {}
-
-message ScheduleSweepReply {}
 

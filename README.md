@@ -18,3 +18,4 @@
 - Use `clang-format`
 - Use `protofmt` from `go get -u -v github.com/emicklei/proto-contrib/cmd/protofmt` to format
 - Use `grpcc` to test: `grpcc -i -a localhost:50051 - p proto/hub.protoc`
+- Use `https://github.com/pseudomuto/protoc-gen-doc` to generate protobuf documentation

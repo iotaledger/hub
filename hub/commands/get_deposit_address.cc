@@ -68,7 +68,7 @@ grpc::Status GetDepositAddress::doProcess(
     transaction.rollback();
 
     return grpc::Status(grpc::StatusCode::FAILED_PRECONDITION, "",
-                        errorToString(hub::rpc::ErrorCode::UNKNOWN));
+                        errorToString(hub::rpc::ErrorCode::EC_UNKNOWN));
   }
 
   return grpc::Status::OK;

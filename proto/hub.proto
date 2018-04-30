@@ -4,14 +4,26 @@ package hub.rpc;
 import "proto/messages.proto";
 
 service Hub {
-  rpc CreateUser              (CreateUserRequest             ) returns (       CreateUserReply        );
-  rpc GetBalance              (GetBalanceRequest             ) returns (       GetBalanceReply        );
-  rpc GetDepositAddress       (GetDepositAddressRequest      ) returns (       GetDepositAddressReply );
-  rpc ScheduleSweep           (ScheduleSweepRequest          ) returns (       ScheduleSweepReply     );
-  rpc UserWithdraw            (UserWithdrawRequest           ) returns (       UserWithdrawReply      );
-  rpc UserWithdrawCancel      (UserWithdrawCancelRequest     ) returns (       UserWithdrawCancelReply);
-  rpc GetStats                (StatsRequest                  ) returns (       StatsReply             );
-  rpc GetUserHistory          (GetUserHistoryRequest         ) returns (       GetUserHistoryReply    );
-  rpc UserBalanceSubscription (UserBalanceSubscriptionRequest) returns (stream UserBalanceEvent       );
+  // Creates a new user on the Hub
+  rpc CreateUser (CreateUserRequest) returns (CreateUserReply);
+  // Returns the available balance for a user
+  rpc GetBalance (GetBalanceRequest) returns (GetBalanceReply);
+  // Creates a new deposit address for a user
+  rpc GetDepositAddress (GetDepositAddressRequest) returns (GetDepositAddressReply);
+  // Submits a withdrawal request for a user.
+  rpc UserWithdraw (UserWithdrawRequest) returns (UserWithdrawReply);
+  // Attempts to cancel a user's withdrawal request.
+  // Only possible as long as sweep hasn't started yet.
+  rpc UserWithdrawCancel (UserWithdrawCancelRequest) returns (UserWithdrawCancelReply);
+  // Returns a user's full balance change history as recorded by the Hub
+  rpc GetUserHistory (GetUserHistoryRequest) returns (GetUserHistoryReply);
+  // Processes a batch of buys/sells from the exchange
+  // Note that the amounts of this batch must sum to 0!
+  rpc ProcessTransferBatch (ProcessTransferBatchRequest) returns (ProcessTransferBatchReply);
+  // Produces a stream of all user balance changes as they appear
+  // These can be subscribed to and consumed asynchronously on the client.
+  rpc UserBalanceSubscription (UserBalanceSubscriptionRequest) returns (stream UserBalanceEvent);
+  // Provides statistics about the Hub
+  rpc GetStats (StatsRequest) returns (StatsReply);
 }
 

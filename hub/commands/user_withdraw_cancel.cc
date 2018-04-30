@@ -29,14 +29,14 @@ grpc::Status UserWithdrawCancel::doProcess(
   sqlpp::transaction_t<hub::db::Connection> transaction(connection, true);
 
   std::optional<hub::rpc::ErrorCode> errorCode;
+  std::optional<bool> success;
+
   boost::uuids::uuid uuid = boost::uuids::string_generator()(request->uuid());
 
   try {
     auto result = db::cancelWithdrawal(connection, uuid);
 
-    if (result == 0) {
-      errorCode = hub::rpc::ErrorCode::CANCELLATION_NOT_POSSIBLE;
-    }
+    success = result != 0;
 
   cleanup:
     if (errorCode) {
@@ -46,7 +46,7 @@ grpc::Status UserWithdrawCancel::doProcess(
     }
   } catch (sqlpp::exception& ex) {
     LOG(ERROR) << session() << " Commit failed: " << ex.what();
-    errorCode = hub::rpc::ErrorCode::UNKNOWN;
+    errorCode = hub::rpc::ErrorCode::EC_UNKNOWN;
   }
 
   if (errorCode) {
@@ -54,9 +54,9 @@ grpc::Status UserWithdrawCancel::doProcess(
                         errorToString(errorCode.value()));
   }
 
-  response->set_success(true);
+  response->set_success(success.value());
 
-  return grpc::Status::CANCELLED;
+  return grpc::Status::OK;
 }
 
 }  // namespace cmd

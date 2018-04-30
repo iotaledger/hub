@@ -51,7 +51,7 @@ grpc::Status UserWithdraw::doProcess(
     {
       auto maybeBalance = db::availableBalanceForUser(connection, userId);
       if (!maybeBalance) {
-        errorCode = hub::rpc::ErrorCode::UNKNOWN;
+        errorCode = hub::rpc::ErrorCode::EC_UNKNOWN;
         goto cleanup;
       }
 
@@ -83,7 +83,7 @@ grpc::Status UserWithdraw::doProcess(
     }
   } catch (sqlpp::exception& ex) {
     LOG(ERROR) << session() << " Commit failed: " << ex.what();
-    errorCode = hub::rpc::ErrorCode::UNKNOWN;
+    errorCode = hub::rpc::ErrorCode::EC_UNKNOWN;
   }
 
   if (errorCode) {
