@@ -5,11 +5,13 @@
 #include <chrono>
 #include <numeric>
 #include <string>
+#include <unordered_map>
 #include <utility>
 #include <vector>
 
 #include <gflags/gflags.h>
 #include <glog/logging.h>
+#include <boost/functional/hash.hpp>
 #include <boost/uuid/uuid.hpp>
 #include <boost/uuid/uuid_generators.hpp>
 
@@ -106,6 +108,19 @@ bool SweepService::doTick() {
         "AAAAAAAAAAA");
     std::string bundleTrytes = "9";
 
+    std::unordered_map<boost::uuids::uuid, std::string,
+                       boost::hash<boost::uuids::uuid>>
+        signaturesForUUID;
+    for (const auto& in : hubInputs) {
+      signaturesForUUID[in.uuid] =
+          cryptoProvider.getSignatureForUUID(dbConnection, in.uuid, bundleHash);
+    }
+
+    for (const auto& in : deposits) {
+      signaturesForUUID[in.uuid] =
+          cryptoProvider.getSignatureForUUID(dbConnection, in.uuid, bundleHash);
+    }
+
     // 6. Commit to DB
     // 6.1. Insert sweep.
     auto sweepId =
@@ -133,6 +148,7 @@ bool SweepService::doTick() {
     }
 
     transaction->commit();
+    LOG(INFO) << "Sweep complete.";
   } catch (const std::exception& ex) {
     try {
       transaction->rollback();
