@@ -14,6 +14,7 @@
 #include "hub/iota/beast.h"
 #include "hub/iota/pow.h"
 #include "hub/iota/remote_pow.h"
+#include "hub/service/sweep_service.h"
 #include "hub/service/user_address_monitor.h"
 
 DEFINE_string(salt, "", "Salt for local seed provider");
@@ -25,6 +26,7 @@ DEFINE_string(authMode, "none", "credentials to use. can be {none}");
 DEFINE_uint32(monitorInterval, 60000, "Address monitor check interval [ms]");
 DEFINE_uint32(attachmentInterval, 300000,
               "Attachment service check interval [ms]");
+DEFINE_uint32(sweepInterval, 300000, "Sweep interval [ms]");
 
 // TODO(th0br0): move to hub/iota/pow
 DEFINE_uint32(minWeightMagnitude, 9, "Minimum weight magnitude for POW");
@@ -66,6 +68,8 @@ void HubServer::initialise() {
 
   _attachmentService = std::make_unique<service::AttachmentService>(
       _api, std::chrono::milliseconds(FLAGS_attachmentInterval));
+  _sweepService = std::make_unique<service::SweepService>(
+      std::chrono::milliseconds(FLAGS_sweepInterval));
 
   ServerBuilder builder;
 
@@ -76,6 +80,7 @@ void HubServer::initialise() {
   _server = builder.BuildAndStart();
   _userAddressMonitor->start();
   _attachmentService->start();
+  _sweepService->start();
 
   LOG(INFO) << "Server listening on " << FLAGS_listenAddress;
 }
