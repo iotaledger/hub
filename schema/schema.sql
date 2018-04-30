@@ -49,7 +49,8 @@ CREATE TABLE IF NOT EXISTS hub_address_balance (
   reason INTEGER NOT NULL,
   sweep INTEGER NOT NULL,
   occured_at DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
-  CONSTRAINT reason_amount CHECK ((reason = 0 and amount > 0) or (reason = 1 and amount < 0)),
+  CONSTRAINT hadd_reason_amount CHECK ((reason = 0 and amount > 0) or (reason = 1 and amount < 0)),
+  CONSTRAINT hadd_reason_range CHECK ((reason = 0 or reason = 1)),
   FOREIGN KEY (hub_address) REFERENCES hub_address(id),
   FOREIGN KEY (sweep) REFERENCES sweep(id)
 );
@@ -71,7 +72,8 @@ CREATE TABLE IF NOT EXISTS user_address_balance (
   -- nullable if not swept yet
   sweep INTEGER DEFAULT NULL,
   occured_at DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
-  CONSTRAINT reason_amount CHECK ((reason = 0 and tail_hash is not null and amount > 0) or (reason = 1 and sweep is not null and amount < 0)),
+  CONSTRAINT uab_reason_amount CHECK ((reason = 0 and tail_hash is not null and amount > 0) or (reason = 1 and sweep is not null and amount < 0)),
+  CONSTRAINT uab_reason_range CHECK ((reason = 0 or reason = 1)),
   FOREIGN KEY (user_address) REFERENCES user_address(id),
   FOREIGN KEY (sweep) REFERENCES sweep(id)
 );
@@ -109,13 +111,14 @@ CREATE TABLE IF NOT EXISTS user_account_balance (
   sweep INTEGER,
   withdrawal INTEGER,
   occured_at DATETIME DEFAULT CURRENT_TIMESTAMP NOT NULL,
-  CONSTRAINT reason_amount CHECK (
+  CONSTRAINT uacc_reason_amount CHECK (
     (reason = 0 and sweep is not null and amount > 0) or
     (reason = 1 and amount > 0) or
     (reason = 2 and withdrawal is not null and amount > 0) or
     (reason = 3 and withdrawal is not null and amount < 0) or
     (reason = 4 and amount < 0)
   ),
+  CONSTRAINT uacc_reason_range CHECK ((reason >= 0 and reason < 5)),
   FOREIGN KEY (user_id) REFERENCES user_account(id),
   FOREIGN KEY (sweep) REFERENCES sweep(id),
   FOREIGN KEY (withdrawal) REFERENCES withdrawal(id)
