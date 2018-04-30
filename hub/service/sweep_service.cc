@@ -11,7 +11,6 @@
 
 #include <gflags/gflags.h>
 #include <glog/logging.h>
-#include <boost/functional/hash.hpp>
 #include <boost/uuid/uuid.hpp>
 #include <boost/uuid/uuid_generators.hpp>
 
@@ -62,6 +61,14 @@ bool SweepService::doTick() {
     LOG(INFO) << "Found " << deposits.size()
               << " deposits with total amount: " << depositInput;
 
+    // 2.1. Abort if no deposits or withdrawals found.
+    if (deposits.size() == 0 && outputs.size() == 0) {
+      LOG(INFO) << "No deposits or withdrawal requests found. Aborting sweep.";
+
+      transaction->rollback();
+      return true;
+    }
+
     // 3. Find hub addresses to fill missing input balance.
     std::vector<db::TransferInput> hubInputs;
     uint64_t hubInputTotal = 0;
@@ -103,14 +110,13 @@ bool SweepService::doTick() {
         remainder, std::move(hubOutputAddress)};
 
     // 5. Generate bundle
+    // 5.1. Generate bundle hash & transactions
     hub::crypto::Hash bundleHash(
         "AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA"
         "AAAAAAAAAAA");
     std::string bundleTrytes = "9";
 
-    std::unordered_map<boost::uuids::uuid, std::string,
-                       boost::hash<boost::uuids::uuid>>
-        signaturesForUUID;
+    std::unordered_map<hub::crypto::UUID, std::string> signaturesForUUID;
     for (const auto& in : hubInputs) {
       signaturesForUUID[in.uuid] =
           cryptoProvider.getSignatureForUUID(dbConnection, in.uuid, bundleHash);
