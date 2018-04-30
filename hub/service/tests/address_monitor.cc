@@ -130,4 +130,59 @@ TEST_F(AddressMonitorTest, Tick) {
 
   monitor.doTick();
 }
+
+TEST_F(AddressMonitorTest, RemoveUnmonitoredAddresses) {
+  auto sapi = std::make_shared<MockAPI>();
+  auto& api = *sapi;
+  MockMonitor monitor(sapi, std::chrono::milliseconds(1));
+
+  auto addressA =
+      "AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA"
+      "AAAAAAAAA";
+
+  auto addressB =
+      "BBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBB"
+      "BBBBBBBBB";
+
+  auto addressC =
+      "CCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCC"
+      "CCCCCCCCC";
+
+  // std::unordered_map<uint64_t, uint64_t>
+  std::vector<std::tuple<uint64_t, std::string>> monitored = {
+      std::make_tuple(0, addressA), std::make_tuple(1, addressB),
+      std::make_tuple(2, addressC)};
+
+  EXPECT_CALL(monitor, monitoredAddresses())
+      .Times(1)
+      .WillOnce(Return(monitored));
+
+  EXPECT_CALL(api, getBalances(_))
+      .Times(1)
+      .WillOnce(Return(std::unordered_map<std::string, uint64_t>{
+          {addressA, 10}, {addressB, 20}, {addressC, 30}}));
+
+  monitor.onStart();
+
+  std::unordered_map<uint64_t, uint64_t> balances = {{0, 10}, {1, 20}, {2, 30}};
+
+  EXPECT_EQ(balances, monitor.balances());
+
+  monitored.pop_back();  // loosing addressC
+
+  EXPECT_CALL(monitor, monitoredAddresses())
+      .Times(1)
+      .WillOnce(Return(monitored));
+  EXPECT_CALL(api, getBalances(_))
+      .Times(1)
+      .WillOnce(Return(std::unordered_map<std::string, uint64_t>{
+          {addressA, 10}, {addressB, 20}}));
+
+  std::unordered_map<uint64_t, uint64_t> balancesAfter = {{0, 10}, {1, 20}};
+
+  monitor.doTick();
+
+  EXPECT_EQ(balancesAfter, monitor.balances());
+}
+
 }  // namespace
