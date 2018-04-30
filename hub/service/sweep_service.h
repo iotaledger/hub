@@ -5,11 +5,17 @@
 
 #include "hub/service/scheduled_service.h"
 
+#include <string>
+
 namespace hub {
 namespace service {
 
 class SweepService : public ScheduledService {
+ public:
   using ScheduledService::ScheduledService;
+  virtual ~SweepService() {}
+
+  const std::string name() const override { return "SweepService"; }
 
  protected:
   bool doTick() override;

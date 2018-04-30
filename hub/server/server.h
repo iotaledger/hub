@@ -11,6 +11,7 @@
 #include "hub/iota/api.h"
 #include "hub/server/grpc.h"
 #include "hub/service/attachment_service.h"
+#include "hub/service/sweep_service.h"
 #include "hub/service/user_address_monitor.h"
 #include "proto/hub.grpc.pb.h"
 #include "proto/hub.pb.h"
@@ -36,6 +37,7 @@ class HubServer {
   std::shared_ptr<hub::iota::IotaAPI> _api;
   std::unique_ptr<hub::service::UserAddressMonitor> _userAddressMonitor;
   std::unique_ptr<hub::service::AttachmentService> _attachmentService;
+  std::unique_ptr<hub::service::SweepService> _sweepService;
 
   bool authenticateSalt() const;
 };

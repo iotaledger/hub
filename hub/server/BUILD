@@ -10,6 +10,7 @@ cc_library(
         "//hub/iota:pow",
         "//hub/iota:remote_pow",
         "//hub/service:attachment_service",
+        "//hub/service:sweep_service",
         "//hub/service:user_address_monitor",
         "//hub/stats",
         "//proto:cpp",
