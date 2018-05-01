@@ -95,7 +95,7 @@ CREATE TABLE IF NOT EXISTS user_account_balance (
   amount INTEGER NOT NULL,
   reason INTEGER NOT NULL,
   sweep INTEGER,
-  withdrawal INTEGER
+  withdrawal INTEGER,
   occured_at DATETIME DEFAULT CURRENT_TIMESTAMP NOT NULL,
   CONSTRAINT reason_amount CHECK (
     (reason = 0 and sweep not null and amount > 0) or
