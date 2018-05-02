@@ -188,7 +188,7 @@ std::vector<Bundle> IotaJsonAPI::getConfirmedBundlesForAddress(
               }) | transformed([](const Transaction& tx) { return tx.hash; }),
               boost::back_move_inserter(tails));
 
-  auto confirmedTails = filterConfirmedTails(tails);
+  auto confirmedTails = filterConfirmedTails(tails, {});
 
   std::vector<Bundle> confirmedBundles;
   std::unordered_map<std::string, Transaction> transactionsByHash;
@@ -216,13 +216,18 @@ std::vector<Bundle> IotaJsonAPI::getConfirmedBundlesForAddress(
 }
 
 std::unordered_set<std::string> IotaJsonAPI::filterConfirmedTails(
-    const std::vector<std::string>& tails) {
-  auto ni = getNodeInfo();
-
+    const std::vector<std::string>& tails,
+    const std::optional<std::string>& reference = {}) {
   json req;
   req["command"] = "getInclusionStates";
   req["transactions"] = tails;
-  req["tips"] = std::vector<std::string>{ni.latestMilestone};
+
+  if (reference.has_value()) {
+    req["tips"] = std::vector<std::string>{reference.value()};
+  } else {
+    auto ni = getNodeInfo();
+    req["tips"] = std::vector<std::string>{ni.latestMilestone};
+  }
 
   auto maybeResponse = post(std::move(req));
 
@@ -244,6 +249,11 @@ std::unordered_set<std::string> IotaJsonAPI::filterConfirmedTails(
 
   return confirmedTails;
 }
+
+std::unordered_set<std::string> IotaJsonAPI::filterConsistentTails(
+    const std::vector<std::string>& tails) {
+  return {};
+};
 
 }  // namespace iota
 }  // namespace hub

@@ -17,13 +17,6 @@
 namespace hub {
 namespace iota {
 
-struct NodeInfo {
- public:
-  std::string latestMilestone;
-  uint64_t latestMilestoneIndex;
-  uint64_t latestSolidMilestoneIndex;
-};
-
 class IotaJsonAPI : virtual public IotaAPI {
  public:
   bool isNodeSolid() override;
@@ -35,14 +28,19 @@ class IotaJsonAPI : virtual public IotaAPI {
       const std::string& address) override;
 
   std::unordered_set<std::string> filterConfirmedTails(
-      const std::vector<std::string>& tails) override;
+      const std::vector<std::string>& tails,
+      const std::optional<std::string>& reference) override;
 
   std::vector<std::string> findTransactions(
       std::optional<std::vector<std::string>> addresses,
-      std::optional<std::vector<std::string>> bundles);
+      std::optional<std::vector<std::string>> bundles) override;
 
-  NodeInfo getNodeInfo();
-  std::vector<Transaction> getTrytes(const std::vector<std::string>& hashes);
+  std::unordered_set<std::string> filterConsistentTails(
+      const std::vector<std::string>& tails) override;
+
+  NodeInfo getNodeInfo() override;
+  std::vector<Transaction> getTrytes(
+      const std::vector<std::string>& hashes) override;
 
   virtual std::optional<nlohmann::json> post(const nlohmann::json& input) = 0;
 };

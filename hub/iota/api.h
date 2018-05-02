@@ -25,6 +25,13 @@ struct Transaction {
   std::string trunk;
 };
 
+struct NodeInfo {
+ public:
+  std::string latestMilestone;
+  uint64_t latestMilestoneIndex;
+  uint64_t latestSolidMilestoneIndex;
+};
+
 using Bundle = std::vector<Transaction>;
 
 class IotaAPI {
@@ -38,9 +45,21 @@ class IotaAPI {
       const std::string& address) = 0;
 
   virtual std::unordered_set<std::string> filterConfirmedTails(
+      const std::vector<std::string>& tails,
+      const std::optional<std::string>& reference = {}) = 0;
+
+  virtual std::unordered_set<std::string> filterConsistentTails(
       const std::vector<std::string>& tails) = 0;
+
+  virtual std::vector<std::string> findTransactions(
+      std::optional<std::vector<std::string>> addresses,
+      std::optional<std::vector<std::string>> bundles) = 0;
+
+  virtual NodeInfo getNodeInfo() = 0;
+  virtual std::vector<Transaction> getTrytes(
+      const std::vector<std::string>& hashes) = 0;
 };
 }  // namespace iota
 }  // namespace hub
 
-#endif // HUB_IOTA_API_H_
+#endif  // HUB_IOTA_API_H_
