@@ -63,9 +63,9 @@ std::optional<AddressWithUUID> selectFirstUserAddress(Connection& connection);
 void markUUIDAsSigned(Connection& connection, const boost::uuids::uuid& uuid);
 
 struct UserBalanceEvent {
-  std::chrono::system_clock::time_point _timestamp;
-  int64_t _amount;
-  UserAccountBalanceReason _type;
+  std::chrono::system_clock::time_point timestamp;
+  int64_t amount;
+  UserAccountBalanceReason type;
 };
 
 std::vector<UserBalanceEvent> getUserAccountBalances(Connection& connection,

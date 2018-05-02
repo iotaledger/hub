@@ -1,6 +1,6 @@
 // Copyright 2018 IOTA Foundation
 
-#include "hub/commands/proto_sql_convertor.h"
+#include "hub/commands/proto_sql_converter.h"
 
 namespace hub {
 namespace cmd {

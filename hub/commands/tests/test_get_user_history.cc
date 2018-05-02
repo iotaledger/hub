@@ -1,20 +1,13 @@
-//
-// Created by tsvi on 5/1/18.
-//
-
 // Copyright 2018 IOTA Foundation
 
 #include <gtest/gtest.h>
 #include <sqlpp11/functions.h>
 #include <sqlpp11/select.h>
-
 #include "proto/hub.pb.h"
 #include "schema/schema.h"
-
 #include "hub/commands/get_user_history.h"
 #include "hub/db/db.h"
 #include "hub/stats/session.h"
-
 #include "runner.h"
 
 using namespace hub;
@@ -47,7 +40,7 @@ TEST_F(GetUserHistoryTest, NewUserHasNoHistory) {
 
   createUser(session(), username);
 
-  req.set_userid("User1");
+  req.set_userid(username);
 
   cmd::GetUserHistory command(session());
 
