@@ -7,6 +7,7 @@ cc_library(
         "//hub/commands",
         "//hub/db",
         "//hub/iota:beast",
+        "//hub/service:attachment_service",
         "//hub/service:user_address_monitor",
         "//hub/stats",
         "//proto:cpp",

@@ -32,8 +32,6 @@ bool AttachmentService::doTick() {
     LOG(INFO) << "Found " << unconfirmedSweeps.size() << " unconfirmed sweeps.";
 
     // 2. Get (tails, timestamp) for these sweeps
-    std::unordered_map<db::Sweep, std::vector<db::SweepTail>> tailsBySweep;
-
     for (const auto& sweep : unconfirmedSweeps) {
       auto sweepTails = db::getTailsForSweep(connection, sweep.id);
       // sort sweepTails newest first.
@@ -114,6 +112,7 @@ bool AttachmentService::doTick() {
           continue;
         }
 
+        // This also makes sure that we only add bundles that IRI has seen fully.
         auto consistentTails = _api->filterConsistentTails(userTails);
 
         if (consistentTails.size() != 0) {
