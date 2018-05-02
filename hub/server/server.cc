@@ -22,6 +22,8 @@ DEFINE_string(apiAddress, "127.0.0.1:14265",
 DEFINE_string(authMode, "none", "credentials to use. can be {none}");
 
 DEFINE_uint32(monitorInterval, 60000, "Address monitor check interval [ms]");
+DEFINE_uint32(attachmentInterval, 300000,
+              "Attachment service check interval [ms]");
 
 using grpc::Server;
 using grpc::ServerBuilder;
@@ -52,6 +54,9 @@ void HubServer::initialise() {
   _userAddressMonitor = std::make_unique<service::UserAddressMonitor>(
       _api, std::chrono::milliseconds(FLAGS_monitorInterval));
 
+  _attachmentService = std::make_unique<service::AttachmentService>(
+      _api, std::chrono::milliseconds(FLAGS_attachmentInterval));
+
   ServerBuilder builder;
 
   builder.AddListeningPort(FLAGS_listenAddress,
@@ -60,6 +65,7 @@ void HubServer::initialise() {
 
   _server = builder.BuildAndStart();
   _userAddressMonitor->start();
+  _attachmentService->start();
 
   LOG(INFO) << "Server listening on " << FLAGS_listenAddress;
 }
