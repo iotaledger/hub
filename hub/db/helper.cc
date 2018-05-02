@@ -171,8 +171,8 @@ std::vector<UserBalanceEvent> getUserAccountBalances(Connection& connection,
     std::chrono::time_point<std::chrono::system_clock> ts =
         row.occuredAt.value();
     UserBalanceEvent event = {
-        std::move(ts), std::move(row.amount),
-        static_cast<UserAccountBalanceReason>(std::move((row.reason.value())))};
+        ts, row.amount,
+        static_cast<UserAccountBalanceReason>((row.reason.value()))};
     balances.push_back(std::move(event));
   }
   return balances;

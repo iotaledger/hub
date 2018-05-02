@@ -15,7 +15,7 @@
 #include "schema/schema.h"
 
 #include "hub/commands/helper.h"
-#include "hub/commands/proto_sql_convertor.h"
+#include "hub/commands/proto_sql_converter.h"
 
 namespace hub {
 namespace cmd {
@@ -45,10 +45,10 @@ grpc::Status GetUserHistory::doProcess(
       auto* event = response->add_events();
       event->set_timestamp(
           std::chrono::duration_cast<std::chrono::milliseconds>(
-              b._timestamp.time_since_epoch())
+              b.timestamp.time_since_epoch())
               .count());
-      event->set_amount(b._amount);
-      event->set_type(userBalanceEventTypeFromSql(b._type));
+      event->set_amount(b.amount);
+      event->set_type(userBalanceEventTypeFromSql(b.type));
     }
   }
 

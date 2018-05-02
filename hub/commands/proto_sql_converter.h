@@ -1,7 +1,7 @@
 // Copyright 2018 IOTA Foundation
 
-#ifndef HUB_COMMANDS_PROTO_SQL_CONVERTOR_H_
-#define HUB_COMMANDS_PROTO_SQL_CONVERTOR_H_
+#ifndef HUB_COMMANDS_PROTO_SQL_CONVERTER_H_
+#define HUB_COMMANDS_PROTO_SQL_CONVERTER_H_
 
 #include <string>
 #include "hub/db/types.h"
@@ -15,4 +15,4 @@ hub::rpc::UserBalanceEventType userBalanceEventTypeFromSql(
 }
 
 }  // namespace hub
-#endif  // HUB_COMMANDS_PROTO_SQL_CONVERTOR_H_
+#endif  // HUB_COMMANDS_PROTO_SQL_CONVERTER_H_

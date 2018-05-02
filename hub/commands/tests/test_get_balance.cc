@@ -43,7 +43,7 @@ TEST_F(GetBalanceTest, NewUserHasZeroBalance) {
 
   createUser(session(), username);
 
-  req.set_userid("User1");
+  req.set_userid(username);
 
   cmd::GetBalance command(session());
 

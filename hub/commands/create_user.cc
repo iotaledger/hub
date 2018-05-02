@@ -13,7 +13,6 @@
 #include "hub/stats/session.h"
 
 #include "hub/commands/helper.h"
-#include "hub/commands/proto_sql_convertor.h"
 
 namespace hub {
 namespace cmd {
