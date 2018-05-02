@@ -3,28 +3,25 @@
 #include <gtest/gtest.h>
 #include <sqlpp11/functions.h>
 #include <sqlpp11/select.h>
-
 #include "proto/hub.pb.h"
 #include "schema/schema.h"
-
-#include "hub/commands/get_balance.h"
+#include "hub/commands/get_user_history.h"
 #include "hub/db/db.h"
 #include "hub/stats/session.h"
-
 #include "runner.h"
 
 using namespace hub;
 using namespace sqlpp;
 
 namespace {
-class GetBalanceTest : public CommandTest {};
+class GetUserHistoryTest : public CommandTest {};
 
-TEST_F(GetBalanceTest, UnknownUserShouldFail) {
-  rpc::GetBalanceRequest req;
-  rpc::GetBalanceReply res;
+TEST_F(GetUserHistoryTest, UnknownUserShouldFail) {
+  rpc::GetUserHistoryRequest req;
+  rpc::GetUserHistoryReply res;
 
   req.set_userid("User1");
-  cmd::GetBalance command(session());
+  cmd::GetUserHistory command(session());
 
   auto status = command.doProcess(&req, &res);
 
@@ -34,9 +31,9 @@ TEST_F(GetBalanceTest, UnknownUserShouldFail) {
   ASSERT_EQ(err.code(), rpc::ErrorCode::USER_DOES_NOT_EXIST);
 }
 
-TEST_F(GetBalanceTest, NewUserHasZeroBalance) {
-  rpc::GetBalanceRequest req;
-  rpc::GetBalanceReply res;
+TEST_F(GetUserHistoryTest, NewUserHasNoHistory) {
+  rpc::GetUserHistoryRequest req;
+  rpc::GetUserHistoryReply res;
   rpc::Error err;
 
   constexpr auto username = "User1";
@@ -45,11 +42,11 @@ TEST_F(GetBalanceTest, NewUserHasZeroBalance) {
 
   req.set_userid(username);
 
-  cmd::GetBalance command(session());
+  cmd::GetUserHistory command(session());
 
   ASSERT_TRUE(command.doProcess(&req, &res).ok());
 
-  ASSERT_EQ(0, res.available());
+  ASSERT_EQ(0, res.events_size());
 }
 
 };  // namespace
