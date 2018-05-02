@@ -39,6 +39,9 @@ AddressMonitor::calculateBalanceChanges() {
                  [](const auto& pair) { return pair.first; });
 
   removeUnmonitoredAddresses(addressToIDs);
+  if (addresses.empty()) {
+      return {};
+  }
   // TODO(th0br0) Figure out better failure pattern.
   //              At the moment, on failure, getBalances will return an empty
   //              list. Therefore, nothing will happen.

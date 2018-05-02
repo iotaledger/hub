@@ -56,8 +56,7 @@ TEST_F(AddressMonitorTest, OnStartShouldInitialise) {
 
   EXPECT_CALL(monitor, monitoredAddresses()).Times(1);
   EXPECT_CALL(monitor, onBalancesChanged(_)).Times(0);
-  EXPECT_CALL(api, getBalances(_)).Times(1);
-
+  EXPECT_CALL(api, getBalances(_)).Times(0);
   monitor.onStart();
 }
 
@@ -75,7 +74,7 @@ TEST_F(AddressMonitorTest, Tick) {
 
   EXPECT_CALL(monitor, monitoredAddresses()).Times(1);
   EXPECT_CALL(monitor, onBalancesChanged(_)).Times(0);
-  EXPECT_CALL(api, getBalances(_)).Times(1);
+  EXPECT_CALL(api, getBalances(_)).Times(0);
   monitor.onStart();
 
   EXPECT_CALL(monitor, monitoredAddresses())
