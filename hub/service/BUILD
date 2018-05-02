@@ -10,6 +10,21 @@ cc_library(
 )
 
 cc_library(
+    name = "attachment_service",
+    srcs = ["attachment_service.cc"],
+    hdrs = ["attachment_service.h"],
+    visibility = ["//visibility:public"],
+    deps = [
+        ":scheduled_service",
+        "//hub/db",
+        "//hub/iota:api",
+        "@boost//:functional",
+        "@boost//:range",
+        "@com_github_google_glog//:glog",
+    ],
+)
+
+cc_library(
     name = "address_monitor",
     srcs = ["address_monitor.cc"],
     hdrs = ["address_monitor.h"],

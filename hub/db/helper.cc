@@ -48,7 +48,7 @@ std::vector<std::string> tailsForAddress(Connection& connection,
       select(bal.tailHash).from(bal).where(bal.userAddress == userId));
 
   for (const auto& row : result) {
-    tails.push_back(std::move(row.tailHash));
+    tails.emplace_back(std::move(row.tailHash));
   }
 
   return tails;
@@ -173,9 +173,64 @@ std::vector<UserBalanceEvent> getUserAccountBalances(Connection& connection,
     UserBalanceEvent event = {
         ts, row.amount,
         static_cast<UserAccountBalanceReason>((row.reason.value()))};
-    balances.push_back(std::move(event));
+    balances.emplace_back(std::move(event));
   }
   return balances;
+}
+
+std::vector<Sweep> getUnconfirmedSweeps(
+    Connection& connection,
+    const std::chrono::system_clock::time_point& olderThan) {
+  db::sql::Sweep swp;
+  db::sql::SweepTails tls;
+
+  std::vector<Sweep> sweeps;
+
+  auto result =
+      connection(select(swp.id, swp.bundleHash, swp.trytes, swp.intoHubAddress)
+                     .from(swp)
+                     .where(swp.createdAt <= olderThan &&
+                            !(exists(select(tls.hash).from(tls).where(
+                                tls.sweep == swp.id && tls.confirmed == 1)))));
+
+  for (const auto& row : result) {
+    sweeps.push_back({static_cast<uint64_t>(row.id), std::move(row.bundleHash),
+                      std::move(row.trytes),
+                      static_cast<uint64_t>(row.intoHubAddress)});
+  }
+
+  return sweeps;
+}
+
+void createTail(Connection& connection, uint64_t sweepId,
+                const std::string& hash) {
+  db::sql::SweepTails tls;
+
+  connection(insert_into(tls).set(tls.sweep = sweepId, tls.hash = hash));
+}
+
+std::vector<SweepTail> getTailsForSweep(Connection& connection,
+                                        uint64_t sweepId) {
+  db::sql::SweepTails tls;
+  std::vector<SweepTail> tails;
+
+  auto result = connection(select(tls.hash, tls.sweep, tls.createdAt)
+                               .from(tls)
+                               .where(tls.sweep == sweepId));
+
+  for (const auto& row : result) {
+    std::chrono::time_point<std::chrono::system_clock> ts =
+        row.createdAt.value();
+    tails.push_back({std::move(row.hash), ts});
+  }
+
+  return tails;
+}
+
+void markTailAsConfirmed(Connection& connection, const std::string& hash) {
+  db::sql::SweepTails tbl;
+
+  connection(update(tbl).set(tbl.confirmed = 1).where(tbl.hash == hash));
 }
 
 }  // namespace db

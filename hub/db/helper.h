@@ -30,8 +30,6 @@ namespace db {
 std::optional<int64_t> userIdFromIdentifier(Connection& connection,
                                             const std::string& identifier);
 
-using AddressWithID = std::tuple<uint64_t, std::string>;
-
 std::vector<AddressWithID> unsweptUserAddresses(Connection& connection);
 
 std::vector<std::string> tailsForAddress(Connection& connection,
@@ -57,19 +55,24 @@ uint64_t createWithdrawal(Connection& connection,
 
 size_t cancelWithdrawal(Connection& connection, const boost::uuids::uuid& uuid);
 
-using AddressWithUUID = std::tuple<std::string, boost::uuids::uuid>;
 std::optional<AddressWithUUID> selectFirstUserAddress(Connection& connection);
 
 void markUUIDAsSigned(Connection& connection, const boost::uuids::uuid& uuid);
 
-struct UserBalanceEvent {
-  std::chrono::system_clock::time_point timestamp;
-  int64_t amount;
-  UserAccountBalanceReason type;
-};
-
 std::vector<UserBalanceEvent> getUserAccountBalances(Connection& connection,
                                                      uint64_t userId);
+
+std::vector<Sweep> getUnconfirmedSweeps(
+    Connection& connection,
+    const std::chrono::system_clock::time_point& olderThan);
+
+void createTail(Connection& connection, uint64_t sweepId,
+                const std::string& hash);
+
+std::vector<SweepTail> getTailsForSweep(Connection& connection,
+                                        uint64_t sweepId);
+
+void markTailAsConfirmed(Connection& connection, const std::string& hash);
 
 }  // namespace db
 }  // namespace hub

@@ -44,9 +44,22 @@ class MockAPI : public iota::IotaAPI {
   MOCK_METHOD1(getConfirmedBundlesForAddress,
                std::vector<Bundle>(const std::string& address));
 
-  MOCK_METHOD1(
-      filterConfirmedTails,
-      std::unordered_set<std::string>(const std::vector<std::string>& tails));
+  MOCK_METHOD2(filterConfirmedTails,
+               std::unordered_set<std::string>(
+                   const std::vector<std::string>& tails,
+                   const std::optional<std::string>& reference));
+
+  MOCK_METHOD2(findTransactions,
+               std::vector<std::string>(
+                   std::optional<std::vector<std::string>> addresses,
+                   std::optional<std::vector<std::string>> bundles));
+
+  MOCK_METHOD0(getNodeInfo, NodeInfo());
+
+  MOCK_METHOD1(getTrytes,
+               std::vector<Transaction>(const std::vector<std::string>&));
+  MOCK_METHOD1(filterConsistentTails, std::unordered_set<std::string>(
+                                          const std::vector<std::string>&));
 };
 
 TEST_F(AddressMonitorTest, OnStartShouldInitialise) {
