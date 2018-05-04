@@ -69,6 +69,9 @@ class MockAPI : public iota::IotaAPI {
                std::vector<std::string>(const std::string&, const std::string&,
                                         size_t,
                                         const std::vector<std::string>&));
+
+  MOCK_METHOD1(storeTransactions, bool(const std::vector<std::string>&));
+  MOCK_METHOD1(broadcastTransactions, bool(const std::vector<std::string>&));
 };
 
 TEST_F(AddressMonitorTest, OnStartShouldInitialise) {

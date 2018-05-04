@@ -19,15 +19,10 @@ class RemotePOW : public POWProvider {
  public:
   using POWProvider::POWProvider;
 
-  std::pair<std::string, std::string> getAttachmentPoint(
-      const std::optional<std::string>& reference = {}) override {
-    return _api->getTransactionsToApprove(depth(), reference);
-  }
-
  protected:
   std::vector<std::string> doPOW(const std::vector<std::string>& trytes,
                                  const std::string& trunk,
-                                 const std::string& branch) override {
+                                 const std::string& branch) const override {
     return _api->attachToTangle(trunk, branch, mwm(), trytes);
   }
 };

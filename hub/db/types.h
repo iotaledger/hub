@@ -6,6 +6,7 @@
 #include <chrono>
 #include <string>
 #include <tuple>
+#include <vector>
 
 #include <boost/uuid/uuid.hpp>
 
@@ -35,30 +36,16 @@ struct UserBalanceEvent {
 struct Sweep {
   uint64_t id;
   std::string bundleHash;
-  std::string trytes;
+  std::vector<std::string> trytes;
   uint64_t intoHubAddress;
 
   inline bool operator==(const Sweep& other) const {
     return id == other.id && bundleHash == other.bundleHash &&
-           trytes == other.bundleHash && intoHubAddress == other.intoHubAddress;
+           trytes == other.trytes && intoHubAddress == other.intoHubAddress;
   }
 };
 
 }  // namespace db
 }  // namespace hub
-
-namespace std {
-template <>
-struct hash<hub::db::Sweep> {
-  typedef hub::db::Sweep argument_type;
-  typedef std::size_t result_type;
-  result_type operator()(argument_type const& s) const noexcept {
-    result_type const h1(std::hash<uint64_t>{}(s.id));
-    result_type const h2(std::hash<std::string>{}(s.trytes));
-    return h1 ^ (h2 << 1);
-  }
-};
-
-}  // namespace std
 
 #endif  // HUB_DB_TYPES_H_

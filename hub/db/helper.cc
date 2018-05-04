@@ -193,9 +193,21 @@ std::vector<Sweep> getUnconfirmedSweeps(
                             !(exists(select(tls.hash).from(tls).where(
                                 tls.sweep == swp.id && tls.confirmed == 1)))));
 
+  constexpr size_t trytesPerTX = 2673;
+
   for (const auto& row : result) {
+    // Need to chunk this up.
+    std::vector<std::string> trytes;
+    auto combinedTrytes = row.trytes.value();
+    auto txCount = combinedTrytes.size() / trytesPerTX;
+
+    for (size_t i = 0; i < txCount; i++) {
+      trytes.push_back(
+          combinedTrytes.substr(i * trytesPerTX, (i + 1) * trytesPerTX));
+    }
+
     sweeps.push_back({static_cast<uint64_t>(row.id), std::move(row.bundleHash),
-                      std::move(row.trytes),
+                      std::move(trytes),
                       static_cast<uint64_t>(row.intoHubAddress)});
   }
 
