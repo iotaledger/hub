@@ -64,6 +64,11 @@ class MockAPI : public iota::IotaAPI {
   MOCK_METHOD2(getTransactionsToApprove,
                std::pair<std::string, std::string>(
                    size_t, const std::optional<std::string>&));
+
+  MOCK_METHOD4(attachToTangle,
+               std::vector<std::string>(const std::string&, const std::string&,
+                                        size_t,
+                                        const std::vector<std::string>&));
 };
 
 TEST_F(AddressMonitorTest, OnStartShouldInitialise) {

@@ -8,8 +8,8 @@
 #include <string>
 #include <unordered_map>
 #include <unordered_set>
-#include <vector>
 #include <utility>
+#include <vector>
 
 #include <nlohmann/json_fwd.hpp>
 
@@ -45,6 +45,11 @@ class IotaJsonAPI : virtual public IotaAPI {
 
   std::pair<std::string, std::string> getTransactionsToApprove(
       size_t depth, const std::optional<std::string>& reference = {}) override;
+
+  std::vector<std::string> attachToTangle(
+      const std::string& trunkTransaction, const std::string& branchTransaction,
+      size_t minWeightMagnitude,
+      const std::vector<std::string>& trytes) override;
 
   virtual std::optional<nlohmann::json> post(const nlohmann::json& input) = 0;
 };
