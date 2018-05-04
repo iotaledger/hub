@@ -114,7 +114,6 @@ bool AttachmentService::doTick() {
 
   auto tickStart = std::chrono::system_clock::now();
 
-  // TODO(th0br0): move transaction into for loop?
   auto milestone = _api->getNodeInfo().latestMilestone;
 
   // 1. Get Unconfirmed sweeps from database.

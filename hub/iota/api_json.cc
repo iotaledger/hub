@@ -217,7 +217,7 @@ std::vector<Bundle> IotaJsonAPI::getConfirmedBundlesForAddress(
 
 std::unordered_set<std::string> IotaJsonAPI::filterConfirmedTails(
     const std::vector<std::string>& tails,
-    const std::optional<std::string>& reference = {}) {
+    const std::optional<std::string>& reference) {
   json req;
   req["command"] = "getInclusionStates";
   req["transactions"] = tails;

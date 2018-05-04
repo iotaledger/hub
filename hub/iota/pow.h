@@ -44,6 +44,9 @@ class POWProvider {
 };
 
 class POWManager {
+ private:
+  POWManager() = default;
+
  public:
   static POWManager& get();
 
