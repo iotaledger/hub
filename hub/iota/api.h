@@ -8,6 +8,7 @@
 #include <string>
 #include <unordered_map>
 #include <unordered_set>
+#include <utility>
 #include <vector>
 
 namespace hub {
@@ -58,6 +59,9 @@ class IotaAPI {
   virtual NodeInfo getNodeInfo() = 0;
   virtual std::vector<Transaction> getTrytes(
       const std::vector<std::string>& hashes) = 0;
+
+  virtual std::pair<std::string, std::string> getTransactionsToApprove(
+      size_t depth, const std::optional<std::string>& reference = {}) = 0;
 };
 }  // namespace iota
 }  // namespace hub

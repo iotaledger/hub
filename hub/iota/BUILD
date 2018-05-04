@@ -1,4 +1,11 @@
 cc_library(
+    name = "pow",
+    srcs = ["pow.cc"],
+    hdrs = ["pow.h"],
+    deps = [":api"],
+)
+
+cc_library(
     name = "beast",
     srcs = ["beast.cc"],
     hdrs = ["beast.h"],

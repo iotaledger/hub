@@ -60,6 +60,10 @@ class MockAPI : public iota::IotaAPI {
                std::vector<Transaction>(const std::vector<std::string>&));
   MOCK_METHOD1(filterConsistentTails, std::unordered_set<std::string>(
                                           const std::vector<std::string>&));
+
+  MOCK_METHOD2(getTransactionsToApprove,
+               std::pair<std::string, std::string>(
+                   size_t, const std::optional<std::string>&));
 };
 
 TEST_F(AddressMonitorTest, OnStartShouldInitialise) {
