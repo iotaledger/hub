@@ -253,7 +253,7 @@ std::unordered_set<std::string> IotaJsonAPI::filterConfirmedTails(
 std::unordered_set<std::string> IotaJsonAPI::filterConsistentTails(
     const std::vector<std::string>& tails) {
   return {};
-};
+}
 
 }  // namespace iota
 }  // namespace hub

@@ -17,11 +17,12 @@ class CryptoManager {
 
  public:
   static CryptoManager& get();
-  CryptoProvider& provider();
 
   void setProvider(std::unique_ptr<CryptoProvider> provider) {
     _provider = std::move(provider);
   }
+
+  CryptoProvider& provider() { return *_provider; }
 
  private:
   std::unique_ptr<CryptoProvider> _provider;

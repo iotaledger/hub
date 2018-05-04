@@ -209,19 +209,20 @@ void createTail(Connection& connection, uint64_t sweepId,
   connection(insert_into(tls).set(tls.sweep = sweepId, tls.hash = hash));
 }
 
-std::vector<SweepTail> getTailsForSweep(Connection& connection,
-                                        uint64_t sweepId) {
+std::vector<std::string> getTailsForSweep(Connection& connection,
+                                          uint64_t sweepId) {
   db::sql::SweepTails tls;
-  std::vector<SweepTail> tails;
+  std::vector<std::string> tails;
 
   auto result = connection(select(tls.hash, tls.sweep, tls.createdAt)
                                .from(tls)
-                               .where(tls.sweep == sweepId));
+                               .where(tls.sweep == sweepId)
+                               .order_by(tls.createdAt.desc()));
 
   for (const auto& row : result) {
     std::chrono::time_point<std::chrono::system_clock> ts =
         row.createdAt.value();
-    tails.push_back({std::move(row.hash), ts});
+    tails.emplace_back(std::move(row.hash));
   }
 
   return tails;

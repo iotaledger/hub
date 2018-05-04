@@ -11,7 +11,5 @@ CryptoManager& CryptoManager::get() {
   return instance;
 }
 
-CryptoProvider& CryptoManager::provider() { return *_provider; }
-
 }  // namespace crypto
 }  // namespace hub

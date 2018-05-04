@@ -69,8 +69,8 @@ std::vector<Sweep> getUnconfirmedSweeps(
 void createTail(Connection& connection, uint64_t sweepId,
                 const std::string& hash);
 
-std::vector<SweepTail> getTailsForSweep(Connection& connection,
-                                        uint64_t sweepId);
+std::vector<std::string> getTailsForSweep(Connection& connection,
+                                          uint64_t sweepId);
 
 void markTailAsConfirmed(Connection& connection, const std::string& hash);
 

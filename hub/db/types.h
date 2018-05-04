@@ -5,6 +5,7 @@
 
 #include <chrono>
 #include <string>
+#include <tuple>
 
 #include <boost/uuid/uuid.hpp>
 
@@ -41,11 +42,6 @@ struct Sweep {
     return id == other.id && bundleHash == other.bundleHash &&
            trytes == other.bundleHash && intoHubAddress == other.intoHubAddress;
   }
-};
-
-struct SweepTail {
-  std::string hash;
-  std::chrono::system_clock::time_point createdAt;
 };
 
 }  // namespace db
