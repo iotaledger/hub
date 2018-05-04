@@ -29,6 +29,7 @@ DEFINE_uint32(attachmentInterval, 300000,
 
 // TODO(th0br0): move to hub/iota/pow
 DEFINE_uint32(minWeightMagnitude, 9, "Minimum weight magnitude for POW");
+DEFINE_uint32(depth, 9, "Value for getTransacationToApprove depth parameter");
 
 using grpc::Server;
 using grpc::ServerBuilder;
@@ -56,8 +57,8 @@ void HubServer::initialise() {
     _api = std::make_shared<iota::BeastIotaAPI>(host, port);
   }
 
-  iota::POWManager::get().setProvider(
-      std::make_unique<iota::RemotePOW>(_api, 3, 14));
+  iota::POWManager::get().setProvider(std::make_unique<iota::RemotePOW>(
+      _api, FLAGS_depth, FLAGS_minWeightMagnitude));
 
   _userAddressMonitor = std::make_unique<service::UserAddressMonitor>(
       _api, std::chrono::milliseconds(FLAGS_monitorInterval));
