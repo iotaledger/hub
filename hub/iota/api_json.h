@@ -9,6 +9,7 @@
 #include <unordered_map>
 #include <unordered_set>
 #include <vector>
+#include <utility>
 
 #include <nlohmann/json_fwd.hpp>
 
@@ -41,6 +42,9 @@ class IotaJsonAPI : virtual public IotaAPI {
   NodeInfo getNodeInfo() override;
   std::vector<Transaction> getTrytes(
       const std::vector<std::string>& hashes) override;
+
+  std::pair<std::string, std::string> getTransactionsToApprove(
+      size_t depth, const std::optional<std::string>& reference = {}) override;
 
   virtual std::optional<nlohmann::json> post(const nlohmann::json& input) = 0;
 };

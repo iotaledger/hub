@@ -250,8 +250,32 @@ std::unordered_set<std::string> IotaJsonAPI::filterConfirmedTails(
   return confirmedTails;
 }
 
+std::pair<std::string, std::string> IotaJsonAPI::getTransactionsToApprove(
+    size_t depth, const std::optional<std::string>& reference) {
+  json req;
+
+  req["command"] = "getTransactionsToApprove";
+  req["depth"] = depth;
+
+  if (reference.has_value()) {
+    req["reference"] = reference.value();
+  }
+
+  auto maybeResponse = post(std::move(req));
+
+  if (!maybeResponse) {
+    LOG(INFO) << __FUNCTION__ << " request failed.";
+    return {};
+  }
+
+  auto& response = maybeResponse.value();
+
+  return {response["trunkTransaction"], response["branchTransaction"]};
+}
+
 std::unordered_set<std::string> IotaJsonAPI::filterConsistentTails(
     const std::vector<std::string>& tails) {
+  // TODO(th0br0): implementation
   return {};
 }
 
