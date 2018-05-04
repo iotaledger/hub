@@ -51,6 +51,9 @@ class IotaJsonAPI : virtual public IotaAPI {
       size_t minWeightMagnitude,
       const std::vector<std::string>& trytes) override;
 
+  bool storeTransactions(const std::vector<std::string>& trytes) override;
+  bool broadcastTransactions(const std::vector<std::string>& trytes) override;
+
   virtual std::optional<nlohmann::json> post(const nlohmann::json& input) = 0;
 };
 }  // namespace iota

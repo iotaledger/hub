@@ -12,7 +12,7 @@ POWManager& POWManager::get() {
 }
 
 std::pair<std::string, std::string> POWProvider::getAttachmentPoint(
-    const std::optional<std::string>& reference) {
+    const std::optional<std::string>& reference) const {
   return _api->getTransactionsToApprove(_depth, reference);
 }
 

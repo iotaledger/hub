@@ -18,9 +18,11 @@ cc_library(
         ":scheduled_service",
         "//hub/db",
         "//hub/iota:api",
+        "//hub/iota:pow",
         "@boost//:functional",
         "@boost//:range",
         "@com_github_google_glog//:glog",
+        "@org_iota_entangled//common/helpers:digest",
     ],
 )
 

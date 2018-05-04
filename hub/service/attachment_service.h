@@ -11,6 +11,7 @@
 
 #include "hub/db/db.h"
 #include "hub/iota/api.h"
+#include "hub/iota/pow.h"
 #include "hub/service/scheduled_service.h"
 
 namespace hub {
@@ -34,6 +35,10 @@ class AttachmentService : public ScheduledService {
   bool doTick() override;
 
  protected:
+  void reattachSweep(db::Connection& connection,
+                     const iota::POWProvider& powProvider,
+                     const db::Sweep& sweep);
+
   bool checkForUserReattachment(db::Connection& connection,
                                 const db::Sweep& sweep,
                                 const std::vector<std::string>& knownTails);

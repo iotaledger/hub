@@ -47,7 +47,7 @@ class IotaAPI {
 
   virtual std::unordered_set<std::string> filterConfirmedTails(
       const std::vector<std::string>& tails,
-      const std::optional<std::string>& reference = {}) = 0;
+      const std::optional<std::string>& reference) = 0;
 
   virtual std::unordered_set<std::string> filterConsistentTails(
       const std::vector<std::string>& tails) = 0;
@@ -66,6 +66,10 @@ class IotaAPI {
 
   virtual std::pair<std::string, std::string> getTransactionsToApprove(
       size_t depth, const std::optional<std::string>& reference = {}) = 0;
+
+  virtual bool storeTransactions(const std::vector<std::string>& trytes) = 0;
+  virtual bool broadcastTransactions(
+      const std::vector<std::string>& trytes) = 0;
 };
 }  // namespace iota
 }  // namespace hub

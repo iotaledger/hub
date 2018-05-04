@@ -24,10 +24,10 @@ class POWProvider {
   size_t depth() const { return _depth; }
 
   virtual std::pair<std::string, std::string> getAttachmentPoint(
-      const std::optional<std::string>& reference = {}) = 0;
+      const std::optional<std::string>& reference = {}) const;
 
   virtual std::vector<std::string> performPOW(
-      const std::vector<std::string>& trytes) {
+      const std::vector<std::string>& trytes) const {
     auto location = getAttachmentPoint({});
     return doPOW(trytes, location.first, location.second);
   }
@@ -35,7 +35,7 @@ class POWProvider {
  protected:
   virtual std::vector<std::string> doPOW(const std::vector<std::string>& trytes,
                                          const std::string& trunk,
-                                         const std::string& branch) = 0;
+                                         const std::string& branch) const = 0;
 
  protected:
   const std::shared_ptr<iota::IotaAPI> _api;

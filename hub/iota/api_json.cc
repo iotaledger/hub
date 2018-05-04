@@ -123,7 +123,7 @@ std::vector<Transaction> IotaJsonAPI::getTrytes(
   }
 
   auto trytes =
-      maybeResponse.value()["trytes"].get<std::unordered_set<std::string>>();
+      maybeResponse.value()["trytes"].get<std::vector<std::string>>();
 
   std::vector<Transaction> txs;
   iota_transaction_t tx = transaction_new();
@@ -291,6 +291,25 @@ std::vector<std::string> IotaJsonAPI::attachToTangle(
   }
 
   return std::move(maybeResponse.value().get<std::vector<std::string>>());
+}
+
+bool IotaJsonAPI::storeTransactions(const std::vector<std::string>& trytes) {
+  json req;
+  req["command"] = "storeTransactions";
+  req["trytes"] = trytes;
+
+  auto maybeResponse = post(std::move(req));
+  return maybeResponse.has_value();
+}
+
+bool IotaJsonAPI::broadcastTransactions(
+    const std::vector<std::string>& trytes) {
+  json req;
+  req["command"] = "broadcastTransactions";
+  req["trytes"] = trytes;
+
+  auto maybeResponse = post(std::move(req));
+  return maybeResponse.has_value();
 }
 
 std::unordered_set<std::string> IotaJsonAPI::filterConsistentTails(

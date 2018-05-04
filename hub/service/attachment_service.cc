@@ -9,7 +9,9 @@
 
 #include <boost/functional/hash.hpp>
 
+#include "common/helpers/digest.h"
 #include "hub/db/helper.h"
+#include "hub/iota/pow.h"
 
 namespace hub {
 namespace service {
@@ -17,7 +19,7 @@ namespace service {
 bool AttachmentService::checkSweepTailsForConfirmation(
     db::Connection& connection, const db::Sweep& sweep,
     const std::vector<std::string>& tails) {
-  auto confirmedTails = _api->filterConfirmedTails(tails);
+  auto confirmedTails = _api->filterConfirmedTails(tails, {});
 
   LOG(INFO) << "Sweep: " << sweep.id << " (" << sweep.bundleHash
             << ") has: " << confirmedTails.size() << " confirmed tails.";
@@ -61,7 +63,7 @@ bool AttachmentService::checkForUserReattachment(
     std::transform(bundleTransactions.cbegin(), bundleTransactions.cend(),
                    userTails.begin(), [](const auto& ref) { return ref.hash; });
 
-    auto confirmedTails = _api->filterConfirmedTails(userTails);
+    auto confirmedTails = _api->filterConfirmedTails(userTails, {});
     if (confirmedTails.size() != 0) {
       // FIXME what if error logic more than one confirmed tail
       const auto& tail = *confirmedTails.cbegin();
@@ -87,6 +89,20 @@ bool AttachmentService::checkForUserReattachment(
   return false;
 }
 
+void AttachmentService::reattachSweep(db::Connection& dbConnection,
+                                      const iota::POWProvider& powProvider,
+                                      const db::Sweep& sweep) {
+  auto attachedTrytes = powProvider.performPOW(sweep.trytes);
+  // Get tail hash of first tx:
+  auto tailHash = iota_digest(attachedTrytes[0].c_str());
+  LOG(INFO) << "Reattached sweep " << sweep.id << " as: " << tailHash;
+
+  _api->storeTransactions(attachedTrytes);
+  _api->broadcastTransactions(attachedTrytes);
+
+  db::createTail(dbConnection, sweep.id, tailHash);
+}
+
 bool AttachmentService::doTick() {
   // We're splitting processing out to separate methods on purpose.
   // This means, that we can't really batch API requests across sweeps.
@@ -94,18 +110,21 @@ bool AttachmentService::doTick() {
   // by Hub.
 
   auto& connection = db::DBManager::get().connection();
+  auto& powProvider = iota::POWManager::get().provider();
+
   auto tickStart = std::chrono::system_clock::now();
 
-  sqlpp::transaction_t<hub::db::Connection> transaction(connection, true);
+  // TODO(th0br0): move transaction into for loop?
+  auto milestone = _api->getNodeInfo().latestMilestone;
 
-  try {
-    auto milestone = _api->getNodeInfo().latestMilestone;
+  // 1. Get Unconfirmed sweeps from database.
+  auto unconfirmedSweeps = db::getUnconfirmedSweeps(connection, tickStart);
+  LOG(INFO) << "Found " << unconfirmedSweeps.size() << " unconfirmed sweeps.";
 
-    // 1. Get Unconfirmed sweeps from database.
-    auto unconfirmedSweeps = db::getUnconfirmedSweeps(connection, tickStart);
-    LOG(INFO) << "Found " << unconfirmedSweeps.size() << " unconfirmed sweeps.";
+  for (const auto& sweep : unconfirmedSweeps) {
+    sqlpp::transaction_t<hub::db::Connection> transaction(connection, true);
 
-    for (const auto& sweep : unconfirmedSweeps) {
+    try {
       // 2. Get (tails, timestamp) for these sweeps
       {
         const auto sweepTails = db::getTailsForSweep(connection, sweep.id);
@@ -136,18 +155,20 @@ bool AttachmentService::doTick() {
                                         });
 
           // TODO(th0br0): promote.
+          // Promotion can fail if getTransactionsToApprove fails!
         }
       }
 
-      // 6. If not, reattach and commit tail to DB.
-      // TODO(th0br0): reattach
-      LOG(INFO) << "Sweep " << sweep.id << " is still unconfirmed.";
-    }
+      reattachSweep(connection, powProvider, sweep);
 
-    transaction.commit();
-  } catch (const std::exception& ex) {
-    LOG(ERROR) << "Failed to commit to DB: " << ex.what();
-    transaction.rollback();
+      // 6. If not, reattach and commit tail to DB.
+      LOG(INFO) << "Sweep " << sweep.id << " is still unconfirmed.";
+      transaction.commit();
+    } catch (const std::exception& ex) {
+      LOG(ERROR) << "Sweep " << sweep.id
+                 << " failed to commit to DB: " << ex.what();
+      transaction.rollback();
+    }
   }
 
   return true;
