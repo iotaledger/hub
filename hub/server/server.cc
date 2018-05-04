@@ -13,6 +13,8 @@
 #include "hub/db/helper.h"
 #include "hub/db/uuid.h"
 #include "hub/iota/beast.h"
+#include "hub/iota/pow.h"
+#include "hub/iota/remote_pow.h"
 #include "hub/service/user_address_monitor.h"
 
 DEFINE_string(salt, "", "Salt for local seed provider");
@@ -24,6 +26,9 @@ DEFINE_string(authMode, "none", "credentials to use. can be {none}");
 DEFINE_uint32(monitorInterval, 60000, "Address monitor check interval [ms]");
 DEFINE_uint32(attachmentInterval, 300000,
               "Attachment service check interval [ms]");
+
+// TODO(th0br0): move to hub/iota/pow
+DEFINE_uint32(minWeightMagnitude, 9, "Minimum weight magnitude for POW");
 
 using grpc::Server;
 using grpc::ServerBuilder;
@@ -50,6 +55,9 @@ void HubServer::initialise() {
 
     _api = std::make_shared<iota::BeastIotaAPI>(host, port);
   }
+
+  iota::POWManager::get().setProvider(
+      std::make_unique<iota::RemotePOW>(_api, 3, 14));
 
   _userAddressMonitor = std::make_unique<service::UserAddressMonitor>(
       _api, std::chrono::milliseconds(FLAGS_monitorInterval));

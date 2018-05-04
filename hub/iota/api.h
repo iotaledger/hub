@@ -60,6 +60,10 @@ class IotaAPI {
   virtual std::vector<Transaction> getTrytes(
       const std::vector<std::string>& hashes) = 0;
 
+  virtual std::vector<std::string> attachToTangle(
+      const std::string& trunkTransaction, const std::string& branchTransaction,
+      size_t minWeightMagnitude, const std::vector<std::string>& trytes) = 0;
+
   virtual std::pair<std::string, std::string> getTransactionsToApprove(
       size_t depth, const std::optional<std::string>& reference = {}) = 0;
 };

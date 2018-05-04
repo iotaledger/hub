@@ -18,6 +18,8 @@ class POWProvider {
   POWProvider(std::shared_ptr<iota::IotaAPI> api, size_t depth, size_t mwm)
       : _api(std::move(api)), _depth(depth), _mwm(mwm) {}
 
+  virtual ~POWProvider() {}
+
   size_t mwm() const { return _mwm; }
   size_t depth() const { return _depth; }
 
@@ -33,9 +35,9 @@ class POWProvider {
  protected:
   virtual std::vector<std::string> doPOW(const std::vector<std::string>& trytes,
                                          const std::string& trunk,
-                                         const std::string& branch);
+                                         const std::string& branch) = 0;
 
- private:
+ protected:
   const std::shared_ptr<iota::IotaAPI> _api;
   const size_t _depth;
   const size_t _mwm;

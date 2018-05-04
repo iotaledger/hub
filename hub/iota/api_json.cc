@@ -70,7 +70,7 @@ std::unordered_map<std::string, uint64_t> IotaJsonAPI::getBalances(
     return {};
   }
 
-  auto response = maybeResponse.value();
+  auto& response = maybeResponse.value();
   auto balances = response["balances"].get<std::vector<std::string>>();
 
   std::unordered_map<std::string, uint64_t> result;
@@ -236,7 +236,7 @@ std::unordered_set<std::string> IotaJsonAPI::filterConfirmedTails(
     return {};
   }
 
-  auto response = maybeResponse.value();
+  auto& response = maybeResponse.value();
   auto states = response["states"].get<std::vector<bool>>();
 
   std::unordered_set<std::string> confirmedTails;
@@ -271,6 +271,26 @@ std::pair<std::string, std::string> IotaJsonAPI::getTransactionsToApprove(
   auto& response = maybeResponse.value();
 
   return {response["trunkTransaction"], response["branchTransaction"]};
+}
+
+std::vector<std::string> IotaJsonAPI::attachToTangle(
+    const std::string& trunkTransaction, const std::string& branchTransaction,
+    size_t minWeightMagnitude, const std::vector<std::string>& trytes) {
+  json req;
+  req["command"] = "attachToTangle";
+  req["trunkTransaction"] = trunkTransaction;
+  req["branchTransaction"] = branchTransaction;
+  req["minWeightMagnitude"] = minWeightMagnitude;
+  req["trytes"] = trytes;
+
+  auto maybeResponse = post(std::move(req));
+
+  if (!maybeResponse) {
+    LOG(INFO) << __FUNCTION__ << " request failed.";
+    return {};
+  }
+
+  return std::move(maybeResponse.value().get<std::vector<std::string>>());
 }
 
 std::unordered_set<std::string> IotaJsonAPI::filterConsistentTails(
