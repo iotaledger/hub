@@ -21,6 +21,7 @@ cc_library(
 
 cc_test(
     name = "test_helper",
+    timeout = "short",
     srcs = ["tests/uuid.cc"],
     deps = [
         ":db",

@@ -20,8 +20,7 @@ service Hub {
   // Processes a batch of buys/sells from the exchange
   // Note that the amounts of this batch must sum to 0!
   rpc ProcessTransferBatch (ProcessTransferBatchRequest) returns (ProcessTransferBatchReply);
-  // Produces a stream of all user balance changes as they appear
-  // These can be subscribed to and consumed asynchronously on the client.
+  // Produces a stream of all user balance changes as they appear since the provided timestamp
   rpc UserBalanceSubscription (UserBalanceSubscriptionRequest) returns (stream UserBalanceEvent);
   // Provides statistics about the Hub
   rpc GetStats (StatsRequest) returns (StatsReply);

@@ -29,6 +29,7 @@ cc_library(
 
 cc_test(
     name = "test_local_provider",
+    timeout = "short",
     srcs = ["tests/local_provider.cc"],
     deps = [
         ":local_provider",

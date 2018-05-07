@@ -245,6 +245,25 @@ void markTailAsConfirmed(Connection& connection, const std::string& hash) {
 
   connection(update(tbl).set(tbl.confirmed = 1).where(tbl.hash == hash));
 }
+std::vector<UserBalanceEvent> getAccountBalances(
+    Connection& connection, std::chrono::system_clock::time_point newerThan) {
+  db::sql::UserAccountBalance bal;
+  auto result = connection(select(bal.amount, bal.reason, bal.occuredAt)
+                               .from(bal)
+                               .where(bal.occuredAt >= newerThan)
+                               .order_by(bal.occuredAt.asc()));
+
+  std::vector<UserBalanceEvent> balances;
+
+  for (auto& row : result) {
+    std::chrono::time_point<std::chrono::system_clock> ts =
+        row.occuredAt.value();
+    balances.emplace_back(UserBalanceEvent{
+        ts, row.amount,
+        static_cast<UserAccountBalanceReason>((row.reason.value()))});
+  }
+  return balances;
+}
 
 }  // namespace db
 }  // namespace hub

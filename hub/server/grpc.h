@@ -41,6 +41,11 @@ class HubImpl final : public hub::rpc::Hub::Service {
   grpc::Status GetUserHistory(grpc::ServerContext* context,
                               const ::hub::rpc::GetUserHistoryRequest* request,
                               hub::rpc::GetUserHistoryReply* response) override;
+
+  grpc::Status UserBalanceSubscription(
+      grpc::ServerContext* context,
+      const hub::rpc::UserBalanceSubscriptionRequest* request,
+      grpc::ServerWriter<hub::rpc::UserBalanceEvent>* writer);
 };
 
 }  // namespace hub

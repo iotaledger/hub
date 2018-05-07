@@ -8,7 +8,6 @@ syntax = "proto3";
 
 package hub.rpc;
 
-
 /*
   Error codes that can be returned by the hub.
  
@@ -192,5 +191,8 @@ message ProcessTransferBatchRequest {
 
 message ProcessTransferBatchReply {}
 
-message UserBalanceSubscriptionRequest {}
+message UserBalanceSubscriptionRequest {
+  // Balances newer than this time (MS since epoch) will be retrievd
+  uint64 newerThan = 1;
+}
 
