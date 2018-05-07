@@ -9,6 +9,7 @@
 #include <tuple>
 #include <utility>
 #include <vector>
+#include <chrono>
 
 #include <sqlpp11/functions.h>
 #include <sqlpp11/insert.h>
@@ -73,6 +74,9 @@ std::vector<std::string> getTailsForSweep(Connection& connection,
                                           uint64_t sweepId);
 
 void markTailAsConfirmed(Connection& connection, const std::string& hash);
+
+std::vector<UserBalanceEvent> getAccountBalances(
+    Connection& connection, std::chrono::system_clock::time_point newerThan);
 
 }  // namespace db
 }  // namespace hub
