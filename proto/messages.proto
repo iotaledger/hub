@@ -25,6 +25,8 @@ enum ErrorCode {
   BATCH_INVALID = 4;
   // The batch is inconsistent (attempt to remove funds from a user's account without sufficient balance)
   BATCH_INCONSISTENT = 5;
+  // The amount associated with the transfer is invalid (should be greater or less than 0)
+  ZERO_AMOUNT_TRANSFER = 6;
 }
 
 /*

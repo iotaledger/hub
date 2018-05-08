@@ -9,6 +9,8 @@
 #include <tuple>
 #include <utility>
 #include <vector>
+#include <map>
+#include <set>
 #include <chrono>
 
 #include <sqlpp11/functions.h>
@@ -77,6 +79,12 @@ void markTailAsConfirmed(Connection& connection, const std::string& hash);
 
 std::vector<UserBalanceEvent> getAccountBalances(
     Connection& connection, std::chrono::system_clock::time_point newerThan);
+
+void insertUserTransfers(Connection& connection,
+                         std::vector<UserTransfer> transfers);
+
+std::map<std::string, int64_t> userIdsFromIdentifiers(
+    Connection& connection, const std::set<std::string>& identifiers);
 
 }  // namespace db
 }  // namespace hub
