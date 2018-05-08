@@ -264,6 +264,36 @@ std::vector<UserBalanceEvent> getAccountBalances(
   }
   return balances;
 }
+void insertUserTransfers(Connection& connection,
+                         std::vector<UserTransfer> transfers) {
+  db::sql::UserAccountBalance bal;
+  auto multi_insert =
+      insert_into(bal).columns(bal.userId, bal.amount, bal.reason);
+
+  for (const auto& t : transfers) {
+    auto reason = t.amount > 0 ? UserAccountBalanceReason::BUY
+                               : UserAccountBalanceReason::SELL;
+    multi_insert.values.add(bal.userId = static_cast<int>(t.userId),
+                            bal.amount = t.amount,
+                            bal.reason = static_cast<int>(reason));
+  }
+  connection(multi_insert);
+}
+
+std::map<std::string, int64_t> userIdsFromIdentifiers(
+    Connection& connection, const std::set<std::string>& identifiers) {
+  db::sql::UserAccount acc;
+  std::map<std::string, int64_t> identifierToId;
+  auto result =
+      connection(select(all_of(acc))
+                     .from(acc)
+                     .where(acc.identifier.in(sqlpp::value_list(identifiers))));
+
+  for (auto& row : result) {
+    identifierToId.insert(std::pair(row.identifier, row.id));
+  }
+  return identifierToId;
+}
 
 }  // namespace db
 }  // namespace hub
