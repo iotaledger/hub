@@ -4,6 +4,7 @@
 #define HUB_COMMANDS_PROCESS_TRANSFER_BATCH_H_
 
 #include <string>
+#include <map>
 
 #include "hub/commands/command.h"
 
@@ -25,6 +26,15 @@ class ProcessTransferBatch
   grpc::Status doProcess(
       const hub::rpc::ProcessTransferBatchRequest* request,
       hub::rpc::ProcessTransferBatchReply* response) noexcept override;
+
+  /********************
+   * No zero transfers
+   * Zero summed batch
+   * Funds Availability
+   ********************/
+  grpc::Status validateTransfers(
+      const hub::rpc::ProcessTransferBatchRequest* request,
+      const std::map<std::string, int64_t>& identifierToId) noexcept;
 
   const std::string name() override { return "ProcessTransferBatch"; }
 };
