@@ -7,8 +7,8 @@ cc_library(
     ],
     visibility = ["//visibility:public"],
     deps = [
+        ":random",
         "//hub/db",
-        "@boost//:uuid",
     ],
 )
 
@@ -24,6 +24,19 @@ cc_library(
         "@org_iota_entangled//common/helpers:sign",
         "@org_iota_entangled//common/kerl:converter",
         "@org_iota_entangled//common/trinary:trit_tryte",
+    ],
+)
+
+cc_library(
+    name = "random",
+    srcs = ["random_generator.cc"],
+    hdrs = [
+        "random_generator.h",
+    ],
+    visibility = ["//visibility:public"],
+    deps = [
+        "//hub/db",
+        "@boost//:random",
     ],
 )
 

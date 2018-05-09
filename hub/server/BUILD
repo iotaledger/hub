@@ -13,7 +13,6 @@ cc_library(
         "//hub/service:user_address_monitor",
         "//hub/stats",
         "//proto:cpp",
-        "@boost//:uuid",
         "@com_github_gflags_gflags//:gflags",
         "@com_github_google_glog//:glog",
     ],
