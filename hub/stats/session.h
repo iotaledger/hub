@@ -9,18 +9,19 @@
 
 #include <glog/logging.h>
 
-#include <boost/uuid/uuid.hpp>
-#include <boost/uuid/uuid_generators.hpp>
-#include <boost/uuid/uuid_io.hpp>
+#include "hub/crypto/random_generator.h"
 
 namespace hub {
 class ClientSession {
  public:
-  ClientSession() : _tag(boost::uuids::random_generator()()), _str(rep_str()) {}
+  ClientSession()
+      : _tag(hub::crypto::generateBase64RandomString(
+            hub::crypto::base64_chars_for_384_bits)),
+        _str(rep_str()) {}
 
   ~ClientSession() { LOG(INFO) << *this << "destroyed."; }
 
-  const boost::uuids::uuid& tag() const { return _tag; }
+  const std::string& tag() const { return _tag; }
   const std::string& to_str() const { return _str; }
 
  private:
@@ -33,7 +34,7 @@ class ClientSession {
     return ostr.str();
   }
 
-  const boost::uuids::uuid _tag;
+  const std::string _tag;
   const std::string _str;
 };
 

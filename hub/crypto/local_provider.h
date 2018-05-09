@@ -6,8 +6,6 @@
 #include <cstdint>
 #include <string>
 
-#include <boost/uuid/uuid.hpp>
-
 #include "hub/crypto/provider.h"
 
 namespace hub {
@@ -18,12 +16,11 @@ class LocalProvider : public CryptoProvider {
   LocalProvider() = delete;
   explicit LocalProvider(std::string salt);
 
-  std::string getAddressForUUID(const boost::uuids::uuid& uuid) const override;
+  std::string getAddressForUUID(const std::string& uuid) const override;
 
  protected:
   std::string doGetSignatureForUUID(
-      const boost::uuids::uuid& uuid,
-      const std::string& bundleHash) const override;
+      const std::string& uuid, const std::string& bundleHash) const override;
 
  private:
   const std::string _salt;

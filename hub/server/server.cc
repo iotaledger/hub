@@ -11,7 +11,6 @@
 #include "hub/crypto/manager.h"
 #include "hub/db/db.h"
 #include "hub/db/helper.h"
-#include "hub/db/uuid.h"
 #include "hub/iota/beast.h"
 #include "hub/iota/pow.h"
 #include "hub/iota/remote_pow.h"

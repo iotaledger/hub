@@ -8,8 +8,6 @@
 #include <tuple>
 #include <vector>
 
-#include <boost/uuid/uuid.hpp>
-
 namespace hub {
 namespace db {
 enum class UserAddressBalanceReason { DEPOSIT = 0, SWEEP = 1 };
@@ -25,7 +23,7 @@ enum class UserAccountBalanceReason {
 };
 
 using AddressWithID = std::tuple<uint64_t, std::string>;
-using AddressWithUUID = std::tuple<std::string, boost::uuids::uuid>;
+using AddressWithUUID = std::tuple<std::string, std::string>;
 
 struct UserBalanceEvent {
   std::chrono::system_clock::time_point timestamp;

@@ -11,12 +11,13 @@
 
 #include <argon2.h>
 #include <glog/logging.h>
-#include <boost/uuid/uuid_io.hpp>
 
 #include "common/helpers/sign.h"
 #include "common/kerl/converter.h"
 #include "common/trinary/trits.h"
 #include "common/trinary/tryte.h"
+
+#include "hub/crypto/random_generator.h"
 
 // FIXME (th0br0) fix up entangled
 extern "C" {
@@ -40,8 +41,7 @@ using TryteSeed = std::array<tryte_t, TRYTE_LEN>;
 using TryteSeedPtr =
     std::unique_ptr<TryteSeed, std::function<void(TryteSeed*)>>;
 
-TryteSeedPtr seedFromUUID(const boost::uuids::uuid& uuid,
-                          const std::string& _salt) {
+TryteSeedPtr seedFromUUID(const std::string& uuid, const std::string& _salt) {
   std::array<uint8_t, BYTE_LEN> byteSeed;
   std::array<trit_t, TRIT_LEN> seed;
 
@@ -50,9 +50,9 @@ TryteSeedPtr seedFromUUID(const boost::uuids::uuid& uuid,
     delete seed;
   });
 
-  argon2i_hash_raw(_argon_t_cost, _argon_m_cost, _argon_parallelism, &uuid.data,
-                   uuid.size(), _salt.c_str(), _salt.length(), byteSeed.data(),
-                   BYTE_LEN);
+  argon2i_hash_raw(_argon_t_cost, _argon_m_cost, _argon_parallelism,
+                   uuid.data(), uuid.size(), _salt.c_str(), _salt.length(),
+                   byteSeed.data(), BYTE_LEN);
 
   bytes_to_trits(byteSeed.data(), seed.data());
   byteSeed.fill(0);
@@ -77,8 +77,7 @@ LocalProvider::LocalProvider(std::string salt) : _salt(std::move(salt)) {
   }
 }
 
-std::string LocalProvider::getAddressForUUID(
-    const boost::uuids::uuid& uuid) const {
+std::string LocalProvider::getAddressForUUID(const std::string& uuid) const {
   LOG(INFO) << "Generating address for: " << uuid;
 
   auto add = iota_sign_address_gen(
@@ -89,7 +88,7 @@ std::string LocalProvider::getAddressForUUID(
 }
 
 std::string LocalProvider::doGetSignatureForUUID(
-    const boost::uuids::uuid& uuid, const std::string& bundleHash) const {
+    const std::string& uuid, const std::string& bundleHash) const {
   LOG(INFO) << "Generating signature for: " << uuid;
 
   auto sig =

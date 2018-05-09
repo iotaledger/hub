@@ -9,14 +9,11 @@
 #include <sqlpp11/insert.h>
 #include <sqlpp11/transaction.h>
 
-#include <boost/uuid/uuid.hpp>
-#include <boost/uuid/uuid_generators.hpp>
-
 #include "hub/commands/helper.h"
 #include "hub/crypto/manager.h"
+#include "hub/crypto/random_generator.h"
 #include "hub/db/db.h"
 #include "hub/db/helper.h"
-#include "hub/db/uuid.h"
 #include "hub/stats/session.h"
 #include "proto/hub.pb.h"
 #include "schema/schema.h"
@@ -49,7 +46,8 @@ grpc::Status GetDepositAddress::doProcess(
     userId = maybeUserId.value();
   }
 
-  boost::uuids::uuid uuid = boost::uuids::random_generator()();
+  auto uuid = hub::crypto::generateBase64RandomString(
+      hub::crypto::base64_chars_for_384_bits);
   auto address =
       hub::crypto::CryptoManager::get().provider().getAddressForUUID(uuid);
 
@@ -61,7 +59,7 @@ grpc::Status GetDepositAddress::doProcess(
     connection(insert_into(userAddress)
                    .set(userAddress.address = address,
                         userAddress.userId = userId,
-                        userAddress.seedUuid = db::dataFromUuid(uuid)));
+                        userAddress.seedUuid = uuid));
     transaction.commit();
   } catch (sqlpp::exception& ex) {
     LOG(ERROR) << session() << " Commit failed: " << ex.what();

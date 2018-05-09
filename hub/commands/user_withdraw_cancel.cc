@@ -7,9 +7,6 @@
 #include <sqlpp11/connection.h>
 #include <sqlpp11/functions.h>
 #include <sqlpp11/select.h>
-#include <boost/uuid/random_generator.hpp>
-#include <boost/uuid/uuid.hpp>
-#include <boost/uuid/uuid_io.hpp>
 
 #include "hub/db/db.h"
 #include "hub/db/helper.h"
@@ -18,6 +15,7 @@
 #include "schema/schema.h"
 
 #include "hub/commands/helper.h"
+#include "hub/crypto/random_generator.h"
 
 namespace hub {
 namespace cmd {
@@ -31,7 +29,8 @@ grpc::Status UserWithdrawCancel::doProcess(
   std::optional<hub::rpc::ErrorCode> errorCode;
   std::optional<bool> success;
 
-  boost::uuids::uuid uuid = boost::uuids::string_generator()(request->uuid());
+  auto uuid =
+      crypto::generateBase64RandomString(crypto::base64_chars_for_384_bits);
 
   try {
     auto result = db::cancelWithdrawal(connection, uuid);

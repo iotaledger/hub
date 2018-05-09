@@ -109,31 +109,29 @@ void createUserAccountBalanceEntry(Connection& connection, uint64_t userId,
   }
 }
 
-uint64_t createWithdrawal(Connection& connection,
-                          const boost::uuids::uuid& uuid, uint64_t userId,
-                          uint64_t amount, const std::string& payoutAddress) {
+uint64_t createWithdrawal(Connection& connection, const std::string& uuid,
+                          uint64_t userId, uint64_t amount,
+                          const std::string& payoutAddress) {
   db::sql::Withdrawal tbl;
 
-  connection(insert_into(tbl).set(tbl.uuid = dataFromUuid(uuid),
-                                  tbl.userId = userId, tbl.amount = amount,
+  connection(insert_into(tbl).set(tbl.uuid = uuid, tbl.userId = userId,
+                                  tbl.amount = amount,
                                   tbl.payoutAddress = payoutAddress));
 
   return connection.last_insert_id();
 }
 
-size_t cancelWithdrawal(Connection& connection,
-                        const boost::uuids::uuid& uuid) {
+size_t cancelWithdrawal(Connection& connection, const std::string& uuid) {
   db::sql::Withdrawal tbl;
   auto now = ::sqlpp::chrono::floor<::std::chrono::milliseconds>(
       std::chrono::system_clock::now());
 
-  return connection(
-      update(tbl)
-          .set(tbl.cancelledAt = now)
-          .where(tbl.uuid == dataFromUuid(uuid) && tbl.sweep.is_null()));
+  return connection(update(tbl)
+                        .set(tbl.cancelledAt = now)
+                        .where(tbl.uuid == uuid && tbl.sweep.is_null()));
 }
 
-using AddressWithUUID = std::tuple<std::string, boost::uuids::uuid>;
+using AddressWithUUID = std::tuple<std::string, std::string>;
 std::optional<AddressWithUUID> selectFirstUserAddress(Connection& connection) {
   db::sql::UserAddress addr;
   auto result = connection(select(addr.seedUuid, addr.address)
@@ -149,13 +147,13 @@ std::optional<AddressWithUUID> selectFirstUserAddress(Connection& connection) {
 
   auto address = row.address;
 
-  return std::make_tuple(std::move(row.address), uuidFromData(row.seedUuid));
+  return std::make_tuple(std::move(row.address), row.seedUuid);
 }
 
-void markUUIDAsSigned(Connection& connection, const boost::uuids::uuid& uuid) {
+void markUUIDAsSigned(Connection& connection, const std::string& uuid) {
   db::sql::SignedUuids tbl;
 
-  connection(insert_into(tbl).set(tbl.uuid = dataFromUuid(uuid)));
+  connection(insert_into(tbl).set(tbl.uuid = uuid));
 }
 
 std::vector<UserBalanceEvent> getUserAccountBalances(Connection& connection,

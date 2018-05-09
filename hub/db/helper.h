@@ -3,15 +3,15 @@
 #ifndef HUB_DB_HELPER_H_
 #define HUB_DB_HELPER_H_
 
+#include <chrono>
 #include <cstdint>
+#include <map>
 #include <optional>
+#include <set>
 #include <string>
 #include <tuple>
 #include <utility>
 #include <vector>
-#include <map>
-#include <set>
-#include <chrono>
 
 #include <sqlpp11/functions.h>
 #include <sqlpp11/insert.h>
@@ -20,11 +20,9 @@
 #include <sqlpp11/sqlpp11.h>
 #include <sqlpp11/transaction.h>
 #include <sqlpp11/update.h>
-#include <boost/uuid/uuid.hpp>
 
 #include "hub/db/db.h"
 #include "hub/db/types.h"
-#include "hub/db/uuid.h"
 #include "schema/schema.h"
 
 namespace hub {
@@ -52,15 +50,15 @@ void createUserAccountBalanceEntry(Connection& connection, uint64_t userId,
                                    const UserAccountBalanceReason reason,
                                    const std::optional<uint64_t> fkey = {});
 
-uint64_t createWithdrawal(Connection& connection,
-                          const boost::uuids::uuid& uuid, uint64_t userId,
-                          uint64_t amount, const std::string& payoutAddress);
+uint64_t createWithdrawal(Connection& connection, const std::string& uuid,
+                          uint64_t userId, uint64_t amount,
+                          const std::string& payoutAddress);
 
-size_t cancelWithdrawal(Connection& connection, const boost::uuids::uuid& uuid);
+size_t cancelWithdrawal(Connection& connection, const std::string& uuid);
 
 std::optional<AddressWithUUID> selectFirstUserAddress(Connection& connection);
 
-void markUUIDAsSigned(Connection& connection, const boost::uuids::uuid& uuid);
+void markUUIDAsSigned(Connection& connection, const std::string& uuid);
 
 std::vector<UserBalanceEvent> getUserAccountBalances(Connection& connection,
                                                      uint64_t userId);
