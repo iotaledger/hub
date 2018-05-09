@@ -86,6 +86,9 @@ void insertUserTransfers(Connection& connection,
 std::map<std::string, int64_t> userIdsFromIdentifiers(
     Connection& connection, const std::set<std::string>& identifiers);
 
+std::map<uint64_t, int64_t> getTotalAmountForUsers(
+    Connection& connection, const std::set<uint64_t>& ids);
+
 }  // namespace db
 }  // namespace hub
 

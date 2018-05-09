@@ -267,6 +267,10 @@ std::vector<UserBalanceEvent> getAccountBalances(
 void insertUserTransfers(Connection& connection,
                          std::vector<UserTransfer> transfers) {
   db::sql::UserAccountBalance bal;
+
+  if (transfers.empty()) {
+    return;
+  }
   auto multi_insert =
       insert_into(bal).columns(bal.userId, bal.amount, bal.reason);
 
@@ -293,6 +297,23 @@ std::map<std::string, int64_t> userIdsFromIdentifiers(
     identifierToId.insert(std::pair(row.identifier, row.id));
   }
   return identifierToId;
+}
+
+std::map<uint64_t, int64_t> getTotalAmountForUsers(
+    Connection& connection, const std::set<uint64_t>& ids) {
+  db::sql::UserAccountBalance bal;
+
+  auto result =
+      connection(select(bal.userId, sum(bal.amount).as(sqlpp::alias::a))
+                     .from(bal)
+                     .where(bal.userId.in(sqlpp::value_list(ids)))
+                     .group_by(bal.userId));
+
+  std::map<std::uint64_t, int64_t> identifierToTotal;
+  for (auto& row : result) {
+    identifierToTotal.insert(std::pair(row.userId, row.a));
+  }
+  return identifierToTotal;
 }
 
 }  // namespace db

@@ -3,8 +3,13 @@
 #include "hub/commands/process_transfer_batch.h"
 
 #include <cstdint>
-#include <vector>
 #include <set>
+#include <unordered_map>
+#include <vector>
+#include <algorithm>
+
+#include <boost/range/adaptors.hpp>
+#include <boost/range/algorithm/copy.hpp>
 
 #include <sqlpp11/connection.h>
 #include <sqlpp11/functions.h>
@@ -21,40 +26,29 @@
 
 namespace hub {
 namespace cmd {
-
 grpc::Status ProcessTransferBatch::doProcess(
     const hub::rpc::ProcessTransferBatchRequest* request,
     hub::rpc::ProcessTransferBatchReply* response) noexcept {
   auto& connection = db::DBManager::get().connection();
   std::set<std::string> identifiers;
-  bool zeroAmount = false;
-  {
-    //populate identifiers for db query and validate amounts are not zero
-    for (auto i = 0; i < request->transfers_size(); ++i) {
-      const hub::rpc::ProcessTransferBatchRequest_Transfer& t =
-          request->transfers(i);
-      identifiers.insert(t.userid());
-      if (t.amount() == 0) {
-        zeroAmount = true;
-      }
-    }
-  }
 
-  if (zeroAmount) {
-    return grpc::Status(
-        grpc::StatusCode::FAILED_PRECONDITION, "",
-        errorToString(hub::rpc::ErrorCode::ZERO_AMOUNT_TRANSFER));
+  for (auto i = 0; i < request->transfers_size(); ++i) {
+    const auto& t = request->transfers(i);
+    identifiers.insert(t.userid());
   }
 
   auto identifierToId = db::userIdsFromIdentifiers(connection, identifiers);
-
   if (identifierToId.size() < identifiers.size()) {
     return grpc::Status(
         grpc::StatusCode::FAILED_PRECONDITION, "",
         errorToString(hub::rpc::ErrorCode::USER_DOES_NOT_EXIST));
   }
 
-  //Actual transfer insertion to db
+  auto validationStatus = validateTransfers(request, identifierToId);
+  if (!validationStatus.ok()) {
+    return validationStatus;
+  }
+
   std::vector<hub::db::UserTransfer> transfers;
   for (auto i = 0; i < request->transfers_size(); ++i) {
     const hub::rpc::ProcessTransferBatchRequest_Transfer& t =
@@ -62,7 +56,66 @@ grpc::Status ProcessTransferBatch::doProcess(
     transfers.emplace_back(
         hub::db::UserTransfer{identifierToId[t.userid()], t.amount()});
   }
-  insertUserTransfers(connection, transfers);
+
+  // Actual transfer insertion to db
+  sqlpp::transaction_t<hub::db::Connection> transaction(connection, true);
+  try {
+    insertUserTransfers(connection, transfers);
+    transaction.commit();
+  } catch (sqlpp::exception& ex) {
+    LOG(ERROR) << session() << " Commit failed: " << ex.what();
+    transaction.rollback();
+
+    return grpc::Status(grpc::StatusCode::FAILED_PRECONDITION, "",
+                        errorToString(hub::rpc::ErrorCode::EC_UNKNOWN));
+  }
+
+  return grpc::Status::OK;
+}
+grpc::Status ProcessTransferBatch::validateTransfers(
+    const hub::rpc::ProcessTransferBatchRequest* request,
+    const std::map<std::string, int64_t>& identifierToId) noexcept {
+  auto& connection = db::DBManager::get().connection();
+  std::unordered_map<std::string, int64_t> userToAmount;
+  uint64_t totalBatchSum = 0;
+
+  bool zeroAmount = false;
+  // validate amounts are not zero
+  for (auto i = 0; i < request->transfers_size(); ++i) {
+    const auto& t = request->transfers(i);
+    if (t.amount() == 0) {
+      zeroAmount = true;
+      break;
+    }
+    totalBatchSum += t.amount();
+    if (userToAmount.find(t.userid()) == userToAmount.end()) {
+      userToAmount[t.userid()] = 0;
+    }
+    userToAmount[t.userid()] += t.amount();
+  }
+
+  if (zeroAmount) {
+    return grpc::Status(grpc::StatusCode::FAILED_PRECONDITION, "",
+                        errorToString(hub::rpc::ErrorCode::BATCH_INVALID));
+  }
+  if (totalBatchSum != 0) {
+    return grpc::Status(grpc::StatusCode::FAILED_PRECONDITION, "",
+                        errorToString(hub::rpc::ErrorCode::BATCH_AMOUNT_ZERO));
+  }
+
+  std::set<uint64_t> userIds;
+  boost::copy(identifierToId | boost::adaptors::map_values,
+              std::inserter(userIds, userIds.begin()));
+  auto userToAvailableAmount = db::getTotalAmountForUsers(connection, userIds);
+  for (auto& kv : userToAmount) {
+    uint64_t currId = identifierToId.at(kv.first);
+
+    if (kv.second > userToAvailableAmount[currId]) {
+      return grpc::Status(
+          grpc::StatusCode::FAILED_PRECONDITION, "",
+          errorToString(hub::rpc::ErrorCode::BATCH_INCONSISTENT));
+    }
+  }
 
   return grpc::Status::OK;
 }
