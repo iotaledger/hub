@@ -24,7 +24,7 @@ TEST_F(LocalProviderTest, EnforceMinimumSeedLength) {
 TEST_F(LocalProviderTest, ShouldReturnValidAddress) {
   LocalProvider provider(std::string("abcdefgh"));
   auto uuid = crypto::generateBase64RandomString(
-      hub::crypto::base64_chars_for_384_bits);
+      hub::crypto::BITS_384);
 
   auto address = provider.getAddressForUUID(uuid);
 
@@ -34,7 +34,7 @@ TEST_F(LocalProviderTest, ShouldReturnValidAddress) {
 TEST_F(LocalProviderTest, ConstantAddressForUUID) {
   LocalProvider provider(std::string("abcdefgh"));
   auto uuid = crypto::generateBase64RandomString(
-      hub::crypto::base64_chars_for_384_bits);
+      hub::crypto::BITS_384);
 
   auto address1 = provider.getAddressForUUID(uuid);
   auto address2 = provider.getAddressForUUID(uuid);
@@ -45,9 +45,9 @@ TEST_F(LocalProviderTest, ConstantAddressForUUID) {
 TEST_F(LocalProviderTest, DifferentUUIDsHaveDifferentAddresses) {
   LocalProvider provider(std::string("abcdefgh"));
   auto uuid1 = hub::crypto::generateBase64RandomString(
-      hub::crypto::base64_chars_for_384_bits);
+      hub::crypto::BITS_384);
   auto uuid2 = hub::crypto::generateBase64RandomString(
-      hub::crypto::base64_chars_for_384_bits);
+      hub::crypto::BITS_384);
 
   EXPECT_NE(uuid1, uuid2);
 
@@ -60,7 +60,7 @@ TEST_F(LocalProviderTest, DifferentUUIDsHaveDifferentAddresses) {
 TEST_F(LocalProviderTest, ShouldOnlySignOnce) {
   LocalProvider provider(std::string("abcdefgh"));
   auto uuid = crypto::generateBase64RandomString(
-      hub::crypto::base64_chars_for_384_bits);
+      hub::crypto::BITS_384);
 
   auto& connection = db::DBManager::get().connection();
 

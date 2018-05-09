@@ -13,9 +13,9 @@ namespace crypto {
 
 static constexpr auto base64_chars =
     "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/";
-static constexpr uint32_t base64_chars_for_384_bits = 64;
+static constexpr uint32_t BITS_384 = 64;
 
-std::string generateBase64RandomString(uint32_t length);
+std::string generateBase64RandomString(uint32_t length = BITS_384);
 
 }  // namespace crypto
 }  // namespace hub
