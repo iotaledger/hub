@@ -3,8 +3,8 @@
 #ifndef HUB_COMMANDS_PROCESS_TRANSFER_BATCH_H_
 #define HUB_COMMANDS_PROCESS_TRANSFER_BATCH_H_
 
-#include <string>
 #include <map>
+#include <string>
 
 #include "hub/commands/command.h"
 

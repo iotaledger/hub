@@ -10,39 +10,21 @@
 
 #include "hub/commands/create_user.h"
 #include "hub/commands/get_balance.h"
+#include "hub/commands/helper.h"
 #include "hub/commands/process_transfer_batch.h"
+#include "hub/commands/tests/helper.h"
 #include "hub/db/db.h"
 
 #include "runner.h"
 
 using namespace hub;
+using namespace hub::tests;
 using namespace sqlpp;
 
 namespace {
 class ProcessTransferBatchTest : public CommandTest {};
 
 static constexpr int64_t USER_BALANCE = 100;
-
-void createZigZagTransfer(std::vector<std::string>& users,
-                          rpc::ProcessTransferBatchRequest& req,
-                          int64_t absAmount) {
-  for (auto i = 0; i < users.size(); ++i) {
-    auto* transfer = req.add_transfers();
-    int64_t mul = (i % 2) ? 1 : -1;
-    transfer->set_amount(mul * absAmount);
-    transfer->set_userid(users[i]);
-  }
-}
-
-void createBalanceForUsers(std::vector<uint64_t> ids, int64_t balance) {
-  std::vector<hub::db::UserTransfer> transfers;
-  for (auto id : ids) {
-    transfers.emplace_back(hub::db::UserTransfer{id, balance});
-  }
-
-  auto& connection = db::DBManager::get().connection();
-  insertUserTransfers(connection, transfers);
-}
 
 TEST_F(ProcessTransferBatchTest, FailOnNonExistingUserId) {
   rpc::ProcessTransferBatchRequest req;
@@ -59,7 +41,10 @@ TEST_F(ProcessTransferBatchTest, FailOnNonExistingUserId) {
   cmd::ProcessTransferBatch command(session());
 
   auto status = command.doProcess(&req, &res);
+
   ASSERT_FALSE(status.ok());
+  ASSERT_EQ(status.error_message(),
+            cmd::errorToString(hub::rpc::ErrorCode::USER_DOES_NOT_EXIST));
 }
 
 TEST_F(ProcessTransferBatchTest, ZeroAmountTransferFails) {
@@ -78,6 +63,8 @@ TEST_F(ProcessTransferBatchTest, ZeroAmountTransferFails) {
 
   status = command.doProcess(&req, &res);
   ASSERT_FALSE(status.ok());
+  ASSERT_EQ(status.error_message(),
+            cmd::errorToString(hub::rpc::ErrorCode::BATCH_INVALID));
 }
 
 TEST_F(ProcessTransferBatchTest, TransfersAreRecorded) {
@@ -163,6 +150,8 @@ TEST_F(ProcessTransferBatchTest, TransfersMustBeZeroSummed) {
   auto status = command.doProcess(&req, &res);
 
   ASSERT_FALSE(status.ok());
+  ASSERT_EQ(status.error_message(),
+            cmd::errorToString(hub::rpc::ErrorCode::BATCH_AMOUNT_ZERO));
 }
 
 TEST_F(ProcessTransferBatchTest, TransferMustHaveSufficientFunds) {
@@ -183,6 +172,8 @@ TEST_F(ProcessTransferBatchTest, TransferMustHaveSufficientFunds) {
   auto status = command.doProcess(&req, &res);
 
   ASSERT_FALSE(status.ok());
+  ASSERT_EQ(status.error_message(),
+            cmd::errorToString(hub::rpc::ErrorCode::BATCH_INCONSISTENT));
 }
 
 };  // namespace

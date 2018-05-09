@@ -2,11 +2,11 @@
 
 #include "hub/commands/process_transfer_batch.h"
 
+#include <algorithm>
 #include <cstdint>
 #include <set>
 #include <unordered_map>
 #include <vector>
-#include <algorithm>
 
 #include <boost/range/adaptors.hpp>
 #include <boost/range/algorithm/copy.hpp>
@@ -40,7 +40,7 @@ grpc::Status ProcessTransferBatch::doProcess(
   auto identifierToId = db::userIdsFromIdentifiers(connection, identifiers);
   if (identifierToId.size() < identifiers.size()) {
     return grpc::Status(
-        grpc::StatusCode::FAILED_PRECONDITION, "",
+        grpc::StatusCode::FAILED_PRECONDITION,
         errorToString(hub::rpc::ErrorCode::USER_DOES_NOT_EXIST));
   }
 
@@ -76,7 +76,8 @@ grpc::Status ProcessTransferBatch::validateTransfers(
     const hub::rpc::ProcessTransferBatchRequest* request,
     const std::map<std::string, int64_t>& identifierToId) noexcept {
   auto& connection = db::DBManager::get().connection();
-  std::unordered_map<std::string, int64_t> userToAmount;
+  std::unordered_map<std::string, int64_t> userToTransferAmount;
+
   uint64_t totalBatchSum = 0;
 
   bool zeroAmount = false;
@@ -88,31 +89,31 @@ grpc::Status ProcessTransferBatch::validateTransfers(
       break;
     }
     totalBatchSum += t.amount();
-    if (userToAmount.find(t.userid()) == userToAmount.end()) {
-      userToAmount[t.userid()] = 0;
+    if (userToTransferAmount.find(t.userid()) == userToTransferAmount.end()) {
+      userToTransferAmount[t.userid()] = 0;
     }
-    userToAmount[t.userid()] += t.amount();
+    userToTransferAmount[t.userid()] += t.amount();
   }
 
   if (zeroAmount) {
-    return grpc::Status(grpc::StatusCode::FAILED_PRECONDITION, "",
+    return grpc::Status(grpc::StatusCode::FAILED_PRECONDITION,
                         errorToString(hub::rpc::ErrorCode::BATCH_INVALID));
   }
   if (totalBatchSum != 0) {
-    return grpc::Status(grpc::StatusCode::FAILED_PRECONDITION, "",
+    return grpc::Status(grpc::StatusCode::FAILED_PRECONDITION,
                         errorToString(hub::rpc::ErrorCode::BATCH_AMOUNT_ZERO));
   }
 
   std::set<uint64_t> userIds;
   boost::copy(identifierToId | boost::adaptors::map_values,
               std::inserter(userIds, userIds.begin()));
-  auto userToAvailableAmount = db::getTotalAmountForUsers(connection, userIds);
-  for (auto& kv : userToAmount) {
+  auto userToBalance = db::getTotalAmountForUsers(connection, userIds);
+  for (auto& kv : userToTransferAmount) {
     uint64_t currId = identifierToId.at(kv.first);
 
-    if (kv.second > userToAvailableAmount[currId]) {
+    if (kv.second > userToBalance.at(currId)) {
       return grpc::Status(
-          grpc::StatusCode::FAILED_PRECONDITION, "",
+          grpc::StatusCode::FAILED_PRECONDITION,
           errorToString(hub::rpc::ErrorCode::BATCH_INCONSISTENT));
     }
   }
