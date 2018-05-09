@@ -31,7 +31,7 @@ grpc::Status UserWithdraw::doProcess(
   uint64_t balance;
   uint64_t withdrawalId;
   auto withdrawalUUID =
-      crypto::generateBase64RandomString(crypto::base64_chars_for_384_bits);
+      crypto::generateBase64RandomString(crypto::BITS_384);
 
   try {
     // Get userId for identifier

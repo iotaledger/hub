@@ -36,7 +36,6 @@ cc_library(
     visibility = ["//visibility:public"],
     deps = [
         "//hub/db",
-        "@boost//:random",
     ],
 )
 

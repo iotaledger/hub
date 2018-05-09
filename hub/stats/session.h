@@ -16,7 +16,7 @@ class ClientSession {
  public:
   ClientSession()
       : _tag(hub::crypto::generateBase64RandomString(
-            hub::crypto::base64_chars_for_384_bits)),
+            hub::crypto::BITS_384)),
         _str(rep_str()) {}
 
   ~ClientSession() { LOG(INFO) << *this << "destroyed."; }

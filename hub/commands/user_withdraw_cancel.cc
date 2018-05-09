@@ -30,7 +30,7 @@ grpc::Status UserWithdrawCancel::doProcess(
   std::optional<bool> success;
 
   auto uuid =
-      crypto::generateBase64RandomString(crypto::base64_chars_for_384_bits);
+      crypto::generateBase64RandomString(crypto::BITS_384);
 
   try {
     auto result = db::cancelWithdrawal(connection, uuid);
