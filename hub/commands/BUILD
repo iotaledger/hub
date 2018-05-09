@@ -15,6 +15,7 @@ cc_library(
         "//hub/db",
         "//hub/stats",
         "//proto:cpp",
+        "@boost//:range",
     ],
 )
 
