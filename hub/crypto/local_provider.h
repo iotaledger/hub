@@ -16,11 +16,11 @@ class LocalProvider : public CryptoProvider {
   LocalProvider() = delete;
   explicit LocalProvider(std::string salt);
 
-  std::string getAddressForUUID(const std::string& uuid) const override;
+  Address getAddressForUUID(const UUID& uuid) const override;
 
  protected:
   std::string doGetSignatureForUUID(
-      const std::string& uuid, const std::string& bundleHash) const override;
+      const UUID& uuid, const Hash& bundleHash) const override;
 
  private:
   const std::string _salt;

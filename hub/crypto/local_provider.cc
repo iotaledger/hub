@@ -17,7 +17,7 @@
 #include "common/trinary/trits.h"
 #include "common/trinary/tryte.h"
 
-#include "hub/crypto/random_generator.h"
+#include "hub/crypto/types.h"
 
 // FIXME (th0br0) fix up entangled
 extern "C" {
@@ -41,7 +41,8 @@ using TryteSeed = std::array<tryte_t, TRYTE_LEN>;
 using TryteSeedPtr =
     std::unique_ptr<TryteSeed, std::function<void(TryteSeed*)>>;
 
-TryteSeedPtr seedFromUUID(const std::string& uuid, const std::string& _salt) {
+TryteSeedPtr seedFromUUID(const hub::crypto::UUID& uuid,
+                          const std::string& _salt) {
   std::array<uint8_t, BYTE_LEN> byteSeed;
   std::array<trit_t, TRIT_LEN> seed;
 
@@ -51,8 +52,8 @@ TryteSeedPtr seedFromUUID(const std::string& uuid, const std::string& _salt) {
   });
 
   argon2i_hash_raw(_argon_t_cost, _argon_m_cost, _argon_parallelism,
-                   uuid.data(), uuid.size(), _salt.c_str(), _salt.length(),
-                   byteSeed.data(), BYTE_LEN);
+                   uuid.toString().data(), hub::crypto::UUID::UUID_SIZE,
+                   _salt.c_str(), _salt.length(), byteSeed.data(), BYTE_LEN);
 
   bytes_to_trits(byteSeed.data(), seed.data());
   byteSeed.fill(0);
@@ -77,23 +78,23 @@ LocalProvider::LocalProvider(std::string salt) : _salt(std::move(salt)) {
   }
 }
 
-std::string LocalProvider::getAddressForUUID(const std::string& uuid) const {
+Address LocalProvider::getAddressForUUID(const hub::crypto::UUID& uuid) const {
   LOG(INFO) << "Generating address for: " << uuid;
 
   auto add = iota_sign_address_gen(
       (const char*)seedFromUUID(uuid, _salt)->data(), KEY_IDX, KEY_SEC);
-  std::string ret = add;
+  Address ret(add);
   std::free(add);
   return ret;
 }
 
-std::string LocalProvider::doGetSignatureForUUID(
-    const std::string& uuid, const std::string& bundleHash) const {
+std::string LocalProvider::doGetSignatureForUUID(const hub::crypto::UUID& uuid,
+                                                 const Hash& bundleHash) const {
   LOG(INFO) << "Generating signature for: " << uuid;
 
   auto sig =
       iota_sign_signature_gen((const char*)seedFromUUID(uuid, _salt)->data(),
-                              KEY_IDX, KEY_SEC, bundleHash.data());
+                              KEY_IDX, KEY_SEC, bundleHash.toString().data());
   std::string ret = sig;
   std::free(sig);
 

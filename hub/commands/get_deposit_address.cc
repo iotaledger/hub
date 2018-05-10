@@ -11,7 +11,7 @@
 
 #include "hub/commands/helper.h"
 #include "hub/crypto/manager.h"
-#include "hub/crypto/random_generator.h"
+#include "hub/crypto/types.h"
 #include "hub/db/db.h"
 #include "hub/db/helper.h"
 #include "hub/stats/session.h"
@@ -46,20 +46,19 @@ grpc::Status GetDepositAddress::doProcess(
     userId = maybeUserId.value();
   }
 
-  auto uuid = hub::crypto::generateBase64RandomString(
-      hub::crypto::BITS_384);
+  auto uuid = hub::crypto::UUID::generate();
   auto address =
       hub::crypto::CryptoManager::get().provider().getAddressForUUID(uuid);
 
-  response->set_address(address);
+  response->set_address(address.toString());
 
   // Add new user address.
   sqlpp::transaction_t<hub::db::Connection> transaction(connection, true);
   try {
     connection(insert_into(userAddress)
-                   .set(userAddress.address = address,
+                   .set(userAddress.address = address.toString(),
                         userAddress.userId = userId,
-                        userAddress.seedUuid = uuid));
+                        userAddress.seedUuid = uuid.toString()));
     transaction.commit();
   } catch (sqlpp::exception& ex) {
     LOG(ERROR) << session() << " Commit failed: " << ex.what();

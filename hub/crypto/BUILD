@@ -7,7 +7,7 @@ cc_library(
     ],
     visibility = ["//visibility:public"],
     deps = [
-        ":random",
+        ":types",
         "//hub/db",
     ],
 )
@@ -28,10 +28,10 @@ cc_library(
 )
 
 cc_library(
-    name = "random",
-    srcs = ["random_generator.cc"],
+    name = "types",
+    srcs = ["types.cc"],
     hdrs = [
-        "random_generator.h",
+        "types.h",
     ],
     visibility = ["//visibility:public"],
     deps = [
@@ -40,9 +40,11 @@ cc_library(
 )
 
 cc_test(
-    name = "test_local_provider",
+    name = "test_crypto",
     timeout = "short",
-    srcs = ["tests/local_provider.cc"],
+    srcs = glob([
+        "tests/**/*.cc",
+    ]),
     deps = [
         ":local_provider",
         "//hub/tests",

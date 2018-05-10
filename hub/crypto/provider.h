@@ -5,6 +5,7 @@
 
 #include <string>
 
+#include "hub/crypto/types.h"
 #include "hub/db/db.h"
 #include "hub/db/helper.h"
 
@@ -14,19 +15,19 @@ namespace crypto {
 class CryptoProvider {
  public:
   virtual ~CryptoProvider() {}
-  virtual std::string getAddressForUUID(const std::string& uuid) const = 0;
+  virtual Address getAddressForUUID(const UUID& uuid) const = 0;
 
-  std::string getSignatureForUUID(const std::string& uuid,
+  std::string getSignatureForUUID(const UUID& uuid,
                                   hub::db::Connection& connection,
-                                  const std::string& bundleHash) const {
-    db::markUUIDAsSigned(connection, uuid);
+                                  const Hash& bundleHash) const {
+    db::markUUIDAsSigned(connection, uuid.toString());
 
     return doGetSignatureForUUID(uuid, bundleHash);
   }
 
  protected:
   virtual std::string doGetSignatureForUUID(
-      const std::string& uuid, const std::string& bundleHash) const = 0;
+      const UUID& uuid, const Hash& bundleHash) const = 0;
 };
 
 }  // namespace crypto

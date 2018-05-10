@@ -58,7 +58,7 @@ size_t cancelWithdrawal(Connection& connection, const std::string& uuid);
 
 std::optional<AddressWithUUID> selectFirstUserAddress(Connection& connection);
 
-void markUUIDAsSigned(Connection& connection, const std::string& uuid);
+void markUUIDAsSigned(Connection& connection, const std::string& uuidString);
 
 std::vector<UserBalanceEvent> getUserAccountBalances(Connection& connection,
                                                      uint64_t userId);

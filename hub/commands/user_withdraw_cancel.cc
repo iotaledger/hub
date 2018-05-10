@@ -15,7 +15,7 @@
 #include "schema/schema.h"
 
 #include "hub/commands/helper.h"
-#include "hub/crypto/random_generator.h"
+#include "hub/crypto/types.h"
 
 namespace hub {
 namespace cmd {
@@ -29,8 +29,7 @@ grpc::Status UserWithdrawCancel::doProcess(
   std::optional<hub::rpc::ErrorCode> errorCode;
   std::optional<bool> success;
 
-  auto uuid =
-      crypto::generateBase64RandomString(crypto::BITS_384);
+  auto uuid = hub::crypto::UUID::generate().toString();
 
   try {
     auto result = db::cancelWithdrawal(connection, uuid);
