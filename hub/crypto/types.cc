@@ -4,20 +4,23 @@
 
 #include <cstring>
 #include <random>
+#include <utility>
 
 namespace hub {
 namespace crypto {
 
 UUID UUID::generate() {
-  UUID res;
+  std::string res;
   std::random_device rd;
   std::uniform_int_distribution<> index_dist(0, UUID_SIZE - 1);
 
   for (uint32_t i = 0; i < UUID_SIZE; ++i) {
-    res._data[i] = BASE64_CHARS[index_dist(rd)];
+    res += BASE64_CHARS[index_dist(rd)];
   }
-  return res;
+  return UUID(res);
 }
+
+UUID::UUID() { _data = std::move(UUID::generate()).data(); }
 
 UUID::UUID(const std::string& str) {
   std::stringstream ss(str);

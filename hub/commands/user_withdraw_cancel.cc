@@ -29,7 +29,7 @@ grpc::Status UserWithdrawCancel::doProcess(
   std::optional<hub::rpc::ErrorCode> errorCode;
   std::optional<bool> success;
 
-  auto uuid = hub::crypto::UUID::generate().toString();
+  auto uuid = hub::crypto::UUID().toString();
 
   try {
     auto result = db::cancelWithdrawal(connection, uuid);

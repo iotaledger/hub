@@ -31,7 +31,7 @@ grpc::Status UserWithdraw::doProcess(
   uint64_t balance;
   uint64_t withdrawalId;
 
-  auto withdrawalUUID = hub::crypto::UUID::generate().toString();
+  hub::crypto::UUID withdrawalUUID;
 
   try {
     // Get userId for identifier
@@ -64,7 +64,7 @@ grpc::Status UserWithdraw::doProcess(
 
     // Add withdrawal
     withdrawalId =
-        db::createWithdrawal(connection, withdrawalUUID, userId,
+        db::createWithdrawal(connection, withdrawalUUID.toString(), userId,
                              request->amount(), request->payoutaddress());
 
     // Add user account balance entry

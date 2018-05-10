@@ -21,6 +21,7 @@ class UUID {
   static constexpr uint32_t UUID_SIZE = 64;
   static UUID generate();
 
+  UUID();
   explicit UUID(const std::string& str);
 
   operator const char*() const;
@@ -30,21 +31,20 @@ class UUID {
   const std::array<uint8_t, UUID_SIZE>& data() const;
 
  private:
-  UUID() = default;
   std::array<uint8_t, UUID_SIZE> _data;
 };
 
 bool operator==(hub::crypto::UUID lhs, hub::crypto::UUID rhs);
 bool operator!=(hub::crypto::UUID lhs, hub::crypto::UUID rhs);
 
+static constexpr auto TRYTE_CHARS = "9ABCDEFGHIJKLMNOPQRSTUVWXYZ";
+static constexpr uint8_t MIN_TRYTE = 'A';
+static constexpr uint8_t MAX_TRYTE = 'Z';
+static constexpr uint8_t NULL_TRYTE = '9';
+
 template <std::size_t N>
 class TryteArray {
  public:
-  static constexpr auto TRYTE_CHARS = "9ABCDEFGHIJKLMNOPQRSTUVWXYZ";
-  static constexpr uint8_t MIN_TRYTE = 'A';
-  static constexpr uint8_t MAX_TRYTE = 'Z';
-  static constexpr uint8_t NULL_TRYTE = '9';
-
   void validateSize(std::size_t size) {
     if (size != N) {
       throw std::runtime_error(
@@ -101,10 +101,58 @@ bool operator!=(hub::crypto::TryteArray<N> lhs,
   return !(lhs == rhs);
 }
 
-using Hash = TryteArray<81>;
-using Address = TryteArray<81>;
+struct HashTag {
+  static constexpr uint32_t SIZE = 81;
+};
+struct AddressTag {
+  static constexpr uint32_t SIZE = 81;
+};
 
-}  // namespace crypto
+template <typename Tag>
+class TryteArrayType {};
+
+template <>
+class TryteArrayType<HashTag> {
+ public:
+  const TryteArray<HashTag::SIZE>& data() { return _data; }
+  uint32_t size() const { return _data.size(); }
+  std::string toString() const { return _data.toString(); }
+  explicit TryteArrayType(const std::string& data) : _data(data) {}
+
+  explicit TryteArrayType(const char* data) : _data(std::string(data)) {}
+
+ private:
+  TryteArray<HashTag::SIZE> _data;
+};
+template <>
+class TryteArrayType<AddressTag> {
+ public:
+  const TryteArray<AddressTag::SIZE>& data() { return _data; }
+  uint32_t size() const { return _data.size(); }
+  std::string toString() const { return _data.toString(); }
+  explicit TryteArrayType(const std::string& data) : _data(data) {}
+
+  explicit TryteArrayType(const char* data) : _data(std::string(data)) {}
+
+ private:
+  TryteArray<AddressTag::SIZE> _data;
+};
+
+template <typename Tag>
+bool operator==(hub::crypto::TryteArrayType<Tag> lhs,
+                hub::crypto::TryteArrayType<Tag> rhs) {
+  return lhs.data() == rhs.data();
+}
+template <typename Tag>
+bool operator!=(hub::crypto::TryteArrayType<Tag> lhs,
+                hub::crypto::TryteArrayType<Tag> rhs) {
+  return !(lhs == rhs);
+}
+
+using Hash = TryteArrayType<HashTag>;
+using Address = TryteArrayType<AddressTag>;
+
+};  // namespace crypto
 }  // namespace hub
 
 #endif  // HUB_CRYPTO_TYPES_H_
