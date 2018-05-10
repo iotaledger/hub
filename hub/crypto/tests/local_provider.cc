@@ -23,7 +23,7 @@ TEST_F(LocalProviderTest, EnforceMinimumSeedLength) {
 
 TEST_F(LocalProviderTest, ShouldReturnValidAddress) {
   LocalProvider provider(std::string("abcdefgh"));
-  auto uuid = UUID::generate();
+  UUID uuid;
   auto address = provider.getAddressForUUID(uuid);
 
   EXPECT_EQ(address.size(), 81);
@@ -31,7 +31,7 @@ TEST_F(LocalProviderTest, ShouldReturnValidAddress) {
 
 TEST_F(LocalProviderTest, ConstantAddressForUUID) {
   LocalProvider provider(std::string("abcdefgh"));
-  auto uuid = UUID::generate();
+  UUID uuid;
   auto address1 = provider.getAddressForUUID(uuid);
   auto address2 = provider.getAddressForUUID(uuid);
 
@@ -40,8 +40,8 @@ TEST_F(LocalProviderTest, ConstantAddressForUUID) {
 
 TEST_F(LocalProviderTest, DifferentUUIDsHaveDifferentAddresses) {
   LocalProvider provider(std::string("abcdefgh"));
-  auto uuid1 = UUID::generate();
-  auto uuid2 = UUID::generate();
+  UUID uuid1;
+  UUID uuid2;
   EXPECT_NE(uuid1, uuid2);
 
   auto address1 = provider.getAddressForUUID(uuid1);
@@ -52,7 +52,7 @@ TEST_F(LocalProviderTest, DifferentUUIDsHaveDifferentAddresses) {
 
 TEST_F(LocalProviderTest, ShouldOnlySignOnce) {
   LocalProvider provider(std::string("abcdefgh"));
-  auto uuid = UUID::generate();
+  UUID uuid;
 
   auto& connection = db::DBManager::get().connection();
 

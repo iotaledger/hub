@@ -46,7 +46,7 @@ grpc::Status GetDepositAddress::doProcess(
     userId = maybeUserId.value();
   }
 
-  auto uuid = hub::crypto::UUID::generate();
+  hub::crypto::UUID uuid;
   auto address =
       hub::crypto::CryptoManager::get().provider().getAddressForUUID(uuid);
 

@@ -15,7 +15,7 @@ namespace hub {
 class ClientSession {
  public:
   ClientSession()
-      : _tag(hub::crypto::UUID::generate()),
+      : _tag(hub::crypto::UUID()),
         _str(rep_str()) {}
 
   ~ClientSession() { LOG(INFO) << *this << "destroyed."; }
