@@ -88,9 +88,9 @@ bool HubServer::authenticateSalt() const {
 
   const auto& provider = crypto::CryptoManager::get().provider();
   const auto& [existantAddress, uuid] = addAndUuidRes.value();
-  auto address = provider.getAddressForUUID(uuid);
+  auto address = provider.getAddressForUUID(crypto::UUID(uuid));
 
-  return address == existantAddress;
+  return address.toString() == existantAddress;
 }
 
 }  // namespace hub

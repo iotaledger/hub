@@ -15,7 +15,7 @@
 #include "schema/schema.h"
 
 #include "hub/commands/helper.h"
-#include "hub/crypto/random_generator.h"
+#include "hub/crypto/types.h"
 
 namespace hub {
 namespace cmd {
@@ -30,8 +30,8 @@ grpc::Status UserWithdraw::doProcess(
   uint64_t userId;
   uint64_t balance;
   uint64_t withdrawalId;
-  auto withdrawalUUID =
-      crypto::generateBase64RandomString(crypto::BITS_384);
+
+  auto withdrawalUUID = hub::crypto::UUID::generate().toString();
 
   try {
     // Get userId for identifier

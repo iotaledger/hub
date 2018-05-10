@@ -9,14 +9,13 @@
 
 #include <glog/logging.h>
 
-#include "hub/crypto/random_generator.h"
+#include "hub/crypto/types.h"
 
 namespace hub {
 class ClientSession {
  public:
   ClientSession()
-      : _tag(hub::crypto::generateBase64RandomString(
-            hub::crypto::BITS_384)),
+      : _tag(hub::crypto::UUID::generate()),
         _str(rep_str()) {}
 
   ~ClientSession() { LOG(INFO) << *this << "destroyed."; }

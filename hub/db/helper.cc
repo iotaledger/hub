@@ -150,10 +150,10 @@ std::optional<AddressWithUUID> selectFirstUserAddress(Connection& connection) {
   return std::make_tuple(std::move(row.address), row.seedUuid);
 }
 
-void markUUIDAsSigned(Connection& connection, const std::string& uuid) {
+void markUUIDAsSigned(Connection& connection, const std::string& uuidString) {
   db::sql::SignedUuids tbl;
 
-  connection(insert_into(tbl).set(tbl.uuid = uuid));
+  connection(insert_into(tbl).set(tbl.uuid = uuidString));
 }
 
 std::vector<UserBalanceEvent> getUserAccountBalances(Connection& connection,
