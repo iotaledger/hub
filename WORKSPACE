@@ -66,6 +66,13 @@ new_git_repository(
     remote = "https://github.com/rbock/sqlpp11-connector-sqlite3.git",
 )
 
+new_git_repository(
+    name = "sqlpp11mysql",
+    build_file = "BUILD.sqlpp11mysql",
+    commit = "8a48bc2d6157fc445cda5b9beac9b7901fff625c",
+    remote = "https://github.com/rbock/sqlpp11-connector-mysql.git",
+)
+
 new_http_archive(
     name = "argon2",
     build_file = "BUILD.argon2",
