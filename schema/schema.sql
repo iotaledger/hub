@@ -1,35 +1,45 @@
 -- We're not normalising seeds into a table of their own on purpose.
 
 CREATE TABLE IF NOT EXISTS user_account (
-  id INTEGER PRIMARY KEY AUTOINCREMENT,
-  identifier VARCHAR NOT NULL UNIQUE
+  id INTEGER PRIMARY KEY /*!40101 AUTO_INCREMENT */,
+  identifier VARCHAR(64) NOT NULL UNIQUE
 );
-CREATE INDEX IF NOT EXISTS idx_user_account_identifier ON user_account(identifier);
+
+CREATE INDEX idx_user_account_identifier ON user_account(identifier);
 
 CREATE TABLE IF NOT EXISTS user_address (
-  id INTEGER PRIMARY KEY AUTOINCREMENT,
+  id INTEGER PRIMARY KEY /*!40101 AUTO_INCREMENT */,
   address CHAR(81) NOT NULL,
   user_id INTEGER NOT NULL,
-  seed_uuid TEXT NOT NULL,
+  seed_uuid CHAR(64) NOT NULL,
   created_at DATETIME DEFAULT CURRENT_TIMESTAMP NOT NULL,
   FOREIGN KEY (user_id) REFERENCES user_account(id)
 );
 
-CREATE INDEX IF NOT EXISTS idx_user_address_address ON user_address(address);
+CREATE INDEX idx_user_address_address ON user_address(address);
 
 CREATE TABLE IF NOT EXISTS hub_address (
-  id INTEGER PRIMARY KEY AUTOINCREMENT,
+  id INTEGER PRIMARY KEY /*!40101 AUTO_INCREMENT */,
   address CHAR(81) NOT NULL,
-  seed_uuid TEXT NOT NULL,
+  seed_uuid CHAR(64) NOT NULL,
   is_cold_storage INTEGER DEFAULT 0 NOT NULL,
   created_at DATETIME DEFAULT CURRENT_TIMESTAMP NOT NULL
 );
 
-CREATE INDEX IF NOT EXISTS idx_hub_address_address ON hub_address(address);
+CREATE INDEX idx_hub_address_address ON hub_address(address);
+
+CREATE TABLE IF NOT EXISTS sweep (
+  id INTEGER PRIMARY KEY /*!40101 AUTO_INCREMENT */,
+  bundle_hash CHAR(81) NOT NULL UNIQUE,
+  trytes TEXT NOT NULL,
+  into_hub_address INTEGER NOT NULL,
+  created_at DATETIME DEFAULT CURRENT_TIMESTAMP NOT NULL,
+  FOREIGN KEY (into_hub_address) REFERENCES hub_address(id)
+);
 
 -- reason: 0 INBOUND 1 OUTBOUND
 CREATE TABLE IF NOT EXISTS hub_address_balance (
-  id INTEGER PRIMARY KEY AUTOINCREMENT,
+  id INTEGER PRIMARY KEY /*!40101 AUTO_INCREMENT */,
   hub_address INTEGER NOT NULL,
   amount INTEGER NOT NULL,
   reason INTEGER NOT NULL,
@@ -40,21 +50,12 @@ CREATE TABLE IF NOT EXISTS hub_address_balance (
   FOREIGN KEY (sweep) REFERENCES sweep(id)
 );
 
-CREATE INDEX IF NOT EXISTS idx_hub_address_balance_reason ON hub_address_balance(hub_address, reason);
-
-CREATE TABLE IF NOT EXISTS sweep (
-  id INTEGER PRIMARY KEY AUTOINCREMENT,
-  bundle_hash CHAR(81) NOT NULL UNIQUE,
-  trytes TEXT NOT NULL,
-  into_hub_address INTEGER NOT NULL,
-  created_at DATETIME DEFAULT CURRENT_TIMESTAMP NOT NULL,
-  FOREIGN KEY (into_hub_address) REFERENCES hub_address(id)
-);
+CREATE INDEX idx_hub_address_balance_reason ON hub_address_balance(hub_address, reason);
 
 -- reason: 0 DEPOSIT 1 SWEEP
 -- if user_address_balance is NE 0 for a given user_account, then this user_account's funds have not been swept yet.
 CREATE TABLE IF NOT EXISTS user_address_balance (
-  id INTEGER PRIMARY KEY AUTOINCREMENT,
+  id INTEGER PRIMARY KEY /*!40101 AUTO_INCREMENT */,
   user_address INTEGER NOT NULL,
   amount INTEGER NOT NULL,
   reason INTEGER NOT NULL,
@@ -63,16 +64,16 @@ CREATE TABLE IF NOT EXISTS user_address_balance (
   -- nullable if not swept yet
   sweep INTEGER DEFAULT NULL,
   occured_at DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
-  CONSTRAINT reason_amount CHECK ((reason = 0 and tail_hash not null and amount > 0) or (reason = 1 and sweep not null and amount < 0)),
+  CONSTRAINT reason_amount CHECK ((reason = 0 and tail_hash is not null and amount > 0) or (reason = 1 and sweep is not null and amount < 0)),
   FOREIGN KEY (user_address) REFERENCES user_address(id),
   FOREIGN KEY (sweep) REFERENCES sweep(id)
 );
 
-CREATE INDEX IF NOT EXISTS idx_user_address_reason ON user_address_balance(user_address, reason);
+CREATE INDEX idx_user_address_reason ON user_address_balance(user_address, reason);
 
 CREATE TABLE IF NOT EXISTS withdrawal (
-  id INTEGER PRIMARY KEY AUTOINCREMENT,
-  uuid TEXT UNIQUE NOT NULL,
+  id INTEGER PRIMARY KEY /*!40101 AUTO_INCREMENT */,
+  uuid CHAR(16) UNIQUE NOT NULL,
   user_id INTEGER NOT NULL,
   amount INTEGER NOT NULL,
   -- payout address
@@ -86,8 +87,8 @@ CREATE TABLE IF NOT EXISTS withdrawal (
   FOREIGN KEY (user_id) REFERENCES user_account(id)
 );
 
-CREATE INDEX IF NOT EXISTS idx_withdrawal_uuid ON withdrawal(uuid);
-CREATE INDEX IF NOT EXISTS idx_withdrawal_cancelled_at ON withdrawal(cancelled_at);
+CREATE INDEX idx_withdrawal_uuid ON withdrawal(uuid);
+CREATE INDEX idx_withdrawal_cancelled_at ON withdrawal(cancelled_at);
 
 -- reason: 0 SWEEP 1 BUY 2 WITHDRAW_CANCEL 3 WITHDRAW 4 SELL
 CREATE TABLE IF NOT EXISTS user_account_balance (
@@ -98,10 +99,10 @@ CREATE TABLE IF NOT EXISTS user_account_balance (
   withdrawal INTEGER,
   occured_at DATETIME DEFAULT CURRENT_TIMESTAMP NOT NULL,
   CONSTRAINT reason_amount CHECK (
-    (reason = 0 and sweep not null and amount > 0) or
+    (reason = 0 and sweep is not null and amount > 0) or
     (reason = 1 and amount > 0) or
-    (reason = 2 and withdrawal not null and amount > 0) or
-    (reason = 3 and withdrawal not null and amount < 0) or
+    (reason = 2 and withdrawal is not null and amount > 0) or
+    (reason = 3 and withdrawal is not null and amount < 0) or
     (reason = 4 and amount < 0)
   ),
   FOREIGN KEY (user_id) REFERENCES user_account(id),
@@ -109,18 +110,18 @@ CREATE TABLE IF NOT EXISTS user_account_balance (
   FOREIGN KEY (withdrawal) REFERENCES withdrawal(id)
 );
 
-CREATE INDEX IF NOT EXISTS idx_user_account_balance_by_user_id ON user_account_balance(user_id);
+CREATE INDEX idx_user_account_balance_by_user_id ON user_account_balance(user_id);
 
 CREATE TABLE IF NOT EXISTS sweep_tails (
   hash CHAR(81) PRIMARY KEY NOT NULL,
   sweep INTEGER NOT NULL,
-  confirmed INTEGER DEFAULT (0) NOT NULL,
-  created_at DATETIME DEFAULT CURRENT_TIMESTAMP NOT NULL,
+  confirmed INTEGER NOT NULL DEFAULT 0,
+  created_at DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
   FOREIGN KEY (sweep) REFERENCES sweep(id)
 );
 
-CREATE INDEX IF NOT EXISTS idx_pending_tails_by_sweep ON sweep_tails(sweep);
+CREATE INDEX idx_pending_tails_by_sweep ON sweep_tails(sweep);
 
 CREATE TABLE IF NOT EXISTS signed_uuids(
-  uuid TEXT PRIMARY KEY NOT NULL UNIQUE
+  uuid CHAR(64) PRIMARY KEY NOT NULL UNIQUE
 );
