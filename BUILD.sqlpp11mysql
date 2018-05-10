@@ -1,0 +1,9 @@
+cc_library(
+    name="sqlpp11mysql",
+    hdrs=glob(["include/**"]),
+    srcs=glob(["src/**/*.cpp", "src/**/*.h"]),
+    strip_include_prefix="include",
+    linkopts=["-lmariadb"],
+    copts=["-I/usr/include/mysql"],
+    deps=["@sqlpp11//:sqlpp11"],
+    visibility=["//visibility:public"])
