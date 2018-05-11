@@ -19,30 +19,32 @@ class UUID {
   static constexpr auto BASE64_CHARS =
       "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/";
   static constexpr uint32_t UUID_SIZE = 64;
-  static UUID generate();
 
   UUID();
-  explicit UUID(const std::string& str);
+  explicit UUID(const std::string_view& sv);
 
   operator const char*() const;
 
-  std::string toString() const;
+  std::string str() const;
+
+  std::string_view strView() const;
 
   const std::array<uint8_t, UUID_SIZE>& data() const;
 
  private:
+  static std::array<uint8_t, UUID_SIZE> generate();
   std::array<uint8_t, UUID_SIZE> _data;
 };
 
-bool operator==(hub::crypto::UUID lhs, hub::crypto::UUID rhs);
-bool operator!=(hub::crypto::UUID lhs, hub::crypto::UUID rhs);
+bool operator==(const hub::crypto::UUID& lhs, const hub::crypto::UUID& rhs);
+bool operator!=(const hub::crypto::UUID& lhs, const hub::crypto::UUID& rhs);
 
 static constexpr auto TRYTE_CHARS = "9ABCDEFGHIJKLMNOPQRSTUVWXYZ";
 static constexpr uint8_t MIN_TRYTE = 'A';
 static constexpr uint8_t MAX_TRYTE = 'Z';
 static constexpr uint8_t NULL_TRYTE = '9';
 
-template <std::size_t N>
+template <std::size_t N, typename TAG>
 class TryteArray {
  public:
   void validateSize(std::size_t size) {
@@ -65,24 +67,18 @@ class TryteArray {
                                " contains invalid characters");
     }
 
-    for (uint32_t i = 0; i < N; ++i) {
-      _data[i] = data[i];
-    }
+    std::copy(std::begin(data), std::end(data), std::begin(_data));
   }
 
   explicit TryteArray(const char* data) : TryteArray(std::string(data)) {}
 
-  const std::array<uint8_t, N>& data() { return _data; }
-
-  std::string toString() const {
-    std::stringstream ss;
-    for (auto i : _data) {
-      ss << i;
-    }
-    return ss.str();
-  }
-
   const std::array<uint8_t, N>& data() const { return _data; }
+
+  std::string str() const { return std::string(strView()); }
+
+  std::string_view strView() const {
+    return std::string_view(reinterpret_cast<const char*>(_data.data()), N);
+  }
 
   uint32_t size() const { return _data.size(); }
 
@@ -90,67 +86,22 @@ class TryteArray {
   std::array<uint8_t, N> _data;
 };
 
-template <std::size_t N>
-bool operator==(hub::crypto::TryteArray<N> lhs,
-                hub::crypto::TryteArray<N> rhs) {
+template <std::size_t N, typename TAG>
+bool operator==(const hub::crypto::TryteArray<N, TAG>& lhs,
+                const hub::crypto::TryteArray<N, TAG>& rhs) {
   return lhs.data() == rhs.data();
 }
-template <std::size_t N>
-bool operator!=(hub::crypto::TryteArray<N> lhs,
-                hub::crypto::TryteArray<N> rhs) {
+template <std::size_t N, typename TAG>
+bool operator!=(const hub::crypto::TryteArray<N, TAG>& lhs,
+                const hub::crypto::TryteArray<N, TAG>& rhs) {
   return !(lhs == rhs);
 }
 
-struct HashTag {
-  static constexpr uint32_t SIZE = 81;
-};
-struct AddressTag {
-  static constexpr uint32_t SIZE = 81;
-};
+struct HashTag {};
+struct AddressTag {};
 
-template <typename Tag>
-class TryteArrayType {};
-
-template <>
-class TryteArrayType<HashTag> {
- public:
-  const TryteArray<HashTag::SIZE>& data() { return _data; }
-  uint32_t size() const { return _data.size(); }
-  std::string toString() const { return _data.toString(); }
-  explicit TryteArrayType(const std::string& data) : _data(data) {}
-
-  explicit TryteArrayType(const char* data) : _data(std::string(data)) {}
-
- private:
-  TryteArray<HashTag::SIZE> _data;
-};
-template <>
-class TryteArrayType<AddressTag> {
- public:
-  const TryteArray<AddressTag::SIZE>& data() { return _data; }
-  uint32_t size() const { return _data.size(); }
-  std::string toString() const { return _data.toString(); }
-  explicit TryteArrayType(const std::string& data) : _data(data) {}
-
-  explicit TryteArrayType(const char* data) : _data(std::string(data)) {}
-
- private:
-  TryteArray<AddressTag::SIZE> _data;
-};
-
-template <typename Tag>
-bool operator==(hub::crypto::TryteArrayType<Tag> lhs,
-                hub::crypto::TryteArrayType<Tag> rhs) {
-  return lhs.data() == rhs.data();
-}
-template <typename Tag>
-bool operator!=(hub::crypto::TryteArrayType<Tag> lhs,
-                hub::crypto::TryteArrayType<Tag> rhs) {
-  return !(lhs == rhs);
-}
-
-using Hash = TryteArrayType<HashTag>;
-using Address = TryteArrayType<AddressTag>;
+using Hash = TryteArray<81, HashTag>;
+using Address = TryteArray<81, AddressTag>;
 
 };  // namespace crypto
 }  // namespace hub

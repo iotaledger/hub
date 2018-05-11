@@ -13,14 +13,18 @@ using namespace hub::crypto;
 
 namespace {
 
+struct TestTag {};
+
+using TestArr = TryteArray<12, HashTag>;
+
 class TrytesArrayTest : public hub::Test {};
 
 TEST_F(TrytesArrayTest, EnforceCorrectLength) {
-  EXPECT_THROW(TryteArray<81>{""}, std::runtime_error);
+  EXPECT_THROW(TestArr{""}, std::runtime_error);
 }
 
 TEST_F(TrytesArrayTest, EnforceValidCharacters) {
-  EXPECT_THROW(TryteArray<12>{"WhatTheHell?"}, std::runtime_error);
+  EXPECT_THROW(TestArr{"WhatTheHell?"}, std::runtime_error);
 }
 
 TEST_F(TrytesArrayTest, AssertInternalRepresentationIsConsistent) {
@@ -28,16 +32,18 @@ TEST_F(TrytesArrayTest, AssertInternalRepresentationIsConsistent) {
       "AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA"
       "AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA";
   Hash testHash(data);
-  ASSERT_EQ(testHash.toString(), data);
+  ASSERT_EQ(testHash.str(), data);
 }
 
 class UUIDTest : public hub::Test {};
 
 TEST_F(UUIDTest, AssertInternalRepresentationIsConsistent) {
-  auto uuidOrig = UUID::generate();
-  auto stringRepresentation = uuidOrig.toString();
+  UUID uuidOrig;
+  std::string_view stringRepresentation = uuidOrig.strView();
+
   auto uuidClone = UUID(stringRepresentation);
-  ASSERT_EQ(uuidClone.toString(), stringRepresentation);
+
+  ASSERT_EQ(uuidClone.str(), uuidOrig.str());
 }
 
 };  // namespace

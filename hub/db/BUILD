@@ -10,7 +10,9 @@ cc_library(
     ),
     visibility = ["//visibility:public"],
     deps = [
+        "//hub/crypto:types",
         "//schema",
+        "@boost//:uuid",
         "@com_github_gflags_gflags//:gflags",
         "@com_github_google_glog//:glog",
         "@sqlpp11",

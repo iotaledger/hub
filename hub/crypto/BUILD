@@ -34,9 +34,6 @@ cc_library(
         "types.h",
     ],
     visibility = ["//visibility:public"],
-    deps = [
-        "//hub/db",
-    ],
 )
 
 cc_test(

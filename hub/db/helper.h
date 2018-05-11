@@ -24,6 +24,7 @@
 #include "hub/db/db.h"
 #include "hub/db/types.h"
 #include "schema/schema.h"
+#include "hub/crypto/types.h"
 
 namespace hub {
 namespace db {
@@ -52,13 +53,13 @@ void createUserAccountBalanceEntry(Connection& connection, uint64_t userId,
 
 uint64_t createWithdrawal(Connection& connection, const std::string& uuid,
                           uint64_t userId, uint64_t amount,
-                          const std::string& payoutAddress);
+                          const hub::crypto::Address& payoutAddress);
 
 size_t cancelWithdrawal(Connection& connection, const std::string& uuid);
 
 std::optional<AddressWithUUID> selectFirstUserAddress(Connection& connection);
 
-void markUUIDAsSigned(Connection& connection, const std::string& uuidString);
+void markUUIDAsSigned(Connection& connection, const hub::crypto::UUID& uuid);
 
 std::vector<UserBalanceEvent> getUserAccountBalances(Connection& connection,
                                                      uint64_t userId);
