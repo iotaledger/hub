@@ -90,7 +90,7 @@ bool HubServer::authenticateSalt() const {
   const auto& [existantAddress, uuid] = addAndUuidRes.value();
   auto address = provider.getAddressForUUID(crypto::UUID(uuid));
 
-  return address.toString() == existantAddress;
+  return address.strView() == existantAddress;
 }
 
 }  // namespace hub

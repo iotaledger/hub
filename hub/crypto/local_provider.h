@@ -19,8 +19,8 @@ class LocalProvider : public CryptoProvider {
   Address getAddressForUUID(const UUID& uuid) const override;
 
  protected:
-  std::string doGetSignatureForUUID(
-      const UUID& uuid, const Hash& bundleHash) const override;
+  std::string doGetSignatureForUUID(const UUID& uuid,
+                                    const Hash& bundleHash) const override;
 
  private:
   const std::string _salt;

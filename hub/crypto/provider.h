@@ -20,14 +20,14 @@ class CryptoProvider {
   std::string getSignatureForUUID(const UUID& uuid,
                                   hub::db::Connection& connection,
                                   const Hash& bundleHash) const {
-    db::markUUIDAsSigned(connection, uuid.toString());
+    db::markUUIDAsSigned(connection, uuid);
 
     return doGetSignatureForUUID(uuid, bundleHash);
   }
 
  protected:
-  virtual std::string doGetSignatureForUUID(
-      const UUID& uuid, const Hash& bundleHash) const = 0;
+  virtual std::string doGetSignatureForUUID(const UUID& uuid,
+                                            const Hash& bundleHash) const = 0;
 };
 
 }  // namespace crypto

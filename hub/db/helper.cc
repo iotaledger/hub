@@ -111,12 +111,12 @@ void createUserAccountBalanceEntry(Connection& connection, uint64_t userId,
 
 uint64_t createWithdrawal(Connection& connection, const std::string& uuid,
                           uint64_t userId, uint64_t amount,
-                          const std::string& payoutAddress) {
+                          const hub::crypto::Address& payoutAddress) {
   db::sql::Withdrawal tbl;
 
   connection(insert_into(tbl).set(tbl.uuid = uuid, tbl.userId = userId,
                                   tbl.amount = amount,
-                                  tbl.payoutAddress = payoutAddress));
+                                  tbl.payoutAddress = payoutAddress.str()));
 
   return connection.last_insert_id();
 }
@@ -150,10 +150,10 @@ std::optional<AddressWithUUID> selectFirstUserAddress(Connection& connection) {
   return std::make_tuple(std::move(row.address), row.seedUuid);
 }
 
-void markUUIDAsSigned(Connection& connection, const std::string& uuidString) {
+void markUUIDAsSigned(Connection& connection, const hub::crypto::UUID& uuid) {
   db::sql::SignedUuids tbl;
 
-  connection(insert_into(tbl).set(tbl.uuid = uuidString));
+  connection(insert_into(tbl).set(tbl.uuid = uuid.str()));
 }
 
 std::vector<UserBalanceEvent> getUserAccountBalances(Connection& connection,

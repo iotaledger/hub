@@ -7,6 +7,9 @@
 #include <sqlpp11/connection.h>
 #include <sqlpp11/functions.h>
 #include <sqlpp11/select.h>
+#include <boost/uuid/random_generator.hpp>
+#include <boost/uuid/uuid.hpp>
+#include <boost/uuid/uuid_io.hpp>
 
 #include "hub/db/db.h"
 #include "hub/db/helper.h"
@@ -31,7 +34,8 @@ grpc::Status UserWithdraw::doProcess(
   uint64_t balance;
   uint64_t withdrawalId;
 
-  hub::crypto::UUID withdrawalUUID;
+  auto withdrawalUUID = boost::uuids::random_generator()();
+  auto payoutAddress = hub::crypto::Address(request->payoutaddress());
 
   try {
     // Get userId for identifier
@@ -63,16 +67,16 @@ grpc::Status UserWithdraw::doProcess(
     }
 
     // Add withdrawal
-    withdrawalId =
-        db::createWithdrawal(connection, withdrawalUUID.toString(), userId,
-                             request->amount(), request->payoutaddress());
+    withdrawalId = db::createWithdrawal(
+        connection, boost::uuids::to_string(withdrawalUUID), userId,
+        request->amount(), payoutAddress);
 
     // Add user account balance entry
     db::createUserAccountBalanceEntry(connection, userId, request->amount(),
                                       db::UserAccountBalanceReason::WITHDRAWAL,
                                       withdrawalId);
 
-    response->set_uuid(withdrawalUUID);
+    response->set_uuid(boost::uuids::to_string(withdrawalUUID));
 
   cleanup:
     if (errorCode) {
