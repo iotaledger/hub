@@ -15,7 +15,7 @@ namespace {
 
 struct TestTag {};
 
-using TestArr = TryteArray<12, HashTag>;
+using TestArr = TryteArray<12, TestTag>;
 
 class TrytesArrayTest : public hub::Test {};
 
@@ -39,7 +39,7 @@ class UUIDTest : public hub::Test {};
 
 TEST_F(UUIDTest, AssertInternalRepresentationIsConsistent) {
   UUID uuidOrig;
-  std::string_view stringRepresentation = uuidOrig.strView();
+  std::string_view stringRepresentation = uuidOrig.str_view();
 
   auto uuidClone = UUID(stringRepresentation);
 
