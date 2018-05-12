@@ -1,0 +1,35 @@
+// Copyright 2018 IOTA Foundation
+
+#include <sqlpp11/mysql/connection.h>
+
+#include <memory>
+#include <utility>
+
+#include "hub/db/db.h"
+#include "hub/db/mysql.h"
+
+namespace hub {
+namespace db {
+
+namespace mysql = sqlpp::mysql;
+
+template <>
+std::unique_ptr<mysql::connection>
+ConnectionImpl<mysql::connection, mysql::connection_config>::fromConfig(
+    const Config& config) {
+  auto db = std::make_shared<mysql::connection_config>();
+  db->debug = config.debug;
+
+  db->user = config.user;
+  db->password = config.password;
+  db->host = config.host;
+  db->port = config.port;
+
+  auto conn = std::make_unique<mysql::connection>(std::move(db));
+  conn->execute("SET SESSION TRANSACTION ISOLATION LEVEL SERIALIZABLE");
+
+  return conn;
+}
+
+}  // namespace db
+}  // namespace hub

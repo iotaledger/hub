@@ -2,12 +2,8 @@
 
 #include "hub/commands/get_deposit_address.h"
 
+#include <sqlpp11/exception.h>
 #include <cstdint>
-
-#include <sqlpp11/connection.h>
-#include <sqlpp11/functions.h>
-#include <sqlpp11/insert.h>
-#include <sqlpp11/transaction.h>
 
 #include "hub/commands/helper.h"
 #include "hub/crypto/manager.h"
@@ -18,25 +14,19 @@
 #include "proto/hub.pb.h"
 #include "schema/schema.h"
 
-namespace {
-SQLPP_ALIAS_PROVIDER(total);
-}
-
 namespace hub {
 namespace cmd {
 
 grpc::Status GetDepositAddress::doProcess(
     const hub::rpc::GetDepositAddressRequest* request,
     hub::rpc::GetDepositAddressReply* response) noexcept {
-  db::sql::UserAddress userAddress;
-
   uint64_t userId;
 
   auto& connection = db::DBManager::get().connection();
 
   // Get userId for identifier
   {
-    auto maybeUserId = db::userIdFromIdentifier(connection, request->userid());
+    auto maybeUserId = connection.userIdFromIdentifier(request->userid());
     if (!maybeUserId) {
       return grpc::Status(
           grpc::StatusCode::FAILED_PRECONDITION, "",
@@ -53,24 +43,18 @@ grpc::Status GetDepositAddress::doProcess(
   response->set_address(address.str());
 
   // Add new user address.
-  sqlpp::transaction_t<hub::db::Connection> transaction(connection, true);
+  auto transaction = connection.transaction();
   try {
-    connection(insert_into(userAddress)
-                   .set(userAddress.address = address.str(),
-                        userAddress.userId = userId,
-                        userAddress.seedUuid = uuid.str()));
-    transaction.commit();
+    connection.createUserAddress(address, userId, uuid);
+    transaction->commit();
   } catch (sqlpp::exception& ex) {
     LOG(ERROR) << session() << " Commit failed: " << ex.what();
-    transaction.rollback();
 
     return grpc::Status(grpc::StatusCode::FAILED_PRECONDITION, "",
                         errorToString(hub::rpc::ErrorCode::EC_UNKNOWN));
   }
 
   return grpc::Status::OK;
+}
 }  // namespace cmd
-
-}  // namespace cmd
-
 }  // namespace hub

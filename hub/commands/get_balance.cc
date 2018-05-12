@@ -27,7 +27,7 @@ grpc::Status GetBalance::doProcess(
 
   // Get userId for identifier
   {
-    auto maybeUserId = db::userIdFromIdentifier(connection, request->userid());
+    auto maybeUserId = connection.userIdFromIdentifier(request->userid());
     if (!maybeUserId) {
       return grpc::Status(
           grpc::StatusCode::FAILED_PRECONDITION, "",
@@ -39,7 +39,7 @@ grpc::Status GetBalance::doProcess(
 
   // Summarise all amounts for user_account_balance changes
   {
-    auto maybeAmount = db::availableBalanceForUser(connection, userId);
+    auto maybeAmount = connection.availableBalanceForUser(userId);
 
     if (!maybeAmount) {
       return grpc::Status(grpc::StatusCode::FAILED_PRECONDITION, "",

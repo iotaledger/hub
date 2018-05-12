@@ -82,7 +82,7 @@ void HubServer::runAndWait() { _server->Wait(); }
 
 bool HubServer::authenticateSalt() const {
   auto& connection = db::DBManager::get().connection();
-  auto addAndUuidRes = db::selectFirstUserAddress(connection);
+  auto addAndUuidRes = connection.selectFirstUserAddress();
 
   if (!addAndUuidRes.has_value()) return true;
 
