@@ -20,19 +20,24 @@ std::array<uint8_t, UUID::UUID_SIZE> UUID::generate() {
   return res;
 }
 
-UUID::UUID() : _data(std::move(UUID::generate())) {}
-
-UUID::UUID(const std::string_view& sv) {
-  std::copy(std::begin(sv), std::end(sv), std::begin(_data));
+std::array<uint8_t, UUID::UUID_SIZE> UUID::fromStringView(
+    const std::string_view& sv) {
+  std::array<uint8_t, UUID_SIZE> res;
+  std::copy(std::begin(sv), std::end(sv), std::begin(res));
+  return res;
 }
 
-std::string UUID::str() const { return std::string(strView()); }
+UUID::UUID() : _data(std::move(UUID::generate())) {}
 
-std::string_view UUID::strView() const {
+UUID::UUID(const std::string_view& sv) : _data(std::move(fromStringView(sv))) {}
+
+std::string UUID::str() const { return std::string(str_view()); }
+
+std::string_view UUID::str_view() const {
   return std::string_view(reinterpret_cast<const char*>(_data.data()),
                           UUID_SIZE);
 }
-UUID::operator const char*() const { return strView().data(); }
+UUID::operator const char*() const { return str_view().data(); }
 
 const std::array<uint8_t, hub::crypto::UUID::UUID_SIZE>& UUID::data() const {
   return _data;

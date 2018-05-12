@@ -27,13 +27,15 @@ class UUID {
 
   std::string str() const;
 
-  std::string_view strView() const;
+  std::string_view str_view() const;
 
   const std::array<uint8_t, UUID_SIZE>& data() const;
 
  private:
   static std::array<uint8_t, UUID_SIZE> generate();
-  std::array<uint8_t, UUID_SIZE> _data;
+  static std::array<uint8_t, UUID_SIZE> fromStringView(
+      const std::string_view& sv);
+  const std::array<uint8_t, UUID_SIZE> _data;
 };
 
 bool operator==(const hub::crypto::UUID& lhs, const hub::crypto::UUID& rhs);
@@ -56,15 +58,15 @@ class TryteArray {
     }
   }
 
-  explicit TryteArray(const std::string& data) {
+  explicit TryteArray(const std::string_view& data) {
     validateSize(data.size());
 
     if (!std::all_of(data.begin(), data.end(), [](char c) {
           return ((c >= MIN_TRYTE && c <= MAX_TRYTE) || c == NULL_TRYTE);
         })) {
       throw std::runtime_error(__FUNCTION__ +
-                               std::string(" initialization string: ") + data +
-                               " contains invalid characters");
+                               std::string(" initialization string: ") +
+                               data.data() + " contains invalid characters");
     }
 
     std::copy(std::begin(data), std::end(data), std::begin(_data));
@@ -74,9 +76,9 @@ class TryteArray {
 
   const std::array<uint8_t, N>& data() const { return _data; }
 
-  std::string str() const { return std::string(strView()); }
+  std::string str() const { return std::string(str_view()); }
 
-  std::string_view strView() const {
+  std::string_view str_view() const {
     return std::string_view(reinterpret_cast<const char*>(_data.data()), N);
   }
 

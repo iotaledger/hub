@@ -52,7 +52,7 @@ TryteSeedPtr seedFromUUID(const hub::crypto::UUID& uuid,
   });
 
   argon2i_hash_raw(_argon_t_cost, _argon_m_cost, _argon_parallelism,
-                   uuid.strView().data(), hub::crypto::UUID::UUID_SIZE,
+                   uuid.str_view().data(), hub::crypto::UUID::UUID_SIZE,
                    _salt.c_str(), _salt.length(), byteSeed.data(), BYTE_LEN);
 
   bytes_to_trits(byteSeed.data(), seed.data());
@@ -94,7 +94,7 @@ std::string LocalProvider::doGetSignatureForUUID(const hub::crypto::UUID& uuid,
 
   auto sig =
       iota_sign_signature_gen((const char*)seedFromUUID(uuid, _salt)->data(),
-                              KEY_IDX, KEY_SEC, bundleHash.strView().data());
+                              KEY_IDX, KEY_SEC, bundleHash.str_view().data());
   std::string ret = sig;
   std::free(sig);
 
