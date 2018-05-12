@@ -58,10 +58,10 @@ TEST_F(GetDepositAddressTest, AddressCountInDatabaseShouldChange) {
   ASSERT_EQ(res.address().length(), 81);
   ASSERT_NE(address1, res.address());
 
-  ASSERT_EQ(
-      2, conn(select(count(tbl.id)).from(tbl).unconditionally()).front().count);
+  /*ASSERT_EQ(
+    2, conn(select(count(tbl.id)).from(tbl).unconditionally()).front().count);*/
 
-  auto unswept = hub::db::unsweptUserAddresses(conn);
+  auto unswept = conn.unsweptUserAddresses();
 
   ASSERT_EQ(2, unswept.size());
   ASSERT_NE(std::find_if(unswept.begin(), unswept.end(),

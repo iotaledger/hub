@@ -20,7 +20,7 @@ class CryptoProvider {
   std::string getSignatureForUUID(const UUID& uuid,
                                   hub::db::Connection& connection,
                                   const Hash& bundleHash) const {
-    db::markUUIDAsSigned(connection, uuid);
+    connection.markUUIDAsSigned(uuid);
 
     return doGetSignatureForUUID(uuid, bundleHash);
   }

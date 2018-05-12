@@ -16,6 +16,7 @@ cc_library(
         "@com_github_gflags_gflags//:gflags",
         "@com_github_google_glog//:glog",
         "@sqlpp11",
+        "@sqlpp11mysql",
         "@sqlpp11sqlite",
     ],
 )

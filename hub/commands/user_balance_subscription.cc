@@ -45,7 +45,7 @@ grpc::Status UserBalanceSubscription::doProcess(
 
 std::vector<db::UserBalanceEvent> UserBalanceSubscription::getAccountBalances(
     std::chrono::system_clock::time_point newerThan) {
-  return db::getAccountBalances(db::DBManager::get().connection(), newerThan);
+  return db::DBManager::get().connection().getAccountBalances(newerThan);
 }
 
 }  // namespace cmd

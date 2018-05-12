@@ -2,11 +2,23 @@
 
 #include "hub/db/helper.h"
 
+#include <sqlpp11/functions.h>
+#include <sqlpp11/insert.h>
+#include <sqlpp11/schema.h>
+#include <sqlpp11/select.h>
+#include <sqlpp11/sqlpp11.h>
+#include <sqlpp11/transaction.h>
+#include <sqlpp11/update.h>
+
+#include <sqlpp11/mysql/connection.h>
+#include <sqlpp11/sqlite3/connection.h>
+
 namespace hub {
 namespace db {
 
-std::optional<int64_t> userIdFromIdentifier(Connection& connection,
-                                            const std::string& identifier) {
+template <typename C>
+std::optional<int64_t> helper<C>::userIdFromIdentifier(
+    C& connection, const std::string& identifier) {
   db::sql::UserAccount acc;
 
   const auto result =
@@ -19,7 +31,8 @@ std::optional<int64_t> userIdFromIdentifier(Connection& connection,
   }
 }
 
-std::vector<AddressWithID> unsweptUserAddresses(Connection& connection) {
+template <typename C>
+std::vector<AddressWithID> helper<C>::unsweptUserAddresses(C& connection) {
   db::sql::UserAddress addr;
   db::sql::UserAddressBalance bal;
 
@@ -38,8 +51,9 @@ std::vector<AddressWithID> unsweptUserAddresses(Connection& connection) {
   return addresses;
 }
 
-std::vector<std::string> tailsForAddress(Connection& connection,
-                                         uint64_t userId) {
+template <typename C>
+std::vector<std::string> helper<C>::tailsForAddress(C& connection,
+                                                    uint64_t userId) {
   db::sql::UserAddressBalance bal;
 
   std::vector<std::string> tails;
@@ -54,8 +68,9 @@ std::vector<std::string> tailsForAddress(Connection& connection,
   return tails;
 }
 
-std::optional<uint64_t> availableBalanceForUser(Connection& connection,
-                                                uint64_t userId) {
+template <typename C>
+std::optional<uint64_t> helper<C>::availableBalanceForUser(C& connection,
+                                                           uint64_t userId) {
   db::sql::UserAccountBalance bal;
 
   const auto result = connection(select(sum(bal.amount).as(sqlpp::alias::a))
@@ -69,11 +84,29 @@ std::optional<uint64_t> availableBalanceForUser(Connection& connection,
   return result.front().a;
 }
 
-void createUserAddressBalanceEntry(Connection& connection, uint64_t addressId,
-                                   int64_t amount,
-                                   const UserAddressBalanceReason reason,
-                                   std::optional<std::string> tailHash,
-                                   std::optional<uint64_t> sweepId) {
+template <typename C>
+void helper<C>::createUser(C& connection, const std::string& identifier) {
+  db::sql::UserAccount userAccount;
+
+  connection(insert_into(userAccount).set(userAccount.identifier = identifier));
+}
+
+template <typename C>
+void helper<C>::createUserAddress(C& connection, const std::string& address,
+                                  uint64_t userId, const std::string& uuid) {
+  db::sql::UserAddress userAddress;
+
+  connection(insert_into(userAddress)
+                 .set(userAddress.address = address,
+                      userAddress.userId = userId,
+                      userAddress.seedUuid = uuid));
+}
+
+template <typename C>
+void helper<C>::createUserAddressBalanceEntry(
+    C& connection, uint64_t addressId, int64_t amount,
+    const UserAddressBalanceReason reason, std::optional<std::string> tailHash,
+    std::optional<uint64_t> sweepId) {
   db::sql::UserAddressBalance bal;
 
   if (reason == UserAddressBalanceReason::DEPOSIT) {
@@ -88,10 +121,10 @@ void createUserAddressBalanceEntry(Connection& connection, uint64_t addressId,
   }
 }
 
-void createUserAccountBalanceEntry(Connection& connection, uint64_t userId,
-                                   int64_t amount,
-                                   const UserAccountBalanceReason reason,
-                                   const std::optional<uint64_t> fkey) {
+template <typename C>
+void helper<C>::createUserAccountBalanceEntry(
+    C& connection, uint64_t userId, int64_t amount,
+    const UserAccountBalanceReason reason, const std::optional<uint64_t> fkey) {
   db::sql::UserAccountBalance bal;
 
   if (reason == UserAccountBalanceReason::SWEEP) {
@@ -109,19 +142,19 @@ void createUserAccountBalanceEntry(Connection& connection, uint64_t userId,
   }
 }
 
-uint64_t createWithdrawal(Connection& connection, const std::string& uuid,
-                          uint64_t userId, uint64_t amount,
-                          const hub::crypto::Address& payoutAddress) {
+template <typename C>
+uint64_t helper<C>::createWithdrawal(
+    C& connection, const std::string& uuid, uint64_t userId, uint64_t amount,
+    const hub::crypto::Address& payoutAddress) {
   db::sql::Withdrawal tbl;
 
-  connection(insert_into(tbl).set(tbl.uuid = uuid, tbl.userId = userId,
-                                  tbl.amount = amount,
-                                  tbl.payoutAddress = payoutAddress.str()));
-
-  return connection.last_insert_id();
+  return connection(insert_into(tbl).set(
+      tbl.uuid = uuid, tbl.userId = userId, tbl.amount = amount,
+      tbl.payoutAddress = payoutAddress.str()));
 }
 
-size_t cancelWithdrawal(Connection& connection, const std::string& uuid) {
+template <typename C>
+size_t helper<C>::cancelWithdrawal(C& connection, const std::string& uuid) {
   db::sql::Withdrawal tbl;
   auto now = ::sqlpp::chrono::floor<::std::chrono::milliseconds>(
       std::chrono::system_clock::now());
@@ -131,8 +164,9 @@ size_t cancelWithdrawal(Connection& connection, const std::string& uuid) {
                         .where(tbl.uuid == uuid && tbl.sweep.is_null()));
 }
 
-using AddressWithUUID = std::tuple<std::string, std::string>;
-std::optional<AddressWithUUID> selectFirstUserAddress(Connection& connection) {
+template <typename C>
+std::optional<AddressWithUUID> helper<C>::selectFirstUserAddress(
+    C& connection) {
   db::sql::UserAddress addr;
   auto result = connection(select(addr.seedUuid, addr.address)
                                .from(addr)
@@ -150,14 +184,16 @@ std::optional<AddressWithUUID> selectFirstUserAddress(Connection& connection) {
   return std::make_tuple(std::move(row.address), row.seedUuid);
 }
 
-void markUUIDAsSigned(Connection& connection, const hub::crypto::UUID& uuid) {
+template <typename C>
+void helper<C>::markUUIDAsSigned(C& connection, const hub::crypto::UUID& uuid) {
   db::sql::SignedUuids tbl;
 
   connection(insert_into(tbl).set(tbl.uuid = uuid.str()));
 }
 
-std::vector<UserBalanceEvent> getUserAccountBalances(Connection& connection,
-                                                     uint64_t userId) {
+template <typename C>
+std::vector<UserBalanceEvent> helper<C>::getUserAccountBalances(
+    C& connection, uint64_t userId) {
   db::sql::UserAccountBalance bal;
   db::sql::UserAccount acc;
   auto result =
@@ -178,9 +214,9 @@ std::vector<UserBalanceEvent> getUserAccountBalances(Connection& connection,
   return balances;
 }
 
-std::vector<Sweep> getUnconfirmedSweeps(
-    Connection& connection,
-    const std::chrono::system_clock::time_point& olderThan) {
+template <typename C>
+std::vector<Sweep> helper<C>::getUnconfirmedSweeps(
+    C& connection, const std::chrono::system_clock::time_point& olderThan) {
   db::sql::Sweep swp;
   db::sql::SweepTails tls;
 
@@ -214,15 +250,17 @@ std::vector<Sweep> getUnconfirmedSweeps(
   return sweeps;
 }
 
-void createTail(Connection& connection, uint64_t sweepId,
-                const std::string& hash) {
+template <typename C>
+void helper<C>::createTail(C& connection, uint64_t sweepId,
+                           const std::string& hash) {
   db::sql::SweepTails tls;
 
   connection(insert_into(tls).set(tls.sweep = sweepId, tls.hash = hash));
 }
 
-std::vector<std::string> getTailsForSweep(Connection& connection,
-                                          uint64_t sweepId) {
+template <typename C>
+std::vector<std::string> helper<C>::getTailsForSweep(C& connection,
+                                                     uint64_t sweepId) {
   db::sql::SweepTails tls;
   std::vector<std::string> tails;
 
@@ -240,13 +278,16 @@ std::vector<std::string> getTailsForSweep(Connection& connection,
   return tails;
 }
 
-void markTailAsConfirmed(Connection& connection, const std::string& hash) {
+template <typename C>
+void helper<C>::markTailAsConfirmed(C& connection, const std::string& hash) {
   db::sql::SweepTails tbl;
 
   connection(update(tbl).set(tbl.confirmed = 1).where(tbl.hash == hash));
 }
-std::vector<UserBalanceEvent> getAccountBalances(
-    Connection& connection, std::chrono::system_clock::time_point newerThan) {
+
+template <typename C>
+std::vector<UserBalanceEvent> helper<C>::getAccountBalances(
+    C& connection, std::chrono::system_clock::time_point newerThan) {
   db::sql::UserAccountBalance bal;
   db::sql::UserAccount acc;
   auto result =
@@ -266,8 +307,10 @@ std::vector<UserBalanceEvent> getAccountBalances(
   }
   return balances;
 }
-void insertUserTransfers(Connection& connection,
-                         std::vector<UserTransfer> transfers) {
+
+template <typename C>
+void helper<C>::insertUserTransfers(
+    C& connection, const std::vector<UserTransfer>& transfers) {
   db::sql::UserAccountBalance bal;
 
   if (transfers.empty()) {
@@ -286,8 +329,9 @@ void insertUserTransfers(Connection& connection,
   connection(multi_insert);
 }
 
-std::map<std::string, int64_t> userIdsFromIdentifiers(
-    Connection& connection, const std::set<std::string>& identifiers) {
+template <typename C>
+std::map<std::string, int64_t> helper<C>::userIdsFromIdentifiers(
+    C& connection, const std::set<std::string>& identifiers) {
   db::sql::UserAccount acc;
   std::map<std::string, int64_t> identifierToId;
   auto result =
@@ -301,8 +345,9 @@ std::map<std::string, int64_t> userIdsFromIdentifiers(
   return identifierToId;
 }
 
-std::map<uint64_t, int64_t> getTotalAmountForUsers(
-    Connection& connection, const std::set<uint64_t>& ids) {
+template <typename C>
+std::map<uint64_t, int64_t> helper<C>::getTotalAmountForUsers(
+    C& connection, const std::set<uint64_t>& ids) {
   db::sql::UserAccountBalance bal;
 
   auto result =
@@ -318,8 +363,9 @@ std::map<uint64_t, int64_t> getTotalAmountForUsers(
   return identifierToTotal;
 }
 
+template <typename C>
 std::map<uint64_t, int64_t> getTotalAmountForAddresses(
-    Connection& connection, const std::set<uint64_t>& ids) {
+    C& connection, const std::set<uint64_t>& ids) {
   db::sql::UserAddressBalance bal;
 
   auto result =
@@ -334,6 +380,9 @@ std::map<uint64_t, int64_t> getTotalAmountForAddresses(
   }
   return addressIdToTotal;
 }
+
+template struct helper<sqlpp::mysql::connection>;
+template struct helper<sqlpp::sqlite3::connection>;
 
 }  // namespace db
 }  // namespace hub

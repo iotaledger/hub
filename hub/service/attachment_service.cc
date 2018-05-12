@@ -27,7 +27,7 @@ bool AttachmentService::checkSweepTailsForConfirmation(
   if (confirmedTails.size() == 1) {
     const auto& tail = *confirmedTails.cbegin();
     LOG(INFO) << "Marking tail as confirmed: " << tail;
-    db::markTailAsConfirmed(connection, tail);
+    connection.markTailAsConfirmed(tail);
     return true;
   } else if (confirmedTails.size() > 1) {
     LOG(FATAL) << "More than one confirmed tail!!!";
@@ -68,10 +68,10 @@ bool AttachmentService::checkForUserReattachment(
       // FIXME what if error logic more than one confirmed tail
       const auto& tail = *confirmedTails.cbegin();
       LOG(INFO) << "Inserting confirmed user-attached tail: " << tail;
-      db::createTail(connection, sweep.id, tail);
+      connection.createTail(sweep.id, tail);
 
       LOG(INFO) << "Marking tail as confirmed: " << tail;
-      db::markTailAsConfirmed(connection, tail);
+      connection.markTailAsConfirmed(tail);
       return true;
     }
 
@@ -82,7 +82,7 @@ bool AttachmentService::checkForUserReattachment(
     if (consistentTails.size() != 0) {
       for (const auto& tail : consistentTails) {
         LOG(INFO) << "Inserting UNconfirmed user-attached tail: " << tail;
-        db::createTail(connection, sweep.id, tail);
+        connection.createTail(sweep.id, tail);
       }
     }
   }
@@ -100,7 +100,7 @@ void AttachmentService::reattachSweep(db::Connection& dbConnection,
   _api->storeTransactions(attachedTrytes);
   _api->broadcastTransactions(attachedTrytes);
 
-  db::createTail(dbConnection, sweep.id, tailHash);
+  dbConnection.createTail(sweep.id, tailHash);
 }
 
 bool AttachmentService::doTick() {
@@ -117,16 +117,16 @@ bool AttachmentService::doTick() {
   auto milestone = _api->getNodeInfo().latestMilestone;
 
   // 1. Get Unconfirmed sweeps from database.
-  auto unconfirmedSweeps = db::getUnconfirmedSweeps(connection, tickStart);
+  auto unconfirmedSweeps = connection.getUnconfirmedSweeps(tickStart);
   LOG(INFO) << "Found " << unconfirmedSweeps.size() << " unconfirmed sweeps.";
 
   for (const auto& sweep : unconfirmedSweeps) {
-    sqlpp::transaction_t<hub::db::Connection> transaction(connection, true);
+    auto transaction = connection.transaction();
 
     try {
       // 2. Get (tails, timestamp) for these sweeps
       {
-        const auto sweepTails = db::getTailsForSweep(connection, sweep.id);
+        const auto sweepTails = connection.getTailsForSweep(sweep.id);
 
         // 3. Check if one of the tails is confirmed.
         if (checkSweepTailsForConfirmation(connection, sweep, sweepTails)) {
@@ -142,7 +142,7 @@ bool AttachmentService::doTick() {
       {
         // Requerying list of tails because `checkForUserReattachment` might
         // have added some.
-        const auto sweepTails = db::getTailsForSweep(connection, sweep.id);
+        const auto sweepTails = connection.getTailsForSweep(sweep.id);
         auto consistentTails = _api->filterConsistentTails(sweepTails);
         // 5.1. If yes, pick most recent and promote.
         if (consistentTails.size() > 0) {
@@ -162,11 +162,10 @@ bool AttachmentService::doTick() {
 
       // 6. If not, reattach and commit tail to DB.
       LOG(INFO) << "Sweep " << sweep.id << " is still unconfirmed.";
-      transaction.commit();
+      transaction->commit();
     } catch (const std::exception& ex) {
       LOG(ERROR) << "Sweep " << sweep.id
                  << " failed to commit to DB: " << ex.what();
-      transaction.rollback();
     }
   }
 
