@@ -26,7 +26,7 @@ struct Config {
   std::string user;
   std::string password;
 
-  bool debug;
+  bool debug {false};
 };
 
 class Connection;

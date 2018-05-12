@@ -27,8 +27,7 @@ namespace db {
 template <typename Conn>
 class TransactionImpl : public Transaction {
  public:
-  explicit TransactionImpl(sqlpp::transaction_t<Conn>&& transaction)
-      : _transaction(std::move(transaction)) {}
+  explicit TransactionImpl(Conn& connection) : _transaction(connection, true) {}
 
   void commit() override { _transaction.commit(); }
   void rollback() override { _transaction.rollback(); }
@@ -47,7 +46,7 @@ class ConnectionImpl : public virtual Connection {
   std::unique_ptr<Conn> fromConfig(const Config& config);
 
   std::unique_ptr<Transaction> transaction() override {
-    return std::make_unique<TransactionImpl<Conn>>(std::move(sqlTransaction()));
+    return std::make_unique<TransactionImpl<Conn>>(*_conn);
   }
 
   void createUser(const std::string& identifier) override {
@@ -159,11 +158,6 @@ class ConnectionImpl : public virtual Connection {
   }
 
   void execute(const std::string& what) override { _conn->execute(what); }
-
- protected:
-  sqlpp::transaction_t<Conn> sqlTransaction() {
-    return sqlpp::transaction_t<Conn>(*_conn, true);
-  }
 
  private:
   std::unique_ptr<Conn> _conn;
