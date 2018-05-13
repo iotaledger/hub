@@ -82,8 +82,13 @@ bool UserAddressMonitor::onBalancesChanged(
       }
 
       if (aggregateSum != change.delta) {
-        LOG(ERROR) << "On-Tangle sum did not match expected. Expected: "
-                   << change.delta << " but saw: " << aggregateSum;
+        LOG(ERROR)
+            << "On-Tangle sum did not match expected. Expected (getBalances): "
+            << change.delta << " observed: " << aggregateSum;
+        goto cleanup;
+      }
+
+      if (!validateBalanceIsConsistent(change.address, change.addressId)) {
         goto cleanup;
       }
     }
@@ -105,6 +110,30 @@ bool UserAddressMonitor::onBalancesChanged(
   }
 
   return false;
+}
+
+bool UserAddressMonitor::validateBalanceIsConsistent(const std::string& address,
+                                                     uint64_t addressId) {
+  auto& connection = db::DBManager::get().connection();
+  const auto& iriBalances = _api->getBalances({address});
+  const auto& dbBalances =
+      db::getTotalAmountForAddresses(connection, {addressId});
+
+  if (iriBalances.size() != 1 || dbBalances.size() != 1) {
+    LOG(ERROR) << "Could not get balance for address: \n" + address;
+    return false;
+  }
+
+  auto observedBalance = iriBalances.begin()->second;
+  auto expectedBalance = dbBalances.begin()->second;
+  if (observedBalance < expectedBalance) {
+    LOG(ERROR) << "Observed sum is less than expected. Expected (db): "
+               << expectedBalance
+               << " Observed (getBalances): " << observedBalance;
+    return false;
+  }
+
+  return true;
 }
 
 }  // namespace service

@@ -314,5 +314,22 @@ std::map<uint64_t, int64_t> getTotalAmountForUsers(
   return identifierToTotal;
 }
 
+std::map<uint64_t, int64_t> getTotalAmountForAddresses(
+    Connection& connection, const std::set<uint64_t>& ids) {
+  db::sql::UserAddressBalance bal;
+
+  auto result =
+      connection(select(bal.userAddress, sum(bal.amount).as(sqlpp::alias::a))
+                     .from(bal)
+                     .where(bal.userAddress.in(sqlpp::value_list(ids)))
+                     .group_by(bal.userAddress));
+
+  std::map<std::uint64_t, int64_t> addressIdToTotal;
+  for (auto& row : result) {
+    addressIdToTotal.insert(std::pair(row.userAddress, row.a));
+  }
+  return addressIdToTotal;
+}
+
 }  // namespace db
 }  // namespace hub

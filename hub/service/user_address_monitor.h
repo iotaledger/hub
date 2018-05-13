@@ -23,6 +23,10 @@ class UserAddressMonitor : public AddressMonitor {
       const std::vector<AddressMonitor::BalanceChange>& changed) override;
 
   const std::string name() const override { return "UserAddressMonitor"; }
+
+ protected:
+  bool validateBalanceIsConsistent(const std::string& address,
+                                   uint64_t addressId);
 };
 
 }  // namespace service
