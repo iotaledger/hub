@@ -88,6 +88,9 @@ std::map<std::string, int64_t> userIdsFromIdentifiers(
 std::map<uint64_t, int64_t> getTotalAmountForUsers(
     Connection& connection, const std::set<uint64_t>& ids);
 
+std::map<uint64_t, int64_t> getTotalAmountForAddresses(
+    Connection& connection, const std::set<uint64_t>& ids);
+
 }  // namespace db
 }  // namespace hub
 
