@@ -21,10 +21,10 @@
 #include <sqlpp11/transaction.h>
 #include <sqlpp11/update.h>
 
+#include "hub/crypto/types.h"
 #include "hub/db/db.h"
 #include "hub/db/types.h"
 #include "schema/schema.h"
-#include "hub/crypto/types.h"
 
 namespace hub {
 namespace db {
