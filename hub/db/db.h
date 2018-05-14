@@ -22,11 +22,12 @@ struct Config {
 
   std::string host;
   uint32_t port;
+  std::string database;
 
   std::string user;
   std::string password;
 
-  bool debug {false};
+  bool debug{false};
 };
 
 class Connection;
@@ -37,7 +38,7 @@ class Connection;
 ***/
 class DBManager {
  private:
-  DBManager() {}
+  DBManager() { loadConnectionConfigFromArgs(); }
 
  public:
   static DBManager& get();
@@ -46,6 +47,8 @@ class DBManager {
   void loadSchema(bool removeExisting);
 
   void resetConnection();
+
+  void loadConnectionConfigFromArgs();
   void setConnectionConfig(Config config) { _config = std::move(config); }
   const Config& config() const { return _config; }
 

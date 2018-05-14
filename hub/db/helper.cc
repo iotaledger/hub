@@ -92,14 +92,16 @@ void helper<C>::createUser(C& connection, const std::string& identifier) {
 }
 
 template <typename C>
-void helper<C>::createUserAddress(C& connection, const std::string& address,
-                                  uint64_t userId, const std::string& uuid) {
+void helper<C>::createUserAddress(C& connection,
+                                  const hub::crypto::Address& address,
+                                  uint64_t userId,
+                                  const hub::crypto::UUID& uuid) {
   db::sql::UserAddress userAddress;
 
   connection(insert_into(userAddress)
-                 .set(userAddress.address = address,
+                 .set(userAddress.address = address.str(),
                       userAddress.userId = userId,
-                      userAddress.seedUuid = uuid));
+                      userAddress.seedUuid = uuid.str()));
 }
 
 template <typename C>
@@ -364,7 +366,7 @@ std::map<uint64_t, int64_t> helper<C>::getTotalAmountForUsers(
 }
 
 template <typename C>
-std::map<uint64_t, int64_t> getTotalAmountForAddresses(
+std::map<uint64_t, int64_t> helper<C>::getTotalAmountForAddresses(
     C& connection, const std::set<uint64_t>& ids) {
   db::sql::UserAddressBalance bal;
 

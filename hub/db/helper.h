@@ -31,8 +31,8 @@ struct helper {
   static std::optional<uint64_t> availableBalanceForUser(C& connection,
                                                          uint64_t userId);
   static void createUser(C& connection, const std::string& identifier);
-  static void createUserAddress(C& connection, const std::string& address,
-                                uint64_t userId, const std::string& uuid);
+  static void createUserAddress(C& connection, const hub::crypto::Address& address,
+                                uint64_t userId, const hub::crypto::UUID& uuid);
   static void createUserAddressBalanceEntry(
       C& connection, uint64_t addressId, int64_t amount,
       const UserAddressBalanceReason reason,
@@ -46,7 +46,7 @@ struct helper {
                                    const hub::crypto::Address& payoutAddress);
   static size_t cancelWithdrawal(C& connection, const std::string& uuid);
   static std::optional<AddressWithUUID> selectFirstUserAddress(C& connection);
-  static void markUUIDAsSigned(C& connection, const std::string& uuid);
+  static void markUUIDAsSigned(C& connection, const hub::crypto::UUID& uuid);
   static std::vector<UserBalanceEvent> getUserAccountBalances(C& connection,
                                                               uint64_t userId);
   static std::vector<Sweep> getUnconfirmedSweeps(

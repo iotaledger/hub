@@ -20,7 +20,7 @@ ConnectionImpl<sqlite::connection, sqlite::connection_config>::fromConfig(
   sqlite::connection_config db;
 
   db.debug = config.debug;
-  db.path_to_database = config.host;
+  db.path_to_database = config.database;
   db.flags = SQLITE_OPEN_READWRITE | SQLITE_OPEN_CREATE;
 
   auto conn = std::make_unique<sqlite::connection>(db);

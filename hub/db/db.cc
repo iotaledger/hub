@@ -9,8 +9,8 @@
 #include <glog/logging.h>
 
 #include "hub/db/connection.h"
+#include "hub/db/mariadb.h"
 #include "hub/db/sqlite3.h"
-#include "hub/db/mysql.h"
 
 namespace {
 thread_local static std::unique_ptr<hub::db::Connection> tl_connection;
@@ -19,13 +19,23 @@ thread_local static std::unique_ptr<hub::db::Connection> tl_connection;
 namespace hub {
 namespace db {
 
-DEFINE_string(db, "hub.db", "Path to sqlite3 database");
-DEFINE_bool(dbInit, false, "Initialise db on startup");
+DEFINE_string(dbType, "mariadb", "Type of DB");
+DEFINE_string(dbHost, "127.0.0.1", "Database server host");
+DEFINE_uint32(dbPort, 3306, "Database server port");
+DEFINE_string(db, "hub", "Database name");
+DEFINE_string(dbUser, "user", "Database user");
+DEFINE_string(dbPassword, "password", "Database user password");
+DEFINE_bool(dbDebug, false, "Enable debug mode for database connection");
 
 DBManager& DBManager::get() {
   static DBManager instance;
 
   return instance;
+}
+
+void DBManager::loadConnectionConfigFromArgs() {
+  setConnectionConfig({FLAGS_dbType, FLAGS_dbHost, FLAGS_dbPort, FLAGS_db,
+                       FLAGS_dbUser, FLAGS_dbPassword, FLAGS_dbDebug});
 }
 
 void DBManager::resetConnection() { tl_connection = nullptr; }
@@ -65,8 +75,8 @@ Connection& DBManager::connection() {
 
   if (_config.type == "sqlite3") {
     tl_connection = std::make_unique<SQLite3Connection>(_config);
-  } else if (_config.type == "mysql") {
-    tl_connection = std::make_unique<MySQLConnection>(_config);
+  } else if (_config.type == "mariadb") {
+    tl_connection = std::make_unique<MariaDBConnection>(_config);
   } else {
     throw new std::runtime_error("Invalid DB schema");
   }

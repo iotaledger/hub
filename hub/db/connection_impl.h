@@ -16,6 +16,7 @@
 
 #include <sqlpp11/transaction.h>
 
+#include "hub/crypto/types.h"
 #include "hub/db/connection.h"
 #include "hub/db/db.h"
 #include "hub/db/helper.h"
@@ -70,8 +71,8 @@ class ConnectionImpl : public virtual Connection {
     return db::helper<Conn>::availableBalanceForUser(*_conn, userId);
   }
 
-  void createUserAddress(const std::string& address, uint64_t userId,
-                         const std::string& uuid) override {
+  void createUserAddress(const hub::crypto::Address& address, uint64_t userId,
+                         const hub::crypto::UUID& uuid) override {
     db::helper<Conn>::createUserAddress(*_conn, address, userId, uuid);
   }
 
@@ -91,9 +92,9 @@ class ConnectionImpl : public virtual Connection {
                                                     reason, std::move(fkey));
   }
 
-  uint64_t createWithdrawal(const std::string& uuid, uint64_t userId,
-                            uint64_t amount,
-                            const std::string& payoutAddress) override {
+  uint64_t createWithdrawal(
+      const std::string& uuid, uint64_t userId, uint64_t amount,
+      const hub::crypto::Address& payoutAddress) override {
     return db::helper<Conn>::createWithdrawal(*_conn, uuid, userId, amount,
                                               payoutAddress);
   }
@@ -106,7 +107,7 @@ class ConnectionImpl : public virtual Connection {
     return db::helper<Conn>::selectFirstUserAddress(*_conn);
   }
 
-  void markUUIDAsSigned(const std::string& uuid) override {
+  void markUUIDAsSigned(const hub::crypto::UUID& uuid) override {
     db::helper<Conn>::markUUIDAsSigned(*_conn, uuid);
   }
 

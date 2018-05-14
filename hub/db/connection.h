@@ -14,6 +14,7 @@
 #include <utility>
 #include <vector>
 
+#include "hub/crypto/types.h"
 #include "hub/db/db.h"
 #include "hub/db/helper.h"
 #include "hub/db/types.h"
@@ -42,17 +43,17 @@ class Connection {
   virtual void createUserAddressBalanceEntry(
       uint64_t addressId, int64_t amount, const UserAddressBalanceReason reason,
       std::optional<std::string> tailHash, std::optional<uint64_t> sweepId) = 0;
-  virtual void createUserAddress(const std::string& address, uint64_t userId,
-                                 const std::string& uuid) = 0;
+  virtual void createUserAddress(const hub::crypto::Address& address, uint64_t userId,
+                                 const hub::crypto::UUID& uuid) = 0;
   virtual void createUserAccountBalanceEntry(
       uint64_t userId, int64_t amount, const UserAccountBalanceReason reason,
       const std::optional<uint64_t> fkey = {}) = 0;
-  virtual uint64_t createWithdrawal(const std::string& uuid, uint64_t userId,
-                                    uint64_t amount,
-                                    const std::string& payoutAddress) = 0;
+  virtual uint64_t createWithdrawal(
+      const std::string& uuid, uint64_t userId, uint64_t amount,
+      const hub::crypto::Address& payoutAddress) = 0;
   virtual size_t cancelWithdrawal(const std::string& uuid) = 0;
   virtual std::optional<AddressWithUUID> selectFirstUserAddress() = 0;
-  virtual void markUUIDAsSigned(const std::string& uuid) = 0;
+  virtual void markUUIDAsSigned(const hub::crypto::UUID& uuid) = 0;
   virtual std::vector<UserBalanceEvent> getUserAccountBalances(
       uint64_t userId) = 0;
   virtual std::vector<Sweep> getUnconfirmedSweeps(

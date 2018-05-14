@@ -114,8 +114,7 @@ bool UserAddressMonitor::validateBalanceIsConsistent(const std::string& address,
                                                      uint64_t addressId) {
   auto& connection = db::DBManager::get().connection();
   const auto& iriBalances = _api->getBalances({address});
-  const auto& dbBalances =
-      db::getTotalAmountForAddresses(connection, {addressId});
+  const auto& dbBalances = connection.getTotalAmountForAddresses({addressId});
 
   if (iriBalances.size() != 1 || dbBalances.size() != 1) {
     LOG(ERROR) << "Could not get balance for address: \n" + address;
