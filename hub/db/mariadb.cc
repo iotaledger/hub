@@ -6,7 +6,7 @@
 #include <utility>
 
 #include "hub/db/db.h"
-#include "hub/db/mysql.h"
+#include "hub/db/mariadb.h"
 
 namespace hub {
 namespace db {
@@ -24,6 +24,7 @@ ConnectionImpl<mysql::connection, mysql::connection_config>::fromConfig(
   db->password = config.password;
   db->host = config.host;
   db->port = config.port;
+  db->database = config.database;
 
   auto conn = std::make_unique<mysql::connection>(std::move(db));
   conn->execute("SET SESSION TRANSACTION ISOLATION LEVEL SERIALIZABLE");

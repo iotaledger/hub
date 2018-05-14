@@ -1,7 +1,7 @@
 // Copyright 2018 IOTA Foundation
 
-#ifndef HUB_DB_MYSQL_H_
-#define HUB_DB_MYSQL_H_
+#ifndef HUB_DB_MARIADB_H_
+#define HUB_DB_MARIADB_H_
 
 #include <sqlpp11/mysql/connection.h>
 
@@ -11,7 +11,7 @@
 namespace hub {
 namespace db {
 
-class MySQLConnection : public ConnectionImpl<sqlpp::mysql::connection,
+class MariaDBConnection : public ConnectionImpl<sqlpp::mysql::connection,
                                               sqlpp::mysql::connection_config> {
   using ConnectionImpl<sqlpp::mysql::connection,
                        sqlpp::mysql::connection_config>::ConnectionImpl;
@@ -20,4 +20,4 @@ class MySQLConnection : public ConnectionImpl<sqlpp::mysql::connection,
 }  // namespace db
 }  // namespace hub
 
-#endif  // HUB_DB_MYSQL_H_
+#endif  // HUB_DB_MARIADB_H_
