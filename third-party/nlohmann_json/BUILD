@@ -1,7 +1,7 @@
 cc_library(
     name = "json",
     hdrs = glob(["include/**/*.hpp"]),
-    strip_include_prefix = "include/nlohmann",
     include_prefix = "nlohmann",
+    strip_include_prefix = "include/nlohmann",
     visibility = ["//visibility:public"],
 )
