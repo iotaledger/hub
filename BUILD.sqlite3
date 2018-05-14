@@ -1,13 +1,14 @@
 cc_library(
-    name="sqlite3",
-    srcs=["sqlite3.c"],
-    hdrs=[
+    name = "sqlite3",
+    srcs = ["sqlite3.c"],
+    hdrs = [
         "sqlite3.h",
         "sqlite3ext.h",
     ],
-    copts=[
+    copts = [
         "-DSQLITE_ENABLE_STAT4",
     ],
-    linkopts=["-ldl"],
-    include_prefix="",
-    visibility=["//visibility:public"])
+    linkopts = ["-ldl"],
+    include_prefix = "",
+    visibility = ["//visibility:public"],
+)
