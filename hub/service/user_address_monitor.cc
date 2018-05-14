@@ -105,6 +105,12 @@ bool UserAddressMonitor::onBalancesChanged(
     }
   } catch (sqlpp::exception& ex) {
     LOG(ERROR) << " Commit failed: " << ex.what();
+
+    try {
+      transaction->rollback();
+    } catch (const std::exception& ex) {
+      LOG(ERROR) << "Rollback failed: " << ex.what();
+    }
   }
 
   return false;
