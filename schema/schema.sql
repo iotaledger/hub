@@ -2,6 +2,7 @@
 
 CREATE TABLE IF NOT EXISTS user_account (
   id INTEGER PRIMARY KEY /*!40101 AUTO_INCREMENT */,
+  balance INTEGER DEFAULT 0 NOT NULL,
   identifier VARCHAR(64) NOT NULL UNIQUE
 );
 
@@ -13,6 +14,7 @@ CREATE TABLE IF NOT EXISTS user_address (
   user_id INTEGER NOT NULL,
   seed_uuid CHAR(64) NOT NULL,
   created_at DATETIME DEFAULT CURRENT_TIMESTAMP NOT NULL,
+  balance INTEGER DEFAULT 0 NOT NULL,
   FOREIGN KEY (user_id) REFERENCES user_account(id)
 );
 
@@ -23,8 +25,10 @@ CREATE TABLE IF NOT EXISTS hub_address (
   address CHAR(81) NOT NULL,
   seed_uuid CHAR(64) NOT NULL,
   is_cold_storage INTEGER DEFAULT 0 NOT NULL,
+  balance INTEGER DEFAULT 0 NOT NULL,
   created_at DATETIME DEFAULT CURRENT_TIMESTAMP NOT NULL
 );
+
 
 CREATE INDEX idx_hub_address_address ON hub_address(address);
 
@@ -50,6 +54,8 @@ CREATE TABLE IF NOT EXISTS hub_address_balance (
   FOREIGN KEY (sweep) REFERENCES sweep(id)
 );
 
+CREATE TRIGGER hub_address_balance_insert AFTER INSERT ON hub_address_balance FOR EACH ROW BEGIN UPDATE hub_address SET balance = (SELECT SUM(amount) FROM hub_address_balance WHERE hub_address = NEW.hub_address) WHERE id = NEW.hub_address; END;
+
 CREATE INDEX idx_hub_address_balance_reason ON hub_address_balance(hub_address, reason);
 
 -- reason: 0 DEPOSIT 1 SWEEP
@@ -68,6 +74,9 @@ CREATE TABLE IF NOT EXISTS user_address_balance (
   FOREIGN KEY (user_address) REFERENCES user_address(id),
   FOREIGN KEY (sweep) REFERENCES sweep(id)
 );
+
+CREATE TRIGGER user_address_balance_insert AFTER INSERT ON user_address_balance FOR EACH ROW BEGIN UPDATE user_address SET balance = (SELECT SUM(amount) FROM user_address_balance WHERE user_address = NEW.user_address) WHERE id = NEW.user_address; END;
+
 
 CREATE INDEX idx_user_address_reason ON user_address_balance(user_address, reason);
 
@@ -109,6 +118,8 @@ CREATE TABLE IF NOT EXISTS user_account_balance (
   FOREIGN KEY (sweep) REFERENCES sweep(id),
   FOREIGN KEY (withdrawal) REFERENCES withdrawal(id)
 );
+
+CREATE TRIGGER user_account_balance_insert AFTER INSERT ON user_account_balance FOR EACH ROW BEGIN UPDATE user_account SET balance = (SELECT SUM(amount) FROM user_account_balance WHERE user_id = NEW.user_id) WHERE id = NEW.user_id; END ;
 
 CREATE INDEX idx_user_account_balance_by_user_id ON user_account_balance(user_id);
 
