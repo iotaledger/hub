@@ -38,7 +38,7 @@ class TransactionImpl : public Transaction {
 };
 
 template <typename Conn, typename Conf>
-class ConnectionImpl : public virtual Connection {
+class ConnectionImpl : public Connection {
  public:
   explicit ConnectionImpl(const Config& config) {
     _conn = std::move(fromConfig(config));

@@ -31,7 +31,8 @@ struct helper {
   static std::optional<uint64_t> availableBalanceForUser(C& connection,
                                                          uint64_t userId);
   static void createUser(C& connection, const std::string& identifier);
-  static void createUserAddress(C& connection, const hub::crypto::Address& address,
+  static void createUserAddress(C& connection,
+                                const hub::crypto::Address& address,
                                 uint64_t userId, const hub::crypto::UUID& uuid);
   static void createUserAddressBalanceEntry(
       C& connection, uint64_t addressId, int64_t amount,

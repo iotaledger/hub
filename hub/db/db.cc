@@ -34,6 +34,10 @@ DBManager& DBManager::get() {
 }
 
 void DBManager::loadConnectionConfigFromArgs() {
+  if (FLAGS_dbType == "sqlite3") {
+    LOG(FATAL) << "sqlite3 is only supported for testing";
+  }
+
   setConnectionConfig({FLAGS_dbType, FLAGS_dbHost, FLAGS_dbPort, FLAGS_db,
                        FLAGS_dbUser, FLAGS_dbPassword, FLAGS_dbDebug});
 }
