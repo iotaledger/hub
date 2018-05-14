@@ -16,7 +16,5 @@ int main(int argc, char** argv) {
   gflags::ParseCommandLineFlags(&argc, &argv, true);
   testing::InitGoogleMock(&argc, argv);
 
-  hub::db::FLAGS_db = ":memory:";
-
   return RUN_ALL_TESTS();
 }

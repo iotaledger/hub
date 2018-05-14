@@ -22,7 +22,7 @@ class Test : public ::testing::Test {
     db::Config config;
 
     config.type = "sqlite3";
-    config.host = ":memory:";
+    config.database = ":memory:";
 
     auto db = hub::db::DBManager::get();
     db.setConnectionConfig(config);
