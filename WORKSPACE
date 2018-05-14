@@ -118,6 +118,14 @@ new_http_archive(
         "https://github.com/gvanas/KeccakCodePackage/archive/c737139c81fd191699886a9a74d3220f6e300b29.zip",
 )
 
+new_http_archive(
+    name = "mariadb_connector",
+    build_file = "BUILD.mariadb_connector",
+    sha256 = "6eff680cd429fdb32940f6ea4755a997dda1bb00f142f439071f752fd0b200cf",
+    strip_prefix = "mariadb-connector-c-3.0.4-src",
+    url = "http://ftp.hosteurope.de/mirror/mariadb.org//connector-c-3.0.4/mariadb-connector-c-3.0.4-src.tar.gz",
+)
+
 load(
     "@io_bazel_rules_docker//container:container.bzl",
     "container_pull",
