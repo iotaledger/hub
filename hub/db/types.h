@@ -26,6 +26,7 @@ using AddressWithID = std::tuple<uint64_t, std::string>;
 using AddressWithUUID = std::tuple<std::string, std::string>;
 
 struct UserBalanceEvent {
+  std::string userIdentifier;
   std::chrono::system_clock::time_point timestamp;
   int64_t amount;
   UserAccountBalanceReason type;

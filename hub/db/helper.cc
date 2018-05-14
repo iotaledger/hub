@@ -159,9 +159,11 @@ void markUUIDAsSigned(Connection& connection, const hub::crypto::UUID& uuid) {
 std::vector<UserBalanceEvent> getUserAccountBalances(Connection& connection,
                                                      uint64_t userId) {
   db::sql::UserAccountBalance bal;
-  auto result = connection(select(bal.amount, bal.reason, bal.occuredAt)
-                               .from(bal)
-                               .where(bal.userId == userId));
+  db::sql::UserAccount acc;
+  auto result =
+      connection(select(acc.identifier, bal.amount, bal.reason, bal.occuredAt)
+                     .from(bal.join(acc).on(bal.userId == acc.id))
+                     .where(bal.userId == userId));
 
   std::vector<UserBalanceEvent> balances;
 
@@ -169,7 +171,7 @@ std::vector<UserBalanceEvent> getUserAccountBalances(Connection& connection,
     std::chrono::time_point<std::chrono::system_clock> ts =
         row.occuredAt.value();
     UserBalanceEvent event = {
-        ts, row.amount,
+        std::move(row.identifier), ts, row.amount,
         static_cast<UserAccountBalanceReason>((row.reason.value()))};
     balances.emplace_back(std::move(event));
   }
@@ -246,10 +248,12 @@ void markTailAsConfirmed(Connection& connection, const std::string& hash) {
 std::vector<UserBalanceEvent> getAccountBalances(
     Connection& connection, std::chrono::system_clock::time_point newerThan) {
   db::sql::UserAccountBalance bal;
-  auto result = connection(select(bal.amount, bal.reason, bal.occuredAt)
-                               .from(bal)
-                               .where(bal.occuredAt >= newerThan)
-                               .order_by(bal.occuredAt.asc()));
+  db::sql::UserAccount acc;
+  auto result =
+      connection(select(acc.identifier, bal.amount, bal.reason, bal.occuredAt)
+                     .from(bal.join(acc).on(bal.userId == acc.id))
+                     .where(bal.occuredAt >= newerThan)
+                     .order_by(bal.occuredAt.asc()));
 
   std::vector<UserBalanceEvent> balances;
 
@@ -257,7 +261,7 @@ std::vector<UserBalanceEvent> getAccountBalances(
     std::chrono::time_point<std::chrono::system_clock> ts =
         row.occuredAt.value();
     balances.emplace_back(UserBalanceEvent{
-        ts, row.amount,
+        std::move(row.identifier), ts, row.amount,
         static_cast<UserAccountBalanceReason>((row.reason.value()))});
   }
   return balances;

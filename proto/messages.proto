@@ -165,10 +165,11 @@ enum UserBalanceEventType {
   SELL = 5;
 }
 message UserBalanceEvent {
+  string userId = 1;
   // Time since epoch in MS when the balance change occured
-                uint64 timestamp = 1;
-  UserBalanceEventType type      = 2;
-                 int64 amount    = 3;
+                uint64 timestamp = 2;
+  UserBalanceEventType type      = 3;
+                 int64 amount    = 4;
 }
 
 message GetUserHistoryReply {
