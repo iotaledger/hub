@@ -66,6 +66,13 @@ new_git_repository(
     remote = "https://github.com/rbock/sqlpp11-connector-sqlite3.git",
 )
 
+new_git_repository(
+    name = "sqlpp11mysql",
+    build_file = "BUILD.sqlpp11mysql",
+    commit = "8a48bc2d6157fc445cda5b9beac9b7901fff625c",
+    remote = "https://github.com/rbock/sqlpp11-connector-mysql.git",
+)
+
 new_http_archive(
     name = "argon2",
     build_file = "BUILD.argon2",
@@ -109,6 +116,14 @@ new_http_archive(
     strip_prefix = "KeccakCodePackage-c737139c81fd191699886a9a74d3220f6e300b29",
     url =
         "https://github.com/gvanas/KeccakCodePackage/archive/c737139c81fd191699886a9a74d3220f6e300b29.zip",
+)
+
+new_http_archive(
+    name = "mariadb_connector",
+    build_file = "BUILD.mariadb_connector",
+    sha256 = "6eff680cd429fdb32940f6ea4755a997dda1bb00f142f439071f752fd0b200cf",
+    strip_prefix = "mariadb-connector-c-3.0.4-src",
+    url = "http://ftp.hosteurope.de/mirror/mariadb.org//connector-c-3.0.4/mariadb-connector-c-3.0.4-src.tar.gz",
 )
 
 load(

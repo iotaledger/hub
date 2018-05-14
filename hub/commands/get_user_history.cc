@@ -28,7 +28,7 @@ grpc::Status GetUserHistory::doProcess(
 
   // Get userId for identifier
   {
-    auto maybeUserId = db::userIdFromIdentifier(connection, request->userid());
+    auto maybeUserId = connection.userIdFromIdentifier(request->userid());
     if (!maybeUserId) {
       return grpc::Status(
           grpc::StatusCode::FAILED_PRECONDITION, "",
@@ -39,7 +39,7 @@ grpc::Status GetUserHistory::doProcess(
   }
 
   {
-    auto balances = db::getUserAccountBalances(connection, userId);
+    auto balances = connection.getUserAccountBalances(userId);
 
     for (const auto& b : balances) {
       auto* event = response->add_events();

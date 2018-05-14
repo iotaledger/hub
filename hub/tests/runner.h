@@ -19,14 +19,23 @@ class Test : public ::testing::Test {
     hub::crypto::CryptoManager::get().setProvider(
         std::make_unique<crypto::LocalProvider>("abcdefghij"));
 
+    db::Config config;
+
+    config.type = "sqlite3";
+    config.database = ":memory:";
+
     auto db = hub::db::DBManager::get();
-    db.resetConnection();
+    db.setConnectionConfig(config);
     db.loadSchema(true);
 
     _session = std::make_shared<ClientSession>();
   }
 
-  virtual void TearDown() { _session = nullptr; }
+  virtual void TearDown() {
+    auto db = hub::db::DBManager::get();
+    db.resetConnection();
+    _session = nullptr;
+  }
 
   std::shared_ptr<ClientSession> session() { return _session; }
 

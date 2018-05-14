@@ -28,7 +28,7 @@ namespace service {
 
 std::vector<std::tuple<uint64_t, std::string>>
 UserAddressMonitor::monitoredAddresses() {
-  return hub::db::unsweptUserAddresses(hub::db::DBManager::get().connection());
+  return hub::db::DBManager::get().connection().unsweptUserAddresses();
 }
 
 bool UserAddressMonitor::onBalancesChanged(
@@ -37,13 +37,13 @@ bool UserAddressMonitor::onBalancesChanged(
   auto& connection = db::DBManager::get().connection();
   bool error = true;
 
-  sqlpp::transaction_t<hub::db::Connection> transaction(connection, true);
+  auto transaction = connection.transaction();
 
   try {
     for (const auto& change : changes) {
       auto confirmedBundles =
           _api->getConfirmedBundlesForAddress(change.address);
-      auto tails = db::tailsForAddress(connection, change.addressId);
+      auto tails = connection.tailsForAddress(change.addressId);
 
       auto unknownTails = confirmedBundles |
                           filtered([&tails](hub::iota::Bundle const& bundle) {
@@ -73,8 +73,8 @@ bool UserAddressMonitor::onBalancesChanged(
               LOG(INFO) << "Creating UserAddressBalance(" << change.addressId
                         << "," << tx.value << ",DEPOSIT," << tail << ")";
 
-              db::createUserAddressBalanceEntry(
-                  connection, change.addressId, tx.value,
+              connection.createUserAddressBalanceEntry(
+                  change.addressId, tx.value,
                   db::UserAddressBalanceReason::DEPOSIT, tail, {});
             }
           }
@@ -98,15 +98,19 @@ bool UserAddressMonitor::onBalancesChanged(
     if (error) {
       LOG(ERROR) << "Controlled rollback.";
 
-      transaction.rollback();
+      transaction->rollback();
     } else {
-      transaction.commit();
+      transaction->commit();
       return true;
     }
   } catch (sqlpp::exception& ex) {
-    transaction.rollback();
-
     LOG(ERROR) << " Commit failed: " << ex.what();
+
+    try {
+      transaction->rollback();
+    } catch (const std::exception& ex) {
+      LOG(ERROR) << "Rollback failed: " << ex.what();
+    }
   }
 
   return false;
@@ -116,8 +120,7 @@ bool UserAddressMonitor::validateBalanceIsConsistent(const std::string& address,
                                                      uint64_t addressId) {
   auto& connection = db::DBManager::get().connection();
   const auto& iriBalances = _api->getBalances({address});
-  const auto& dbBalances =
-      db::getTotalAmountForAddresses(connection, {addressId});
+  const auto& dbBalances = connection.getTotalAmountForAddresses({addressId});
 
   if (iriBalances.size() != 1 || dbBalances.size() != 1) {
     LOG(ERROR) << "Could not get balance for address: \n" + address;

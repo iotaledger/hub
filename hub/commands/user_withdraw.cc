@@ -27,7 +27,7 @@ grpc::Status UserWithdraw::doProcess(
     const hub::rpc::UserWithdrawRequest* request,
     hub::rpc::UserWithdrawReply* response) noexcept {
   auto& connection = db::DBManager::get().connection();
-  sqlpp::transaction_t<hub::db::Connection> transaction(connection, true);
+  auto transaction = connection.transaction();
 
   std::optional<hub::rpc::ErrorCode> errorCode;
   uint64_t userId;
@@ -40,8 +40,7 @@ grpc::Status UserWithdraw::doProcess(
   try {
     // Get userId for identifier
     {
-      auto maybeUserId =
-          db::userIdFromIdentifier(connection, request->userid());
+      auto maybeUserId = connection.userIdFromIdentifier(request->userid());
       if (!maybeUserId) {
         errorCode = hub::rpc::ErrorCode::USER_DOES_NOT_EXIST;
         goto cleanup;
@@ -52,7 +51,7 @@ grpc::Status UserWithdraw::doProcess(
 
     // Get available balance for user
     {
-      auto maybeBalance = db::availableBalanceForUser(connection, userId);
+      auto maybeBalance = connection.availableBalanceForUser(userId);
       if (!maybeBalance) {
         errorCode = hub::rpc::ErrorCode::EC_UNKNOWN;
         goto cleanup;
@@ -67,25 +66,32 @@ grpc::Status UserWithdraw::doProcess(
     }
 
     // Add withdrawal
-    withdrawalId = db::createWithdrawal(
-        connection, boost::uuids::to_string(withdrawalUUID), userId,
-        request->amount(), payoutAddress);
+    withdrawalId =
+        connection.createWithdrawal(boost::uuids::to_string(withdrawalUUID),
+                                    userId, request->amount(), payoutAddress);
 
     // Add user account balance entry
-    db::createUserAccountBalanceEntry(connection, userId, request->amount(),
-                                      db::UserAccountBalanceReason::WITHDRAWAL,
-                                      withdrawalId);
+    connection.createUserAccountBalanceEntry(
+        userId, request->amount(), db::UserAccountBalanceReason::WITHDRAWAL,
+        withdrawalId);
 
     response->set_uuid(boost::uuids::to_string(withdrawalUUID));
 
   cleanup:
     if (errorCode) {
-      transaction.rollback();
+      transaction->rollback();
     } else {
-      transaction.commit();
+      transaction->commit();
     }
   } catch (sqlpp::exception& ex) {
     LOG(ERROR) << session() << " Commit failed: " << ex.what();
+
+    try {
+      transaction->rollback();
+    } catch (const sqlpp::exception& ex) {
+      LOG(ERROR) << session() << " Rollback failed: " << ex.what();
+    }
+
     errorCode = hub::rpc::ErrorCode::EC_UNKNOWN;
   }
 

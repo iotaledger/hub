@@ -1,8 +1,9 @@
 cc_library(
-    name = "sqlpp11sqlite",
+    name = "sqlpp11mysql",
     hdrs = glob(["include/**"]),
     srcs = glob(["src/**/*.cpp", "src/**/*.h"]),
     strip_include_prefix = "include",
-    deps = ["@sqlpp11//:sqlpp11", "@sqlite3//:sqlite3"],
+    copts = ["-I/usr/include/mysql"],
+    deps = ["@sqlpp11//:sqlpp11", "@mariadb_connector//:connector"],
     visibility = ["//visibility:public"],
 )

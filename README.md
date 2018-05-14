@@ -3,11 +3,16 @@
 - Modern GCC or Clang
 - [[https://github.com/bazelbuild/bazel/releases][bazel]]
 - sqlite3
+- system-wide installation of mariadb-connector-c 
 - pyparsing (pip install pyparsing)
 - buildifier: (`go get -u github.com/bazelbuild/buildtools/buildifier`)
 
+## Supported database systems
+- MariaDB. Note that we *strongly discourage* the use of *MySQL* because it does not support CHECK constraints for data integrity. We only test against MariaDB.
+
 ## Developing RPCHub
 - Be sure to run `./hooks/autohook.sh install` after checkout!
+
 
 ## How to run
 - `bazel run -c opt //hub:hub -- <parameters>`

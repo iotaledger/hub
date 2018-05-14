@@ -6,22 +6,31 @@
 #include <memory>
 #include <sstream>
 #include <string>
+#include <utility>
 
 #include <gflags/gflags.h>
-#include <sqlpp11/connection.h>
-#include <sqlpp11/schema.h>
-#include <sqlpp11/serialize.h>
-#include <sqlpp11/sqlite3/connection.h>
-#include <sqlpp11/transaction.h>
-#include <sqlpp11/type_traits.h>
 
+#include "hub/db/connection.h"
 #include "hub/db/types.h"
 
 namespace hub {
 namespace db {
 DECLARE_string(db);
 
-using Connection = sqlpp::sqlite3::connection;
+struct Config {
+  std::string type;
+
+  std::string host;
+  uint32_t port;
+  std::string database;
+
+  std::string user;
+  std::string password;
+
+  bool debug{false};
+};
+
+class Connection;
 
 /***
     This class manages access to the database connection.
@@ -39,8 +48,14 @@ class DBManager {
 
   void resetConnection();
 
-  void setConnection(std::unique_ptr<Connection> ptr);
-  Connection& connection();
+  void loadConnectionConfigFromArgs();
+  void setConnectionConfig(Config config) { _config = std::move(config); }
+  const Config& config() const { return _config; }
+
+  hub::db::Connection& connection();
+
+ private:
+  Config _config;
 };
 
 }  // namespace db

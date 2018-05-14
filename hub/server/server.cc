@@ -59,6 +59,8 @@ void HubServer::initialise() {
   iota::POWManager::get().setProvider(std::make_unique<iota::RemotePOW>(
       _api, FLAGS_depth, FLAGS_minWeightMagnitude));
 
+  db::DBManager::get().loadConnectionConfigFromArgs();
+
   _userAddressMonitor = std::make_unique<service::UserAddressMonitor>(
       _api, std::chrono::milliseconds(FLAGS_monitorInterval));
 
@@ -82,7 +84,7 @@ void HubServer::runAndWait() { _server->Wait(); }
 
 bool HubServer::authenticateSalt() const {
   auto& connection = db::DBManager::get().connection();
-  auto addAndUuidRes = db::selectFirstUserAddress(connection);
+  auto addAndUuidRes = connection.selectFirstUserAddress();
 
   if (!addAndUuidRes.has_value()) return true;
 

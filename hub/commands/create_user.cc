@@ -20,19 +20,21 @@ namespace cmd {
 grpc::Status CreateUser::doProcess(
     const hub::rpc::CreateUserRequest* request,
     hub::rpc::CreateUserReply* response) noexcept {
-  db::sql::UserAccount userAccount;
-
   auto& connection = db::DBManager::get().connection();
 
-  sqlpp::transaction_t<hub::db::Connection> transaction(connection, true);
+  auto transaction = connection.transaction();
 
   try {
-    connection(insert_into(userAccount)
-                   .set(userAccount.identifier = request->userid()));
-    transaction.commit();
-  } catch (sqlpp::exception& ex) {
+    connection.createUser(request->userid());
+    transaction->commit();
+  } catch (const sqlpp::exception& ex) {
     LOG(ERROR) << session() << " Commit failed: " << ex.what();
-    transaction.rollback();
+
+    try {
+      transaction->rollback();
+    } catch (const sqlpp::exception& ex) {
+      LOG(ERROR) << session() << " Rollback failed: " << ex.what();
+    }
 
     return grpc::Status(grpc::StatusCode::FAILED_PRECONDITION, "",
                         errorToString(hub::rpc::ErrorCode::USER_EXISTS));

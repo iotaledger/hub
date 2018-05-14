@@ -45,12 +45,12 @@ class HubImpl final : public hub::rpc::Hub::Service {
   grpc::Status UserBalanceSubscription(
       grpc::ServerContext* context,
       const hub::rpc::UserBalanceSubscriptionRequest* request,
-      grpc::ServerWriter<hub::rpc::UserBalanceEvent>* writer);
+      grpc::ServerWriter<hub::rpc::UserBalanceEvent>* writer) override;
 
   grpc::Status ProcessTransferBatch(
       grpc::ServerContext* context,
       const hub::rpc::ProcessTransferBatchRequest* request,
-      hub::rpc::ProcessTransferBatchReply* response);
+      hub::rpc::ProcessTransferBatchReply* response) override;
 };
 
 }  // namespace hub

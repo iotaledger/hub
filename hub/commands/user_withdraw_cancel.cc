@@ -27,7 +27,7 @@ grpc::Status UserWithdrawCancel::doProcess(
     const hub::rpc::UserWithdrawCancelRequest* request,
     hub::rpc::UserWithdrawCancelReply* response) noexcept {
   auto& connection = db::DBManager::get().connection();
-  sqlpp::transaction_t<hub::db::Connection> transaction(connection, true);
+  auto transaction = connection.transaction();
 
   std::optional<hub::rpc::ErrorCode> errorCode;
   std::optional<bool> success;
@@ -35,19 +35,25 @@ grpc::Status UserWithdrawCancel::doProcess(
   boost::uuids::uuid uuid = boost::uuids::string_generator()(request->uuid());
 
   try {
-    auto result =
-        db::cancelWithdrawal(connection, boost::uuids::to_string(uuid));
+    auto result = connection.cancelWithdrawal(boost::uuids::to_string(uuid));
 
     success = result != 0;
 
   cleanup:
     if (errorCode) {
-      transaction.rollback();
+      transaction->rollback();
     } else {
-      transaction.commit();
+      transaction->commit();
     }
   } catch (sqlpp::exception& ex) {
     LOG(ERROR) << session() << " Commit failed: " << ex.what();
+
+    try {
+      transaction->rollback();
+    } catch (const sqlpp::exception& ex) {
+      LOG(ERROR) << session() << " Rollback failed: " << ex.what();
+    }
+
     errorCode = hub::rpc::ErrorCode::EC_UNKNOWN;
   }
 

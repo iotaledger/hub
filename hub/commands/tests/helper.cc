@@ -24,7 +24,7 @@ void createBalanceForUsers(std::vector<uint64_t> ids, int64_t balance) {
   }
 
   auto& connection = db::DBManager::get().connection();
-  insertUserTransfers(connection, transfers);
+  connection.insertUserTransfers(transfers);
 }
 
 }  // namespace tests

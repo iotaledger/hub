@@ -37,7 +37,7 @@ grpc::Status ProcessTransferBatch::doProcess(
     identifiers.insert(t.userid());
   }
 
-  auto identifierToId = db::userIdsFromIdentifiers(connection, identifiers);
+  auto identifierToId = connection.userIdsFromIdentifiers(identifiers);
   if (identifierToId.size() < identifiers.size()) {
     return grpc::Status(
         grpc::StatusCode::FAILED_PRECONDITION,
@@ -53,18 +53,23 @@ grpc::Status ProcessTransferBatch::doProcess(
   for (auto i = 0; i < request->transfers_size(); ++i) {
     const hub::rpc::ProcessTransferBatchRequest_Transfer& t =
         request->transfers(i);
-    transfers.emplace_back(
-        hub::db::UserTransfer{identifierToId[t.userid()], t.amount()});
+    transfers.emplace_back(hub::db::UserTransfer{
+        static_cast<uint64_t>(identifierToId[t.userid()]), t.amount()});
   }
 
   // Actual transfer insertion to db
-  sqlpp::transaction_t<hub::db::Connection> transaction(connection, true);
+  auto transaction = connection.transaction();
   try {
-    insertUserTransfers(connection, transfers);
-    transaction.commit();
+    connection.insertUserTransfers(transfers);
+    transaction->commit();
   } catch (sqlpp::exception& ex) {
     LOG(ERROR) << session() << " Commit failed: " << ex.what();
-    transaction.rollback();
+
+    try {
+      transaction->rollback();
+    } catch (const sqlpp::exception& ex) {
+      LOG(ERROR) << session() << " Rollback failed: " << ex.what();
+    }
 
     return grpc::Status(grpc::StatusCode::FAILED_PRECONDITION, "",
                         errorToString(hub::rpc::ErrorCode::EC_UNKNOWN));
@@ -107,7 +112,7 @@ grpc::Status ProcessTransferBatch::validateTransfers(
   std::set<uint64_t> userIds;
   boost::copy(identifierToId | boost::adaptors::map_values,
               std::inserter(userIds, userIds.begin()));
-  auto userToBalance = db::getTotalAmountForUsers(connection, userIds);
+  auto userToBalance = connection.getTotalAmountForUsers(userIds);
   for (auto& kv : userToTransferAmount) {
     uint64_t currId = identifierToId.at(kv.first);
 

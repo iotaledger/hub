@@ -7,8 +7,10 @@
 
 #include <gflags/gflags.h>
 #include <glog/logging.h>
-#include <sqlpp11/sqlite3/sqlite3.h>
-#include <sqlpp11/sqlpp11.h>
+
+#include "hub/db/connection.h"
+#include "hub/db/mariadb.h"
+#include "hub/db/sqlite3.h"
 
 namespace {
 thread_local static std::unique_ptr<hub::db::Connection> tl_connection;
@@ -17,8 +19,13 @@ thread_local static std::unique_ptr<hub::db::Connection> tl_connection;
 namespace hub {
 namespace db {
 
-DEFINE_string(db, "hub.db", "Path to sqlite3 database");
-DEFINE_bool(dbInit, false, "Initialise db on startup");
+DEFINE_string(dbType, "mariadb", "Type of DB");
+DEFINE_string(dbHost, "127.0.0.1", "Database server host");
+DEFINE_uint32(dbPort, 3306, "Database server port");
+DEFINE_string(db, "hub", "Database name");
+DEFINE_string(dbUser, "user", "Database user");
+DEFINE_string(dbPassword, "password", "Database user password");
+DEFINE_bool(dbDebug, false, "Enable debug mode for database connection");
 
 DBManager& DBManager::get() {
   static DBManager instance;
@@ -26,11 +33,16 @@ DBManager& DBManager::get() {
   return instance;
 }
 
-void DBManager::resetConnection() { tl_connection = nullptr; }
+void DBManager::loadConnectionConfigFromArgs() {
+  if (FLAGS_dbType == "sqlite3") {
+    LOG(FATAL) << "sqlite3 is only supported for testing";
+  }
 
-void DBManager::setConnection(std::unique_ptr<Connection> ptr) {
-  tl_connection = std::move(ptr);
+  setConnectionConfig({FLAGS_dbType, FLAGS_dbHost, FLAGS_dbPort, FLAGS_db,
+                       FLAGS_dbUser, FLAGS_dbPassword, FLAGS_dbDebug});
 }
+
+void DBManager::resetConnection() { tl_connection = nullptr; }
 
 void DBManager::loadSchema(bool removeExisting) {
   auto& conn = connection();
@@ -65,23 +77,12 @@ Connection& DBManager::connection() {
     return *tl_connection;
   }
 
-  sqlpp::sqlite3::connection_config config;
-  config.path_to_database = FLAGS_db;
-  config.flags = SQLITE_OPEN_READWRITE | SQLITE_OPEN_CREATE;
-
-#ifdef DEBUG
-  config.debug = true;
-#endif
-
-  LOG(INFO) << "Opened up database connection to " << FLAGS_db;
-
-  tl_connection = std::make_unique<sqlpp::sqlite3::connection>(config);
-  tl_connection->set_default_isolation_level(
-      sqlpp::isolation_level::serializable);
-
-  if (FLAGS_dbInit) {
-    loadSchema(false);
-    FLAGS_dbInit = false;
+  if (_config.type == "sqlite3") {
+    tl_connection = std::make_unique<SQLite3Connection>(_config);
+  } else if (_config.type == "mariadb") {
+    tl_connection = std::make_unique<MariaDBConnection>(_config);
+  } else {
+    throw new std::runtime_error("Invalid DB schema");
   }
 
   return *tl_connection;
