@@ -50,8 +50,6 @@ grpc::Status GetDepositAddress::doProcess(
   auto address =
       hub::crypto::CryptoManager::get().provider().getAddressForUUID(uuid);
 
-  response->set_address(address.str());
-
   // Add new user address.
   sqlpp::transaction_t<hub::db::Connection> transaction(connection, true);
   try {
@@ -60,6 +58,7 @@ grpc::Status GetDepositAddress::doProcess(
                         userAddress.userId = userId,
                         userAddress.seedUuid = uuid.str()));
     transaction.commit();
+    response->set_address(address.str());
   } catch (sqlpp::exception& ex) {
     LOG(ERROR) << session() << " Commit failed: " << ex.what();
     transaction.rollback();
