@@ -1,8 +1,19 @@
 cc_library(
     name = "connector",
-    srcs = glob(["libmariadb/*.c"], exclude = ["libmariadb/bmove_upp.c"]) +
-           ["libmariadb/secure/openssl.c", ":ma_client_plugin_c", "plugins/auth/my_auth.c", "plugins/auth/old_password.c", "plugins/pvio/pvio_socket.c"],
-    hdrs = glob(["include/**/*.h"]) + [":mariadb_version_h", ":ma_config_h"],
+    srcs = glob(
+        ["libmariadb/*.c"],
+        exclude = ["libmariadb/bmove_upp.c"],
+    ) + [
+        "libmariadb/secure/openssl.c",
+        ":ma_client_plugin_c",
+        "plugins/auth/my_auth.c",
+        "plugins/auth/old_password.c",
+        "plugins/pvio/pvio_socket.c",
+    ],
+    hdrs = glob(["include/**/*.h"]) + [
+        ":mariadb_version_h",
+        ":ma_config_h",
+    ],
     copts = [
         "-DLIBMARIADB",
         "-Iinclude",
@@ -11,7 +22,10 @@ cc_library(
         "-DHAVE_TLS",
         "-Dlibmariadb_EXPORTS",
     ],
-    linkopts = ["-lssl", "-lcrypto"],
+    linkopts = [
+        "-lssl",
+        "-lcrypto",
+    ],
     strip_include_prefix = "include",
     visibility = ["//visibility:public"],
 )

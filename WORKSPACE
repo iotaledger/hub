@@ -47,35 +47,35 @@ git_repository(
 
 new_git_repository(
     name = "hinnant_date",
-    build_file = "BUILD.date",
+    build_file = "third-party/date/BUILD",
     commit = "e5c69d84ab5db3e06170b8eedec1d87841c7fb22",
     remote = "https://github.com/HowardHinnant/date.git",
 )
 
 new_git_repository(
     name = "sqlpp11",
-    build_file = "BUILD.sqlpp11",
+    build_file = "third-party/sqlpp11/BUILD",
     commit = "9d64a5c7411f84cad1da71b23118634b5a62a063",
     remote = "https://github.com/rbock/sqlpp11.git",
 )
 
 new_git_repository(
     name = "sqlpp11sqlite",
-    build_file = "BUILD.sqlpp11sqlite",
+    build_file = "third-party/sqlpp11sqlite/BUILD",
     commit = "cf37829fc9828a36afa050f960d09abcaf6aeb6a",
     remote = "https://github.com/rbock/sqlpp11-connector-sqlite3.git",
 )
 
 new_git_repository(
     name = "sqlpp11mysql",
-    build_file = "BUILD.sqlpp11mysql",
+    build_file = "third-party/sqlpp11mysql/BUILD",
     commit = "8a48bc2d6157fc445cda5b9beac9b7901fff625c",
     remote = "https://github.com/rbock/sqlpp11-connector-mysql.git",
 )
 
 new_http_archive(
     name = "argon2",
-    build_file = "BUILD.argon2",
+    build_file = "third-party/argon2/BUILD",
     sha256 = "eaea0172c1f4ee4550d1b6c9ce01aab8d1ab66b4207776aa67991eb5872fdcd8",
     strip_prefix = "phc-winner-argon2-20171227",
     url = "https://github.com/P-H-C/phc-winner-argon2/archive/20171227.tar.gz",
@@ -83,7 +83,7 @@ new_http_archive(
 
 new_http_archive(
     name = "sqlite3",
-    build_file = "BUILD.sqlite3",
+    build_file = "third-party/sqlite3/BUILD",
     sha256 = "4239a1f69e5721d07d9a374eb84d594225229e54be4ee628da2995f4315d8dfc",
     strip_prefix = "sqlite-amalgamation-3230100",
     url = "https://www.sqlite.org/2018/sqlite-amalgamation-3230100.zip",
@@ -104,7 +104,7 @@ http_archive(
 
 new_git_repository(
     name = "nlohmann",
-    build_file = "BUILD.nlohmann_json",
+    build_file = "third-party/nlohmann_json/BUILD",
     commit = "435fc32a697188a43c86c559e60069711317ffc9",
     remote = "https://github.com/th0br0/json.git",
 )
@@ -120,7 +120,7 @@ new_http_archive(
 
 new_http_archive(
     name = "mariadb_connector",
-    build_file = "BUILD.mariadb_connector",
+    build_file = "third-party/mariadb_connector/BUILD",
     sha256 = "6eff680cd429fdb32940f6ea4755a997dda1bb00f142f439071f752fd0b200cf",
     strip_prefix = "mariadb-connector-c-3.0.4-src",
     url = "http://ftp.hosteurope.de/mirror/mariadb.org//connector-c-3.0.4/mariadb-connector-c-3.0.4-src.tar.gz",
