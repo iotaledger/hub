@@ -8,8 +8,7 @@
 - buildifier: (`go get -u github.com/bazelbuild/buildtools/buildifier`)
 
 ## Supported database systems
-- SQLite3
-- MySQL. Note that we strongly discourage the use of MySQL / MariaDB because it will ignore CHECK constraints for data integrity.
+- MariaDB. Note that we *strongly discourage* the use of *MySQL* because it does not support CHECK constraints for data integrity. We only test against MariaDB.
 
 ## Developing RPCHub
 - Be sure to run `./hooks/autohook.sh install` after checkout!

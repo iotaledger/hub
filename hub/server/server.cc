@@ -59,6 +59,8 @@ void HubServer::initialise() {
   iota::POWManager::get().setProvider(std::make_unique<iota::RemotePOW>(
       _api, FLAGS_depth, FLAGS_minWeightMagnitude));
 
+  db::DBManager::get().loadConnectionConfigFromArgs();
+
   _userAddressMonitor = std::make_unique<service::UserAddressMonitor>(
       _api, std::chrono::milliseconds(FLAGS_monitorInterval));
 

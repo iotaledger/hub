@@ -38,7 +38,7 @@ class Connection;
 ***/
 class DBManager {
  private:
-  DBManager() { loadConnectionConfigFromArgs(); }
+  DBManager() {}
 
  public:
   static DBManager& get();
