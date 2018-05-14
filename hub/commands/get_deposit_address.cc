@@ -50,6 +50,12 @@ grpc::Status GetDepositAddress::doProcess(
   } catch (sqlpp::exception& ex) {
     LOG(ERROR) << session() << " Commit failed: " << ex.what();
 
+    try {
+      transaction->rollback();
+    } catch (const sqlpp::exception& ex) {
+      LOG(ERROR) << session() << " Rollback failed: " << ex.what();
+    }
+
     return grpc::Status(grpc::StatusCode::FAILED_PRECONDITION, "",
                         errorToString(hub::rpc::ErrorCode::EC_UNKNOWN));
   }
