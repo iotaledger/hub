@@ -368,8 +368,7 @@ Note that the amounts of this batch must sum to 0!</p></td>
                 <td>UserBalanceSubscription</td>
                 <td><a href="#hub.rpc.UserBalanceSubscriptionRequest">UserBalanceSubscriptionRequest</a></td>
                 <td><a href="#hub.rpc.UserBalanceEvent">UserBalanceEvent</a></td>
-                <td><p>Produces a stream of all user balance changes as they appear
-These can be subscribed to and consumed asynchronously on the client.</p></td>
+                <td><p>Produces a stream of all user balance changes as they appear since the provided timestamp</p></td>
               </tr>
             
               <tr>
@@ -682,6 +681,13 @@ These can be subscribed to and consumed asynchronously on the client.</p></td>
             <tbody>
               
                 <tr>
+                  <td>userId</td>
+                  <td><a href="#string">string</a></td>
+                  <td></td>
+                  <td><p> </p></td>
+                </tr>
+              
+                <tr>
                   <td>timestamp</td>
                   <td><a href="#uint64">uint64</a></td>
                   <td></td>
@@ -711,6 +717,22 @@ These can be subscribed to and consumed asynchronously on the client.</p></td>
         <h3 id="hub.rpc.UserBalanceSubscriptionRequest">UserBalanceSubscriptionRequest</h3>
         <p></p>
 
+        
+          <table class="field-table">
+            <thead>
+              <tr><td>Field</td><td>Type</td><td>Label</td><td>Description</td></tr>
+            </thead>
+            <tbody>
+              
+                <tr>
+                  <td>newerThan</td>
+                  <td><a href="#uint64">uint64</a></td>
+                  <td></td>
+                  <td><p>Balances newer than this time (MS since epoch) will be retrievd </p></td>
+                </tr>
+              
+            </tbody>
+          </table>
         
 
         
@@ -865,6 +887,12 @@ These can be subscribed to and consumed asynchronously on the client.</p></td>
                 <td>BATCH_INCONSISTENT</td>
                 <td>5</td>
                 <td><p>The batch is inconsistent (attempt to remove funds from a user&#39;s account without sufficient balance)</p></td>
+              </tr>
+            
+              <tr>
+                <td>BATCH_AMOUNT_ZERO</td>
+                <td>6</td>
+                <td><p>The amount associated with the transfer is invalid (should be greater or less than 0)</p></td>
               </tr>
             
           </tbody>
