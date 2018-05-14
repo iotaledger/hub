@@ -27,8 +27,14 @@ grpc::Status CreateUser::doProcess(
   try {
     connection.createUser(request->userid());
     transaction->commit();
-  } catch (sqlpp::exception& ex) {
+  } catch (const sqlpp::exception& ex) {
     LOG(ERROR) << session() << " Commit failed: " << ex.what();
+
+    try {
+      transaction->rollback();
+    } catch (const sqlpp::exception& ex) {
+      LOG(ERROR) << session() << " Rollback failed: " << ex.what();
+    }
 
     return grpc::Status(grpc::StatusCode::FAILED_PRECONDITION, "",
                         errorToString(hub::rpc::ErrorCode::USER_EXISTS));

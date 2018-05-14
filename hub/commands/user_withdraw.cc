@@ -85,6 +85,13 @@ grpc::Status UserWithdraw::doProcess(
     }
   } catch (sqlpp::exception& ex) {
     LOG(ERROR) << session() << " Commit failed: " << ex.what();
+
+    try {
+      transaction->rollback();
+    } catch (const sqlpp::exception& ex) {
+      LOG(ERROR) << session() << " Rollback failed: " << ex.what();
+    }
+
     errorCode = hub::rpc::ErrorCode::EC_UNKNOWN;
   }
 
