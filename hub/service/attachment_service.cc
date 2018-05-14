@@ -166,6 +166,12 @@ bool AttachmentService::doTick() {
     } catch (const std::exception& ex) {
       LOG(ERROR) << "Sweep " << sweep.id
                  << " failed to commit to DB: " << ex.what();
+
+      try {
+        transaction->rollback();
+      } catch (const std::exception& ex) {
+        LOG(ERROR) << "Sweep " << sweep.id << " rollback failed: " << ex.what();
+      }
     }
   }
 
