@@ -43,7 +43,8 @@ class Connection {
   virtual void createUserAddressBalanceEntry(
       uint64_t addressId, int64_t amount, const UserAddressBalanceReason reason,
       std::optional<std::string> tailHash, std::optional<uint64_t> sweepId) = 0;
-  virtual void createUserAddress(const hub::crypto::Address& address, uint64_t userId,
+  virtual void createUserAddress(const hub::crypto::Address& address,
+                                 uint64_t userId,
                                  const hub::crypto::UUID& uuid) = 0;
   virtual void createUserAccountBalanceEntry(
       uint64_t userId, int64_t amount, const UserAccountBalanceReason reason,
