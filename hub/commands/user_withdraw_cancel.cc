@@ -39,6 +39,16 @@ grpc::Status UserWithdrawCancel::doProcess(
 
     success = result != 0;
 
+    if (success) {
+      auto withdrawalInfo =
+          connection.getWithdrawalInfoFromUUID(boost::uuids::to_string(uuid));
+
+      // Add user account balance entry
+      connection.createUserAccountBalanceEntry(
+          withdrawalInfo.userId, -withdrawalInfo.amount,
+          db::UserAccountBalanceReason::WITHDRAWAL_CANCEL);
+    }
+
   cleanup:
     if (errorCode) {
       transaction->rollback();

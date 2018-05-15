@@ -67,6 +67,9 @@ struct helper {
       C& connection, const std::set<uint64_t>& ids);
   static std::map<uint64_t, int64_t> getTotalAmountForAddresses(
       C& connection, const std::set<uint64_t>& ids);
+
+  static WithdrawalInfo getWithdrawalInfoFromUUID(C& connection,
+                                                  const std::string& uuid);
 };
 
 }  // namespace db
