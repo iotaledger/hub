@@ -158,6 +158,10 @@ class ConnectionImpl : public Connection {
     return db::helper<Conn>::getTotalAmountForAddresses(*_conn, ids);
   }
 
+  WithdrawalInfo getWithdrawalInfoFromUUID(const std::string& uuid) override {
+    return db::helper<Conn>::getWithdrawalInfoFromUUID(*_conn, uuid);
+  }
+
   void execute(const std::string& what) override { _conn->execute(what); }
 
  private:

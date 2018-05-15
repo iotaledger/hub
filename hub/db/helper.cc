@@ -378,6 +378,17 @@ std::map<uint64_t, int64_t> helper<C>::getTotalAmountForAddresses(
   return addressIdToTotal;
 }
 
+template <typename C>
+WithdrawalInfo helper<C>::getWithdrawalInfoFromUUID(C& connection,
+                                                    const std::string& uuid) {
+  db::sql::Withdrawal tbl;
+
+  auto result = connection(
+      select(tbl.userId, tbl.amount).from(tbl).where(tbl.uuid == uuid));
+
+  return {result.front().userId, result.front().amount};
+}
+
 template struct helper<sqlpp::mysql::connection>;
 template struct helper<sqlpp::sqlite3::connection>;
 

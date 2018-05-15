@@ -44,9 +44,14 @@ struct Sweep {
   }
 };
 
-struct UserTransfer{
-    uint64_t userId;
-    int64_t  amount;
+struct UserTransfer {
+  uint64_t userId;
+  int64_t amount;
+};
+
+struct WithdrawalInfo {
+  uint64_t userId;
+  int64_t amount;
 };
 
 }  // namespace db

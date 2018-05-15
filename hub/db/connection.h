@@ -73,6 +73,8 @@ class Connection {
   virtual std::map<uint64_t, int64_t> getTotalAmountForAddresses(
       const std::set<uint64_t>& ids) = 0;
 
+  virtual WithdrawalInfo getWithdrawalInfoFromUUID(const std::string& uuid) = 0;
+
  private:
   friend class DBManager;
   virtual void execute(const std::string& what) = 0;
