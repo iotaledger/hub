@@ -116,7 +116,10 @@ grpc::Status ProcessTransferBatch::validateTransfers(
   for (auto& kv : userToTransferAmount) {
     uint64_t currId = identifierToId.at(kv.first);
 
-    if (kv.second > userToBalance.at(currId)) {
+    auto availableBalance = userToBalance.at(currId);
+    auto balanceChange = kv.second;
+
+    if ((availableBalance + balanceChange) < 0) {
       return grpc::Status(
           grpc::StatusCode::FAILED_PRECONDITION,
           errorToString(hub::rpc::ErrorCode::BATCH_INCONSISTENT));
