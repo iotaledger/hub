@@ -130,11 +130,13 @@ bool AttachmentService::doTick() {
 
         // 3. Check if one of the tails is confirmed.
         if (checkSweepTailsForConfirmation(connection, sweep, sweepTails)) {
-          continue;
+          goto commit;
         }
 
         // 4. If not, check if a user reattachment was confirmed
-        checkForUserReattachment(connection, sweep, sweepTails);
+        if (checkForUserReattachment(connection, sweep, sweepTails)) {
+          goto commit;
+        }
       }
 
       // 5. If not, check if at least one of the tails per sweep is still
@@ -162,6 +164,8 @@ bool AttachmentService::doTick() {
 
       // 6. If not, reattach and commit tail to DB.
       LOG(INFO) << "Sweep " << sweep.id << " is still unconfirmed.";
+
+    commit:
       transaction->commit();
     } catch (const std::exception& ex) {
       LOG(ERROR) << "Sweep " << sweep.id
