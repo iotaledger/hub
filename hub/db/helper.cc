@@ -71,17 +71,16 @@ std::vector<std::string> helper<C>::tailsForAddress(C& connection,
 template <typename C>
 std::optional<uint64_t> helper<C>::availableBalanceForUser(C& connection,
                                                            uint64_t userId) {
-  db::sql::UserAccountBalance bal;
+  db::sql::UserAccount ua;
 
-  const auto result = connection(select(sum(bal.amount).as(sqlpp::alias::a))
-                                     .from(bal)
-                                     .where(bal.userId == userId));
+  const auto result =
+      connection(select(ua.balance).from(ua).where(ua.id == userId));
 
   if (result.empty()) {
     return {};
   }
 
-  return result.front().a;
+  return result.front().balance;
 }
 
 template <typename C>
@@ -350,17 +349,15 @@ std::map<std::string, int64_t> helper<C>::userIdsFromIdentifiers(
 template <typename C>
 std::map<uint64_t, int64_t> helper<C>::getTotalAmountForUsers(
     C& connection, const std::set<uint64_t>& ids) {
-  db::sql::UserAccountBalance bal;
+  db::sql::UserAccount ua;
 
-  auto result =
-      connection(select(bal.userId, sum(bal.amount).as(sqlpp::alias::a))
-                     .from(bal)
-                     .where(bal.userId.in(sqlpp::value_list(ids)))
-                     .group_by(bal.userId));
+  auto result = connection(select(ua.id, ua.balance)
+                               .from(ua)
+                               .where(ua.id.in(sqlpp::value_list(ids))));
 
   std::map<std::uint64_t, int64_t> identifierToTotal;
   for (auto& row : result) {
-    identifierToTotal.insert(std::pair(row.userId, row.a));
+    identifierToTotal.insert(std::pair(row.id, row.balance));
   }
   return identifierToTotal;
 }
@@ -368,17 +365,15 @@ std::map<uint64_t, int64_t> helper<C>::getTotalAmountForUsers(
 template <typename C>
 std::map<uint64_t, int64_t> helper<C>::getTotalAmountForAddresses(
     C& connection, const std::set<uint64_t>& ids) {
-  db::sql::UserAddressBalance bal;
+  db::sql::UserAddress ua;
 
-  auto result =
-      connection(select(bal.userAddress, sum(bal.amount).as(sqlpp::alias::a))
-                     .from(bal)
-                     .where(bal.userAddress.in(sqlpp::value_list(ids)))
-                     .group_by(bal.userAddress));
+  auto result = connection(select(ua.id, ua.balance)
+                               .from(ua)
+                               .where(ua.id.in(sqlpp::value_list(ids))));
 
   std::map<std::uint64_t, int64_t> addressIdToTotal;
   for (auto& row : result) {
-    addressIdToTotal.insert(std::pair(row.userAddress, row.a));
+    addressIdToTotal.insert(std::pair(row.id, row.balance));
   }
   return addressIdToTotal;
 }
