@@ -7,6 +7,7 @@ cc_library(
     ],
     copts = [
         "-DSQLITE_ENABLE_STAT4",
+        "-DSQLITE_THREADSAFE=1",
     ],
     include_prefix = "",
     linkopts = ["-ldl"],

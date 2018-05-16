@@ -17,9 +17,9 @@ namespace tests {
 
 void createBalanceForUsers(std::vector<uint64_t> ids, int64_t balance);
 
-void createZigZagTransfer(std::vector<std::string>& users,
-                          rpc::ProcessTransferBatchRequest& req,
-                          int64_t absAmount);
+std::map<uint64_t, int64_t> createZigZagTransfer(
+    std::vector<std::string>& users, rpc::ProcessTransferBatchRequest& req,
+    int64_t absAmount);
 
 }  // namespace tests
 
