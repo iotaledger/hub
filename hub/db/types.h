@@ -12,7 +12,7 @@ namespace hub {
 namespace db {
 enum class UserAddressBalanceReason { DEPOSIT = 0, SWEEP = 1 };
 
-enum class HubAddressBalanceReason { INBOUND = 1, OUTBOUND = 2 };
+enum class HubAddressBalanceReason { INBOUND = 0, OUTBOUND = 1 };
 
 enum class UserAccountBalanceReason {
   SWEEP = 0,

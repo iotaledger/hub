@@ -91,16 +91,16 @@ void helper<C>::createUser(C& connection, const std::string& identifier) {
 }
 
 template <typename C>
-void helper<C>::createUserAddress(C& connection,
-                                  const hub::crypto::Address& address,
-                                  uint64_t userId,
-                                  const hub::crypto::UUID& uuid) {
+uint64_t helper<C>::createUserAddress(C& connection,
+                                      const hub::crypto::Address& address,
+                                      uint64_t userId,
+                                      const hub::crypto::UUID& uuid) {
   db::sql::UserAddress userAddress;
 
-  connection(insert_into(userAddress)
-                 .set(userAddress.address = address.str(),
-                      userAddress.userId = userId,
-                      userAddress.seedUuid = uuid.str()));
+  return connection(insert_into(userAddress)
+                        .set(userAddress.address = address.str(),
+                             userAddress.userId = userId,
+                             userAddress.seedUuid = uuid.str()));
 }
 
 template <typename C>
@@ -387,6 +387,44 @@ WithdrawalInfo helper<C>::getWithdrawalInfoFromUUID(C& connection,
       select(tbl.userId, tbl.amount).from(tbl).where(tbl.uuid == uuid));
 
   return {result.front().userId, result.front().amount};
+}
+
+template <typename C>
+int64_t helper<C>::createHubAddress(C& connection,
+                                    const hub::crypto::UUID& uuid,
+                                    const std::string& address) {
+  db::sql::HubAddress tbl;
+
+  return connection(
+      insert_into(tbl).set(tbl.seedUuid = uuid.str(), tbl.address = address));
+}
+
+template <typename C>
+void helper<C>::createHubAddressBalanceEntry(
+    C& connection, uint64_t hubAddress, int64_t amount,
+    const HubAddressBalanceReason reason, uint64_t sweepId) {
+  db::sql::HubAddressBalance bal;
+
+  connection(insert_into(bal).set(
+      bal.hubAddress = hubAddress, bal.amount = amount,
+      bal.reason = static_cast<int>(reason), bal.sweep = sweepId));
+}
+
+template <typename C>
+int64_t helper<C>::getHubAddressBalance(C& connection, uint64_t hubAddressId) {
+  db::sql::HubAddress tbl;
+  auto result =
+      connection(select(tbl.balance).from(tbl).where(tbl.id == hubAddressId));
+  return result.front().balance;
+}
+
+template <typename C>
+int64_t helper<C>::getUserAddressBalance(C& connection,
+                                         uint64_t userAddressId) {
+  db::sql::UserAddress tbl;
+  auto result =
+      connection(select(tbl.balance).from(tbl).where(tbl.id == userAddressId));
+  return result.front().balance;
 }
 
 template struct helper<sqlpp::mysql::connection>;
