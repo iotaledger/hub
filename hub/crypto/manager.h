@@ -14,6 +14,10 @@ namespace crypto {
 class CryptoManager {
  private:
   CryptoManager() {}
+  CryptoManager(CryptoManager const&) = delete;
+  CryptoManager(CryptoManager&&) = delete;
+  CryptoManager& operator=(CryptoManager const&) = delete;
+  CryptoManager& operator=(CryptoManager&&) = delete;
 
  public:
   static CryptoManager& get();

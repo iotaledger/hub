@@ -8,18 +8,15 @@
 
 #include <gtest/gtest.h>
 
-#include <sqlpp11/functions.h>
-#include <sqlpp11/select.h>
-
-#include "proto/hub.pb.h"
-#include "schema/schema.h"
-
 #include "hub/commands/create_user.h"
 #include "hub/commands/get_balance.h"
 #include "hub/commands/helper.h"
 #include "hub/commands/process_transfer_batch.h"
 #include "hub/commands/tests/helper.h"
 #include "hub/db/db.h"
+#include "hub/stats/session.h"
+#include "proto/hub.pb.h"
+#include "schema/schema.h"
 
 #include "runner.h"
 
@@ -58,12 +55,14 @@ void processRandomTransfer(const std::vector<std::string>& users,
 }
 void processRandomTransferLock(std::vector<std::string> users,
                                std::map<uint64_t, int64_t>& idsToBalances,
-                               cmd::ProcessTransferBatch& cmd) {
+                               std::shared_ptr<hub::ClientSession> session) {
   std::random_device rd;   // obtain a random number from hardware
   std::mt19937 eng(rd());  // seed the generator
   std::uniform_int_distribution<> distr(1,
                                         MAX_TRANSFER_UNIT);  // define the range
   std::unique_lock<std::mutex> lock(m);
+
+  cmd::ProcessTransferBatch cmd(std::move(session));
 
   for (auto i = 0; i < 10; ++i) {
     rpc::ProcessTransferBatchRequest req;
@@ -71,9 +70,7 @@ void processRandomTransferLock(std::vector<std::string> users,
 
     auto idsToAmounts = createZigZagTransfer(users, req, distr(eng));
     auto status = cmd.doProcess(&req, &res);
-    if (status.ok())
-
-    {
+    if (status.ok()) {
       for (auto& kv : idsToBalances) {
         idsToBalances[kv.first] -= idsToAmounts[kv.first];
       }
@@ -275,7 +272,7 @@ TEST_F(ProcessTransferBatchTest, SequentialTransfersAreConsistent) {
 }
 
 TEST_F(ProcessTransferBatchTest, ConcurrentTransfersAreConsistent) {
-  static constexpr uint32_t NUM_THREADS = 1;
+  static constexpr uint32_t NUM_THREADS = 3;
   std::vector<std::string> users;
   std::vector<uint64_t> userIds;
   std::vector<std::thread> threads(NUM_THREADS);
@@ -295,16 +292,15 @@ TEST_F(ProcessTransferBatchTest, ConcurrentTransfersAreConsistent) {
   createBalanceForUsers(userIds, USER_BALANCE);
 
   for (auto i = 0; i < NUM_THREADS; ++i) {
-    cmd::ProcessTransferBatch command(session());
     std::thread t(processRandomTransferLock, users, std::ref(idsToBalances),
-                  std::ref(command));
+                  session());
     // works
     // processRandomTransferLock(users, idsToBalances, command);
     threads[i] = std::move(t);
   }
 
   for (auto& t : threads) {
-       t.join();
+    t.join();
   }
 
   cmd::GetBalance balCmd(session());
