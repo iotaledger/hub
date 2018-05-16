@@ -40,6 +40,11 @@ class DBManager {
  private:
   DBManager() {}
 
+  DBManager(DBManager const&) = delete;
+  DBManager(DBManager&&) = delete;
+  DBManager& operator=(DBManager const&) = delete;
+  DBManager& operator=(DBManager&&) = delete;
+
  public:
   static DBManager& get();
 
