@@ -1,5 +1,11 @@
 // Copyright 2018 IOTA Foundation
 
+#include <iostream>
+#include <mutex>
+#include <random>
+#include <shared_mutex>
+#include <thread>
+
 #include <gtest/gtest.h>
 
 #include <sqlpp11/functions.h>
@@ -24,7 +30,56 @@ using namespace sqlpp;
 namespace {
 class ProcessTransferBatchTest : public CommandTest {};
 
-static constexpr int64_t USER_BALANCE = 100;
+static constexpr int64_t USER_BALANCE = 10000;
+static constexpr int64_t MAX_TRANSFER_UNIT = 50;
+std::mutex m;
+
+void processRandomTransfer(const std::vector<std::string>& users,
+                           std::map<uint64_t, int64_t>& idsToBalances,
+                           cmd::ProcessTransferBatch& cmd) {
+  std::random_device rd;   // obtain a random number from hardware
+  std::mt19937 eng(rd());  // seed the generator
+  std::uniform_int_distribution<> distr(1,
+                                        MAX_TRANSFER_UNIT);  // define the range
+
+  for (auto i = 0; i < 10; ++i) {
+    rpc::ProcessTransferBatchRequest req;
+    rpc::ProcessTransferBatchReply res;
+
+    auto idsToAmounts = createZigZagTransfer(users, req, distr(eng));
+    auto status = cmd.doProcess(&req, &res);
+
+    ASSERT_TRUE(status.ok());
+
+    for (auto& kv : idsToBalances) {
+      idsToBalances[kv.first] -= idsToAmounts[kv.first];
+    }
+  }
+}
+void processRandomTransferLock(std::vector<std::string> users,
+                               std::map<uint64_t, int64_t>& idsToBalances,
+                               cmd::ProcessTransferBatch& cmd) {
+  std::random_device rd;   // obtain a random number from hardware
+  std::mt19937 eng(rd());  // seed the generator
+  std::uniform_int_distribution<> distr(1,
+                                        MAX_TRANSFER_UNIT);  // define the range
+  std::unique_lock<std::mutex> lock(m);
+
+  for (auto i = 0; i < 10; ++i) {
+    rpc::ProcessTransferBatchRequest req;
+    rpc::ProcessTransferBatchReply res;
+
+    auto idsToAmounts = createZigZagTransfer(users, req, distr(eng));
+    auto status = cmd.doProcess(&req, &res);
+    if (status.ok())
+
+    {
+      for (auto& kv : idsToBalances) {
+        idsToBalances[kv.first] -= idsToAmounts[kv.first];
+      }
+    }
+  }
+}
 
 TEST_F(ProcessTransferBatchTest, FailOnNonExistingUserId) {
   rpc::ProcessTransferBatchRequest req;
@@ -174,6 +229,105 @@ TEST_F(ProcessTransferBatchTest, TransferMustHaveSufficientFunds) {
   ASSERT_FALSE(status.ok());
   ASSERT_EQ(status.error_message(),
             cmd::errorToString(hub::rpc::ErrorCode::BATCH_INCONSISTENT));
+}
+
+TEST_F(ProcessTransferBatchTest, SequentialTransfersAreConsistent) {
+  std::vector<std::string> users;
+  std::vector<uint64_t> userIds;
+
+  std::map<uint64_t, int64_t> idsToBalances;
+
+  constexpr uint32_t numUsers = 100;
+  constexpr uint32_t numTransfers = 20;
+
+  for (auto i = 0; i < numUsers; ++i) {
+    users.push_back("User " + std::to_string(i + 1));
+    userIds.push_back(i + 1);  // incremental keys are predictable
+    auto status = createUser(session(), users[i]);
+    ASSERT_TRUE(status.ok());
+    idsToBalances[i + 1] = USER_BALANCE;
+  }
+  createBalanceForUsers(userIds, USER_BALANCE);
+
+  for (auto i = 0; i < 20; ++i) {
+    cmd::ProcessTransferBatch command(session());
+    processRandomTransfer(users, idsToBalances, command);
+  }
+
+  cmd::GetBalance balCmd(session());
+  rpc::GetBalanceRequest getBalReq;
+  rpc::GetBalanceReply getBalRep;
+
+  std::string err;
+
+  for (auto i = 0; i < users.size() - 1; ++i) {
+    getBalReq.set_userid(users[i]);
+    ASSERT_TRUE(balCmd.doProcess(&getBalReq, &getBalRep).ok());
+
+    std::string tmp = std::string("\n") + users[i] + ": " +
+                      std::to_string(getBalRep.available()) + " " +
+                      std::to_string(userIds[i]) + ": " +
+                      std::to_string(idsToBalances[userIds[i]]);
+    err += tmp;
+
+    ASSERT_EQ(idsToBalances[userIds[i]], getBalRep.available());
+  }
+}
+
+TEST_F(ProcessTransferBatchTest, ConcurrentTransfersAreConsistent) {
+  static constexpr uint32_t NUM_THREADS = 1;
+  std::vector<std::string> users;
+  std::vector<uint64_t> userIds;
+  std::vector<std::thread> threads(NUM_THREADS);
+
+  std::map<uint64_t, int64_t> idsToBalances;
+
+  constexpr uint32_t numUsers = 100;
+  constexpr uint32_t numTransfers = 20;
+
+  for (auto i = 0; i < numUsers; ++i) {
+    users.push_back("User " + std::to_string(i + 1));
+    userIds.push_back(i + 1);  // incremental keys are predictable
+    auto status = createUser(session(), users[i]);
+    ASSERT_TRUE(status.ok());
+    idsToBalances[i + 1] = USER_BALANCE;
+  }
+  createBalanceForUsers(userIds, USER_BALANCE);
+
+  for (auto i = 0; i < NUM_THREADS; ++i) {
+    cmd::ProcessTransferBatch command(session());
+    std::thread t(processRandomTransferLock, users, std::ref(idsToBalances),
+                  std::ref(command));
+    // works
+    // processRandomTransferLock(users, idsToBalances, command);
+    threads[i] = std::move(t);
+  }
+
+  for (auto& t : threads) {
+       t.join();
+  }
+
+  cmd::GetBalance balCmd(session());
+  rpc::GetBalanceRequest getBalReq;
+  rpc::GetBalanceReply getBalRep;
+
+  std::string err;
+
+  for (auto i = 0; i < users.size() - 1; ++i) {
+    getBalReq.set_userid(users[i]);
+    ASSERT_TRUE(balCmd.doProcess(&getBalReq, &getBalRep).ok());
+
+    std::string tmp = std::string("\n") + users[i] + ": " +
+                      std::to_string(getBalRep.available()) + " " +
+                      std::to_string(userIds[i]) + ": " +
+                      std::to_string(idsToBalances[userIds[i]]);
+    err += tmp;
+
+    if (idsToBalances[userIds[i]] != getBalRep.available()) {
+      throw std::runtime_error(err);
+    }
+    ASSERT_EQ(idsToBalances[userIds[i]], getBalRep.available());
+  }
 }
 
 };  // namespace
