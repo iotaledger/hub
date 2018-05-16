@@ -43,9 +43,9 @@ class Connection {
   virtual void createUserAddressBalanceEntry(
       uint64_t addressId, int64_t amount, const UserAddressBalanceReason reason,
       std::optional<std::string> tailHash, std::optional<uint64_t> sweepId) = 0;
-  virtual void createUserAddress(const hub::crypto::Address& address,
-                                 uint64_t userId,
-                                 const hub::crypto::UUID& uuid) = 0;
+  virtual uint64_t createUserAddress(const hub::crypto::Address& address,
+                                     uint64_t userId,
+                                     const hub::crypto::UUID& uuid) = 0;
   virtual void createUserAccountBalanceEntry(
       uint64_t userId, int64_t amount, const UserAccountBalanceReason reason,
       const std::optional<uint64_t> fkey = {}) = 0;
@@ -74,6 +74,15 @@ class Connection {
       const std::set<uint64_t>& ids) = 0;
 
   virtual WithdrawalInfo getWithdrawalInfoFromUUID(const std::string& uuid) = 0;
+
+  virtual int64_t createHubAddress(const hub::crypto::UUID& uuid,
+                                   const std::string& address) = 0;
+  virtual void createHubAddressBalanceEntry(
+      uint64_t hubAddress, int64_t amount, const HubAddressBalanceReason reason,
+      uint64_t sweepId) = 0;
+
+  virtual int64_t getHubAddressBalance(uint64_t hubAddress) = 0;
+  virtual int64_t getUserAddressBalance(uint64_t userAddress) = 0;
 
  private:
   friend class DBManager;

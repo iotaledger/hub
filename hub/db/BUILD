@@ -20,3 +20,16 @@ cc_library(
         "@sqlpp11sqlite",
     ],
 )
+
+cc_test(
+    name = "test_db",
+    timeout = "short",
+    srcs = glob([
+        "tests/**/*.cc",
+    ]),
+    deps = [
+        ":db",
+        "//hub/tests",
+        "@com_google_googletest//:gtest",
+    ],
+)

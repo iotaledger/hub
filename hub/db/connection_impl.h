@@ -71,9 +71,10 @@ class ConnectionImpl : public Connection {
     return db::helper<Conn>::availableBalanceForUser(*_conn, userId);
   }
 
-  void createUserAddress(const hub::crypto::Address& address, uint64_t userId,
-                         const hub::crypto::UUID& uuid) override {
-    db::helper<Conn>::createUserAddress(*_conn, address, userId, uuid);
+  uint64_t createUserAddress(const hub::crypto::Address& address,
+                             uint64_t userId,
+                             const hub::crypto::UUID& uuid) override {
+    return db::helper<Conn>::createUserAddress(*_conn, address, userId, uuid);
   }
 
   void createUserAddressBalanceEntry(uint64_t addressId, int64_t amount,
@@ -160,6 +161,26 @@ class ConnectionImpl : public Connection {
 
   WithdrawalInfo getWithdrawalInfoFromUUID(const std::string& uuid) override {
     return db::helper<Conn>::getWithdrawalInfoFromUUID(*_conn, uuid);
+  }
+
+  int64_t createHubAddress(const hub::crypto::UUID& uuid,
+                           const std::string& address) override {
+    return db::helper<Conn>::createHubAddress(*_conn, uuid, address);
+  }
+
+  void createHubAddressBalanceEntry(uint64_t hubAddress, int64_t amount,
+                                    const HubAddressBalanceReason reason,
+                                    uint64_t sweepId) override {
+    return db::helper<Conn>::createHubAddressBalanceEntry(
+        *_conn, hubAddress, amount, reason, sweepId);
+  }
+
+  int64_t getHubAddressBalance(uint64_t hubAddress) override {
+    return db::helper<Conn>::getHubAddressBalance(*_conn, hubAddress);
+  }
+
+  int64_t getUserAddressBalance(uint64_t userAddress) override {
+    return db::helper<Conn>::getUserAddressBalance(*_conn, userAddress);
   }
 
   void execute(const std::string& what) override { _conn->execute(what); }

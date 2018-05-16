@@ -31,9 +31,10 @@ struct helper {
   static std::optional<uint64_t> availableBalanceForUser(C& connection,
                                                          uint64_t userId);
   static void createUser(C& connection, const std::string& identifier);
-  static void createUserAddress(C& connection,
-                                const hub::crypto::Address& address,
-                                uint64_t userId, const hub::crypto::UUID& uuid);
+  static uint64_t createUserAddress(C& connection,
+                                    const hub::crypto::Address& address,
+                                    uint64_t userId,
+                                    const hub::crypto::UUID& uuid);
   static void createUserAddressBalanceEntry(
       C& connection, uint64_t addressId, int64_t amount,
       const UserAddressBalanceReason reason,
@@ -70,6 +71,15 @@ struct helper {
 
   static WithdrawalInfo getWithdrawalInfoFromUUID(C& connection,
                                                   const std::string& uuid);
+
+  static int64_t createHubAddress(C& connection, const hub::crypto::UUID& uuid,
+                                  const std::string& address);
+  static void createHubAddressBalanceEntry(C& connection, uint64_t hubAddress,
+                                           int64_t amount,
+                                           const HubAddressBalanceReason reason,
+                                           uint64_t sweepId);
+  static int64_t getHubAddressBalance(C& connection, uint64_t hubAddress);
+  static int64_t getUserAddressBalance(C& connection, uint64_t userAddress);
 };
 
 }  // namespace db
