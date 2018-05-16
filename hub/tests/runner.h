@@ -4,11 +4,13 @@
 #define HUB_TESTS_RUNNER_H_
 
 #include <memory>
+#include <string>
 
 #include <gtest/gtest.h>
 
 #include "hub/crypto/local_provider.h"
 #include "hub/crypto/manager.h"
+#include "hub/crypto/types.h"
 #include "hub/db/db.h"
 #include "hub/stats/session.h"
 
@@ -21,10 +23,16 @@ class Test : public ::testing::Test {
 
     db::Config config;
 
-    config.type = "sqlite3";
-    config.database = ":memory:";
+    using std::string_literals::operator""s;
 
-    auto db = hub::db::DBManager::get();
+    config.type = "sqlite3";
+    config.database =
+        "file:"s + hub::crypto::UUID().str() + "?mode=memory&cache=shared"s;
+
+    std::replace(config.database.begin(), config.database.end(), '+', 'X');
+    std::replace(config.database.begin(), config.database.end(), '/', 'Y');
+
+    auto& db = hub::db::DBManager::get();
     db.setConnectionConfig(config);
     db.loadSchema(true);
 
@@ -32,7 +40,7 @@ class Test : public ::testing::Test {
   }
 
   virtual void TearDown() {
-    auto db = hub::db::DBManager::get();
+    auto& db = hub::db::DBManager::get();
     db.resetConnection();
     _session = nullptr;
   }
