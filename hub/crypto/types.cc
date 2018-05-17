@@ -37,7 +37,6 @@ std::string_view UUID::str_view() const {
   return std::string_view(reinterpret_cast<const char*>(_data.data()),
                           UUID_SIZE);
 }
-UUID::operator const char*() const { return str_view().data(); }
 
 const std::array<uint8_t, hub::crypto::UUID::UUID_SIZE>& UUID::data() const {
   return _data;

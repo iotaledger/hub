@@ -79,7 +79,7 @@ LocalProvider::LocalProvider(std::string salt) : _salt(std::move(salt)) {
 }
 
 Address LocalProvider::getAddressForUUID(const hub::crypto::UUID& uuid) const {
-  LOG(INFO) << "Generating address for: " << uuid;
+  LOG(INFO) << "Generating address for: " << uuid.str();
 
   auto add = iota_sign_address_gen(
       (const char*)seedFromUUID(uuid, _salt)->data(), KEY_IDX, KEY_SEC);
@@ -90,7 +90,7 @@ Address LocalProvider::getAddressForUUID(const hub::crypto::UUID& uuid) const {
 
 std::string LocalProvider::doGetSignatureForUUID(const hub::crypto::UUID& uuid,
                                                  const Hash& bundleHash) const {
-  LOG(INFO) << "Generating signature for: " << uuid;
+  LOG(INFO) << "Generating signature for: " << uuid.str();
 
   auto sig =
       iota_sign_signature_gen((const char*)seedFromUUID(uuid, _salt)->data(),

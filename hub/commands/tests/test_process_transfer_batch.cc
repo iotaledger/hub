@@ -1,16 +1,15 @@
 // Copyright 2018 IOTA Foundation
 
-#include <thread>
-#include <random>
-#include <vector>
 #include <map>
 #include <mutex>
+#include <random>
+#include <thread>
+#include <vector>
 
 #include <gtest/gtest.h>
 
-
-#include <sqlpp11/functions.h>
-#include <sqlpp11/select.h>
+#include <boost/range/adaptors.hpp>
+#include <boost/range/algorithm/copy.hpp>
 
 #include "proto/hub.pb.h"
 #include "schema/schema.h"
@@ -29,54 +28,52 @@ using namespace hub::tests;
 using namespace sqlpp;
 
 namespace {
-class ProcessTransferBatchTest : public CommandTest {};
-
 static constexpr int64_t USER_BALANCE = 10000;
 static constexpr int64_t MAX_TRANSFER_UNIT = 50;
-std::mutex m;
+static constexpr uint32_t NUM_USERS = 100;
+static constexpr uint32_t NUM_TRANSFERS = 20;
 
-void processRandomTransfer(std::vector<std::string> users,
+class ProcessTransferBatchTest : public CommandTest {};
+
+void processRandomTransfer(std::map<uint64_t, std::string>& idsToUsers,
                            std::map<uint64_t, int64_t>& idsToBalances,
-                           std::shared_ptr<hub::ClientSession> session) {
+                           std::shared_ptr<hub::ClientSession> session,
+                           bool threadSafe = false) {
+
+  static std::mutex m;
   std::random_device rd;   // obtain a random number from hardware
   std::mt19937 eng(rd());  // seed the generator
   std::uniform_int_distribution<> distr(1,
                                         MAX_TRANSFER_UNIT);  // define the range
-
-  for (auto i = 0; i < 10; ++i) {
-    rpc::ProcessTransferBatchRequest req;
-    rpc::ProcessTransferBatchReply res;
-    cmd::ProcessTransferBatch cmd(std::move(session));
-    auto idsToAmounts = createZigZagTransfer(users, req, distr(eng));
-    auto status = cmd.doProcess(&req, &res);
-
-    ASSERT_TRUE(status.ok());
-
-    for (auto& kv : idsToBalances) {
-      idsToBalances[kv.first] -= idsToAmounts[kv.first];
-    }
-  }
-}
-void processRandomTransferLock(std::vector<std::string> users,
-                               std::map<uint64_t, int64_t>& idsToBalances,
-                               std::shared_ptr<hub::ClientSession> session) {
-  std::random_device rd;   // obtain a random number from hardware
-  std::mt19937 eng(rd());  // seed the generator
-  std::uniform_int_distribution<> distr(1,
-                                        MAX_TRANSFER_UNIT);  // define the range
-  std::unique_lock<std::mutex> lock(m);
-
+  std::vector<std::string> users;
+  boost::copy(idsToUsers | boost::adaptors::map_values,
+              std::inserter(users, users.begin()));
   cmd::ProcessTransferBatch cmd(std::move(session));
 
-  for (auto i = 0; i < 10; ++i) {
+  for (auto i = 0; i < NUM_TRANSFERS; ++i) {
     rpc::ProcessTransferBatchRequest req;
     rpc::ProcessTransferBatchReply res;
 
     auto idsToAmounts = createZigZagTransfer(users, req, distr(eng));
-    auto status = cmd.doProcess(&req, &res);
-    if (status.ok()) {
-      for (auto& kv : idsToBalances) {
-        idsToBalances[kv.first] -= idsToAmounts[kv.first];
+    bool cmdOK = false;
+    try {
+      auto status = cmd.doProcess(&req, &res);
+      cmdOK = status.ok();
+    } catch (const sqlpp::exception& ex) {
+    }
+
+    if (threadSafe) {
+      if (cmdOK) {
+        std::unique_lock<std::mutex> lock(m);
+        for (auto& kv : idsToBalances) {
+          idsToBalances[kv.first] += idsToAmounts[kv.first];
+        }
+      }
+    } else {
+      if (cmdOK) {
+        for (auto& kv : idsToBalances) {
+          idsToBalances[kv.first] += idsToAmounts[kv.first];
+        }
       }
     }
   }
@@ -233,61 +230,57 @@ TEST_F(ProcessTransferBatchTest, TransferMustHaveSufficientFunds) {
 }
 
 TEST_F(ProcessTransferBatchTest, SequentialTransfersAreConsistent) {
-  std::vector<std::string> users;
-  std::vector<uint64_t> userIds;
-
+  std::map<uint64_t, std::string> idsToUsers;
   std::map<uint64_t, int64_t> idsToBalances;
 
-  constexpr uint32_t numUsers = 100;
-  constexpr uint32_t numTransfers = 20;
-
-  for (auto i = 0; i < numUsers; ++i) {
-    users.push_back("User " + std::to_string(i + 1));
-    userIds.push_back(i + 1);  // incremental keys are predictable
-    auto status = createUser(session(), users[i]);
+  for (auto i = 0; i < NUM_USERS; ++i) {
+    idsToUsers[i + 1] = "User " + std::to_string(i + 1);
+    auto status = createUser(session(), idsToUsers[i + 1]);
     ASSERT_TRUE(status.ok());
-    idsToBalances[i + 1] = USER_BALANCE;
   }
-  createBalanceForUsers(userIds, USER_BALANCE);
 
-  for (auto i = 0; i < 20; ++i) {
-    processRandomTransfer(users, idsToBalances, session());
+  std::vector<uint64_t> userIds;
+  boost::copy(idsToUsers | boost::adaptors::map_keys,
+              std::inserter(userIds, userIds.begin()));
+
+  idsToBalances = createBalanceForUsers(userIds, USER_BALANCE);
+
+  for (auto i = 0; i < 10; ++i) {
+    processRandomTransfer(idsToUsers, idsToBalances, session());
   }
 
   cmd::GetBalance balCmd(session());
   rpc::GetBalanceRequest getBalReq;
   rpc::GetBalanceReply getBalRep;
 
-  for (auto i = 0; i < users.size() - 1; ++i) {
-    getBalReq.set_userid(users[i]);
+  for (auto& kv : idsToUsers) {
+    getBalReq.set_userid(kv.second);
     ASSERT_TRUE(balCmd.doProcess(&getBalReq, &getBalRep).ok());
-    ASSERT_EQ(idsToBalances[userIds[i]], getBalRep.available());
+    ASSERT_EQ(idsToBalances[kv.first], getBalRep.available());
   }
 }
 
 TEST_F(ProcessTransferBatchTest, ConcurrentTransfersAreConsistent) {
-  static constexpr uint32_t NUM_THREADS = 3;
-  std::vector<std::string> users;
-  std::vector<uint64_t> userIds;
-  std::vector<std::thread> threads(NUM_THREADS);
+  static constexpr uint32_t NUM_THREADS = 5;
 
+  std::vector<std::thread> threads(NUM_THREADS);
+  std::map<uint64_t, std::string> idsToUsers;
   std::map<uint64_t, int64_t> idsToBalances;
 
-  constexpr uint32_t numUsers = 100;
-  constexpr uint32_t numTransfers = 20;
-
-  for (auto i = 0; i < numUsers; ++i) {
-    users.push_back("User " + std::to_string(i + 1));
-    userIds.push_back(i + 1);  // incremental keys are predictable
-    auto status = createUser(session(), users[i]);
+  for (auto i = 0; i < NUM_USERS; ++i) {
+    idsToUsers[i + 1] = "User " + std::to_string(i + 1);
+    auto status = createUser(session(), idsToUsers[i + 1]);
     ASSERT_TRUE(status.ok());
-    idsToBalances[i + 1] = USER_BALANCE;
   }
-  createBalanceForUsers(userIds, USER_BALANCE);
+
+  std::vector<uint64_t> userIds;
+  boost::copy(idsToUsers | boost::adaptors::map_keys,
+              std::inserter(userIds, userIds.begin()));
+  idsToBalances = createBalanceForUsers(userIds, USER_BALANCE);
 
   for (auto i = 0; i < NUM_THREADS; ++i) {
-    std::thread t(processRandomTransferLock, users, std::ref(idsToBalances),
-                  session());
+    std::thread t(processRandomTransfer, std::ref(idsToUsers),
+                  std::ref(idsToBalances), session(), true);
     threads[i] = std::move(t);
   }
 
@@ -299,10 +292,10 @@ TEST_F(ProcessTransferBatchTest, ConcurrentTransfersAreConsistent) {
   rpc::GetBalanceRequest getBalReq;
   rpc::GetBalanceReply getBalRep;
 
-  for (auto i = 0; i < users.size() - 1; ++i) {
-    getBalReq.set_userid(users[i]);
+  for (auto& kv : idsToUsers) {
+    getBalReq.set_userid(kv.second);
     ASSERT_TRUE(balCmd.doProcess(&getBalReq, &getBalRep).ok());
-    ASSERT_EQ(idsToBalances[userIds[i]], getBalRep.available());
+    ASSERT_EQ(idsToBalances[kv.first], getBalRep.available());
   }
 }
 
