@@ -118,6 +118,13 @@ new_http_archive(
         "https://github.com/gvanas/KeccakCodePackage/archive/c737139c81fd191699886a9a74d3220f6e300b29.zip",
 )
 
+new_git_repository(
+    name = "iota_lib_cpp",
+    build_file = "third-party/iota_lib_cpp/BUILD",
+    commit = "9971c832e6a38972803a4d1506a78c36451c3df3",
+    remote = "https://github.com/th0br0/iota.lib.cpp.git",
+)
+
 new_http_archive(
     name = "mariadb_connector",
     build_file = "third-party/mariadb_connector/BUILD",
