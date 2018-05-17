@@ -60,8 +60,9 @@ bool AttachmentService::checkForUserReattachment(
     // Third-party (i.e. user erattachments!)
     std::vector<std::string> userTails;
 
-    std::transform(bundleTransactions.cbegin(), bundleTransactions.cend(),
-                   userTails.begin(), [](const auto& ref) { return ref.hash; });
+    for (const auto& ref : bundleTransactions) {
+      userTails.push_back(ref.hash);
+    }
 
     auto confirmedTails = _api->filterConfirmedTails(userTails, {});
     if (confirmedTails.size() != 0) {

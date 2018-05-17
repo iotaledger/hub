@@ -83,6 +83,7 @@ TEST_F(AddressMonitorTest, OnStartShouldInitialise) {
 
   EXPECT_CALL(monitor, monitoredAddresses()).Times(1);
   EXPECT_CALL(monitor, onBalancesChanged(_)).Times(0);
+  EXPECT_CALL(monitor, initialBalances(_)).Times(1);
   EXPECT_CALL(api, getBalances(_)).Times(0);
   monitor.onStart();
 }
@@ -190,10 +191,11 @@ TEST_F(AddressMonitorTest, RemoveUnmonitoredAddresses) {
       .Times(1)
       .WillOnce(Return(monitored));
 
-  EXPECT_CALL(api, getBalances(_))
+  std::unordered_map<uint64_t, uint64_t> initialBalances = {
+      {0, 10}, {1, 20}, {2, 30}};
+  EXPECT_CALL(monitor, initialBalances(_))
       .Times(1)
-      .WillOnce(Return(std::unordered_map<std::string, uint64_t>{
-          {addressA, 10}, {addressB, 20}, {addressC, 30}}));
+      .WillOnce(Return(initialBalances));
 
   monitor.onStart();
 

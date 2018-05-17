@@ -109,6 +109,15 @@ using Address = TryteArray<81, AddressTag>;
 }  // namespace hub
 
 namespace std {
+
+template <std::size_t N, typename TAG>
+struct hash<hub::crypto::TryteArray<N, TAG>> {
+ public:
+  std::size_t operator()(const hub::crypto::TryteArray<N, TAG>& k) const {
+    return std::hash<std::string_view>()(k.str_view());
+  }
+};
+
 template <>
 struct hash<hub::crypto::UUID> {
  public:

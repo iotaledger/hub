@@ -19,83 +19,95 @@ using namespace hub::db;
 
 namespace {
 
-    class DBTest : public hub::Test {};
+class DBTest : public hub::Test {};
 
-    TEST_F(DBTest, HubAddressTriggerWorks) {
-        auto& connection = db::DBManager::get().connection();
-        auto& cryptoProvider = crypto::CryptoManager::get().provider();
-        auto balances = {100, 540, 60, 700};
+TEST_F(DBTest, HubAddressTriggerWorks) {
+  auto& connection = db::DBManager::get().connection();
+  auto& cryptoProvider = crypto::CryptoManager::get().provider();
+  auto balances = {100, 540, 60, 700};
 
-        uint64_t stepSize = 10;
+  uint64_t stepSize = 10;
 
-        UUID uuid;
-        auto hubOutputAddress = cryptoProvider.getAddressForUUID(uuid);
+  UUID uuid;
+  auto hubOutputAddress = cryptoProvider.getAddressForUUID(uuid);
 
-        std::vector<uint64_t> hubAddressIds;
-        for (auto b : balances) {
-            auto hubAddressId =
-                    connection.createHubAddress(uuid, hubOutputAddress);
-            hubAddressIds.push_back(hubAddressId);
-        }
+  std::vector<uint64_t> hubAddressIds;
+  for (auto b : balances) {
+    auto hubAddressId = connection.createHubAddress(uuid, hubOutputAddress);
+    hubAddressIds.push_back(hubAddressId);
+  }
 
-        uint32_t step = 0;
-        for (auto b : balances) {
-            for (auto i = 0; i < b / stepSize; ++i) {
-                connection.createHubAddressBalanceEntry(
-                        hubAddressIds[step], stepSize, HubAddressBalanceReason::INBOUND, 1);
-            }
+  auto sweepId = connection.createSweep(
+      hub::crypto::Hash("999999999999999999999999999999999999999999999999999999"
+                        "999999999999999999999999999"),
+      "", hubAddressIds[0]);
 
-            auto triggerSummedBalance =
-                    connection.getHubAddressBalance(hubAddressIds[step]);
-            EXPECT_EQ(triggerSummedBalance, b);
-            ++step;
-        }
+  uint32_t step = 0;
+  for (auto b : balances) {
+    for (auto i = 0; i < b / stepSize; ++i) {
+      connection.createHubAddressBalanceEntry(hubAddressIds[step], stepSize,
+                                              HubAddressBalanceReason::INBOUND,
+                                              sweepId);
     }
 
-    TEST_F(DBTest, UserAddressTriggerWorks) {
-        auto& connection = db::DBManager::get().connection();
-        auto& cryptoProvider = crypto::CryptoManager::get().provider();
+    auto triggerSummedBalance =
+        connection.getHubAddressBalance(hubAddressIds[step]);
+    EXPECT_EQ(triggerSummedBalance, b);
+    ++step;
+  }
+}
 
-        std::set<std::string> users = {"Ricky", "Stephen", "Karl"};
-        std::vector<uint64_t> userBalances = {90000, 10000, 1000};
-        std::map<uint64_t, std::string> usersToBalance;
-        uint64_t stepSize = 100;
+TEST_F(DBTest, UserAddressTriggerWorks) {
+  auto& connection = db::DBManager::get().connection();
+  auto& cryptoProvider = crypto::CryptoManager::get().provider();
 
-        for (auto u : users) {
-            connection.createUser(u);
-        }
+  std::set<std::string> users = {"Ricky", "Stephen", "Karl"};
+  std::vector<uint64_t> userBalances = {90000, 10000, 1000};
+  std::map<uint64_t, std::string> usersToBalance;
+  uint64_t stepSize = 100;
 
-        auto identifiersToIds = connection.userIdsFromIdentifiers(users);
-        EXPECT_EQ(identifiersToIds.size(), users.size());
+  UUID uuid;
+  auto hubOutputAddress = cryptoProvider.getAddressForUUID(uuid);
+  auto hubAddressId = connection.createHubAddress(uuid, hubOutputAddress);
+  auto sweepId = connection.createSweep(
+      hub::crypto::Hash("999999999999999999999999999999999999999999999999999999"
+                        "999999999999999999999999999"),
+      "", hubAddressId);
 
-        auto userNum = 0;
-        for (const auto& kv : identifiersToIds) {
-            UUID uuid;
-            auto userAddress = cryptoProvider.getAddressForUUID(uuid);
-            auto addId = connection.createUserAddress(userAddress, kv.second, uuid);
-            usersToBalance[addId] = userBalances[userNum];
+  for (auto u : users) {
+    connection.createUser(u);
+  }
 
-            for (auto i = 0; i < userBalances[userNum] / stepSize; ++i) {
-                connection.createUserAddressBalanceEntry(
-                        addId, stepSize, UserAddressBalanceReason::DEPOSIT, "", 1);
-            }
+  auto identifiersToIds = connection.userIdsFromIdentifiers(users);
+  EXPECT_EQ(identifiersToIds.size(), users.size());
 
-            // just so all types of REASONs will be tested
-            connection.createUserAddressBalanceEntry(
-                    addId, -stepSize, UserAddressBalanceReason::SWEEP, "", 1);
+  auto userNum = 0;
+  for (const auto& kv : identifiersToIds) {
+    UUID uuid;
+    auto userAddress = cryptoProvider.getAddressForUUID(uuid);
+    auto addId = connection.createUserAddress(userAddress, kv.second, uuid);
+    usersToBalance[addId] = userBalances[userNum];
 
-            connection.createUserAddressBalanceEntry(
-                    addId, stepSize, UserAddressBalanceReason::DEPOSIT, "", 1);
-
-            ++userNum;
-        }
-
-        userNum = 0;
-        for (const auto& kv : usersToBalance) {
-            auto balance = connection.getUserAddressBalance(kv.first);
-            EXPECT_EQ(balance, userBalances[userNum++]);
-        }
+    for (auto i = 0; i < userBalances[userNum] / stepSize; ++i) {
+      connection.createUserAddressBalanceEntry(
+          addId, stepSize, UserAddressBalanceReason::DEPOSIT, "", 1);
     }
 
+    // just so all types of REASONs will be tested
+    connection.createUserAddressBalanceEntry(
+        addId, -stepSize, UserAddressBalanceReason::SWEEP, "", sweepId);
+
+    connection.createUserAddressBalanceEntry(
+        addId, stepSize, UserAddressBalanceReason::DEPOSIT, "", 1);
+
+    ++userNum;
+  }
+
+  userNum = 0;
+  for (const auto& kv : usersToBalance) {
+    auto balance = connection.getUserAddressBalance(kv.first);
+    EXPECT_EQ(balance, userBalances[userNum++]);
+  }
+}
 
 };  // namespace
