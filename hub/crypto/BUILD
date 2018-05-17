@@ -38,7 +38,6 @@ cc_library(
 
 cc_test(
     name = "test_crypto",
-    timeout = "short",
     srcs = glob([
         "tests/**/*.cc",
     ]),

@@ -386,7 +386,7 @@ WithdrawalInfo helper<C>::getWithdrawalInfoFromUUID(C& connection,
   auto result = connection(
       select(tbl.userId, tbl.amount).from(tbl).where(tbl.uuid == uuid));
 
-  return {result.front().userId, result.front().amount};
+  return {static_cast<uint64_t>(result.front().userId), result.front().amount};
 }
 
 template <typename C>
