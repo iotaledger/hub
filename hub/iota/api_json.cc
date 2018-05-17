@@ -122,8 +122,7 @@ std::vector<Transaction> IotaJsonAPI::getTrytes(
     return {};
   }
 
-  auto trytes =
-      maybeResponse.value()["trytes"].get<std::vector<std::string>>();
+  auto trytes = maybeResponse.value()["trytes"].get<std::vector<std::string>>();
 
   std::vector<Transaction> txs;
   iota_transaction_t tx = transaction_new();
@@ -281,7 +280,11 @@ std::vector<std::string> IotaJsonAPI::attachToTangle(
   req["trunkTransaction"] = trunkTransaction;
   req["branchTransaction"] = branchTransaction;
   req["minWeightMagnitude"] = minWeightMagnitude;
-  req["trytes"] = trytes;
+
+  // FIXME(th0br0) should decode trytes and not trust input ordering
+  std::vector<std::string> localTrytes = trytes;
+  std::reverse(std::begin(localTrytes), std::end(localTrytes));
+  req["trytes"] = json(localTrytes);
 
   auto maybeResponse = post(std::move(req));
 
@@ -290,7 +293,7 @@ std::vector<std::string> IotaJsonAPI::attachToTangle(
     return {};
   }
 
-  return std::move(maybeResponse.value().get<std::vector<std::string>>());
+  return maybeResponse.value()["trytes"].get<std::vector<std::string>>();
 }
 
 bool IotaJsonAPI::storeTransactions(const std::vector<std::string>& trytes) {

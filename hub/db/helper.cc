@@ -241,8 +241,7 @@ std::vector<Sweep> helper<C>::getUnconfirmedSweeps(
     auto txCount = combinedTrytes.size() / trytesPerTX;
 
     for (size_t i = 0; i < txCount; i++) {
-      trytes.push_back(
-          combinedTrytes.substr(i * trytesPerTX, (i + 1) * trytesPerTX));
+      trytes.push_back(combinedTrytes.substr(i * trytesPerTX, trytesPerTX));
     }
 
     sweeps.push_back({static_cast<uint64_t>(row.id), std::move(row.bundleHash),
@@ -422,7 +421,7 @@ uint64_t helper<C>::getHubAddressBalance(C& connection, uint64_t hubAddressId) {
 
 template <typename C>
 uint64_t helper<C>::getUserAddressBalance(C& connection,
-                                         uint64_t userAddressId) {
+                                          uint64_t userAddressId) {
   db::sql::UserAddress tbl;
   auto result =
       connection(select(tbl.balance).from(tbl).where(tbl.id == userAddressId));

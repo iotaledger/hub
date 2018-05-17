@@ -49,7 +49,6 @@ grpc::Status UserWithdrawCancel::doProcess(
           db::UserAccountBalanceReason::WITHDRAWAL_CANCEL);
     }
 
-  cleanup:
     if (errorCode) {
       transaction->rollback();
     } else {

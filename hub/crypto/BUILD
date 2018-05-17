@@ -21,6 +21,7 @@ cc_library(
         ":crypto",
         "@argon2",
         "@com_github_google_glog//:glog",
+        "@iota_lib_cpp",
         "@org_iota_entangled//common/helpers:sign",
         "@org_iota_entangled//common/kerl:converter",
         "@org_iota_entangled//common/trinary:trit_tryte",

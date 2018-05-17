@@ -40,6 +40,7 @@ cc_library(
         "@boost//:uuid",
         "@com_github_gflags_gflags//:gflags",
         "@com_github_google_glog//:glog",
+        "@iota_lib_cpp",
     ],
 )
 

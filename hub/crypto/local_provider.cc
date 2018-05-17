@@ -3,6 +3,7 @@
 #include "hub/crypto/local_provider.h"
 
 #include <array>
+#include <vector>
 #include <cstdint>
 #include <functional>
 #include <memory>
@@ -11,12 +12,16 @@
 
 #include <argon2.h>
 #include <glog/logging.h>
+#include <iota/crypto/signing.hpp>
+#include <iota/models/bundle.hpp>
+#include <iota/types/trinary.hpp>
 
 #include "common/helpers/sign.h"
 #include "common/kerl/converter.h"
+#include "common/kerl/kerl.h"
+#include "common/sign/v1/iss_kerl.h"
 #include "common/trinary/trits.h"
 #include "common/trinary/tryte.h"
-
 #include "hub/crypto/types.h"
 
 // FIXME (th0br0) fix up entangled
@@ -37,7 +42,7 @@ static constexpr uint32_t _argon_t_cost = 1;
 static constexpr uint32_t _argon_m_cost = 1 << 16;  // 64mebibytes
 static constexpr uint32_t _argon_parallelism = 1;
 
-using TryteSeed = std::array<tryte_t, TRYTE_LEN>;
+using TryteSeed = std::array<tryte_t, TRYTE_LEN + 1>;
 using TryteSeedPtr =
     std::unique_ptr<TryteSeed, std::function<void(TryteSeed*)>>;
 
@@ -58,6 +63,7 @@ TryteSeedPtr seedFromUUID(const hub::crypto::UUID& uuid,
   bytes_to_trits(byteSeed.data(), seed.data());
   byteSeed.fill(0);
 
+  tryteSeed->fill(0);
   trits_to_trytes(seed.data(), tryteSeed->data(), TRIT_LEN);
   seed.fill(0);
 
@@ -81,8 +87,8 @@ LocalProvider::LocalProvider(std::string salt) : _salt(std::move(salt)) {
 Address LocalProvider::getAddressForUUID(const hub::crypto::UUID& uuid) const {
   LOG(INFO) << "Generating address for: " << uuid.str();
 
-  auto add = iota_sign_address_gen(
-      (const char*)seedFromUUID(uuid, _salt)->data(), KEY_IDX, KEY_SEC);
+  auto seed = seedFromUUID(uuid, _salt);
+  auto add = iota_sign_address_gen((const char*)seed->data(), KEY_IDX, KEY_SEC);
   Address ret(add);
   std::free(add);
   return ret;
@@ -90,15 +96,40 @@ Address LocalProvider::getAddressForUUID(const hub::crypto::UUID& uuid) const {
 
 std::string LocalProvider::doGetSignatureForUUID(const hub::crypto::UUID& uuid,
                                                  const Hash& bundleHash) const {
-  LOG(INFO) << "Generating signature for: " << uuid.str();
+  LOG(INFO) << "Generating signature for: " << uuid.str()
+            << ", bundle: " << bundleHash.str_view();
 
-  auto sig =
-      iota_sign_signature_gen((const char*)seedFromUUID(uuid, _salt)->data(),
-                              KEY_IDX, KEY_SEC, bundleHash.str_view().data());
-  std::string ret = sig;
-  std::free(sig);
+  auto seed = seedFromUUID(uuid, _salt);
 
-  return ret;
+  IOTA::Models::Bundle bundle;
+  auto normalized = bundle.normalizedBundle(bundleHash.str());
+
+  const size_t kKeyLength = ISS_KEY_LENGTH * KEY_SEC;
+  Kerl kerl;
+  init_kerl(&kerl);
+
+  trit_t key[kKeyLength];
+  std::array<trit_t, TRIT_LEN> tritSeed;
+  trytes_to_trits(seed->data(), tritSeed.data(), TRYTE_LEN);
+  iss_kerl_key(tritSeed.data(), key, kKeyLength, &kerl);
+  tritSeed.fill(0);
+
+  std::vector<int8_t> keyTrits(key, key + kKeyLength);
+  std::ostringstream oss;
+
+  for (size_t i = 0; i < KEY_SEC; i++) {
+    std::vector<int8_t> bundleFrag(normalized.begin() + i * 27,
+                                   normalized.begin() + (i + 1) * 27);
+    std::vector<int8_t> keyFrag(keyTrits.begin() + i * ISS_KEY_LENGTH,
+                                keyTrits.begin() + (i + 1) * ISS_KEY_LENGTH);
+
+    auto sigFrag =
+        IOTA::Crypto::Signing::signatureFragment(bundleFrag, keyFrag);
+
+    oss << IOTA::Types::tritsToTrytes(sigFrag);
+  }
+
+  return oss.str();
 }
 
 }  // namespace crypto
