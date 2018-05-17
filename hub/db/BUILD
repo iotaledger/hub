@@ -23,7 +23,6 @@ cc_library(
 
 cc_test(
     name = "test_db",
-    timeout = "short",
     srcs = glob([
         "tests/**/*.cc",
     ]),

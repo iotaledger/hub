@@ -52,7 +52,6 @@ cc_library(
 
 cc_test(
     name = "tests",
-    timeout = "short",
     srcs = glob(["tests/**/*.cc"]),
     deps = [
         ":beast",
