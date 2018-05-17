@@ -29,6 +29,7 @@ cc_test(
     deps = [
         ":commands",
         "//hub/tests",
+        "@boost//:range",
         "@com_google_googletest//:gtest",
     ],
 )

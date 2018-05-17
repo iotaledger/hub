@@ -23,8 +23,6 @@ class UUID {
   UUID();
   explicit UUID(const std::string_view& sv);
 
-  operator const char*() const;
-
   std::string str() const;
 
   std::string_view str_view() const;
