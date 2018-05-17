@@ -31,7 +31,7 @@ namespace {
 static constexpr int64_t USER_BALANCE = 10000;
 static constexpr int64_t MAX_TRANSFER_UNIT = 50;
 static constexpr uint32_t NUM_USERS = 100;
-static constexpr uint32_t NUM_TRANSFERS = 20;
+static constexpr uint32_t NUM_TRANSFERS = 200;
 
 class ProcessTransferBatchTest : public CommandTest {};
 
@@ -261,7 +261,7 @@ TEST_F(ProcessTransferBatchTest, SequentialTransfersAreConsistent) {
 }
 
 TEST_F(ProcessTransferBatchTest, ConcurrentTransfersAreConsistent) {
-  static constexpr uint32_t NUM_THREADS = 5;
+  static constexpr uint32_t NUM_THREADS = 100;
 
   std::vector<std::thread> threads(NUM_THREADS);
   std::map<uint64_t, std::string> idsToUsers;

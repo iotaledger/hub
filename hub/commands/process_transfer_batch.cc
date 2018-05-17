@@ -58,27 +58,22 @@ grpc::Status ProcessTransferBatch::doProcess(
   }
 
   // Actual transfer insertion to db
-//  try {
-    auto transaction = connection.transaction();
+  auto transaction = connection.transaction();
+  try {
+    connection.insertUserTransfers(transfers);
+    transaction->commit();
+  } catch (sqlpp::exception& ex) {
+    LOG(ERROR) << session() << " Commit failed: " << ex.what();
+
     try {
-      connection.insertUserTransfers(transfers);
-      transaction->commit();
-    } catch (sqlpp::exception& ex) {
-       LOG(ERROR) << session() << " Commit failed: " << ex.what();
-
-      try {
-        transaction->rollback();
-      } catch (const sqlpp::exception& ex) {
-         LOG(ERROR) << session() << " Rollback failed: " << ex.what();
-      }
-
-      return grpc::Status(grpc::StatusCode::FAILED_PRECONDITION, "",
-                          errorToString(hub::rpc::ErrorCode::EC_UNKNOWN));
+      transaction->rollback();
+    } catch (const sqlpp::exception& ex) {
+      LOG(ERROR) << session() << " Rollback failed: " << ex.what();
     }
-//  } catch (const sqlpp::exception& ex) {
-//    return grpc::Status(grpc::StatusCode::FAILED_PRECONDITION, "",
-//                        errorToString(hub::rpc::ErrorCode::EC_UNKNOWN));
-//  }
+
+    return grpc::Status(grpc::StatusCode::FAILED_PRECONDITION, "",
+                        errorToString(hub::rpc::ErrorCode::EC_UNKNOWN));
+  }
 
   return grpc::Status::OK;
 }
@@ -118,10 +113,6 @@ grpc::Status ProcessTransferBatch::validateTransfers(
   boost::copy(identifierToId | boost::adaptors::map_values,
               std::inserter(userIds, userIds.begin()));
   auto userToBalance = connection.getTotalAmountForUsers(userIds);
-  if (userToBalance.empty() || identifierToId.empty()) {
-    return grpc::Status(grpc::StatusCode::FAILED_PRECONDITION,
-                        errorToString(hub::rpc::ErrorCode::BATCH_INCONSISTENT));
-  }
   for (auto& kv : userToTransferAmount) {
     uint64_t currId = identifierToId.at(kv.first);
 
