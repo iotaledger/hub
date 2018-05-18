@@ -22,6 +22,7 @@ cc_library(
         "@boost//:functional",
         "@boost//:range",
         "@com_github_google_glog//:glog",
+        "@iota_lib_cpp",
         "@org_iota_entangled//common/helpers:digest",
     ],
 )

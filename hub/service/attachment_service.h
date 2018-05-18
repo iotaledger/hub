@@ -39,6 +39,10 @@ class AttachmentService : public ScheduledService {
                      const iota::POWProvider& powProvider,
                      const db::Sweep& sweep);
 
+  void promoteSweep(db::Connection& connection,
+                    const iota::POWProvider& powProvider,
+                    const db::Sweep& sweep, const hub::crypto::Hash& tailHash);
+
   bool checkForUserReattachment(db::Connection& connection,
                                 const db::Sweep& sweep,
                                 const std::vector<std::string>& knownTails);
