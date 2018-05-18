@@ -72,7 +72,7 @@ grpc::Status UserWithdraw::doProcess(
 
     // Add user account balance entry
     connection.createUserAccountBalanceEntry(
-        userId, request->amount(), db::UserAccountBalanceReason::WITHDRAWAL,
+        userId, -request->amount(), db::UserAccountBalanceReason::WITHDRAWAL,
         withdrawalId);
 
     response->set_uuid(boost::uuids::to_string(withdrawalUUID));
@@ -100,7 +100,7 @@ grpc::Status UserWithdraw::doProcess(
                         errorToString(errorCode.value()));
   }
 
-  return grpc::Status::CANCELLED;
+  return grpc::Status::OK;
 }
 
 }  // namespace cmd
