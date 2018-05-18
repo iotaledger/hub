@@ -53,6 +53,7 @@ class Connection {
       const std::string& uuid, uint64_t userId, uint64_t amount,
       const hub::crypto::Address& payoutAddress) = 0;
   virtual size_t cancelWithdrawal(const std::string& uuid) = 0;
+  virtual size_t setWithdrawalSweep(uint64_t id, uint64_t sweepId) = 0;
   virtual std::optional<AddressWithUUID> selectFirstUserAddress() = 0;
   virtual void markUUIDAsSigned(const hub::crypto::UUID& uuid) = 0;
   virtual std::vector<UserBalanceEvent> getUserAccountBalances(

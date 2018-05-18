@@ -47,6 +47,9 @@ struct helper {
                                    uint64_t userId, uint64_t amount,
                                    const hub::crypto::Address& payoutAddress);
   static size_t cancelWithdrawal(C& connection, const std::string& uuid);
+  static size_t setWithdrawalSweep(C& connection, uint64_t id,
+                                   uint64_t sweepId);
+
   static std::optional<AddressWithUUID> selectFirstUserAddress(C& connection);
   static void markUUIDAsSigned(C& connection, const hub::crypto::UUID& uuid);
   static std::vector<UserBalanceEvent> getUserAccountBalances(C& connection,

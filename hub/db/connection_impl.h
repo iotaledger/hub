@@ -104,6 +104,10 @@ class ConnectionImpl : public Connection {
     return db::helper<Conn>::cancelWithdrawal(*_conn, uuid);
   }
 
+  size_t setWithdrawalSweep(uint64_t id, uint64_t sweepId) override {
+    return db::helper<Conn>::setWithdrawalSweep(*_conn, id, sweepId);
+  }
+
   std::optional<AddressWithUUID> selectFirstUserAddress() override {
     return db::helper<Conn>::selectFirstUserAddress(*_conn);
   }
