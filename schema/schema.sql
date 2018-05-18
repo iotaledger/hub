@@ -49,7 +49,7 @@ CREATE TABLE IF NOT EXISTS hub_address_balance (
   reason INTEGER NOT NULL,
   sweep INTEGER NOT NULL,
   occured_at DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
-  CONSTRAINT hadd_reason_amount CHECK ((reason = 0 and amount > 0) or (reason = 1 and amount < 0)),
+  CONSTRAINT hadd_reason_amount CHECK ((reason = 0 and amount >= 0) or (reason = 1 and amount < 0)),
   CONSTRAINT hadd_reason_range CHECK ((reason = 0 or reason = 1)),
   FOREIGN KEY (hub_address) REFERENCES hub_address(id),
   FOREIGN KEY (sweep) REFERENCES sweep(id)
