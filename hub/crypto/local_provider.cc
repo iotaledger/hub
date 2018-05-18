@@ -111,6 +111,7 @@ std::string LocalProvider::doGetSignatureForUUID(const hub::crypto::UUID& uuid,
   trit_t key[kKeyLength];
   std::array<trit_t, TRIT_LEN> tritSeed;
   trytes_to_trits(seed->data(), tritSeed.data(), TRYTE_LEN);
+  iss_kerl_subseed(tritSeed.data(), tritSeed.data(), KEY_IDX, &kerl);
   iss_kerl_key(tritSeed.data(), key, kKeyLength, &kerl);
   tritSeed.fill(0);
 
