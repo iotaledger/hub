@@ -3,6 +3,8 @@
 #include "hub/db/helper.h"
 
 #include <algorithm>
+#include <unordered_set>
+#include <vector>
 
 #include <sqlpp11/functions.h>
 #include <sqlpp11/insert.h>
@@ -448,11 +450,12 @@ std::vector<TransferOutput> helper<C>::getWithdrawalsForSweep(
 
   std::vector<TransferOutput> outputs;
 
-  auto result = connection(select(tbl.id, tbl.amount, tbl.payoutAddress)
-                               .from(tbl)
-                               .where(tbl.requestedAt <= olderThan)
-                               .order_by(tbl.requestedAt.asc())
-                               .limit(max));
+  auto result =
+      connection(select(tbl.id, tbl.amount, tbl.payoutAddress)
+                     .from(tbl)
+                     .where(tbl.requestedAt <= olderThan && tbl.sweep.is_null())
+                     .order_by(tbl.requestedAt.asc())
+                     .limit(max));
 
   for (const auto& row : result) {
     outputs.emplace_back(
@@ -461,6 +464,14 @@ std::vector<TransferOutput> helper<C>::getWithdrawalsForSweep(
   }
 
   return outputs;
+}
+
+template <typename C>
+size_t helper<C>::setWithdrawalSweep(C& connection, uint64_t id,
+                                     uint64_t sweepId) {
+  db::sql::Withdrawal tbl;
+
+  return connection(update(tbl).set(tbl.sweep = sweepId).where(tbl.id == id));
 }
 
 template <typename C>
@@ -517,19 +528,26 @@ std::vector<TransferInput> helper<C>::getHubInputsForSweep(
   db::sql::SweepTails tls;
 
   // 1. Get all available unused Hub addresses
-  auto availableAddresses = connection(
-      select(add.id, add.address, add.seedUuid)
+  auto availableAddressesResult = connection(
+      select(add.id, add.address, add.balance, add.seedUuid)
           .from(add)
-          .where(add.createdAt < olderThan && !(add.isColdStorage > 0) &&
+          .where(add.createdAt < olderThan && !(add.isColdStorage != 0) &&
                  !exists(select(bal.id).from(bal).where(
                      bal.hubAddress == add.id &&
                      bal.reason == static_cast<int>(
                                        HubAddressBalanceReason::OUTBOUND)))));
 
+  std::vector<TransferInput> availableInputs;
   std::vector<int64_t> addressIds;
+  for (const auto& row : availableAddressesResult) {
+    auto id = row.id;
 
-  for (const auto& row : availableAddresses) {
-    addressIds.push_back(row.id);
+    TransferInput input = {id, 0, hub::crypto::Address(row.address.value()),
+                           hub::crypto::UUID(row.seedUuid.value()),
+                           static_cast<uint64_t>(row.balance)};
+
+    addressIds.push_back(id);
+    availableInputs.emplace_back(std::move(input));
   }
 
   // 2. Only select those with a confirmed INBOUND sweep
@@ -540,32 +558,19 @@ std::vector<TransferInput> helper<C>::getHubInputsForSweep(
                  exists(select(tls.hash).from(tls).where(tls.sweep == swp.id &&
                                                          tls.confirmed == 1))));
 
-  addressIds.clear();
+  std::unordered_set<int64_t> confirmedAddressIds;
 
   for (const auto& row : confirmedAddresses) {
-    addressIds.push_back(row.intoHubAddress);
+    confirmedAddressIds.insert(row.intoHubAddress);
   }
 
-  std::vector<TransferInput> availableInputs;
-
-  // 3. Figure out the balance on each of these
-  for (const auto& row : availableAddresses) {
-    auto id = row.id;
-
-    if (std::find(addressIds.begin(), addressIds.end(), id) ==
-        addressIds.end()) {
-      continue;
-    }
-
-    auto availableBalance = connection(
-        select(sum(bal.amount)).from(bal).where(bal.hubAddress == id));
-
-    TransferInput input = {id, 0, hub::crypto::Address(row.address.value()),
-                           hub::crypto::UUID(row.seedUuid.value()),
-                           static_cast<uint64_t>(availableBalance.front().sum)};
-
-    availableInputs.emplace_back(std::move(input));
-  }
+  availableInputs.erase(
+      std::remove_if(availableInputs.begin(), availableInputs.end(),
+                     [&confirmedAddressIds](const auto& input) {
+                       return confirmedAddressIds.find(input.addressId) ==
+                              confirmedAddressIds.end();
+                     }),
+      availableInputs.end());
 
   // Sort lowest to highest
   std::sort(availableInputs.begin(), availableInputs.end(),
@@ -573,8 +578,12 @@ std::vector<TransferInput> helper<C>::getHubInputsForSweep(
 
   std::vector<TransferInput> selectedInputs;
   auto it = availableInputs.begin();
-  uint64_t total;
 
+  if (it == std::end(availableInputs)) {
+    return selectedInputs;
+  }
+
+  uint64_t total = 0;
   do {
     total += it->amount;
     selectedInputs.emplace_back(std::move(*it));

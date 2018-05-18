@@ -92,12 +92,21 @@ bool SweepService::doTick() {
       if (hubInputTotal < missing) {
         LOG(ERROR)
             << "Not enough balance available in hub addresses right now. "
-            << "Ignoring withdrawals.";
+            << "Needed: " << missing << " but only found: " << hubInputTotal
+            << ". Ignoring withdrawals.";
 
         hubInputs.clear();
         requiredOutput = 0;
         withdrawals.clear();
       }
+    }
+
+    // 3.1. Abort if no deposits or withdrawals found.
+    if (deposits.size() == 0 && withdrawals.size() == 0) {
+      LOG(INFO) << "No deposits or withdrawal requests found. Aborting sweep.";
+
+      transaction->rollback();
+      return true;
     }
 
     LOG(INFO) << "Found " << hubInputs.size()
@@ -227,16 +236,24 @@ bool SweepService::doTick() {
                                             hubOutput.id);
 
     // 6.2. Change Hub address balances
+    LOG(INFO) << "hub output amount: " << hubOutput.amount;
+
     dbConnection.createHubAddressBalanceEntry(
         hubOutput.id, hubOutput.amount, db::HubAddressBalanceReason::INBOUND,
         sweepId);
     for (const auto& input : hubInputs) {
+      LOG(INFO) << "hub input: " << input.amount;
       dbConnection.createHubAddressBalanceEntry(
           input.addressId, -input.amount, db::HubAddressBalanceReason::OUTBOUND,
           sweepId);
     }
 
-    // 6.3. Change User address balances
+    // 6.3. Update withdrawal sweep id
+    for (const auto& withdrawal : withdrawals) {
+      dbConnection.setWithdrawalSweep(withdrawal.id, sweepId);
+    }
+
+    // 6.4. Change User address balances
     for (const auto& input : deposits) {
       dbConnection.createUserAddressBalanceEntry(
           input.addressId, -input.amount, db::UserAddressBalanceReason::SWEEP,
