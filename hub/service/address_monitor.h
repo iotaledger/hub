@@ -49,17 +49,21 @@ class AddressMonitor : public ScheduledService {
   //! @return true if balance changes are accepted
   virtual bool onBalancesChanged(const std::vector<BalanceChange>& changed) = 0;
 
+  virtual std::unordered_map<uint64_t, uint64_t> initialBalances(
+      std::vector<uint64_t> ids) = 0;
+
   void onStart() override;
 
-  //copy
+  // copy
   inline std::unordered_map<uint64_t, uint64_t> balances() const {
-      return _balances;
+    return _balances;
   }
 
  protected:
   bool doTick() override;
 
   std::vector<BalanceChange> calculateBalanceChanges();
+
   void persistBalanceChanges(std::vector<BalanceChange> changes);
   void removeUnmonitoredAddresses(
       const std::unordered_map<std::string, uint64_t>& addressToIds);

@@ -78,8 +78,8 @@ struct helper {
                                            int64_t amount,
                                            const HubAddressBalanceReason reason,
                                            uint64_t sweepId);
-  static int64_t getHubAddressBalance(C& connection, uint64_t hubAddress);
-  static int64_t getUserAddressBalance(C& connection, uint64_t userAddress);
+  static uint64_t getHubAddressBalance(C& connection, uint64_t hubAddress);
+  static uint64_t getUserAddressBalance(C& connection, uint64_t userAddress);
 
   static int64_t createSweep(C& connection, const hub::crypto::Hash& bundleHash,
                              const std::string& bundleTrytes,

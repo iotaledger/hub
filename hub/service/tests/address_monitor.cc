@@ -28,6 +28,8 @@ class MockMonitor : public AddressMonitor {
                std::vector<std::tuple<uint64_t, std::string>>(void));
   MOCK_METHOD1(onBalancesChanged,
                bool(const std::vector<BalanceChange>& changed));
+  MOCK_METHOD1(initialBalances, std::unordered_map<uint64_t, uint64_t>(
+                                    std::vector<uint64_t> ids));
 
   const std::string name() const override { return "MockMonitor"; }
 };
@@ -94,11 +96,18 @@ TEST_F(AddressMonitorTest, Tick) {
       "AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA"
       "AAAAAAAAA";
 
+  std::unordered_map<uint64_t, uint64_t> initialBalances;
+  initialBalances[0] = 0;
+
   std::vector<std::tuple<uint64_t, std::string>> monitored = {
       std::make_tuple(0, address)};
 
   EXPECT_CALL(monitor, monitoredAddresses()).Times(1);
   EXPECT_CALL(monitor, onBalancesChanged(_)).Times(0);
+
+  EXPECT_CALL(monitor, initialBalances(_))
+      .Times(1)
+      .WillOnce(Return(initialBalances));
   EXPECT_CALL(api, getBalances(_)).Times(0);
   monitor.onStart();
 

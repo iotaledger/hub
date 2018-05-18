@@ -34,9 +34,12 @@ DBManager& DBManager::get() {
 }
 
 void DBManager::loadConnectionConfigFromArgs() {
+  /*
   if (FLAGS_dbType == "sqlite3") {
     LOG(FATAL) << "sqlite3 is only supported for testing";
   }
+  */
+  LOG(INFO) << "Loading database connection config from database.";
 
   setConnectionConfig({FLAGS_dbType, FLAGS_dbHost, FLAGS_dbPort, FLAGS_db,
                        FLAGS_dbUser, FLAGS_dbPassword, FLAGS_dbDebug});
@@ -82,7 +85,7 @@ Connection& DBManager::connection() {
   } else if (_config.type == "mariadb") {
     tl_connection = std::make_unique<MariaDBConnection>(_config);
   } else {
-    throw new std::runtime_error("Invalid DB schema");
+    throw new std::runtime_error("Invalid DB schema: " + _config.type);
   }
 
   return *tl_connection;

@@ -6,6 +6,7 @@
 #include <cstdint>
 #include <string>
 #include <tuple>
+#include <unordered_map>
 #include <vector>
 
 #include "hub/iota/api.h"
@@ -21,6 +22,9 @@ class UserAddressMonitor : public AddressMonitor {
   std::vector<std::tuple<uint64_t, std::string>> monitoredAddresses() override;
   bool onBalancesChanged(
       const std::vector<AddressMonitor::BalanceChange>& changed) override;
+
+  std::unordered_map<uint64_t, uint64_t> initialBalances(
+      std::vector<uint64_t> ids) override;
 
   const std::string name() const override { return "UserAddressMonitor"; }
 
