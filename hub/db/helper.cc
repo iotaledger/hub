@@ -413,20 +413,20 @@ void helper<C>::createHubAddressBalanceEntry(
 }
 
 template <typename C>
-int64_t helper<C>::getHubAddressBalance(C& connection, uint64_t hubAddressId) {
+uint64_t helper<C>::getHubAddressBalance(C& connection, uint64_t hubAddressId) {
   db::sql::HubAddress tbl;
   auto result =
       connection(select(tbl.balance).from(tbl).where(tbl.id == hubAddressId));
-  return result.front().balance;
+  return static_cast<uint64_t>(result.front().balance);
 }
 
 template <typename C>
-int64_t helper<C>::getUserAddressBalance(C& connection,
+uint64_t helper<C>::getUserAddressBalance(C& connection,
                                          uint64_t userAddressId) {
   db::sql::UserAddress tbl;
   auto result =
       connection(select(tbl.balance).from(tbl).where(tbl.id == userAddressId));
-  return result.front().balance;
+  return static_cast<uint64_t>(result.front().balance);
 }
 
 template <typename C>

@@ -28,6 +28,18 @@ UserAddressMonitor::monitoredAddresses() {
   return hub::db::DBManager::get().connection().unsweptUserAddresses();
 }
 
+std::unordered_map<uint64_t, uint64_t> UserAddressMonitor::initialBalances(
+    std::vector<uint64_t> ids) {
+  std::unordered_map<uint64_t, uint64_t> ret;
+  auto& connection = db::DBManager::get().connection();
+
+  for (auto id : ids) {
+    ret[id] = connection.getUserAddressBalance(id);
+  }
+
+  return ret;
+}
+
 bool UserAddressMonitor::onBalancesChanged(
     const std::vector<AddressMonitor::BalanceChange>& changes) {
   LOG(INFO) << "Processing changes. Total: " << changes.size();

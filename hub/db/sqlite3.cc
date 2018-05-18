@@ -26,6 +26,7 @@ ConnectionImpl<sqlite::connection, sqlite::connection_config>::fromConfig(
   auto conn = std::make_unique<sqlite::connection>(db);
   conn->set_default_isolation_level(sqlpp::isolation_level::serializable);
   conn->execute("PRAGMA journal_mode = WAL");
+  conn->execute("PRAGMA foreign_keys = ON");
   conn->execute("PRAGMA busy_timeout = 10000");
 
   return conn;

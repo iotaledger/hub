@@ -4,16 +4,16 @@
 
 #include <algorithm>
 #include <iterator>
+#include <set>
 #include <stdexcept>
 #include <tuple>
 #include <unordered_map>
-#include <set>
 #include <utility>
 
 #include <boost/asio/io_service.hpp>
 #include <boost/bind.hpp>
-#include <boost/range/algorithm/copy.hpp>
 #include <boost/range/adaptors.hpp>
+#include <boost/range/algorithm/copy.hpp>
 
 namespace hub {
 namespace service {
@@ -40,7 +40,7 @@ AddressMonitor::calculateBalanceChanges() {
 
   removeUnmonitoredAddresses(addressToIDs);
   if (addresses.empty()) {
-      return {};
+    return {};
   }
   // TODO(th0br0) Figure out better failure pattern.
   //              At the moment, on failure, getBalances will return an empty
@@ -63,7 +63,15 @@ AddressMonitor::calculateBalanceChanges() {
 }
 
 void AddressMonitor::onStart() {
-  persistBalanceChanges(calculateBalanceChanges());
+  auto monitored = monitoredAddresses();
+
+  std::vector<uint64_t> ids;
+
+  for (const auto& tup : monitored) {
+    ids.push_back(std::get<0>(tup));
+  }
+
+  _balances = initialBalances(std::move(ids));
 }
 
 void AddressMonitor::persistBalanceChanges(

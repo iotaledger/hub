@@ -81,8 +81,8 @@ class Connection {
       uint64_t hubAddress, int64_t amount, const HubAddressBalanceReason reason,
       uint64_t sweepId) = 0;
 
-  virtual int64_t getHubAddressBalance(uint64_t hubAddress) = 0;
-  virtual int64_t getUserAddressBalance(uint64_t userAddress) = 0;
+  virtual uint64_t getHubAddressBalance(uint64_t hubAddress) = 0;
+  virtual uint64_t getUserAddressBalance(uint64_t userAddress) = 0;
 
   virtual int64_t createSweep(const hub::crypto::Hash& bundleHash,
                               const std::string& bundleTrytes,

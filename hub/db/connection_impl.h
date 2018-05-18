@@ -175,11 +175,11 @@ class ConnectionImpl : public Connection {
         *_conn, hubAddress, amount, reason, sweepId);
   }
 
-  int64_t getHubAddressBalance(uint64_t hubAddress) override {
+  uint64_t getHubAddressBalance(uint64_t hubAddress) override {
     return db::helper<Conn>::getHubAddressBalance(*_conn, hubAddress);
   }
 
-  int64_t getUserAddressBalance(uint64_t userAddress) override {
+  uint64_t getUserAddressBalance(uint64_t userAddress) override {
     return db::helper<Conn>::getUserAddressBalance(*_conn, userAddress);
   }
 
