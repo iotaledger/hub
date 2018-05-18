@@ -284,7 +284,7 @@ std::vector<std::string> IotaJsonAPI::attachToTangle(
   // FIXME(th0br0) should decode trytes and not trust input ordering
   std::vector<std::string> localTrytes = trytes;
   std::reverse(std::begin(localTrytes), std::end(localTrytes));
-  req["trytes"] = json(localTrytes);
+  req["trytes"] = localTrytes;
 
   auto maybeResponse = post(std::move(req));
 
@@ -317,8 +317,25 @@ bool IotaJsonAPI::broadcastTransactions(
 
 std::unordered_set<std::string> IotaJsonAPI::filterConsistentTails(
     const std::vector<std::string>& tails) {
-  // TODO(th0br0): implementation
-  return {};
+  std::unordered_set<std::string> ret;
+
+  for (const auto& tail : tails) {
+    json req;
+    req["command"] = "checkConsistency";
+    req["tails"] = std::vector<std::string>({tail});
+
+    auto maybeResponse = post(std::move(req));
+
+    if (!maybeResponse.has_value()) {
+      continue;
+    }
+
+    if (maybeResponse.value()["state"].get<bool>()) {
+      ret.insert(tail);
+    }
+  }
+
+  return ret;
 }
 
 }  // namespace iota

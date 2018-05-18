@@ -32,7 +32,6 @@ class POWProvider {
     return doPOW(trytes, location.first, location.second);
   }
 
- protected:
   virtual std::vector<std::string> doPOW(const std::vector<std::string>& trytes,
                                          const std::string& trunk,
                                          const std::string& branch) const = 0;

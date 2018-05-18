@@ -2,12 +2,15 @@
 
 #include "hub/service/attachment_service.h"
 
-#include <glog/logging.h>
 #include <algorithm>
+#include <chrono>
 #include <unordered_map>
 #include <vector>
 
+#include <glog/logging.h>
 #include <boost/functional/hash.hpp>
+#include <iota/models/bundle.hpp>
+#include <iota/models/transaction.hpp>
 
 #include "common/helpers/digest.h"
 #include "hub/db/helper.h"
@@ -104,6 +107,39 @@ void AttachmentService::reattachSweep(db::Connection& dbConnection,
   dbConnection.createTail(sweep.id, tailHash);
 }
 
+void AttachmentService::promoteSweep(db::Connection& connection,
+                                     const iota::POWProvider& powProvider,
+                                     const db::Sweep& sweep,
+                                     const hub::crypto::Hash& tailHash) {
+  auto toApprove = _api->getTransactionsToApprove(0, {tailHash.str()});
+  auto timestamp = std::chrono::duration_cast<std::chrono::seconds>(
+                       std::chrono::system_clock::now().time_since_epoch())
+                       .count();
+
+  IOTA::Models::Bundle bundle;
+  IOTA::Models::Transaction otx;
+
+  otx.setAddress(
+      "SOME9RANDOM9HUB9BEING9REATTACHED9999999999999999999999999999999999999999"
+      "999999999");
+  otx.setValue(0);
+  otx.setTimestamp(timestamp);
+
+  bundle.addTransaction(otx, 1);
+  bundle.addTrytes({""});
+  bundle.finalize();
+
+  const auto& tx = bundle.getTransactions()[0];
+
+  auto attachedTrytes =
+      powProvider.doPOW({tx.toTrytes()}, toApprove.first, toApprove.second);
+
+  _api->storeTransactions(attachedTrytes);
+  _api->broadcastTransactions(attachedTrytes);
+  LOG(INFO) << "Issued promotion for sweep " << sweep.id << ": "
+            << tx.getHash();
+}
+
 bool AttachmentService::doTick() {
   // We're splitting processing out to separate methods on purpose.
   // This means, that we can't really batch API requests across sweeps.
@@ -126,23 +162,17 @@ bool AttachmentService::doTick() {
 
     try {
       // 2. Get (tails, timestamp) for these sweeps
-      {
-        const auto sweepTails = connection.getTailsForSweep(sweep.id);
+      const auto initialSweepTails = connection.getTailsForSweep(sweep.id);
 
-        // 3. Check if one of the tails is confirmed.
-        if (checkSweepTailsForConfirmation(connection, sweep, sweepTails)) {
-          goto commit;
-        }
-
-        // 4. If not, check if a user reattachment was confirmed
-        if (checkForUserReattachment(connection, sweep, sweepTails)) {
-          goto commit;
-        }
-      }
-
-      // 5. If not, check if at least one of the tails per sweep is still
-      //    promotable
-      {
+      // 3. Check if one of the tails is confirmed.
+      // 4. If not, check if a user reattachment was confirmed
+      if (checkSweepTailsForConfirmation(connection, sweep,
+                                         initialSweepTails) ||
+          checkForUserReattachment(connection, sweep, initialSweepTails)) {
+        goto commit;
+      } else {
+        // 5. If not, check if at least one of the tails per sweep is still
+        //    promotable
         // Requerying list of tails because `checkForUserReattachment` might
         // have added some.
         const auto sweepTails = connection.getTailsForSweep(sweep.id);
@@ -156,14 +186,16 @@ bool AttachmentService::doTick() {
                                                  consistentTails.end();
                                         });
 
-          // TODO(th0br0): promote.
           // Promotion can fail if getTransactionsToApprove fails!
+          // In this case, we just catch and rollback.
+          promoteSweep(connection, powProvider, sweep,
+                       hub::crypto::Hash(*toPromote));
+        } else {
+          // 6. If not, reattach and commit tail to DB.
+          reattachSweep(connection, powProvider, sweep);
         }
       }
 
-      reattachSweep(connection, powProvider, sweep);
-
-      // 6. If not, reattach and commit tail to DB.
       LOG(INFO) << "Sweep " << sweep.id << " is still unconfirmed.";
 
     commit:
