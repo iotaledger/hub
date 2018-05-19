@@ -532,6 +532,7 @@ std::vector<TransferInput> helper<C>::getHubInputsForSweep(
       select(add.id, add.address, add.balance, add.seedUuid)
           .from(add)
           .where(add.createdAt < olderThan && !(add.isColdStorage != 0) &&
+                 add.balance > 0 &&
                  !exists(select(bal.id).from(bal).where(
                      bal.hubAddress == add.id &&
                      bal.reason == static_cast<int>(
