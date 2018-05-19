@@ -37,6 +37,7 @@ CREATE TABLE IF NOT EXISTS sweep (
   bundle_hash CHAR(81) NOT NULL UNIQUE,
   trytes TEXT NOT NULL,
   into_hub_address INTEGER NOT NULL,
+  confirmed INTEGER DEFAULT 0 NOT NULL,
   created_at DATETIME DEFAULT CURRENT_TIMESTAMP NOT NULL,
   FOREIGN KEY (into_hub_address) REFERENCES hub_address(id)
 );
@@ -55,7 +56,17 @@ CREATE TABLE IF NOT EXISTS hub_address_balance (
   FOREIGN KEY (sweep) REFERENCES sweep(id)
 );
 
-CREATE TRIGGER hub_address_balance_insert AFTER INSERT ON hub_address_balance FOR EACH ROW BEGIN UPDATE hub_address SET balance = (SELECT SUM(amount) FROM hub_address_balance WHERE hub_address = NEW.hub_address) WHERE id = NEW.hub_address; END;
+CREATE TRIGGER hub_address_balance_insert
+AFTER INSERT ON hub_address_balance
+FOR EACH ROW
+BEGIN
+  UPDATE hub_address
+  SET balance = (
+      SELECT SUM(amount) FROM hub_address_balance
+      WHERE hub_address = NEW.hub_address
+  )
+  WHERE id = NEW.hub_address;
+END;
 
 CREATE INDEX idx_hub_address_balance_hub_address ON hub_address_balance(hub_address);
 CREATE INDEX idx_hub_address_balance_reason ON hub_address_balance(hub_address, reason);
@@ -78,7 +89,16 @@ CREATE TABLE IF NOT EXISTS user_address_balance (
   FOREIGN KEY (sweep) REFERENCES sweep(id)
 );
 
-CREATE TRIGGER user_address_balance_insert AFTER INSERT ON user_address_balance FOR EACH ROW BEGIN UPDATE user_address SET balance = (SELECT SUM(amount) FROM user_address_balance WHERE user_address = NEW.user_address) WHERE id = NEW.user_address; END;
+CREATE TRIGGER user_address_balance_insert
+AFTER INSERT ON user_address_balance
+FOR EACH ROW
+BEGIN
+  UPDATE user_address
+  SET balance = (
+      SELECT SUM(amount) FROM user_address_balance WHERE user_address = NEW.user_address
+  )
+  WHERE id = NEW.user_address;
+END;
 
 CREATE INDEX idx_user_address_balance_reason ON user_address_balance(user_address, reason);
 CREATE INDEX idx_user_address_occuredAt ON user_address_balance(occured_at);
