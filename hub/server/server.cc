@@ -24,13 +24,13 @@ DEFINE_string(apiAddress, "127.0.0.1:14265",
 DEFINE_string(authMode, "none", "credentials to use. can be {none}");
 
 DEFINE_uint32(monitorInterval, 60000, "Address monitor check interval [ms]");
-DEFINE_uint32(attachmentInterval, 300000,
+DEFINE_uint32(attachmentInterval, 240000,
               "Attachment service check interval [ms]");
-DEFINE_uint32(sweepInterval, 300000, "Sweep interval [ms]");
+DEFINE_uint32(sweepInterval, 600000, "Sweep interval [ms]");
 
 // TODO(th0br0): move to hub/iota/pow
 DEFINE_uint32(minWeightMagnitude, 9, "Minimum weight magnitude for POW");
-DEFINE_uint32(depth, 9, "Value for getTransacationToApprove depth parameter");
+DEFINE_uint32(depth, 3, "Value for getTransacationToApprove depth parameter");
 
 using grpc::Server;
 using grpc::ServerBuilder;
