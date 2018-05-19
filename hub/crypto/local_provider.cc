@@ -3,12 +3,12 @@
 #include "hub/crypto/local_provider.h"
 
 #include <array>
-#include <vector>
 #include <cstdint>
 #include <functional>
 #include <memory>
 #include <stdexcept>
 #include <utility>
+#include <vector>
 
 #include <argon2.h>
 #include <glog/logging.h>
@@ -93,6 +93,8 @@ Address LocalProvider::getAddressForUUID(const hub::crypto::UUID& uuid) const {
   std::free(add);
   return ret;
 }
+
+size_t LocalProvider::securityLevel() const { return KEY_SEC; }
 
 std::string LocalProvider::doGetSignatureForUUID(const hub::crypto::UUID& uuid,
                                                  const Hash& bundleHash) const {
