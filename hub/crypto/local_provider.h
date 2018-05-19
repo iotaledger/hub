@@ -18,6 +18,8 @@ class LocalProvider : public CryptoProvider {
 
   Address getAddressForUUID(const UUID& uuid) const override;
 
+  size_t securityLevel() const override;
+
  protected:
   std::string doGetSignatureForUUID(const UUID& uuid,
                                     const Hash& bundleHash) const override;

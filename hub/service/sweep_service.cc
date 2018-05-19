@@ -140,8 +140,7 @@ bool SweepService::doTick() {
         tx.setTimestamp(timestamp);
         tx.setValue((-1uLL) * deposit.amount);
 
-        // FIXME(th0br0) need to know security level here
-        bundle.addTransaction(tx, 2);
+        bundle.addTransaction(tx, cryptoProvider.securityLevel());
       }
       // inputs: hubInputs
       for (const auto& input : hubInputs) {
@@ -150,8 +149,7 @@ bool SweepService::doTick() {
         tx.setTimestamp(timestamp);
         tx.setValue((-1uLL) * input.amount);
 
-        // FIXME(th0br0) need to know security level here
-        bundle.addTransaction(tx, 2);
+        bundle.addTransaction(tx, cryptoProvider.securityLevel());
       }
       // outputs: withdrawals
       for (const auto& wd : withdrawals) {

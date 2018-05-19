@@ -25,6 +25,8 @@ class CryptoProvider {
     return doGetSignatureForUUID(uuid, bundleHash);
   }
 
+  virtual size_t securityLevel() const = 0;
+
  protected:
   virtual std::string doGetSignatureForUUID(const UUID& uuid,
                                             const Hash& bundleHash) const = 0;
