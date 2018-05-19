@@ -169,8 +169,10 @@ bool AttachmentService::doTick() {
       if (checkSweepTailsForConfirmation(connection, sweep,
                                          initialSweepTails) ||
           checkForUserReattachment(connection, sweep, initialSweepTails)) {
-        goto commit;
+        LOG(INFO) << "Sweep " << sweep.id << " is CONFIRMED.";
       } else {
+        LOG(INFO) << "Sweep " << sweep.id << " is still unconfirmed.";
+
         // 5. If not, check if at least one of the tails per sweep is still
         //    promotable
         // Requerying list of tails because `checkForUserReattachment` might
@@ -187,18 +189,19 @@ bool AttachmentService::doTick() {
                                         });
 
           // Promotion can fail if getTransactionsToApprove fails!
-          // In this case, we just catch and rollback.
-          promoteSweep(connection, powProvider, sweep,
-                       hub::crypto::Hash(*toPromote));
-        } else {
-          // 6. If not, reattach and commit tail to DB.
-          reattachSweep(connection, powProvider, sweep);
+          // In this case, we just catch and reattach.
+          try {
+            promoteSweep(connection, powProvider, sweep,
+                         hub::crypto::Hash(*toPromote));
+          } catch (const std::exception& ex) {
+            LOG(INFO) << "Promotion failed. Reattaching.";
+
+            // 6. If not, reattach and commit tail to DB.
+            reattachSweep(connection, powProvider, sweep);
+          }
         }
       }
 
-      LOG(INFO) << "Sweep " << sweep.id << " is still unconfirmed.";
-
-    commit:
       transaction->commit();
     } catch (const std::exception& ex) {
       LOG(ERROR) << "Sweep " << sweep.id
