@@ -226,7 +226,6 @@ bool SweepService::doTick() {
     // 6.1. Insert sweep.
     std::ostringstream bundleTrytesOS;
     for (const auto& tx : bundle.getTransactions()) {
-      VLOG(5) << "Transaction: " << tx.toTrytes();
       bundleTrytesOS << tx.toTrytes();
     }
 
@@ -234,13 +233,10 @@ bool SweepService::doTick() {
                                             hubOutput.id);
 
     // 6.2. Change Hub address balances
-    LOG(INFO) << "hub output amount: " << hubOutput.amount;
-
     dbConnection.createHubAddressBalanceEntry(
         hubOutput.id, hubOutput.amount, db::HubAddressBalanceReason::INBOUND,
         sweepId);
     for (const auto& input : hubInputs) {
-      LOG(INFO) << "hub input: " << input.amount;
       dbConnection.createHubAddressBalanceEntry(
           input.addressId, -input.amount, db::HubAddressBalanceReason::OUTBOUND,
           sweepId);
