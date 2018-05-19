@@ -21,6 +21,27 @@ namespace {
 
 class DBTest : public hub::Test {};
 
+TEST_F(DBTest, SweepTriggerWorks) {
+  auto& connection = db::DBManager::get().connection();
+  auto& cryptoProvider = crypto::CryptoManager::get().provider();
+
+  UUID uuid;
+  auto hubOutputAddress = cryptoProvider.getAddressForUUID(uuid);
+  auto hubAddressId = connection.createHubAddress(uuid, hubOutputAddress);
+  auto hash = hub::crypto::Hash(
+      "999999999999999999999999999999999999999999999999999999"
+      "999999999999999999999999999");
+
+  auto sweepId = connection.createSweep(hash, "", hubAddressId);
+  connection.createTail(sweepId, hash.str());
+
+  EXPECT_FALSE(connection.isSweepConfirmed(sweepId));
+
+  connection.markTailAsConfirmed(hash.str());
+
+  EXPECT_TRUE(connection.isSweepConfirmed(sweepId));
+}
+
 TEST_F(DBTest, HubAddressTriggerWorks) {
   auto& connection = db::DBManager::get().connection();
   auto& cryptoProvider = crypto::CryptoManager::get().provider();

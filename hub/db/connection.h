@@ -98,6 +98,7 @@ class Connection {
   virtual std::vector<TransferInput> getHubInputsForSweep(
       uint64_t requiredAmount,
       const std::chrono::system_clock::time_point& olderThan) = 0;
+  virtual bool isSweepConfirmed(uint64_t sweepId) = 0;
 
  private:
   friend class DBManager;

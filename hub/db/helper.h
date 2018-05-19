@@ -99,6 +99,8 @@ struct helper {
   static std::vector<TransferInput> getHubInputsForSweep(
       C& connection, uint64_t requiredAmount,
       const std::chrono::system_clock::time_point& olderThan);
+
+  static bool isSweepConfirmed(C& connection, uint64_t sweepId);
 };
 
 }  // namespace db

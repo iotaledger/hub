@@ -211,7 +211,11 @@ class ConnectionImpl : public Connection {
       const std::chrono::system_clock::time_point& olderThan) override {
     return db::helper<Conn>::getHubInputsForSweep(*_conn, requiredAmount,
                                                   olderThan);
-  };
+  }
+
+  bool isSweepConfirmed(uint64_t sweepId) override {
+    return db::helper<Conn>::isSweepConfirmed(*_conn, sweepId);
+  }
 
   void execute(const std::string& what) override { _conn->execute(what); }
 
