@@ -65,6 +65,7 @@ void DBManager::loadSchema(bool removeExisting) {
     }
 
     cmd += line;
+    cmd += " ";
 
     if (line.find(';') != std::string::npos) {
       conn.execute(cmd);

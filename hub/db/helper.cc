@@ -550,13 +550,13 @@ std::vector<TransferInput> helper<C>::getHubInputsForSweep(
     availableInputs.emplace_back(std::move(input));
   }
 
-  // 2. Only select those with a confirmed INBOUND sweep
+  // 2. Only select those with all INBOUND sweeps confirmed
   auto confirmedAddresses = connection(
       select(swp.intoHubAddress)
+          .where(swp.intoHubAddress.in(sqlpp::value_list(addressIds)))
           .from(swp)
-          .where(swp.intoHubAddress.in(sqlpp::value_list(addressIds)) &&
-                 exists(select(tls.hash).from(tls).where(tls.sweep == swp.id &&
-                                                         tls.confirmed == 1))));
+          .group_by(swp.intoHubAddress)
+          .having(sum(swp.confirmed) == count(swp.id)));
 
   std::unordered_set<int64_t> confirmedAddressIds;
 
@@ -591,6 +591,16 @@ std::vector<TransferInput> helper<C>::getHubInputsForSweep(
   } while (total < requiredAmount);
 
   return selectedInputs;
+}
+
+template <typename C>
+bool helper<C>::isSweepConfirmed(C& connection, uint64_t sweepId) {
+  db::sql::Sweep swp;
+
+  auto result =
+      connection(select(swp.confirmed).from(swp).where(swp.id == sweepId));
+
+  return result.front().confirmed;
 }
 
 template struct helper<sqlpp::mysql::connection>;
