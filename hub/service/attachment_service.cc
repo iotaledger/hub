@@ -105,6 +105,8 @@ void AttachmentService::reattachSweep(db::Connection& dbConnection,
   _api->broadcastTransactions(attachedTrytes);
 
   dbConnection.createTail(sweep.id, tailHash);
+
+  std::free(tailHash);
 }
 
 void AttachmentService::promoteSweep(db::Connection& connection,
@@ -136,8 +138,11 @@ void AttachmentService::promoteSweep(db::Connection& connection,
 
   _api->storeTransactions(attachedTrytes);
   _api->broadcastTransactions(attachedTrytes);
+
+  auto promotionHash = iota_digest(attachedTrytes[0].c_str());
   LOG(INFO) << "Issued promotion for sweep " << sweep.id << ": "
-            << tx.getHash();
+            << promotionHash;
+  std::free(promotionHash);
 }
 
 bool AttachmentService::doTick() {
@@ -199,6 +204,9 @@ bool AttachmentService::doTick() {
             // 6. If not, reattach and commit tail to DB.
             reattachSweep(connection, powProvider, sweep);
           }
+        } else {
+          // 6. If not, reattach and commit tail to DB.
+          reattachSweep(connection, powProvider, sweep);
         }
       }
 

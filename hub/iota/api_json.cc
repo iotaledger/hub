@@ -137,6 +137,8 @@ std::vector<Transaction> IotaJsonAPI::getTrytes(
         // We could also rely on the ordering of the hashes argument here.
         auto hash = iota_digest(trytes.c_str());
         std::string sHash = std::string(reinterpret_cast<char*>(hash), 81);
+        std::free(hash);
+
         auto address = transaction_address(tx);
         std::string sAddress =
             std::string(reinterpret_cast<char*>(address), 81);
