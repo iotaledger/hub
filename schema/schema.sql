@@ -86,7 +86,7 @@ CREATE INDEX idx_user_address_occuredAt ON user_address_balance(occured_at);
 
 CREATE TABLE IF NOT EXISTS withdrawal (
   id INTEGER PRIMARY KEY /*!40101 AUTO_INCREMENT */,
-  uuid CHAR(16) UNIQUE NOT NULL,
+  uuid CHAR(36) UNIQUE NOT NULL,
   user_id INTEGER NOT NULL,
   amount INTEGER NOT NULL,
   -- payout address
