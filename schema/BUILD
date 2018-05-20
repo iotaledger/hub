@@ -14,6 +14,10 @@ genrule(
 cc_library(
     name = "schema",
     hdrs = [":headers"],
-    data = [":schema.sql"],
+    data = [
+        "schema.sql",
+        "triggers.mariadb.sql",
+        "triggers.sqlite3.sql",
+    ],
     visibility = ["//visibility:public"],
 )

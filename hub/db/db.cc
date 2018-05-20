@@ -47,10 +47,10 @@ void DBManager::loadConnectionConfigFromArgs() {
 
 void DBManager::resetConnection() { tl_connection = nullptr; }
 
-void DBManager::loadSchema(bool removeExisting) {
+void DBManager::executeFile(const std::string& fname) {
   auto& conn = connection();
 
-  std::ifstream fSchema("schema/schema.sql");
+  std::ifstream fSchema(fname);
   std::string schema((std::istreambuf_iterator<char>(fSchema)),
                      std::istreambuf_iterator<char>());
   std::stringstream ss(schema);
@@ -72,6 +72,11 @@ void DBManager::loadSchema(bool removeExisting) {
       cmd = "";
     }
   }
+}
+
+void DBManager::loadSchema() {
+  executeFile("schema/schema.sql");
+  executeFile("schema/triggers." + _config.type + ".sql");
 
   LOG(INFO) << "Populated database with schema.";
 }

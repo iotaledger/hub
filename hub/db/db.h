@@ -49,7 +49,7 @@ class DBManager {
   static DBManager& get();
 
   //! Loads schema
-  void loadSchema(bool removeExisting);
+  void loadSchema();
 
   void resetConnection();
 
@@ -58,6 +58,9 @@ class DBManager {
   const Config& config() const { return _config; }
 
   hub::db::Connection& connection();
+
+ protected:
+  void executeFile(const std::string& fname);
 
  private:
   Config _config;
