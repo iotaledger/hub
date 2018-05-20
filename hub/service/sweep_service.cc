@@ -35,13 +35,176 @@ DEFINE_uint32(sweep_max_deposit, 5,
 
 namespace hub {
 namespace service {
+db::TransferOutput SweepService::getHubOutput(uint64_t remainder) {
+  auto& dbConnection = db::DBManager::get().connection();
+  auto& cryptoProvider = crypto::CryptoManager::get().provider();
+
+  hub::crypto::UUID hubOutputUUID;
+  auto hubOutputAddress = cryptoProvider.getAddressForUUID(hubOutputUUID);
+
+  return {dbConnection.createHubAddress(hubOutputUUID, hubOutputAddress),
+          remainder, std::move(hubOutputAddress)};
+}
+
+std::tuple<hub::crypto::Hash, std::string> SweepService::createBundle(
+    const std::vector<db::TransferInput>& deposits,
+    const std::vector<db::TransferInput>& hubInputs,
+    const std::vector<db::TransferOutput>& withdrawals,
+    const db::TransferOutput& hubOutput) {
+  auto& dbConnection = db::DBManager::get().connection();
+  auto& cryptoProvider = crypto::CryptoManager::get().provider();
+
+  // 5.1. Generate bundle hash & transactions
+  IOTA::Models::Bundle bundle;
+  {
+    // timestamp.
+    auto timestamp = std::chrono::duration_cast<std::chrono::seconds>(
+                         std::chrono::system_clock::now().time_since_epoch())
+                         .count();
+
+    // inputs: deposits
+    for (const auto& deposit : deposits) {
+      IOTA::Models::Transaction tx;
+      tx.setAddress(deposit.address.str());
+      tx.setTimestamp(timestamp);
+      tx.setValue((-1uLL) * deposit.amount);
+
+      bundle.addTransaction(tx, cryptoProvider.securityLevel());
+    }
+    // inputs: hubInputs
+    for (const auto& input : hubInputs) {
+      IOTA::Models::Transaction tx;
+      tx.setAddress(input.address.str());
+      tx.setTimestamp(timestamp);
+      tx.setValue((-1uLL) * input.amount);
+
+      bundle.addTransaction(tx, cryptoProvider.securityLevel());
+    }
+    // outputs: withdrawals
+    for (const auto& wd : withdrawals) {
+      IOTA::Models::Transaction tx;
+      tx.setAddress(wd.payoutAddress.str());
+      tx.setTimestamp(timestamp);
+      tx.setValue(wd.amount);
+
+      bundle.addTransaction(tx, 1);
+    }
+
+    // output: hubOutput
+    IOTA::Models::Transaction tx;
+    tx.setAddress(hubOutput.payoutAddress.str());
+    tx.setTimestamp(timestamp);
+    tx.setValue(hubOutput.amount);
+
+    bundle.addTransaction(tx, 1);
+  }
+
+  bundle.finalize();
+
+  hub::crypto::Hash bundleHash(bundle.getHash());
+
+  // 5.2 Generate signatures
+  std::unordered_map<hub::crypto::Address, std::string> signaturesForAddress;
+  for (const auto& in : deposits) {
+    signaturesForAddress[in.address] =
+        cryptoProvider.getSignatureForUUID(dbConnection, in.uuid, bundleHash);
+  }
+  for (const auto& in : hubInputs) {
+    signaturesForAddress[in.address] =
+        cryptoProvider.getSignatureForUUID(dbConnection, in.uuid, bundleHash);
+  }
+
+  // FIXME(th0br0) move this somewhere proper
+  constexpr size_t FRAGMENT_LEN = 2187;
+  std::string EMPTY_FRAG(FRAGMENT_LEN, '9');
+  std::string EMPTY_NONCE(27, '9');
+  std::string EMPTY_HASH(81, '9');
+
+  auto it = bundle.getTransactions().begin();
+
+  while (it != bundle.getTransactions().end()) {
+    auto& tx = *it;
+
+    if (tx.getValue() >= 0) {
+      tx.setSignatureFragments(EMPTY_FRAG);
+      tx.setNonce(EMPTY_NONCE);
+      tx.setTrunkTransaction(EMPTY_HASH);
+      tx.setBranchTransaction(EMPTY_HASH);
+      tx.setObsoleteTag(EMPTY_NONCE);
+
+      ++it;
+      continue;
+    }
+
+    std::string_view signature = signaturesForAddress.at(
+        hub::crypto::Address(tx.getAddress().toTrytes()));
+
+    while (!signature.empty()) {
+      (*it).setSignatureFragments(
+          std::string(signature.substr(0, FRAGMENT_LEN)));
+      (*it).setNonce(EMPTY_NONCE);
+      (*it).setTrunkTransaction(EMPTY_HASH);
+      (*it).setBranchTransaction(EMPTY_HASH);
+
+      signature.remove_prefix(FRAGMENT_LEN);
+
+      ++it;
+    }
+  }
+
+  std::ostringstream bundleTrytesOS;
+  for (const auto& tx : bundle.getTransactions()) {
+    bundleTrytesOS << tx.toTrytes();
+  }
+
+  return {std::move(bundleHash), bundleTrytesOS.str()};
+}
+
+void SweepService::persistToDatabase(
+    std::tuple<hub::crypto::Hash, std::string> bundle,
+    const std::vector<db::TransferInput>& deposits,
+    const std::vector<db::TransferInput>& hubInputs,
+    const std::vector<db::TransferOutput>& withdrawals,
+    const db::TransferOutput& hubOutput) {
+  auto& dbConnection = db::DBManager::get().connection();
+
+  // 6.1. Insert sweep.
+  auto sweepId = dbConnection.createSweep(std::get<0>(bundle),
+                                          std::get<1>(bundle), hubOutput.id);
+
+  // 6.2. Change Hub address balances
+
+  dbConnection.createHubAddressBalanceEntry(
+      hubOutput.id, hubOutput.amount, db::HubAddressBalanceReason::INBOUND,
+      sweepId);
+  for (const auto& input : hubInputs) {
+    dbConnection.createHubAddressBalanceEntry(
+        input.addressId, -input.amount, db::HubAddressBalanceReason::OUTBOUND,
+        sweepId);
+  }
+
+  // 6.3. Update withdrawal sweep id
+  for (const auto& withdrawal : withdrawals) {
+    dbConnection.setWithdrawalSweep(withdrawal.id, sweepId);
+  }
+
+  // 6.4. Change User address balances
+  for (const auto& input : deposits) {
+    dbConnection.createUserAddressBalanceEntry(
+        input.addressId, -input.amount, db::UserAddressBalanceReason::SWEEP, {},
+        sweepId);
+
+    dbConnection.createUserAccountBalanceEntry(
+        input.userId, input.amount, db::UserAccountBalanceReason::SWEEP,
+        sweepId);
+  }
+}
+
 bool SweepService::doTick() {
   LOG(INFO) << "Starting sweep.";
   auto sweepStart = std::chrono::system_clock::now();
 
   auto& dbConnection = db::DBManager::get().connection();
-  auto& cryptoProvider = crypto::CryptoManager::get().provider();
-
   auto transaction = dbConnection.transaction();
 
   try {
@@ -59,12 +222,12 @@ bool SweepService::doTick() {
     // 2. Get up to Y sweep inputs (= deposits)
     auto deposits =
         dbConnection.getDepositsForSweep(FLAGS_sweep_max_deposit, sweepStart);
-    auto depositInput =
+    auto depositsTotal =
         std::accumulate(deposits.cbegin(), deposits.cend(), 0uLL,
                         [](uint64_t a, const auto& b) { return a + b.amount; });
 
     LOG(INFO) << "Found " << deposits.size()
-              << " deposits with total amount: " << depositInput;
+              << " deposits with total amount: " << depositsTotal;
 
     // 2.1. Abort if no deposits or withdrawals found.
     if (deposits.size() == 0 && withdrawals.size() == 0) {
@@ -78,8 +241,8 @@ bool SweepService::doTick() {
     std::vector<db::TransferInput> hubInputs;
     uint64_t hubInputTotal = 0;
 
-    if (depositInput < requiredOutput) {
-      auto missing = requiredOutput - depositInput;
+    if (depositsTotal < requiredOutput) {
+      auto missing = requiredOutput - depositsTotal;
 
       LOG(INFO) << "Need to fill " << missing << " via Hub addresses.";
 
@@ -95,6 +258,7 @@ bool SweepService::doTick() {
             << "Needed: " << missing << " but only found: " << hubInputTotal
             << ". Ignoring withdrawals.";
 
+        hubInputTotal = 0;
         hubInputs.clear();
         requiredOutput = 0;
         withdrawals.clear();
@@ -113,150 +277,16 @@ bool SweepService::doTick() {
               << " hub inputs to fill missing funds.";
 
     // 4. Determine Hub output address
-    auto remainder = (hubInputTotal + depositInput) - requiredOutput;
-    hub::crypto::UUID hubOutputUUID;
-    auto hubOutputAddress = cryptoProvider.getAddressForUUID(hubOutputUUID);
+    auto remainder = (hubInputTotal + depositsTotal) - requiredOutput;
+    auto hubOutput = getHubOutput(remainder);
 
     LOG(INFO) << "Will move " << remainder
-              << " into new Hub address: " << hubOutputAddress.str();
-
-    auto hubOutput = db::TransferOutput{
-        dbConnection.createHubAddress(hubOutputUUID, hubOutputAddress),
-        remainder, std::move(hubOutputAddress)};
-
+              << " into new Hub address: " << hubOutput.payoutAddress.str();
     // 5. Generate bundle
-    // 5.1. Generate bundle hash & transactions
-    IOTA::Models::Bundle bundle;
-    {
-      // timestamp.
-      auto timestamp = std::chrono::duration_cast<std::chrono::seconds>(
-                           std::chrono::system_clock::now().time_since_epoch())
-                           .count();
-
-      // inputs: deposits
-      for (const auto& deposit : deposits) {
-        IOTA::Models::Transaction tx;
-        tx.setAddress(deposit.address.str());
-        tx.setTimestamp(timestamp);
-        tx.setValue((-1uLL) * deposit.amount);
-
-        bundle.addTransaction(tx, cryptoProvider.securityLevel());
-      }
-      // inputs: hubInputs
-      for (const auto& input : hubInputs) {
-        IOTA::Models::Transaction tx;
-        tx.setAddress(input.address.str());
-        tx.setTimestamp(timestamp);
-        tx.setValue((-1uLL) * input.amount);
-
-        bundle.addTransaction(tx, cryptoProvider.securityLevel());
-      }
-      // outputs: withdrawals
-      for (const auto& wd : withdrawals) {
-        IOTA::Models::Transaction tx;
-        tx.setAddress(wd.payoutAddress.str());
-        tx.setTimestamp(timestamp);
-        tx.setValue(wd.amount);
-
-        bundle.addTransaction(tx, 1);
-      }
-
-      // output: hubOutput
-      IOTA::Models::Transaction tx;
-      tx.setAddress(hubOutputAddress.str());
-      tx.setTimestamp(timestamp);
-      tx.setValue(remainder);
-
-      bundle.addTransaction(tx, 1);
-    }
-
-    bundle.finalize();
-
-    hub::crypto::Hash bundleHash(bundle.getHash());
-
-    // 5.2 Generate signatures
-    std::unordered_map<hub::crypto::Address, std::string> signaturesForAddress;
-    for (const auto& in : deposits) {
-      signaturesForAddress[in.address] =
-          cryptoProvider.getSignatureForUUID(dbConnection, in.uuid, bundleHash);
-    }
-    for (const auto& in : hubInputs) {
-      signaturesForAddress[in.address] =
-          cryptoProvider.getSignatureForUUID(dbConnection, in.uuid, bundleHash);
-    }
-    // FIXME(th0br0) move this somewhere proper
-    constexpr size_t FRAGMENT_LEN = 2187;
-    std::string EMPTY_FRAG(FRAGMENT_LEN, '9');
-    std::string EMPTY_NONCE(27, '9');
-    std::string EMPTY_HASH(81, '9');
-
-    auto it = bundle.getTransactions().begin();
-
-    while (it != bundle.getTransactions().end()) {
-      auto& tx = *it;
-
-      if (tx.getValue() >= 0) {
-        tx.setSignatureFragments(EMPTY_FRAG);
-        tx.setNonce(EMPTY_NONCE);
-        tx.setTrunkTransaction(EMPTY_HASH);
-        tx.setBranchTransaction(EMPTY_HASH);
-        tx.setObsoleteTag(EMPTY_NONCE);
-
-        ++it;
-        continue;
-      }
-
-      std::string_view signature = signaturesForAddress.at(
-          hub::crypto::Address(tx.getAddress().toTrytes()));
-
-      while (!signature.empty()) {
-        (*it).setSignatureFragments(
-            std::string(signature.substr(0, FRAGMENT_LEN)));
-        (*it).setNonce(EMPTY_NONCE);
-        (*it).setTrunkTransaction(EMPTY_HASH);
-        (*it).setBranchTransaction(EMPTY_HASH);
-
-        signature.remove_prefix(FRAGMENT_LEN);
-
-        ++it;
-      }
-    }
+    auto bundle = createBundle(deposits, hubInputs, withdrawals, hubOutput);
 
     // 6. Commit to DB
-    // 6.1. Insert sweep.
-    std::ostringstream bundleTrytesOS;
-    for (const auto& tx : bundle.getTransactions()) {
-      bundleTrytesOS << tx.toTrytes();
-    }
-
-    auto sweepId = dbConnection.createSweep(bundleHash, bundleTrytesOS.str(),
-                                            hubOutput.id);
-
-    // 6.2. Change Hub address balances
-    dbConnection.createHubAddressBalanceEntry(
-        hubOutput.id, hubOutput.amount, db::HubAddressBalanceReason::INBOUND,
-        sweepId);
-    for (const auto& input : hubInputs) {
-      dbConnection.createHubAddressBalanceEntry(
-          input.addressId, -input.amount, db::HubAddressBalanceReason::OUTBOUND,
-          sweepId);
-    }
-
-    // 6.3. Update withdrawal sweep id
-    for (const auto& withdrawal : withdrawals) {
-      dbConnection.setWithdrawalSweep(withdrawal.id, sweepId);
-    }
-
-    // 6.4. Change User address balances
-    for (const auto& input : deposits) {
-      dbConnection.createUserAddressBalanceEntry(
-          input.addressId, -input.amount, db::UserAddressBalanceReason::SWEEP,
-          {}, sweepId);
-
-      dbConnection.createUserAccountBalanceEntry(
-          input.userId, input.amount, db::UserAccountBalanceReason::SWEEP,
-          sweepId);
-    }
+    persistToDatabase(bundle, deposits, hubInputs, withdrawals, hubOutput);
 
     transaction->commit();
     LOG(INFO) << "Sweep complete.";

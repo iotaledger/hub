@@ -7,6 +7,7 @@ CREATE TABLE IF NOT EXISTS user_account (
 );
 
 CREATE INDEX idx_user_account_identifier ON user_account(identifier);
+CREATE INDEX idx_user_account_balance ON user_account(balance);
 
 CREATE TABLE IF NOT EXISTS user_address (
   id INTEGER PRIMARY KEY /*!40101 AUTO_INCREMENT */,
@@ -19,6 +20,7 @@ CREATE TABLE IF NOT EXISTS user_address (
 );
 
 CREATE INDEX idx_user_address_address ON user_address(address);
+CREATE INDEX idx_user_address_balance ON user_address(balance);
 
 CREATE TABLE IF NOT EXISTS hub_address (
   id INTEGER PRIMARY KEY /*!40101 AUTO_INCREMENT */,
@@ -31,6 +33,7 @@ CREATE TABLE IF NOT EXISTS hub_address (
 
 
 CREATE INDEX idx_hub_address_address ON hub_address(address);
+CREATE INDEX idx_hub_address_balance ON hub_address(balance);
 
 CREATE TABLE IF NOT EXISTS sweep (
   id INTEGER PRIMARY KEY /*!40101 AUTO_INCREMENT */,
