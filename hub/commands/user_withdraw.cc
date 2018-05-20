@@ -51,18 +51,12 @@ grpc::Status UserWithdraw::doProcess(
 
     // Get available balance for user
     {
-      auto maybeBalance = connection.availableBalanceForUser(userId);
-      if (!maybeBalance) {
-        errorCode = hub::rpc::ErrorCode::EC_UNKNOWN;
+      auto balance = connection.availableBalanceForUser(userId);
+
+      if (balance < request->amount()) {
+        errorCode = hub::rpc::ErrorCode::INSUFFICIENT_BALANCE;
         goto cleanup;
       }
-
-      balance = maybeBalance.value();
-    }
-
-    if (balance < request->amount()) {
-      errorCode = hub::rpc::ErrorCode::INSUFFICIENT_BALANCE;
-      goto cleanup;
     }
 
     // Add withdrawal

@@ -38,16 +38,8 @@ grpc::Status GetBalance::doProcess(
   }
 
   // Summarise all amounts for user_account_balance changes
-  {
-    auto maybeAmount = connection.availableBalanceForUser(userId);
-
-    if (!maybeAmount) {
-      return grpc::Status(grpc::StatusCode::FAILED_PRECONDITION, "",
-                          errorToString(hub::rpc::ErrorCode::EC_UNKNOWN));
-    }
-
-    response->set_available(maybeAmount.value());
-  }
+  auto amount = connection.availableBalanceForUser(userId);
+  response->set_available(amount);
 
   return grpc::Status::OK;
 }
