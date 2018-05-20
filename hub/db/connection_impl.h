@@ -63,11 +63,11 @@ class ConnectionImpl : public Connection {
     return db::helper<Conn>::unsweptUserAddresses(*_conn);
   }
 
-  std::vector<std::string> tailsForAddress(uint64_t userId) override {
-    return db::helper<Conn>::tailsForAddress(*_conn, userId);
+  std::vector<std::string> tailsForUserAddresses(uint64_t userId) override {
+    return db::helper<Conn>::tailsForUserAddresses(*_conn, userId);
   }
 
-  std::optional<uint64_t> availableBalanceForUser(uint64_t userId) override {
+  uint64_t availableBalanceForUser(uint64_t userId) override {
     return db::helper<Conn>::availableBalanceForUser(*_conn, userId);
   }
 

@@ -56,8 +56,8 @@ std::vector<AddressWithID> helper<C>::unsweptUserAddresses(C& connection) {
 }
 
 template <typename C>
-std::vector<std::string> helper<C>::tailsForAddress(C& connection,
-                                                    uint64_t userId) {
+std::vector<std::string> helper<C>::tailsForUserAddresses(C& connection,
+                                                          uint64_t userId) {
   db::sql::UserAddressBalance bal;
 
   std::vector<std::string> tails;
@@ -73,16 +73,11 @@ std::vector<std::string> helper<C>::tailsForAddress(C& connection,
 }
 
 template <typename C>
-std::optional<uint64_t> helper<C>::availableBalanceForUser(C& connection,
-                                                           uint64_t userId) {
+uint64_t helper<C>::availableBalanceForUser(C& connection, uint64_t userId) {
   db::sql::UserAccount ua;
 
   const auto result =
       connection(select(ua.balance).from(ua).where(ua.id == userId));
-
-  if (result.empty()) {
-    return {};
-  }
 
   return result.front().balance;
 }
@@ -481,38 +476,24 @@ std::vector<TransferInput> helper<C>::getDepositsForSweep(
   db::sql::UserAddress add;
   db::sql::UserAddressBalance bal;
 
-  const auto balA = bal.as(sqlpp::alias::a);
-  const auto balB = bal.as(sqlpp::alias::b);
-  const auto query =
-      select(balA.userAddress, sum(balA.amount))
-          .from(balA)
-          .where(balA.occuredAt <= olderThan &&
-                 !exists(select(balB.id).from(balB).where(
-                     balB.userAddress == balA.userAddress &&
-                     balB.reason ==
+  auto result = connection(
+      select(add.id, add.address, add.userId, add.seedUuid, add.balance)
+          .from(add)
+          .where(add.balance > 0 &&
+                 !exists(select(bal.id).from(bal).where(
+                     bal.userAddress == add.id &&
+                     bal.reason ==
                          static_cast<int>(UserAddressBalanceReason::SWEEP))))
-          .group_by(balA.userAddress)
+          .limit(max));
 
-          .limit(max);
-
-  auto result = connection(query);
   std::vector<TransferInput> deposits;
 
   for (const auto& row : result) {
-    // Inefficient. Would need to use dynamic joins for sqlpp, can't do join as
-    // is right now.
-    auto uuidResult = connection(select(add.address, add.userId, add.seedUuid)
-                                     .from(add)
-                                     .where(add.id == row.userAddress));
-
-    const auto& front = uuidResult.front();
-
-    TransferInput input = {std::move(row.userAddress), front.userId,
-                           hub::crypto::Address(front.address.value()),
-                           hub::crypto::UUID(front.seedUuid.value()),
-                           static_cast<uint64_t>(row.sum)};
-
-    deposits.emplace_back(std::move(input));
+    TransferInput ti = {row.id, row.userId,
+                        hub::crypto::Address(row.address.value()),
+                        hub::crypto::UUID(row.seedUuid.value()),
+                        static_cast<uint64_t>(row.balance)};
+    deposits.push_back(std::move(ti));
   }
 
   return deposits;
@@ -525,7 +506,6 @@ std::vector<TransferInput> helper<C>::getHubInputsForSweep(
   db::sql::HubAddress add;
   db::sql::HubAddressBalance bal;
   db::sql::Sweep swp;
-  db::sql::SweepTails tls;
 
   // 1. Get all available unused Hub addresses
   auto availableAddressesResult = connection(
@@ -580,16 +560,12 @@ std::vector<TransferInput> helper<C>::getHubInputsForSweep(
   std::vector<TransferInput> selectedInputs;
   auto it = availableInputs.begin();
 
-  if (it == std::end(availableInputs)) {
-    return selectedInputs;
-  }
-
   uint64_t total = 0;
-  do {
+  while (it != std::end(availableInputs) && total < requiredAmount) {
     total += it->amount;
     selectedInputs.emplace_back(std::move(*it));
     it++;
-  } while (total < requiredAmount);
+  }
 
   return selectedInputs;
 }

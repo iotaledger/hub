@@ -52,7 +52,7 @@ bool UserAddressMonitor::onBalancesChanged(
     for (const auto& change : changes) {
       auto confirmedBundles =
           _api->getConfirmedBundlesForAddress(change.address);
-      auto tails = connection.tailsForAddress(change.addressId);
+      auto tails = connection.tailsForUserAddresses(change.addressId);
 
       auto unknownTails = confirmedBundles |
                           filtered([&tails](hub::iota::Bundle const& bundle) {

@@ -37,8 +37,8 @@ class Connection {
   virtual std::optional<int64_t> userIdFromIdentifier(
       const std::string& identifier) = 0;
   virtual std::vector<AddressWithID> unsweptUserAddresses() = 0;
-  virtual std::vector<std::string> tailsForAddress(uint64_t userId) = 0;
-  virtual std::optional<uint64_t> availableBalanceForUser(uint64_t userId) = 0;
+  virtual std::vector<std::string> tailsForUserAddresses(uint64_t userId) = 0;
+  virtual uint64_t availableBalanceForUser(uint64_t userId) = 0;
   virtual void createUser(const std::string& identifier) = 0;
   virtual void createUserAddressBalanceEntry(
       uint64_t addressId, int64_t amount, const UserAddressBalanceReason reason,
