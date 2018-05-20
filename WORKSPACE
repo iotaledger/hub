@@ -125,12 +125,11 @@ new_git_repository(
     remote = "https://github.com/th0br0/iota.lib.cpp.git",
 )
 
-new_http_archive(
+new_git_repository(
     name = "mariadb_connector",
     build_file = "third-party/mariadb_connector/BUILD",
-    sha256 = "6eff680cd429fdb32940f6ea4755a997dda1bb00f142f439071f752fd0b200cf",
-    strip_prefix = "mariadb-connector-c-3.0.4-src",
-    url = "http://ftp.hosteurope.de/mirror/mariadb.org//connector-c-3.0.4/mariadb-connector-c-3.0.4-src.tar.gz",
+    commit = "184a16d2f1d0bb24bea6bcf23e1604093fef8f93",
+    remote = "https://github.com/MariaDB/mariadb-connector-c.git",
 )
 
 load(
