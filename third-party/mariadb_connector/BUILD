@@ -4,7 +4,7 @@ cc_library(
         ["libmariadb/*.c"],
         exclude = ["libmariadb/bmove_upp.c"],
     ) + [
-        "libmariadb/secure/openssl.c",
+        #        "libmariadb/secure/openssl.c",
         ":ma_client_plugin_c",
         "plugins/auth/my_auth.c",
         "plugins/auth/old_password.c",
@@ -18,16 +18,16 @@ cc_library(
         "-DLIBMARIADB",
         "-Iinclude",
         "-DTHREAD",
-        "-DHAVE_OPENSSL",
-        "-DHAVE_TLS",
+        #"-DHAVE_OPENSSL",
+        #"-DHAVE_TLS",
         "-Dlibmariadb_EXPORTS",
-    ],
-    linkopts = [
-        "-lssl",
-        "-lcrypto",
     ],
     strip_include_prefix = "include",
     visibility = ["//visibility:public"],
+    #    deps = [
+    #        "@boringssl//:crypto",
+    #        "@boringssl//:ssl",
+    #    ],
 )
 
 genrule(
