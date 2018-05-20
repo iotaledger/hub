@@ -34,7 +34,7 @@ class Test : public ::testing::Test {
 
     auto& db = hub::db::DBManager::get();
     db.setConnectionConfig(config);
-    db.loadSchema(true);
+    db.loadSchema();
 
     _session = std::make_shared<ClientSession>();
   }
