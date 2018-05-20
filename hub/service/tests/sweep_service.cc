@@ -48,9 +48,6 @@ class MockAPI : public iota::IotaAPI {
 };
 
 TEST_F(SweepServiceTest, DoSomething) {
-  auto& connection = hub::db::DBManager::get().connection();
-  auto now = std::chrono::system_clock::now();
-
 }
 
 }  // namespace

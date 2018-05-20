@@ -27,9 +27,8 @@ struct helper {
       C& connection, const std::string& identifier);
   static std::vector<AddressWithID> unsweptUserAddresses(C& connection);
   static std::vector<std::string> tailsForUserAddresses(C& connection,
-                                                  uint64_t userId);
-  static uint64_t availableBalanceForUser(C& connection,
-                                                         uint64_t userId);
+                                                        uint64_t userId);
+  static uint64_t availableBalanceForUser(C& connection, uint64_t userId);
   static void createUser(C& connection, const std::string& identifier);
   static uint64_t createUserAddress(C& connection,
                                     const hub::crypto::Address& address,
