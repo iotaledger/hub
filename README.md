@@ -12,15 +12,20 @@
 
 ## Developing RPCHub
 - Be sure to run `./hooks/autohook.sh install` after checkout!
+- Pass `-c dbg` for building with debug symbols.
 
 ## How to run
 - `bazel run -c opt //hub:hub -- <parameters>`
 - `bazel build //hub:hub`
 - `rm hub.db; sqlite3 hub.db < schema/schema.sql; GLOG_logtostderr=true GLOG_v=3 ./bazel-bin/hub/hub --salt abcdefghijklmnopqrstuvwxyz --apiAddress localhost:14700`
 
+### Run via Docker
+You can build a docker image for `RPCHub` via `bazel build -c opt //docker:hub`
+
 ## Configuration
 - If running on mainnet, set `-minWeightMagnitude` to at least 14
-- Run your own IRI node
+- You *MUST* pass a `-salt` parameter.
+- Run your own IRI node and specify endpoint via `-apiAddress`
 
 ## Command Line Arguments
 ```
