@@ -2,7 +2,7 @@
 
 #include "hub/iota/beast.h"
 
-#include <optional>
+#include <nonstd/optional.hpp>
 
 #include <boost/asio/connect.hpp>
 #include <boost/asio/ip/tcp.hpp>
@@ -18,7 +18,7 @@ namespace {}  // namespace
 namespace hub {
 namespace iota {
 
-std::optional<json> BeastIotaAPI::post(const json& input) {
+nonstd::optional<json> BeastIotaAPI::post(const json& input) {
   using tcp = boost::asio::ip::tcp;
   namespace http = boost::beast::http;
 

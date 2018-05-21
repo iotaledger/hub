@@ -15,6 +15,7 @@ cc_library(
         "@boost//:uuid",
         "@com_github_gflags_gflags//:gflags",
         "@com_github_google_glog//:glog",
+        "@optional_lite",
         "@sqlpp11",
         "@sqlpp11mysql",
         "@sqlpp11sqlite",

@@ -4,7 +4,7 @@
 #define HUB_IOTA_REMOTE_POW_H_
 
 #include <memory>
-#include <optional>
+#include <nonstd/optional.hpp>
 #include <string>
 #include <utility>
 #include <vector>

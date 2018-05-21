@@ -7,7 +7,7 @@
 #include <cstdint>
 #include <map>
 #include <memory>
-#include <optional>
+#include <nonstd/optional.hpp>
 #include <set>
 #include <string>
 #include <tuple>
@@ -54,7 +54,7 @@ class ConnectionImpl : public Connection {
     db::helper<Conn>::createUser(*_conn, identifier);
   }
 
-  std::optional<int64_t> userIdFromIdentifier(
+  nonstd::optional<int64_t> userIdFromIdentifier(
       const std::string& identifier) override {
     return db::helper<Conn>::userIdFromIdentifier(*_conn, identifier);
   }
@@ -77,10 +77,10 @@ class ConnectionImpl : public Connection {
     return db::helper<Conn>::createUserAddress(*_conn, address, userId, uuid);
   }
 
-  void createUserAddressBalanceEntry(uint64_t addressId, int64_t amount,
-                                     const UserAddressBalanceReason reason,
-                                     std::optional<std::string> tailHash,
-                                     std::optional<uint64_t> sweepId) override {
+  void createUserAddressBalanceEntry(
+      uint64_t addressId, int64_t amount, const UserAddressBalanceReason reason,
+      nonstd::optional<std::string> tailHash,
+      nonstd::optional<uint64_t> sweepId) override {
     db::helper<Conn>::createUserAddressBalanceEntry(*_conn, addressId, amount,
                                                     reason, std::move(tailHash),
                                                     std::move(sweepId));
@@ -88,7 +88,7 @@ class ConnectionImpl : public Connection {
 
   void createUserAccountBalanceEntry(
       uint64_t userId, int64_t amount, const UserAccountBalanceReason reason,
-      const std::optional<uint64_t> fkey = {}) override {
+      const nonstd::optional<uint64_t> fkey = {}) override {
     db::helper<Conn>::createUserAccountBalanceEntry(*_conn, userId, amount,
                                                     reason, std::move(fkey));
   }
@@ -108,7 +108,7 @@ class ConnectionImpl : public Connection {
     return db::helper<Conn>::setWithdrawalSweep(*_conn, id, sweepId);
   }
 
-  std::optional<AddressWithUUID> selectFirstUserAddress() override {
+  nonstd::optional<AddressWithUUID> selectFirstUserAddress() override {
     return db::helper<Conn>::selectFirstUserAddress(*_conn);
   }
 

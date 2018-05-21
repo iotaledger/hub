@@ -29,7 +29,7 @@ grpc::Status UserWithdraw::doProcess(
   auto& connection = db::DBManager::get().connection();
   auto transaction = connection.transaction();
 
-  std::optional<hub::rpc::ErrorCode> errorCode;
+  nonstd::optional<hub::rpc::ErrorCode> errorCode;
   uint64_t userId;
   uint64_t balance;
   uint64_t withdrawalId;

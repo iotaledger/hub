@@ -6,7 +6,7 @@
 #include <chrono>
 #include <cstdint>
 #include <map>
-#include <optional>
+#include <nonstd/optional.hpp>
 #include <set>
 #include <string>
 #include <tuple>
@@ -23,7 +23,7 @@ namespace db {
 
 template <typename C>
 struct helper {
-  static std::optional<int64_t> userIdFromIdentifier(
+  static nonstd::optional<int64_t> userIdFromIdentifier(
       C& connection, const std::string& identifier);
   static std::vector<AddressWithID> unsweptUserAddresses(C& connection);
   static std::vector<std::string> tailsForUserAddresses(C& connection,
@@ -37,11 +37,12 @@ struct helper {
   static void createUserAddressBalanceEntry(
       C& connection, uint64_t addressId, int64_t amount,
       const UserAddressBalanceReason reason,
-      std::optional<std::string> tailHash, std::optional<uint64_t> sweepId);
+      nonstd::optional<std::string> tailHash,
+      nonstd::optional<uint64_t> sweepId);
   static void createUserAccountBalanceEntry(
       C& connection, uint64_t userId, int64_t amount,
       const UserAccountBalanceReason reason,
-      const std::optional<uint64_t> fkey = {});
+      const nonstd::optional<uint64_t> fkey = {});
   static uint64_t createWithdrawal(C& connection, const std::string& uuid,
                                    uint64_t userId, uint64_t amount,
                                    const hub::crypto::Address& payoutAddress);
@@ -49,7 +50,8 @@ struct helper {
   static size_t setWithdrawalSweep(C& connection, uint64_t id,
                                    uint64_t sweepId);
 
-  static std::optional<AddressWithUUID> selectFirstUserAddress(C& connection);
+  static nonstd::optional<AddressWithUUID> selectFirstUserAddress(
+      C& connection);
   static void markUUIDAsSigned(C& connection, const hub::crypto::UUID& uuid);
   static std::vector<UserBalanceEvent> getUserAccountBalances(C& connection,
                                                               uint64_t userId);
