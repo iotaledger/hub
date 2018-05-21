@@ -5,8 +5,8 @@ load("@org_pubref_rules_protobuf//cpp:rules.bzl", "cc_proto_library")
 load("@org_pubref_rules_protobuf//go:rules.bzl", "go_proto_library")
 load(
     "@org_pubref_rules_protobuf//grpc_gateway:rules.bzl",
-    "grpc_gateway_proto_library",
     "GRPC_GATEWAY_DEPS",
+    "grpc_gateway_proto_library",
 )
 
 filegroup(

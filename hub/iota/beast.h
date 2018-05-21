@@ -4,7 +4,7 @@
 #define HUB_IOTA_BEAST_H_
 
 #include <cstdint>
-#include <optional>
+#include <nonstd/optional.hpp>
 #include <string>
 #include <utility>
 #include <vector>
@@ -25,7 +25,7 @@ class BeastIotaAPI : virtual public IotaAPI, public IotaJsonAPI {
   virtual ~BeastIotaAPI() {}
 
  protected:
-  std::optional<nlohmann::json> post(const nlohmann::json& input) override;
+  nonstd::optional<nlohmann::json> post(const nlohmann::json& input) override;
 
  private:
   const std::string _host;

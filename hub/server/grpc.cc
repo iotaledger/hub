@@ -11,11 +11,11 @@
 #include "hub/commands/create_user.h"
 #include "hub/commands/get_balance.h"
 #include "hub/commands/get_deposit_address.h"
+#include "hub/commands/get_user_history.h"
+#include "hub/commands/process_transfer_batch.h"
+#include "hub/commands/user_balance_subscription.h"
 #include "hub/commands/user_withdraw.h"
 #include "hub/commands/user_withdraw_cancel.h"
-#include "hub/commands/get_user_history.h"
-#include "hub/commands/user_balance_subscription.h"
-#include "hub/commands/process_transfer_batch.h"
 #include "hub/stats/session.h"
 
 namespace hub {
@@ -74,7 +74,6 @@ grpc::Status HubImpl::UserBalanceSubscription(
     grpc::ServerContext* context,
     const hub::rpc::UserBalanceSubscriptionRequest* request,
     grpc::ServerWriter<hub::rpc::UserBalanceEvent>* writer) {
-
   auto clientSession = std::make_shared<ClientSession>();
   cmd::UserBalanceSubscription cmd(clientSession);
   return cmd.process(request, writer);
@@ -84,7 +83,6 @@ grpc::Status HubImpl::ProcessTransferBatch(
     grpc::ServerContext* context,
     const hub::rpc::ProcessTransferBatchRequest* request,
     hub::rpc::ProcessTransferBatchReply* response) {
-
   auto clientSession = std::make_shared<ClientSession>();
   cmd::ProcessTransferBatch cmd(clientSession);
   return cmd.process(request, response);

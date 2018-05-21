@@ -29,8 +29,8 @@ grpc::Status UserWithdrawCancel::doProcess(
   auto& connection = db::DBManager::get().connection();
   auto transaction = connection.transaction();
 
-  std::optional<hub::rpc::ErrorCode> errorCode;
-  std::optional<bool> success;
+  nonstd::optional<hub::rpc::ErrorCode> errorCode;
+  nonstd::optional<bool> success;
 
   boost::uuids::uuid uuid = boost::uuids::string_generator()(request->uuid());
 

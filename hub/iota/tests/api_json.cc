@@ -2,7 +2,7 @@
 
 #include <chrono>
 #include <iostream>
-#include <optional>
+#include <nonstd/optional.hpp>
 #include <thread>
 
 #include <glog/logging.h>
@@ -27,7 +27,7 @@ class MockAPI : public IotaJsonAPI {
   json req;
   json res;
 
-  MOCK_METHOD1(post, std::optional<json>(const json&));
+  MOCK_METHOD1(post, nonstd::optional<json>(const json&));
 };
 
 TEST_F(IotaJsonAPITest, GetBalances) {

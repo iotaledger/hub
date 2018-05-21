@@ -48,6 +48,7 @@ cc_library(
     name = "api",
     hdrs = ["api.h"],
     visibility = ["//visibility:public"],
+    deps = ["@optional_lite"],
 )
 
 cc_test(

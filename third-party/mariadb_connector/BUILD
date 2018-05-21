@@ -1,3 +1,8 @@
+config_setting(
+    name = "osx",
+    constraint_values = ["@bazel_tools//platforms:osx"],
+)
+
 cc_library(
     name = "connector",
     srcs = glob(
@@ -22,6 +27,10 @@ cc_library(
         #"-DHAVE_TLS",
         "-Dlibmariadb_EXPORTS",
     ],
+    linkopts = select({
+        ":osx": ["-liconv"],
+        "//conditions:default": [],
+    }),
     strip_include_prefix = "include",
     visibility = ["//visibility:public"],
     #    deps = [
@@ -645,10 +654,10 @@ genrule(
 # define HAVE_UINT 1
 #endif
 
-#define SIZEOF_ULONG 8
-#if SIZEOF_ULONG
-# define HAVE_ULONG 1
-#endif
+//#define SIZEOF_ULONG 8
+//#if SIZEOF_ULONG
+//# define HAVE_ULONG 1
+//#endif
 
 #if SIZEOF_INT8
 # define HAVE_INT8 1

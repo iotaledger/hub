@@ -4,7 +4,7 @@
 #define HUB_IOTA_API_JSON_H_
 
 #include <cstdint>
-#include <optional>
+#include <nonstd/optional.hpp>
 #include <string>
 #include <unordered_map>
 #include <unordered_set>
@@ -30,11 +30,11 @@ class IotaJsonAPI : virtual public IotaAPI {
 
   std::unordered_set<std::string> filterConfirmedTails(
       const std::vector<std::string>& tails,
-      const std::optional<std::string>& reference) override;
+      const nonstd::optional<std::string>& reference) override;
 
   std::vector<std::string> findTransactions(
-      std::optional<std::vector<std::string>> addresses,
-      std::optional<std::vector<std::string>> bundles) override;
+      nonstd::optional<std::vector<std::string>> addresses,
+      nonstd::optional<std::vector<std::string>> bundles) override;
 
   std::unordered_set<std::string> filterConsistentTails(
       const std::vector<std::string>& tails) override;
@@ -44,7 +44,8 @@ class IotaJsonAPI : virtual public IotaAPI {
       const std::vector<std::string>& hashes) override;
 
   std::pair<std::string, std::string> getTransactionsToApprove(
-      size_t depth, const std::optional<std::string>& reference = {}) override;
+      size_t depth,
+      const nonstd::optional<std::string>& reference = {}) override;
 
   std::vector<std::string> attachToTangle(
       const std::string& trunkTransaction, const std::string& branchTransaction,
@@ -54,7 +55,8 @@ class IotaJsonAPI : virtual public IotaAPI {
   bool storeTransactions(const std::vector<std::string>& trytes) override;
   bool broadcastTransactions(const std::vector<std::string>& trytes) override;
 
-  virtual std::optional<nlohmann::json> post(const nlohmann::json& input) = 0;
+  virtual nonstd::optional<nlohmann::json> post(
+      const nlohmann::json& input) = 0;
 };
 }  // namespace iota
 }  // namespace hub

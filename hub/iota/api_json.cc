@@ -85,8 +85,8 @@ std::unordered_map<std::string, uint64_t> IotaJsonAPI::getBalances(
 }
 
 std::vector<std::string> IotaJsonAPI::findTransactions(
-    std::optional<std::vector<std::string>> addresses,
-    std::optional<std::vector<std::string>> bundles) {
+    nonstd::optional<std::vector<std::string>> addresses,
+    nonstd::optional<std::vector<std::string>> bundles) {
   if (!addresses && !bundles) {
     return {};
   }
@@ -218,7 +218,7 @@ std::vector<Bundle> IotaJsonAPI::getConfirmedBundlesForAddress(
 
 std::unordered_set<std::string> IotaJsonAPI::filterConfirmedTails(
     const std::vector<std::string>& tails,
-    const std::optional<std::string>& reference) {
+    const nonstd::optional<std::string>& reference) {
   json req;
   req["command"] = "getInclusionStates";
   req["transactions"] = tails;
@@ -252,7 +252,7 @@ std::unordered_set<std::string> IotaJsonAPI::filterConfirmedTails(
 }
 
 std::pair<std::string, std::string> IotaJsonAPI::getTransactionsToApprove(
-    size_t depth, const std::optional<std::string>& reference) {
+    size_t depth, const nonstd::optional<std::string>& reference) {
   json req;
 
   req["command"] = "getTransactionsToApprove";

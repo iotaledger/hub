@@ -7,7 +7,7 @@
 #include <cstdint>
 #include <map>
 #include <memory>
-#include <optional>
+#include <nonstd/optional.hpp>
 #include <set>
 #include <string>
 #include <tuple>
@@ -34,7 +34,7 @@ class Connection {
   virtual ~Connection() {}
 
   virtual std::unique_ptr<Transaction> transaction() = 0;
-  virtual std::optional<int64_t> userIdFromIdentifier(
+  virtual nonstd::optional<int64_t> userIdFromIdentifier(
       const std::string& identifier) = 0;
   virtual std::vector<AddressWithID> unsweptUserAddresses() = 0;
   virtual std::vector<std::string> tailsForUserAddresses(uint64_t userId) = 0;
@@ -42,19 +42,20 @@ class Connection {
   virtual void createUser(const std::string& identifier) = 0;
   virtual void createUserAddressBalanceEntry(
       uint64_t addressId, int64_t amount, const UserAddressBalanceReason reason,
-      std::optional<std::string> tailHash, std::optional<uint64_t> sweepId) = 0;
+      nonstd::optional<std::string> tailHash,
+      nonstd::optional<uint64_t> sweepId) = 0;
   virtual uint64_t createUserAddress(const hub::crypto::Address& address,
                                      uint64_t userId,
                                      const hub::crypto::UUID& uuid) = 0;
   virtual void createUserAccountBalanceEntry(
       uint64_t userId, int64_t amount, const UserAccountBalanceReason reason,
-      const std::optional<uint64_t> fkey = {}) = 0;
+      const nonstd::optional<uint64_t> fkey = {}) = 0;
   virtual uint64_t createWithdrawal(
       const std::string& uuid, uint64_t userId, uint64_t amount,
       const hub::crypto::Address& payoutAddress) = 0;
   virtual size_t cancelWithdrawal(const std::string& uuid) = 0;
   virtual size_t setWithdrawalSweep(uint64_t id, uint64_t sweepId) = 0;
-  virtual std::optional<AddressWithUUID> selectFirstUserAddress() = 0;
+  virtual nonstd::optional<AddressWithUUID> selectFirstUserAddress() = 0;
   virtual void markUUIDAsSigned(const hub::crypto::UUID& uuid) = 0;
   virtual std::vector<UserBalanceEvent> getUserAccountBalances(
       uint64_t userId) = 0;

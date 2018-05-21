@@ -49,12 +49,12 @@ class MockAPI : public iota::IotaAPI {
   MOCK_METHOD2(filterConfirmedTails,
                std::unordered_set<std::string>(
                    const std::vector<std::string>& tails,
-                   const std::optional<std::string>& reference));
+                   const nonstd::optional<std::string>& reference));
 
   MOCK_METHOD2(findTransactions,
                std::vector<std::string>(
-                   std::optional<std::vector<std::string>> addresses,
-                   std::optional<std::vector<std::string>> bundles));
+                   nonstd::optional<std::vector<std::string>> addresses,
+                   nonstd::optional<std::vector<std::string>> bundles));
 
   MOCK_METHOD0(getNodeInfo, NodeInfo());
 
@@ -65,7 +65,7 @@ class MockAPI : public iota::IotaAPI {
 
   MOCK_METHOD2(getTransactionsToApprove,
                std::pair<std::string, std::string>(
-                   size_t, const std::optional<std::string>&));
+                   size_t, const nonstd::optional<std::string>&));
 
   MOCK_METHOD4(attachToTangle,
                std::vector<std::string>(const std::string&, const std::string&,

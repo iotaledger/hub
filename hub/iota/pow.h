@@ -4,7 +4,7 @@
 #define HUB_IOTA_POW_H_
 
 #include <memory>
-#include <optional>
+#include <nonstd/optional.hpp>
 #include <string>
 #include <utility>
 #include <vector>
@@ -24,7 +24,7 @@ class POWProvider {
   size_t depth() const { return _depth; }
 
   virtual std::pair<std::string, std::string> getAttachmentPoint(
-      const std::optional<std::string>& reference = {}) const;
+      const nonstd::optional<std::string>& reference = {}) const;
 
   virtual std::vector<std::string> performPOW(
       const std::vector<std::string>& trytes) const {

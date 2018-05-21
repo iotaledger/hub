@@ -5,10 +5,10 @@ cc_library(
         "src/**/*.h",
     ]),
     hdrs = glob(["include/**"]),
-    copts = ["-I/usr/include/mysql"],
     strip_include_prefix = "include",
     visibility = ["//visibility:public"],
     deps = [
+        "@boost//:thread",
         "@mariadb_connector//:connector",
         "@sqlpp11",
     ],

@@ -5,6 +5,7 @@
 
 #include <chrono>
 #include <cstdint>
+#include <nonstd/optional.hpp>
 #include <string>
 #include <unordered_map>
 #include <unordered_set>
@@ -47,14 +48,14 @@ class IotaAPI {
 
   virtual std::unordered_set<std::string> filterConfirmedTails(
       const std::vector<std::string>& tails,
-      const std::optional<std::string>& reference) = 0;
+      const nonstd::optional<std::string>& reference) = 0;
 
   virtual std::unordered_set<std::string> filterConsistentTails(
       const std::vector<std::string>& tails) = 0;
 
   virtual std::vector<std::string> findTransactions(
-      std::optional<std::vector<std::string>> addresses,
-      std::optional<std::vector<std::string>> bundles) = 0;
+      nonstd::optional<std::vector<std::string>> addresses,
+      nonstd::optional<std::vector<std::string>> bundles) = 0;
 
   virtual NodeInfo getNodeInfo() = 0;
   virtual std::vector<Transaction> getTrytes(
@@ -65,7 +66,7 @@ class IotaAPI {
       size_t minWeightMagnitude, const std::vector<std::string>& trytes) = 0;
 
   virtual std::pair<std::string, std::string> getTransactionsToApprove(
-      size_t depth, const std::optional<std::string>& reference = {}) = 0;
+      size_t depth, const nonstd::optional<std::string>& reference = {}) = 0;
 
   virtual bool storeTransactions(const std::vector<std::string>& trytes) = 0;
   virtual bool broadcastTransactions(
