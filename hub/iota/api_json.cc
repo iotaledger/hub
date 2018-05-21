@@ -11,6 +11,7 @@
 #include <utility>
 #include <vector>
 
+#include <gflags/gflags.h>
 #include <glog/logging.h>
 #include <boost/move/move.hpp>
 #include <boost/range/adaptors.hpp>
@@ -28,7 +29,8 @@ using boost::adaptors::uniqued;
 namespace hub {
 namespace iota {
 
-static constexpr uint32_t MAX_ADDRESSES_GET_BALANCES = 1000;
+DEFINE_uint32(maxNumAddressesForGetBalances, 1000,
+              "Maximum number of addresses to query for in 'getBalances'");
 
 bool IotaJsonAPI::isNodeSolid() {
   auto ni = getNodeInfo();
@@ -67,10 +69,10 @@ std::unordered_map<std::string, uint64_t> IotaJsonAPI::getBalances(
 
   uint32_t currAddressCount = 0;
   while (currAddressCount < addresses.size()) {
-    auto numAddressesToQuery =
-        (addresses.size() - currAddressCount) > MAX_ADDRESSES_GET_BALANCES
-            ? MAX_ADDRESSES_GET_BALANCES
-            : (addresses.size() - currAddressCount);
+    auto numAddressesToQuery = (addresses.size() - currAddressCount) >
+                                       FLAGS_maxNumAddressesForGetBalances
+                                   ? FLAGS_maxNumAddressesForGetBalances
+                                   : (addresses.size() - currAddressCount);
     auto start = addresses.begin() + currAddressCount;
     auto currAddresses =
         std::vector<std::string>(start, start + numAddressesToQuery);
