@@ -28,6 +28,8 @@ using boost::adaptors::uniqued;
 namespace hub {
 namespace iota {
 
+static constexpr uint32_t MAX_ADDRESSES_GET_BALANCES = 1000;
+
 bool IotaJsonAPI::isNodeSolid() {
   auto ni = getNodeInfo();
 
@@ -58,27 +60,39 @@ NodeInfo IotaJsonAPI::getNodeInfo() {
 
 std::unordered_map<std::string, uint64_t> IotaJsonAPI::getBalances(
     const std::vector<std::string>& addresses) {
+  std::unordered_map<std::string, uint64_t> result;
   json req;
   req["command"] = "getBalances";
-  req["addresses"] = addresses;
   req["threshold"] = 100;
 
-  auto maybeResponse = post(std::move(req));
+  uint32_t currAddressCount = 0;
+  while (currAddressCount < addresses.size()) {
+    auto numAddressesToQuery =
+        (addresses.size() - currAddressCount) > MAX_ADDRESSES_GET_BALANCES
+            ? MAX_ADDRESSES_GET_BALANCES
+            : (addresses.size() - currAddressCount);
+    auto start = addresses.begin() + currAddressCount;
+    auto currAddresses =
+        std::vector<std::string>(start, start + numAddressesToQuery);
+    req["addresses"] = currAddresses;
 
-  if (!maybeResponse) {
-    LOG(INFO) << __FUNCTION__ << " request failed.";
-    return {};
-  }
+    auto maybeResponse = post(req);
 
-  auto& response = maybeResponse.value();
-  auto balances = response["balances"].get<std::vector<std::string>>();
+    if (!maybeResponse) {
+      LOG(INFO) << __FUNCTION__ << " request failed.";
+      return {};
+    }
 
-  std::unordered_map<std::string, uint64_t> result;
+    auto& response = maybeResponse.value();
+    auto balances = response["balances"].get<std::vector<std::string>>();
 
-  for (const auto& tup : boost::combine(addresses, balances)) {
-    std::string add, bal;
-    boost::tie(add, bal) = tup;
-    result.emplace(std::move(add), std::stoull(bal));
+    for (const auto& tup : boost::combine(currAddresses, balances)) {
+      std::string add, bal;
+      boost::tie(add, bal) = tup;
+      result.emplace(std::move(add), std::stoull(bal));
+    }
+
+    currAddressCount += numAddressesToQuery;
   }
 
   return result;
