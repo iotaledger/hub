@@ -25,8 +25,8 @@ class IotaJsonAPI : virtual public IotaAPI {
   std::unordered_map<std::string, uint64_t> getBalances(
       const std::vector<std::string>& addresses) override;
 
-  std::vector<Bundle> getConfirmedBundlesForAddress(
-      const std::string& address) override;
+  std::unordered_multimap<std::string, Bundle> getConfirmedBundlesForAddresses(
+      const std::vector<std::string>& addresses) override;
 
   std::unordered_set<std::string> filterConfirmedTails(
       const std::vector<std::string>& tails,

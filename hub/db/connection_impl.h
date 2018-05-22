@@ -13,6 +13,7 @@
 #include <tuple>
 #include <utility>
 #include <vector>
+#include <unordered_map>
 
 #include <sqlpp11/transaction.h>
 
@@ -63,8 +64,9 @@ class ConnectionImpl : public Connection {
     return db::helper<Conn>::unsweptUserAddresses(*_conn);
   }
 
-  std::vector<std::string> tailsForUserAddresses(uint64_t userId) override {
-    return db::helper<Conn>::tailsForUserAddresses(*_conn, userId);
+  std::unordered_multimap<uint64_t, std::string> tailsForUserAddresses(
+      const std::vector<uint64_t>& userIds) override {
+    return db::helper<Conn>::tailsForUserAddresses(*_conn, userIds);
   }
 
   uint64_t availableBalanceForUser(uint64_t userId) override {

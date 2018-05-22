@@ -43,8 +43,9 @@ class MockAPI : public iota::IotaAPI {
   MOCK_METHOD1(getBalances, std::unordered_map<std::string, uint64_t>(
                                 const std::vector<std::string>& addresses));
 
-  MOCK_METHOD1(getConfirmedBundlesForAddress,
-               std::vector<Bundle>(const std::string& address));
+  MOCK_METHOD1(getConfirmedBundlesForAddresses,
+               std::unordered_multimap<std::string, Bundle>(
+                   const std::vector<std::string>& addresses));
 
   MOCK_METHOD2(filterConfirmedTails,
                std::unordered_set<std::string>(

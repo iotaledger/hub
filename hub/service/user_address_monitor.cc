@@ -2,6 +2,7 @@
 
 #include "hub/service/user_address_monitor.h"
 
+#include <algorithm>
 #include <iterator>
 #include <vector>
 
@@ -49,22 +50,43 @@ bool UserAddressMonitor::onBalancesChanged(
   auto transaction = connection.transaction();
 
   try {
-    for (const auto& change : changes) {
-      auto confirmedBundles =
-          _api->getConfirmedBundlesForAddress(change.address);
-      auto tails = connection.tailsForUserAddresses(change.addressId);
+    std::vector<std::string> addresses;
+    std::transform(std::begin(changes), std::end(changes),
+                   std::back_inserter(addresses),
+                   [](const auto& change) { return change.address; });
 
-      auto unknownTails = confirmedBundles |
-                          filtered([&tails](hub::iota::Bundle const& bundle) {
-                            auto& ctail = bundle[0].hash;
-                            if (std::none_of(tails.cbegin(), tails.cend(),
-                                             [&ctail](const std::string& tail) {
-                                               return ctail == tail;
-                                             })) {
-                              return true;
-                            }
-                            return false;
-                          });
+    std::vector<uint64_t> ids;
+    std::transform(std::begin(changes), std::end(changes),
+                   std::back_inserter(ids),
+                   [](const auto& change) { return change.addressId; });
+
+    auto confirmedBundlesMap = _api->getConfirmedBundlesForAddresses(addresses);
+
+    auto tailsToAddresses = connection.tailsForUserAddresses(ids);
+
+    for (const auto& change : changes) {
+      std::vector<std::string> tails;
+      auto tailsER = tailsToAddresses.equal_range(change.addressId);
+      for (auto it = tailsER.first; it != tailsER.second; ++it) {
+        tails.push_back(it->second);
+      }
+
+      auto confirmedBundlesER = confirmedBundlesMap.equal_range(change.address);
+      std::vector<hub::iota::Bundle> confirmedBundles;
+
+      for (auto it = confirmedBundlesER.first; it != confirmedBundlesER.second;
+           ++it) {
+        confirmedBundles.push_back(it->second);
+      }
+
+      auto unknownTails =
+          confirmedBundles |
+          filtered([&tails](hub::iota::Bundle const& bundle) {
+            auto& ctail = bundle[0].hash;
+            return (std::none_of(
+                tails.cbegin(), tails.cend(),
+                [&ctail](const std::string& tail) { return ctail == tail; }));
+          });
 
       int64_t aggregateSum = 0;
 

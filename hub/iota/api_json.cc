@@ -181,10 +181,11 @@ std::vector<Transaction> IotaJsonAPI::getTrytes(
   return txs;
 }
 
-std::vector<Bundle> IotaJsonAPI::getConfirmedBundlesForAddress(
-    const std::string& address) {
+std::unordered_multimap<std::string, Bundle>
+IotaJsonAPI::getConfirmedBundlesForAddresses(
+    const std::vector<std::string>& addresses) {
   // 1. Get all transactions for address [findTransactions, getTrytes]
-  auto txHashes = findTransactions(std::vector<std::string>{address}, {});
+  auto txHashes = findTransactions(addresses, {});
   auto transactions = getTrytes(txHashes);
 
   // 2. Filter unique bundles from these []
@@ -208,6 +209,7 @@ std::vector<Bundle> IotaJsonAPI::getConfirmedBundlesForAddress(
   auto confirmedTails = filterConfirmedTails(tails, {});
 
   std::vector<Bundle> confirmedBundles;
+  std::unordered_multimap<std::string, Bundle> confirmedBundlesMap;
   std::unordered_map<std::string, Transaction> transactionsByHash;
 
   for (auto& tx : transactions) {
@@ -229,7 +231,19 @@ std::vector<Bundle> IotaJsonAPI::getConfirmedBundlesForAddress(
     confirmedBundles.push_back(std::move(bundle));
   }
 
-  return confirmedBundles;
+  for (const auto& address : addresses) {
+    for (const auto& b : confirmedBundles) {
+      if (std::find_if(b.begin(), b.end(),
+                       [address](const Transaction& tx) -> bool {
+                         return address == tx.address;
+                       }) != b.end()) {
+        confirmedBundlesMap.insert(std::pair(address, b));
+        break;
+      }
+    }
+  }
+
+  return confirmedBundlesMap;
 }
 
 std::unordered_set<std::string> IotaJsonAPI::filterConfirmedTails(
