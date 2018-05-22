@@ -5,6 +5,7 @@
 #include <algorithm>
 #include <iterator>
 #include <vector>
+#include <utility>
 
 #include <glog/logging.h>
 #include <boost/move/move.hpp>
@@ -68,7 +69,7 @@ bool UserAddressMonitor::onBalancesChanged(
       std::vector<std::string> tails;
       auto tailsER = tailsToAddresses.equal_range(change.addressId);
       for (auto it = tailsER.first; it != tailsER.second; ++it) {
-        tails.push_back(it->second);
+        tails.push_back(std::move(it->second));
       }
 
       auto confirmedBundlesER = confirmedBundlesMap.equal_range(change.address);
@@ -76,7 +77,7 @@ bool UserAddressMonitor::onBalancesChanged(
 
       for (auto it = confirmedBundlesER.first; it != confirmedBundlesER.second;
            ++it) {
-        confirmedBundles.push_back(it->second);
+        confirmedBundles.push_back(std::move(it->second));
       }
 
       auto unknownTails =
