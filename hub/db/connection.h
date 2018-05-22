@@ -13,6 +13,7 @@
 #include <tuple>
 #include <utility>
 #include <vector>
+#include <unordered_map>
 
 #include "hub/crypto/types.h"
 #include "hub/db/db.h"
@@ -37,7 +38,8 @@ class Connection {
   virtual nonstd::optional<int64_t> userIdFromIdentifier(
       const std::string& identifier) = 0;
   virtual std::vector<AddressWithID> unsweptUserAddresses() = 0;
-  virtual std::vector<std::string> tailsForUserAddresses(uint64_t userId) = 0;
+  virtual std::unordered_multimap<uint64_t, std::string> tailsForUserAddresses(
+      const std::vector<uint64_t>& userIds) = 0;
   virtual uint64_t availableBalanceForUser(uint64_t userId) = 0;
   virtual void createUser(const std::string& identifier) = 0;
   virtual void createUserAddressBalanceEntry(

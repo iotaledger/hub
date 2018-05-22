@@ -56,20 +56,22 @@ std::vector<AddressWithID> helper<C>::unsweptUserAddresses(C& connection) {
 }
 
 template <typename C>
-std::vector<std::string> helper<C>::tailsForUserAddresses(C& connection,
-                                                          uint64_t userId) {
+std::unordered_multimap<uint64_t, std::string> helper<C>::tailsForUserAddresses(
+    C& connection, const std::vector<uint64_t>& userIds) {
   db::sql::UserAddressBalance bal;
 
-  std::vector<std::string> tails;
+  std::unordered_multimap<uint64_t, std::string> userIdsToTails;
 
-  auto result = connection(
-      select(bal.tailHash).from(bal).where(bal.userAddress == userId));
+  auto result =
+      connection(select(bal.tailHash, bal.userAddress)
+                     .from(bal)
+                     .where(bal.userAddress.in(sqlpp::value_list(userIds))));
 
   for (const auto& row : result) {
-    tails.emplace_back(std::move(row.tailHash));
+    userIdsToTails.insert(std::pair(row.userAddress, std::move(row.tailHash)));
   }
 
-  return tails;
+  return userIdsToTails;
 }
 
 template <typename C>

@@ -43,8 +43,9 @@ class IotaAPI {
   virtual std::unordered_map<std::string, uint64_t> getBalances(
       const std::vector<std::string>& addresses) = 0;
 
-  virtual std::vector<Bundle> getConfirmedBundlesForAddress(
-      const std::string& address) = 0;
+  virtual std::unordered_multimap<std::string, Bundle>
+  getConfirmedBundlesForAddresses(
+      const std::vector<std::string>& addresses) = 0;
 
   virtual std::unordered_set<std::string> filterConfirmedTails(
       const std::vector<std::string>& tails,

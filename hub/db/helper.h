@@ -12,6 +12,7 @@
 #include <tuple>
 #include <utility>
 #include <vector>
+#include <unordered_map>
 
 #include "hub/crypto/types.h"
 #include "hub/db/db.h"
@@ -26,8 +27,8 @@ struct helper {
   static nonstd::optional<int64_t> userIdFromIdentifier(
       C& connection, const std::string& identifier);
   static std::vector<AddressWithID> unsweptUserAddresses(C& connection);
-  static std::vector<std::string> tailsForUserAddresses(C& connection,
-                                                        uint64_t userId);
+  static std::unordered_multimap<uint64_t, std::string> tailsForUserAddresses(
+      C& connection, const std::vector<uint64_t>& userIds);
   static uint64_t availableBalanceForUser(C& connection, uint64_t userId);
   static void createUser(C& connection, const std::string& identifier);
   static uint64_t createUserAddress(C& connection,
