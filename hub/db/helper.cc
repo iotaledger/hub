@@ -68,7 +68,7 @@ std::unordered_multimap<uint64_t, std::string> helper<C>::tailsForUserAddresses(
                      .where(bal.userAddress.in(sqlpp::value_list(userIds))));
 
   for (const auto& row : result) {
-    userIdsToTails.insert(std::pair(row.userAddress, std::move(row.tailHash)));
+    userIdsToTails.emplace(std::pair(row.userAddress, std::move(row.tailHash)));
   }
 
   return userIdsToTails;
