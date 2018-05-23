@@ -1,10 +1,13 @@
 // Copyright 2018 IOTA Foundation
 
 #include "hub/commands/user_balance_subscription.h"
+
 #include <chrono>
 #include <functional>
 #include <iostream>
 #include <thread>
+#include <utility>
+
 #include "hub/commands/helper.h"
 #include "hub/commands/proto_sql_converter.h"
 #include "hub/db/db.h"
@@ -27,6 +30,7 @@ grpc::Status UserBalanceSubscription::doProcess(
   auto balances = getAccountBalances(newerThan);
   bool cancelled = false;
   for (auto& b : balances) {
+    event.set_userid(std::move(b.userIdentifier));
     event.set_timestamp(std::chrono::duration_cast<std::chrono::milliseconds>(
                             b.timestamp.time_since_epoch())
                             .count());
