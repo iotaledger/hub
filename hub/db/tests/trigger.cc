@@ -111,15 +111,15 @@ TEST_F(DBTest, UserAddressTriggerWorks) {
 
     for (auto i = 0; i < userBalances[userNum] / stepSize; ++i) {
       connection.createUserAddressBalanceEntry(
-          addId, stepSize, UserAddressBalanceReason::DEPOSIT, "", 1);
+          addId, stepSize, UserAddressBalanceReason::DEPOSIT, {""}, 1);
     }
 
     // just so all types of REASONs will be tested
     connection.createUserAddressBalanceEntry(
-        addId, -stepSize, UserAddressBalanceReason::SWEEP, "", sweepId);
+        addId, -stepSize, UserAddressBalanceReason::SWEEP, {""}, sweepId);
 
     connection.createUserAddressBalanceEntry(
-        addId, stepSize, UserAddressBalanceReason::DEPOSIT, "", 1);
+        addId, stepSize, UserAddressBalanceReason::DEPOSIT, {""}, 1);
 
     ++userNum;
   }

@@ -51,7 +51,7 @@ TEST_F(UserWithdrawTest, ErrorOnZeroAmount) {
       "999999999999999999999999999999999999999999999999999999999999999999999999"
       "999999999");
 
-  auto status = command.doProcess(&req, &res);
+  auto status = command.process(&req, &res);
 
   ASSERT_FALSE(status.ok());
 }

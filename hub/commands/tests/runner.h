@@ -23,7 +23,7 @@ class CommandTest : public hub::Test {
 
     req.set_userid(std::move(username));
     cmd::CreateUser command(std::move(session));
-    return command.doProcess(&req, &res);
+    return command.process(&req, &res);
   }
 
   rpc::Error errorFromStatus(grpc::Status& status) {

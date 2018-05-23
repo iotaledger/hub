@@ -28,7 +28,7 @@ TEST_F(GetDepositAddressTest, UnknownUserShouldFail) {
   req.set_userid("User1");
   cmd::GetDepositAddress command(session());
 
-  auto status = command.doProcess(&req, &res);
+  auto status = command.process(&req, &res);
 
   ASSERT_FALSE(status.ok());
 
@@ -51,10 +51,10 @@ TEST_F(GetDepositAddressTest, AddressCountInDatabaseShouldChange) {
 
   cmd::GetDepositAddress command(session());
 
-  ASSERT_TRUE(command.doProcess(&req, &res).ok());
+  ASSERT_TRUE(command.process(&req, &res).ok());
   std::string address1 = res.address();
   ASSERT_EQ(res.address().length(), 81);
-  ASSERT_TRUE(command.doProcess(&req, &res).ok());
+  ASSERT_TRUE(command.process(&req, &res).ok());
   ASSERT_EQ(res.address().length(), 81);
   ASSERT_NE(address1, res.address());
 
@@ -90,7 +90,7 @@ TEST_F(GetDepositAddressTest, AddressShouldHaveCorrectLength) {
 
   cmd::GetDepositAddress command(session());
 
-  ASSERT_TRUE(command.doProcess(&req, &res).ok());
+  ASSERT_TRUE(command.process(&req, &res).ok());
   ASSERT_EQ(res.address().length(), 81);
 }
 

@@ -20,13 +20,13 @@ cc_library(
     deps = [
         ":crypto",
         "@argon2",
+        "@boost//:interprocess",
         "@com_github_google_glog//:glog",
         "@iota_lib_cpp",
         "@org_iota_entangled//common/helpers:sign",
         "@org_iota_entangled//common/kerl:converter",
         "@org_iota_entangled//common/sign/v1:iss_kerl",
         "@org_iota_entangled//common/trinary:trit_tryte",
-        "@boost//:interprocess",
     ],
 )
 
@@ -47,7 +47,7 @@ cc_test(
     deps = [
         ":local_provider",
         "//hub/tests",
-        "@com_google_googletest//:gtest",
         "@boost//:interprocess",
+        "@com_google_googletest//:gtest",
     ],
 )

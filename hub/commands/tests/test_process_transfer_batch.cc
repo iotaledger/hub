@@ -57,7 +57,7 @@ void processRandomTransfer(std::map<uint64_t, std::string>& idsToUsers,
     auto idsToAmounts = createZigZagTransfer(users, req, distr(eng));
     bool cmdOK = false;
     try {
-      auto status = cmd.doProcess(&req, &res);
+      auto status = cmd.process(&req, &res);
       cmdOK = status.ok();
     } catch (const sqlpp::exception& ex) {
     }
@@ -93,7 +93,7 @@ TEST_F(ProcessTransferBatchTest, FailOnNonExistingUserId) {
 
   cmd::ProcessTransferBatch command(session());
 
-  auto status = command.doProcess(&req, &res);
+  auto status = command.process(&req, &res);
 
   ASSERT_FALSE(status.ok());
   ASSERT_EQ(status.error_message(),
@@ -114,7 +114,7 @@ TEST_F(ProcessTransferBatchTest, ZeroAmountTransferFails) {
 
   cmd::ProcessTransferBatch command(session());
 
-  status = command.doProcess(&req, &res);
+  status = command.process(&req, &res);
   ASSERT_FALSE(status.ok());
   ASSERT_EQ(status.error_message(),
             cmd::errorToString(hub::rpc::ErrorCode::BATCH_INVALID));
@@ -136,7 +136,7 @@ TEST_F(ProcessTransferBatchTest, TransfersAreRecorded) {
   }
   createBalanceForUsers(userIds, USER_BALANCE);
   createZigZagTransfer(users, req, absAmount);
-  auto status = command.doProcess(&req, &res);
+  auto status = command.process(&req, &res);
 
   ASSERT_TRUE(status.ok());
 
@@ -147,7 +147,7 @@ TEST_F(ProcessTransferBatchTest, TransfersAreRecorded) {
   for (auto i = 0; i < users.size(); ++i) {
     getBalReq.set_userid(users[i]);
     int64_t amount = (i % 2) ? absAmount : -absAmount;
-    ASSERT_TRUE(balCmd.doProcess(&getBalReq, &getBalRep).ok());
+    ASSERT_TRUE(balCmd.process(&getBalReq, &getBalRep).ok());
     ASSERT_EQ(USER_BALANCE + amount, getBalRep.available());
   }
 }
@@ -169,7 +169,7 @@ TEST_F(ProcessTransferBatchTest, TransfersAreRecordedGroupingUserBalances) {
   createBalanceForUsers(userIds, USER_BALANCE / 2);
   createBalanceForUsers(userIds, USER_BALANCE / 2);
   createZigZagTransfer(users, req, absAmount);
-  auto status = command.doProcess(&req, &res);
+  auto status = command.process(&req, &res);
 
   ASSERT_TRUE(status.ok());
 
@@ -180,7 +180,7 @@ TEST_F(ProcessTransferBatchTest, TransfersAreRecordedGroupingUserBalances) {
   for (auto i = 0; i < users.size(); ++i) {
     getBalReq.set_userid(users[i]);
     int64_t amount = (i % 2) ? absAmount : -absAmount;
-    ASSERT_TRUE(balCmd.doProcess(&getBalReq, &getBalRep).ok());
+    ASSERT_TRUE(balCmd.process(&getBalReq, &getBalRep).ok());
     ASSERT_EQ(USER_BALANCE + amount, getBalRep.available());
   }
 }
@@ -200,7 +200,7 @@ TEST_F(ProcessTransferBatchTest, TransfersMustBeZeroSummed) {
   }
   createBalanceForUsers(userIds, USER_BALANCE);
   createZigZagTransfer(users, req, USER_BALANCE / 2);
-  auto status = command.doProcess(&req, &res);
+  auto status = command.process(&req, &res);
 
   ASSERT_FALSE(status.ok());
   ASSERT_EQ(status.error_message(),
@@ -222,7 +222,7 @@ TEST_F(ProcessTransferBatchTest, TransferMustHaveSufficientFunds) {
   }
   createBalanceForUsers(userIds, USER_BALANCE);
   createZigZagTransfer(users, req, USER_BALANCE + 1);
-  auto status = command.doProcess(&req, &res);
+  auto status = command.process(&req, &res);
 
   ASSERT_FALSE(status.ok());
   ASSERT_EQ(status.error_message(),
@@ -255,7 +255,7 @@ TEST_F(ProcessTransferBatchTest, SequentialTransfersAreConsistent) {
 
   for (auto& kv : idsToUsers) {
     getBalReq.set_userid(kv.second);
-    ASSERT_TRUE(balCmd.doProcess(&getBalReq, &getBalRep).ok());
+    ASSERT_TRUE(balCmd.process(&getBalReq, &getBalRep).ok());
     ASSERT_EQ(idsToBalances[kv.first], getBalRep.available());
   }
 }
@@ -294,7 +294,7 @@ TEST_F(ProcessTransferBatchTest, ConcurrentTransfersAreConsistent) {
 
   for (auto& kv : idsToUsers) {
     getBalReq.set_userid(kv.second);
-    ASSERT_TRUE(balCmd.doProcess(&getBalReq, &getBalRep).ok());
+    ASSERT_TRUE(balCmd.process(&getBalReq, &getBalRep).ok());
     ASSERT_EQ(idsToBalances[kv.first], getBalRep.available());
   }
 }

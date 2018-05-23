@@ -1,4 +1,4 @@
 #!/bin/sh
 
-python2 tools/cpplint.py --filter=-build/include_order,-whitespace/comments --extensions=h,cc hub/**/*.h hub/**/*.cc
+python tools/cpplint.py --filter=-build/include_order,-whitespace/comments --extensions=h,cc hub/**/*.h hub/**/*.cc
 

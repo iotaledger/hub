@@ -1,4 +1,10 @@
-// Copyright 2018 IOTA Foundation
+/*
+ * Copyright (c) 2018 IOTA Stiftung
+ * https://github.com/iotaledger/rpchub
+ *
+ * Refer to the LICENSE file for licensing information
+ */
+
 
 #ifndef HUB_SERVICE_SERVICE_H_
 #define HUB_SERVICE_SERVICE_H_
@@ -13,18 +19,28 @@
 namespace hub {
 namespace service {
 
+/// Service abstract class. This is the base class for all services
+/// Each concrete subclass is responsible for implementing their
+/// respective behaviour
 class Service {
  public:
+  /// constructor
   Service() {}
 
+  /// Start the service
   virtual void start();
+  /// Stop the service
   virtual void stop();
+  /// @return bool - true if the service is currently running, false otherwise
   virtual bool isRunning() { return _thread != nullptr; }
 
+  /// @return string - the descriptive name of the service
   virtual const std::string name() const = 0;
 
  protected:
+  /// Called immediately after starting the service
   virtual void onStart() {}
+  /// Called immediately before stopping the service
   virtual void onStop() {}
 
   // Order of destruction matters for the below

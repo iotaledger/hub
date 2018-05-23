@@ -1,4 +1,10 @@
-// Copyright 2018 IOTA Foundation
+/*
+ * Copyright (c) 2018 IOTA Stiftung
+ * https://github.com/iotaledger/rpchub
+ *
+ * Refer to the LICENSE file for licensing information
+ */
+
 
 #ifndef HUB_COMMANDS_USER_BALANCE_SUBSCRIPTION_H_
 #define HUB_COMMANDS_USER_BALANCE_SUBSCRIPTION_H_
@@ -19,6 +25,8 @@ class UserBalanceEvent;
 
 namespace cmd {
 
+/// @param[in] hub::rpc::UserBalanceSubscriptionRequest
+/// @param[in] hub::rpc::ServerWriterInterface
 class UserBalanceSubscription
     : public Command<hub::rpc::UserBalanceSubscriptionRequest,
                      grpc::ServerWriterInterface<hub::rpc::UserBalanceEvent>> {
@@ -27,15 +35,15 @@ class UserBalanceSubscription
       hub::rpc::UserBalanceSubscriptionRequest,
       grpc::ServerWriterInterface<hub::rpc::UserBalanceEvent>>::Command;
 
-  grpc::Status doProcess(
-      const hub::rpc::UserBalanceSubscriptionRequest* request,
-      grpc::ServerWriterInterface<hub::rpc::UserBalanceEvent>*
-          writer) noexcept override;
-
   const std::string name() override { return "UserBalanceSubscription"; }
 
   virtual std::vector<db::UserBalanceEvent> getAccountBalances(
       std::chrono::system_clock::time_point lastCheck);
+
+  grpc::Status doProcess(
+      const hub::rpc::UserBalanceSubscriptionRequest* request,
+      grpc::ServerWriterInterface<hub::rpc::UserBalanceEvent>*
+          writer) noexcept override;
 };
 }  // namespace cmd
 }  // namespace hub
