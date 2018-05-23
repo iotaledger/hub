@@ -3,10 +3,8 @@
 #include "hub/commands/user_withdraw.h"
 
 #include <cstdint>
+#include <exception>
 
-#include <sqlpp11/connection.h>
-#include <sqlpp11/functions.h>
-#include <sqlpp11/select.h>
 #include <boost/uuid/random_generator.hpp>
 #include <boost/uuid/uuid.hpp>
 #include <boost/uuid/uuid_io.hpp>
@@ -31,11 +29,15 @@ grpc::Status UserWithdraw::doProcess(
 
   nonstd::optional<hub::rpc::ErrorCode> errorCode;
   uint64_t userId;
-  uint64_t balance;
   uint64_t withdrawalId;
 
   auto withdrawalUUID = boost::uuids::random_generator()();
   auto payoutAddress = hub::crypto::Address(request->payoutaddress());
+
+  if (request->amount() <= 0) {
+    return grpc::Status(grpc::StatusCode::FAILED_PRECONDITION, "",
+                        errorToString(hub::rpc::ErrorCode::EC_UNKNOWN));
+  }
 
   try {
     // Get userId for identifier
@@ -77,12 +79,12 @@ grpc::Status UserWithdraw::doProcess(
     } else {
       transaction->commit();
     }
-  } catch (sqlpp::exception& ex) {
+  } catch (const std::exception& ex) {
     LOG(ERROR) << session() << " Commit failed: " << ex.what();
 
     try {
       transaction->rollback();
-    } catch (const sqlpp::exception& ex) {
+    } catch (const std::exception& ex) {
       LOG(ERROR) << session() << " Rollback failed: " << ex.what();
     }
 
