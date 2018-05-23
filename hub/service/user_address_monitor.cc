@@ -4,8 +4,9 @@
 
 #include <algorithm>
 #include <iterator>
-#include <vector>
 #include <utility>
+#include <vector>
+#include <set>
 
 #include <glog/logging.h>
 #include <boost/move/move.hpp>
@@ -66,32 +67,28 @@ bool UserAddressMonitor::onBalancesChanged(
     auto tailsToAddresses = connection.tailsForUserAddresses(ids);
 
     for (const auto& change : changes) {
-      std::vector<std::string> tails;
+      std::set<std::string> tails;
       auto tailsER = tailsToAddresses.equal_range(change.addressId);
       for (auto it = tailsER.first; it != tailsER.second; ++it) {
-        tails.push_back(std::move(it->second));
+        tails.insert(std::move(it->second));
       }
 
       auto confirmedBundlesER = confirmedBundlesMap.equal_range(change.address);
-      std::vector<hub::iota::Bundle> confirmedBundles;
+      std::vector<hub::iota::Bundle> unknownBundles;
 
       for (auto it = confirmedBundlesER.first; it != confirmedBundlesER.second;
            ++it) {
-        confirmedBundles.push_back(std::move(it->second));
-      }
-
-      auto unknownTails =
-          confirmedBundles |
-          filtered([&tails](hub::iota::Bundle const& bundle) {
-            auto& ctail = bundle[0].hash;
-            return (std::none_of(
+        auto& ctail = it->second[0].hash;
+        if (std::none_of(
                 tails.cbegin(), tails.cend(),
-                [&ctail](const std::string& tail) { return ctail == tail; }));
-          });
+                [&ctail](const std::string& tail) { return ctail == tail; })) {
+          unknownBundles.push_back(std::move(it->second));
+        }
+      }
 
       int64_t aggregateSum = 0;
 
-      for (const auto& bundle : unknownTails) {
+      for (const auto& bundle : unknownBundles) {
         auto& tail = bundle[0].hash;
 
         for (const auto& tx : bundle) {
