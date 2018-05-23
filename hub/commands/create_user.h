@@ -1,4 +1,9 @@
-// Copyright 2018 IOTA Foundation
+/*
+ * Copyright (c) 2018 IOTA Stiftung
+ * https://github.com/iotaledger/rpchub
+ *
+ * Refer to the LICENSE file for licensing information
+ */
 
 #ifndef HUB_COMMANDS_CREATE_USER_H_
 #define HUB_COMMANDS_CREATE_USER_H_
@@ -15,16 +20,19 @@ class CreateUserReply;
 
 namespace cmd {
 
+/// Creates a new user with a specific id.
+/// @param[in] hub::rpc::CreateUserRequest
+/// @param[in] hub::rpc::CreateUserReply
 class CreateUser
     : public Command<hub::rpc::CreateUserRequest, hub::rpc::CreateUserReply> {
  public:
   using Command<hub::rpc::CreateUserRequest,
                 hub::rpc::CreateUserReply>::Command;
 
+  const std::string name() override { return "CreateUser"; }
+
   grpc::Status doProcess(const hub::rpc::CreateUserRequest* request,
                          hub::rpc::CreateUserReply* response) noexcept override;
-
-  const std::string name() override { return "CreateUser"; }
 };
 }  // namespace cmd
 }  // namespace hub

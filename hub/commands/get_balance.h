@@ -1,4 +1,9 @@
-// Copyright 2018 IOTA Foundation
+/*
+ * Copyright (c) 2018 IOTA Stiftung
+ * https://github.com/iotaledger/rpchub
+ *
+ * Refer to the LICENSE file for licensing information
+ */
 
 #ifndef HUB_COMMANDS_GET_BALANCE_H_
 #define HUB_COMMANDS_GET_BALANCE_H_
@@ -15,16 +20,19 @@ class GetBalanceReply;
 
 namespace cmd {
 
+/// Gets the current balance for a user with a specific id.
+/// @param[in] hub::rpc::GetBalanceRequest
+/// @param[in] hub::rpc::GetBalanceReply
 class GetBalance
     : public Command<hub::rpc::GetBalanceRequest, hub::rpc::GetBalanceReply> {
  public:
   using Command<hub::rpc::GetBalanceRequest,
                 hub::rpc::GetBalanceReply>::Command;
 
+  const std::string name() override { return "GetBalance"; }
+
   grpc::Status doProcess(const hub::rpc::GetBalanceRequest* request,
                          hub::rpc::GetBalanceReply* response) noexcept override;
-
-  const std::string name() override { return "GetBalance"; }
 };
 }  // namespace cmd
 }  // namespace hub

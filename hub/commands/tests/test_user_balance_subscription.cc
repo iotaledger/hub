@@ -20,7 +20,7 @@ class UserBalanceSubscriptionTest : public CommandTest {};
 
 class MockUserBalanceSubscription : public UserBalanceSubscription {
  public:
-  using UserBalanceSubscription::doProcess;
+  using UserBalanceSubscription::process;
   using UserBalanceSubscription::UserBalanceSubscription;
   using IWriter = grpc::ServerWriterInterface<rpc::UserBalanceEvent>;
   MOCK_METHOD1(getAccountBalances,
@@ -54,7 +54,7 @@ TEST_F(UserBalanceSubscriptionTest, UserBalanceSubscriptionWriteAllEvents) {
       .Times(events.size())
       .WillRepeatedly(Return(true));
   EXPECT_CALL(mockCmd, getAccountBalances(_)).Times(1).WillOnce(Return(events));
-  mockCmd.doProcess(&request, &mockSW);
+  mockCmd.process(&request, &mockSW);
 }
 
 TEST_F(UserBalanceSubscriptionTest,
@@ -72,6 +72,6 @@ TEST_F(UserBalanceSubscriptionTest,
   events.push_back(db::UserBalanceEvent{});
   EXPECT_CALL(mockSW, Write(_, _)).Times(1).WillOnce(Return(false));
   EXPECT_CALL(mockCmd, getAccountBalances(_)).Times(1).WillOnce(Return(events));
-  mockCmd.doProcess(&request, &mockSW);
+  mockCmd.process(&request, &mockSW);
 }
 };  // namespace

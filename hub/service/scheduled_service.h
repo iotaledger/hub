@@ -1,4 +1,10 @@
-// Copyright 2018 IOTA Foundation
+/*
+ * Copyright (c) 2018 IOTA Stiftung
+ * https://github.com/iotaledger/rpchub
+ *
+ * Refer to the LICENSE file for licensing information
+ */
+
 
 #ifndef HUB_SERVICE_SCHEDULED_SERVICE_H_
 #define HUB_SERVICE_SCHEDULED_SERVICE_H_
@@ -13,19 +19,28 @@
 namespace hub {
 namespace service {
 
+/// ScheduledService abstract class. This is the base class for all scheduled
+/// services. Each concrete subclass is responsible for implementing their
+/// respective behaviour in the protected onTick() method
 class ScheduledService : public Service {
  public:
   ScheduledService() = delete;
 
+  /// constructor
+  /// @param[in] interval - the tick interval in milliseconds
   explicit ScheduledService(std::chrono::milliseconds interval)
       : _interval(interval) {}
 
+  /// Start the service
   void start() override;
+  /// Stop the service
   void stop() override;
+  /// Invoked at each tick occuring at <B>interval</B> milliseconds
   void tick();
 
  protected:
-  //! Should return false if it wants to stop.
+  /// Called by tick() by default
+  /// @return false if it wants to stop.
   virtual bool doTick() = 0;
 
  protected:
