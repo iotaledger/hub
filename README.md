@@ -1,7 +1,7 @@
 # IOTA Hub
 ## Dependencies
 - Modern GCC or Clang
-- [[https://github.com/bazelbuild/bazel/releases][bazel]]
+- [CHECK constraints](https://github.com/bazelbuild/bazel/releases)
 - sqlite3
 - system-wide installation of mariadb-connector-c 
 - pyparsing (pip install pyparsing)
@@ -9,6 +9,7 @@
 
 ## Supported database systems
 - MariaDB. Note that we *strongly discourage* the use of *MySQL* because it does not support CHECK constraints for data integrity. We only test against MariaDB.
+  Please ensure that your MariaDB version is *>= 10.2.1* as this is the first version supporting [CHECK constraints](https://mariadb.com/kb/en/library/constraint/#check-constraints)
 
 ## Developing RPCHub
 - Be sure to run `./hooks/autohook.sh install` after checkout!
