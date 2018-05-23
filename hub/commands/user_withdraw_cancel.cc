@@ -30,11 +30,11 @@ grpc::Status UserWithdrawCancel::doProcess(
   auto transaction = connection.transaction();
 
   nonstd::optional<hub::rpc::ErrorCode> errorCode;
-  nonstd::optional<bool> success;
-
-  boost::uuids::uuid uuid = boost::uuids::string_generator()(request->uuid());
+  bool success = false;
 
   try {
+    boost::uuids::uuid uuid = boost::uuids::string_generator()(request->uuid());
+
     auto result = connection.cancelWithdrawal(boost::uuids::to_string(uuid));
 
     success = result != 0;
@@ -47,14 +47,15 @@ grpc::Status UserWithdrawCancel::doProcess(
       connection.createUserAccountBalanceEntry(
           withdrawalInfo.userId, -withdrawalInfo.amount,
           db::UserAccountBalanceReason::WITHDRAWAL_CANCEL);
-    }
 
-    if (errorCode) {
-      transaction->rollback();
-    } else {
       transaction->commit();
+
+      LOG(INFO) << "Withdrawal: " << request->uuid()
+                << " cancelled successfully.";
+    } else {
+      transaction->rollback();
     }
-  } catch (sqlpp::exception& ex) {
+  } catch (const std::exception& ex) {
     LOG(ERROR) << session() << " Commit failed: " << ex.what();
 
     try {
@@ -71,7 +72,7 @@ grpc::Status UserWithdrawCancel::doProcess(
                         errorToString(errorCode.value()));
   }
 
-  response->set_success(success.value());
+  response->set_success(success);
 
   return grpc::Status::OK;
 }
