@@ -11,8 +11,9 @@
 namespace hub {
 namespace db {
 
-class MariaDBConnection : public ConnectionImpl<sqlpp::mysql::connection,
-                                              sqlpp::mysql::connection_config> {
+class MariaDBConnection
+    : public ConnectionImpl<sqlpp::mysql::connection,
+                            sqlpp::mysql::connection_config> {
   using ConnectionImpl<sqlpp::mysql::connection,
                        sqlpp::mysql::connection_config>::ConnectionImpl;
 };

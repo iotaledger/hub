@@ -21,7 +21,7 @@ namespace hub {
 namespace db {
 
 template <typename C>
-std::optional<int64_t> helper<C>::userIdFromIdentifier(
+nonstd::optional<int64_t> helper<C>::userIdFromIdentifier(
     C& connection, const std::string& identifier) {
   db::sql::UserAccount acc;
 
@@ -31,7 +31,7 @@ std::optional<int64_t> helper<C>::userIdFromIdentifier(
   if (result.empty()) {
     return {};
   } else {
-    return result.front().id;
+    return result.front().id.value();
   }
 }
 
@@ -105,8 +105,9 @@ uint64_t helper<C>::createUserAddress(C& connection,
 template <typename C>
 void helper<C>::createUserAddressBalanceEntry(
     C& connection, uint64_t addressId, int64_t amount,
-    const UserAddressBalanceReason reason, std::optional<std::string> tailHash,
-    std::optional<uint64_t> sweepId) {
+    const UserAddressBalanceReason reason,
+    nonstd::optional<std::string> tailHash,
+    nonstd::optional<uint64_t> sweepId) {
   db::sql::UserAddressBalance bal;
 
   if (reason == UserAddressBalanceReason::DEPOSIT) {
@@ -124,7 +125,8 @@ void helper<C>::createUserAddressBalanceEntry(
 template <typename C>
 void helper<C>::createUserAccountBalanceEntry(
     C& connection, uint64_t userId, int64_t amount,
-    const UserAccountBalanceReason reason, const std::optional<uint64_t> fkey) {
+    const UserAccountBalanceReason reason,
+    const nonstd::optional<uint64_t> fkey) {
   db::sql::UserAccountBalance bal;
 
   if (reason == UserAccountBalanceReason::SWEEP) {
@@ -165,7 +167,7 @@ size_t helper<C>::cancelWithdrawal(C& connection, const std::string& uuid) {
 }
 
 template <typename C>
-std::optional<AddressWithUUID> helper<C>::selectFirstUserAddress(
+nonstd::optional<AddressWithUUID> helper<C>::selectFirstUserAddress(
     C& connection) {
   db::sql::UserAddress addr;
   auto result = connection(select(addr.seedUuid, addr.address)
@@ -179,9 +181,7 @@ std::optional<AddressWithUUID> helper<C>::selectFirstUserAddress(
 
   const auto& row = *result.begin();
 
-  auto address = row.address;
-
-  return std::make_tuple(std::move(row.address), row.seedUuid);
+  return std::make_tuple(std::move(row.address.value()), row.seedUuid.value());
 }
 
 template <typename C>

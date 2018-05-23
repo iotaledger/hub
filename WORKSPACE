@@ -15,6 +15,18 @@ http_archive(
 )
 
 git_repository(
+    name = "bazel_skylib",
+    remote = "https://github.com/bazelbuild/bazel-skylib.git",
+    tag = "0.4.0",
+)
+
+git_repository(
+    name = "build_bazel_rules_apple",
+    remote = "https://github.com/bazelbuild/rules_apple.git",
+    tag = "0.5.0",
+)
+
+git_repository(
     name = "com_github_nelhage_rules_boost",
     commit = "69e96e724cbe746f63d993fa8f6bf772e1ebc5cc",
     remote = "https://github.com/nelhage/rules_boost",
@@ -132,6 +144,13 @@ new_git_repository(
     remote = "https://github.com/MariaDB/mariadb-connector-c.git",
 )
 
+new_git_repository(
+    name = "optional_lite",
+    build_file = "third-party/optional_lite/BUILD",
+    commit = "807da49219e55210614402e4937f364f486b897d",
+    remote = "https://github.com/martinmoene/optional-lite.git",
+)
+
 load(
     "@io_bazel_rules_docker//container:container.bzl",
     "container_pull",
@@ -145,9 +164,9 @@ load("@com_github_nelhage_rules_boost//:boost/boost.bzl", "boost_deps")
 load("@org_pubref_rules_protobuf//cpp:rules.bzl", "cpp_proto_repositories")
 load(
     "@io_bazel_rules_go//go:def.bzl",
-    "go_rules_dependencies",
-    "go_register_toolchains",
     "go_prefix",
+    "go_register_toolchains",
+    "go_rules_dependencies",
 )
 load("@org_pubref_rules_protobuf//go:rules.bzl", "go_proto_repositories")
 load(
