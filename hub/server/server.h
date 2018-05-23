@@ -1,4 +1,10 @@
-// Copyright 2018 IOTA Foundation
+/*
+ * Copyright (c) 2018 IOTA Stiftung
+ * https://github.com/iotaledger/rpchub
+ *
+ * Refer to the LICENSE file for licensing information
+ */
+
 
 #ifndef HUB_SERVER_SERVER_H_
 #define HUB_SERVER_SERVER_H_
@@ -23,15 +29,23 @@ class ServerBuilder;
 
 namespace hub {
 
+/// HubServer class.
+/// The HubServer runs the local services and holds the instance of the
+/// hub::iota::IotaAPI complient API interface to the tangle. It also holds
+/// an instance of the hub service that will accept requests
 class HubServer {
  public:
+  /// Constructor.
   HubServer();
 
+  /// Creates and initializes the services and the API interface.
   void initialise();
+  /// Runs the hub service and waits for requests
   void runAndWait();
 
  private:
   std::unique_ptr<grpc::Server> _server;
+  /// The hub::HubImpl service that listens to requests from clients
   hub::HubImpl _service;
 
   std::shared_ptr<hub::iota::IotaAPI> _api;
@@ -39,6 +53,9 @@ class HubServer {
   std::unique_ptr<hub::service::AttachmentService> _attachmentService;
   std::unique_ptr<hub::service::SweepService> _sweepService;
 
+  /// Verifies that the salt provided on the command line has the correct
+  /// value for this server. On first run, will always succeed.
+  /// @return bool - true on success
   bool authenticateSalt() const;
 };
 

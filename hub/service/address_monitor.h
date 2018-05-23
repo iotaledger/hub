@@ -1,4 +1,10 @@
-// Copyright 2018 IOTA Foundation
+/*
+ * Copyright (c) 2018 IOTA Stiftung
+ * https://github.com/iotaledger/rpchub
+ *
+ * Refer to the LICENSE file for licensing information
+ */
+
 
 #ifndef HUB_SERVICE_ADDRESS_MONITOR_H_
 #define HUB_SERVICE_ADDRESS_MONITOR_H_
@@ -18,8 +24,11 @@
 namespace hub {
 namespace service {
 
+/// Class AddressMonitor. Defines the abstract behaviour of a service that
+/// monitors changes of addresses.
 class AddressMonitor : public ScheduledService {
  public:
+  /// Structure BalanceChange. Contains the changes found at that address
   struct BalanceChange {
    public:
     const uint64_t addressId;
@@ -38,14 +47,20 @@ class AddressMonitor : public ScheduledService {
     }
   };
 
+  /// constructor
+  /// \param[in] api - an hub::iota::IotaAPI compliant API provider
+  /// \param[in] interval - the tick interval, in milliseconds,
   explicit AddressMonitor(std::shared_ptr<hub::iota::IotaAPI> api,
                           std::chrono::milliseconds interval)
       : ScheduledService(interval), _api(std::move(api)) {}
+  /// Destructor
   virtual ~AddressMonitor() {}
 
+  /// The list of addresses that are monitored
   virtual std::vector<std::tuple<uint64_t, std::string>>
   monitoredAddresses() = 0;
 
+  /// \param[in] changed - a list of addresses that have changed
   //! @return true if balance changes are accepted
   virtual bool onBalancesChanged(const std::vector<BalanceChange>& changed) = 0;
 
@@ -54,14 +69,17 @@ class AddressMonitor : public ScheduledService {
 
   void onStart() override;
 
-  // copy
+  /// @return the list of persisted balances
   inline std::unordered_map<uint64_t, uint64_t> balances() const {
     return _balances;
   }
 
  protected:
+  /// Process each tick at the interval specified in the constructor
   bool doTick() override;
 
+  /// Calculate balance changes
+  /// @return a list of BalanceChange structures
   std::vector<BalanceChange> calculateBalanceChanges();
 
   void persistBalanceChanges(std::vector<BalanceChange> changes);
@@ -69,9 +87,11 @@ class AddressMonitor : public ScheduledService {
       const std::unordered_map<std::string, uint64_t>& addressToIds);
 
  protected:
+  /// an hub::iota::IotaAPI compliant API provider
   const std::shared_ptr<hub::iota::IotaAPI> _api;
 
  private:
+  /// A list of persisted balances ebtween calls
   std::unordered_map<uint64_t, uint64_t> _balances;
 };
 

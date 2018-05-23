@@ -1,4 +1,13 @@
-// Copyright 2018 IOTA Foundation
+/*
+ * Copyright (c) 2018 IOTA Stiftung
+ * https://github.com/iotaledger/rpchub
+ *
+ * Refer to the LICENSE file for licensing information
+ */
+
+/// \file crypto/types.h
+/// Helpers that provide functionality to deal with UUIDs, trytes and hashes
+///
 
 #ifndef HUB_CRYPTO_TYPES_H_
 #define HUB_CRYPTO_TYPES_H_
