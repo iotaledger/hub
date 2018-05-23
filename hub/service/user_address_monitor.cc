@@ -79,9 +79,7 @@ bool UserAddressMonitor::onBalancesChanged(
       for (auto it = confirmedBundlesER.first; it != confirmedBundlesER.second;
            ++it) {
         auto& ctail = it->second[0].hash;
-        if (std::none_of(
-                tails.cbegin(), tails.cend(),
-                [&ctail](const std::string& tail) { return ctail == tail; })) {
+        if (tails.find(ctail) == tails.end()) {
           unknownBundles.push_back(std::move(it->second));
         }
       }

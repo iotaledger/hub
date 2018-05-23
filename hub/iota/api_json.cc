@@ -237,8 +237,7 @@ IotaJsonAPI::getConfirmedBundlesForAddresses(
                        [address](const Transaction& tx) -> bool {
                          return address == tx.address;
                        }) != b.end()) {
-        confirmedBundlesMap.emplace(std::pair(std::move(address), b));
-        break;
+        confirmedBundlesMap.emplace(std::pair(address, b));
       }
     }
   }
