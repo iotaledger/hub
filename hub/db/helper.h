@@ -65,6 +65,8 @@ struct helper {
   static void markTailAsConfirmed(C& connection, const std::string& hash);
   static std::vector<UserBalanceEvent> getAccountBalances(
       C& connection, std::chrono::system_clock::time_point newerThan);
+  static std::vector<SweepEvent> getSweeps(
+      C& connection, std::chrono::system_clock::time_point newerThan);
   static void insertUserTransfers(C& connection,
                                   const std::vector<UserTransfer>& transfers);
   static std::map<std::string, int64_t> userIdsFromIdentifiers(

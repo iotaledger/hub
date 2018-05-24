@@ -24,5 +24,7 @@ service Hub {
   rpc UserBalanceSubscription (UserBalanceSubscriptionRequest) returns (stream UserBalanceEvent);
   // Provides statistics about the Hub
   rpc GetStats (StatsRequest) returns (StatsReply);
+  // Produces a stream of all sweeps since the provided timestamp
+  rpc SweepSubscription (SweepSubscriptionRequest) returns (stream SweepEvent);
 }
 

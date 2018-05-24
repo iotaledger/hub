@@ -51,6 +51,11 @@ class HubImpl final : public hub::rpc::Hub::Service {
       grpc::ServerContext* context,
       const hub::rpc::ProcessTransferBatchRequest* request,
       hub::rpc::ProcessTransferBatchReply* response) override;
+
+  grpc::Status SweepSubscription(
+      grpc::ServerContext* context,
+      const hub::rpc::SweepSubscriptionRequest* request,
+      grpc::ServerWriter<hub::rpc::SweepEvent>* writer) override;
 };
 
 }  // namespace hub

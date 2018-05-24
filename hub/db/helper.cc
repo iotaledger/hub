@@ -3,6 +3,7 @@
 #include "hub/db/helper.h"
 
 #include <algorithm>
+#include <unordered_map>
 #include <unordered_set>
 #include <vector>
 
@@ -307,6 +308,42 @@ std::vector<UserBalanceEvent> helper<C>::getAccountBalances(
         static_cast<UserAccountBalanceReason>((row.reason.value()))});
   }
   return balances;
+}
+
+template <typename C>
+std::vector<SweepEvent> helper<C>::getSweeps(
+    C& connection, std::chrono::system_clock::time_point newerThan) {
+  db::sql::Sweep swp;
+  db::sql::Withdrawal withdrawal;
+  auto result = connection(
+      select(swp.id, swp.bundleHash, swp.createdAt, withdrawal.uuid)
+          .from(swp.left_outer_join(withdrawal).on(swp.id == withdrawal.sweep))
+          .where(swp.createdAt >= newerThan)
+          .order_by(swp.id.asc()));
+
+  std::unordered_map<std::string, std::vector<std::string>> hashToUUIDs;
+
+  int64_t id = -1;
+  std::vector<SweepEvent> events;
+  SweepEvent* currEvent;
+
+  for (auto& row : result) {
+    if (row.id != id) {
+      id = row.id;
+      std::vector<std::string> uuids;
+      std::chrono::time_point<std::chrono::system_clock> ts =
+          row.createdAt.value();
+      currEvent = &events.emplace_back(
+          SweepEvent{std::move(row.bundleHash), ts, std::move(uuids)});
+    }
+
+    if (!std::string{row.uuid}.empty()) {
+      auto& uuids = currEvent->withdrawalUUIDs;
+      uuids.emplace_back(std::string{std::move(row.uuid)});
+    }
+  }
+
+  return events;
 }
 
 template <typename C>

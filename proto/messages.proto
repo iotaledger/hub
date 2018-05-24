@@ -30,7 +30,7 @@ enum ErrorCode {
 }
 
 /*
- * The generic Error that will be used to return an error code on, e.g. Status::CANCELLED.
+ * The generic Error that will be used to return an error code on, e.g. Status::CANCELLED. 	
  *
  * The error will be serialised and stored in the Status' detail field.
  
@@ -196,6 +196,17 @@ message ProcessTransferBatchReply {}
 
 message UserBalanceSubscriptionRequest {
   // Balances newer than this time (MS since epoch) will be retrievd
+  uint64 newerThan = 1;
+}
+
+message SweepEvent {
+  string bundleHash = 1;
+  uint64 timestamp = 2;
+  repeated string withdrawalUUID = 3;
+}
+
+message SweepSubscriptionRequest {
+  // Sweeps newer than this time (MS since epoch) will be retrievd
   uint64 newerThan = 1;
 }
 
