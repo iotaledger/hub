@@ -1,4 +1,10 @@
-// Copyright 2018 IOTA Foundation
+/*
+ * Copyright (c) 2018 IOTA Stiftung
+ * https://github.com/iotaledger/rpchub
+ *
+ * Refer to the LICENSE file for licensing information
+ */
+
 
 #ifndef HUB_COMMANDS_PROTO_SQL_CONVERTER_H_
 #define HUB_COMMANDS_PROTO_SQL_CONVERTER_H_

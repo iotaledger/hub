@@ -1,4 +1,10 @@
-// Copyright 2018 IOTA Foundation
+/*
+ * Copyright (c) 2018 IOTA Stiftung
+ * https://github.com/iotaledger/rpchub
+ *
+ * Refer to the LICENSE file for licensing information
+ */
+
 
 #ifndef HUB_IOTA_BEAST_H_
 #define HUB_IOTA_BEAST_H_
@@ -17,6 +23,7 @@
 namespace hub {
 namespace iota {
 
+/// Implementation of IotaJsonAPI class. This is the actual IOTA API provider.
 class BeastIotaAPI : virtual public IotaAPI, public IotaJsonAPI {
  public:
   BeastIotaAPI() = delete;

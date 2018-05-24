@@ -1,4 +1,9 @@
-// Copyright 2018 IOTA Foundation
+/*
+ * Copyright (c) 2018 IOTA Stiftung
+ * https://github.com/iotaledger/rpchub
+ *
+ * Refer to the LICENSE file for licensing information
+ */
 
 #ifndef HUB_IOTA_POW_H_
 #define HUB_IOTA_POW_H_
@@ -13,11 +18,15 @@ namespace hub {
 namespace iota {
 
 class IotaAPI;
+
+/// POWProvider (Proof Of Work provider)
 class POWProvider {
  public:
+  /// Constructor
   POWProvider(std::shared_ptr<iota::IotaAPI> api, size_t depth, size_t mwm)
       : _api(std::move(api)), _depth(depth), _mwm(mwm) {}
 
+  /// Destructor
   virtual ~POWProvider() {}
 
   size_t mwm() const { return _mwm; }

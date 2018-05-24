@@ -1,4 +1,10 @@
-// Copyright 2018 IOTA Foundation
+/*
+ * Copyright (c) 2018 IOTA Stiftung
+ * https://github.com/iotaledger/rpchub
+ *
+ * Refer to the LICENSE file for licensing information
+ */
+
 
 #ifndef HUB_IOTA_API_JSON_H_
 #define HUB_IOTA_API_JSON_H_
@@ -18,6 +24,7 @@
 namespace hub {
 namespace iota {
 
+/// Implementation of IotaAPI class with JSON responses
 class IotaJsonAPI : virtual public IotaAPI {
  public:
   bool isNodeSolid() override;

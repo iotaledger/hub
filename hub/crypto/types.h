@@ -1,4 +1,9 @@
-// Copyright 2018 IOTA Foundation
+/*
+ * Copyright (c) 2018 IOTA Stiftung
+ * https://github.com/iotaledger/rpchub
+ *
+ * Refer to the LICENSE file for licensing information
+ */
 
 #ifndef HUB_CRYPTO_TYPES_H_
 #define HUB_CRYPTO_TYPES_H_
@@ -16,25 +21,44 @@
 namespace hub {
 namespace crypto {
 
+/// UUID class.
+/// Provides methods to work with UUIDs
 class UUID {
  public:
   static constexpr auto BASE64_CHARS =
       "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/";
   static constexpr uint32_t UUID_SIZE = 64;
 
+  /// Constructor
   UUID();
+  /// Constructor. Creates a new UUID from a string.
+  /// @param[in] sv - string representation
   explicit UUID(const std::string_view& sv);
 
+  /// String representation of UUID
+  /// @return string - string representation
   std::string str() const;
 
+  /// String view representation of UUID
+  /// @return string - string representation
   std::string_view str_view() const;
 
+  /// Binary representation of UUID
+  /// @return std::array - binary representation
   const std::array<uint8_t, UUID_SIZE>& data() const;
 
  private:
+  /// Generate a new UUID
+  /// @return std::array - binary representation
   static std::array<uint8_t, UUID_SIZE> generate();
+
+  /// Generate a new UUID from string
+  /// @param[in] sv - a string view
+  /// @return std::array - binary representation
   static std::array<uint8_t, UUID_SIZE> fromStringView(
       const std::string_view& sv);
+
+  /// Internal representation of UUID
   std::array<uint8_t, UUID_SIZE> _data;
 };
 
@@ -46,6 +70,8 @@ static constexpr uint8_t MIN_TRYTE = 'A';
 static constexpr uint8_t MAX_TRYTE = 'Z';
 static constexpr uint8_t NULL_TRYTE = '9';
 
+/// Template for array of trytes class.
+/// Provides methods to work with tryte arrays
 template <std::size_t N, typename TAG>
 class TryteArray {
  public:
@@ -58,6 +84,8 @@ class TryteArray {
     }
   }
 
+  /// Constructor
+  /// @param[in] data - a std::string_view
   explicit TryteArray(const std::string_view& data) {
     validateSize(data.size());
 
@@ -72,19 +100,24 @@ class TryteArray {
     std::copy(std::begin(data), std::end(data), std::begin(_data));
   }
 
+  /// Constructor
+  /// @param[in] data - a standard C string
   explicit TryteArray(const char* data) : TryteArray(std::string(data)) {}
 
   const std::array<uint8_t, N>& data() const { return _data; }
 
   std::string str() const { return std::string(str_view()); }
 
+  /// @return std::string_view - a std::string_view representation of the trytes
   std::string_view str_view() const {
     return std::string_view(reinterpret_cast<const char*>(_data.data()), N);
   }
 
+  /// @return uint32_t - The number of bytes used to represent the trytes
   uint32_t size() const { return _data.size(); }
 
  private:
+  /// Internal representation of the trytes
   std::array<uint8_t, N> _data;
 };
 

@@ -1,4 +1,10 @@
-// Copyright 2018 IOTA Foundation
+/*
+ * Copyright (c) 2018 IOTA Stiftung
+ * https://github.com/iotaledger/rpchub
+ *
+ * Refer to the LICENSE file for licensing information
+ */
+
 
 #ifndef HUB_SERVICE_ATTACHMENT_SERVICE_H_
 #define HUB_SERVICE_ATTACHMENT_SERVICE_H_
@@ -22,16 +28,24 @@ struct SweepTail;
 
 namespace service {
 
+/// AttachmentService class.
 class AttachmentService : public ScheduledService {
  public:
+  /// constructor
+  /// @param[in] api - an hub::iota::IotaAPI compliant API provider
+  /// @param[in] interval - the tick interval in milliseconds
   explicit AttachmentService(std::shared_ptr<hub::iota::IotaAPI> api,
                              std::chrono::milliseconds interval)
       : ScheduledService(interval), _api(std::move(api)) {}
+  /// Destructor
   virtual ~AttachmentService() {}
 
+  /// @return string - the descriptive name of the service
   const std::string name() const override { return "AttachmentService"; }
 
  protected:
+  /// Called by tick() by default. Override in subclasses
+  /// @return false if it wants to stop.
   bool doTick() override;
 
  protected:
@@ -52,6 +66,7 @@ class AttachmentService : public ScheduledService {
                                       const std::vector<std::string>& tails);
 
  protected:
+  /// an hub::iota::IotaAPI compliant API provider
   const std::shared_ptr<hub::iota::IotaAPI> _api;
 };
 
