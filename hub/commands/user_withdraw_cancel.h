@@ -23,7 +23,6 @@ namespace cmd {
 
 /// UserWithdrawCancel command. Cancels a previous withdrawal request
 /// if it hasn't been processed yet
-/// Returns ???
 /// Constructor
 /// @param[in] hub::rpc::UserWithdrawCancelRequest
 /// @param[in] hub::rpc::UserWithdrawCancelReply

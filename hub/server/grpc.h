@@ -5,7 +5,6 @@
  * Refer to the LICENSE file for licensing information
  */
 
-
 #ifndef HUB_SERVER_GRPC_H_
 #define HUB_SERVER_GRPC_H_
 
@@ -24,7 +23,8 @@ namespace hub {
 /// - GetBalance. Get the balance for a given user
 /// - GetDepositAddress. Get a new deposit address
 /// - UserWithdraw. Process a withdrawal for a user
-/// - UserWithdrawCancel. Cancels a previous withdrawal request (if not processed)
+/// - UserWithdrawCancel. Cancels a previous withdrawal request (if not
+/// processed)
 /// - GetUserHistory. Get the history for a user
 /// - UserBalanceSubscription. Monitors the balance for a user
 /// - ProcessTransferBatch. Process transfers in batch

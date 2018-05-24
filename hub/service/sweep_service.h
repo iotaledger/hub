@@ -5,7 +5,6 @@
  * Refer to the LICENSE file for licensing information
  */
 
-
 #ifndef HUB_SERVICE_SWEEP_SERVICE_H_
 #define HUB_SERVICE_SWEEP_SERVICE_H_
 
@@ -70,7 +69,8 @@ class SweepService : public ScheduledService {
   /// \param[in] deposits - a list of deposit transactions
   /// \param[in] hubInputs - a list of internal transfers
   /// \param[in] withdrawals - a list of withdrawal transactions
-  /// \param[in] hubOutput - the hub address into which the remainder is deposited
+  /// \param[in] hubOutput - the hub address into which the remainder is
+  /// deposited
   void persistToDatabase(std::tuple<hub::crypto::Hash, std::string> bundle,
                          const std::vector<db::TransferInput>& deposits,
                          const std::vector<db::TransferInput>& hubInputs,

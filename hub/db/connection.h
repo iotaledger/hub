@@ -5,7 +5,6 @@
  * Refer to the LICENSE file for licensing information
  */
 
-
 #ifndef HUB_DB_CONNECTION_H_
 #define HUB_DB_CONNECTION_H_
 
@@ -217,7 +216,8 @@ class Connection {
   virtual uint64_t getUserAddressBalance(uint64_t userAddress) = 0;
 
   /// Create a new sweep
-  /// \param[in] bundleHash - the hash of the bundle for which a sweep is created
+  /// \param[in] bundleHash - the hash of the bundle for which a sweep is
+  /// created
   /// \param[in] bundleTrytes - the serialized bundle in trytes
   /// \param[in] intoHubAddress - the hub address for remainder if any
   /// @return int64_t - the database id of the new sweep

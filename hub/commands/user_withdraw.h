@@ -22,7 +22,6 @@ class UserWithdrawReply;
 namespace cmd {
 
 /// UserWithdraw command. Process a withdrawal command for a user
-/// Returns ???
 /// Constructor
 /// @param[in] hub::rpc::UserWithdrawRequest
 /// @param[in] hub::rpc::UserWithdrawReply

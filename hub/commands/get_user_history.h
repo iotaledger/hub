@@ -22,7 +22,6 @@ class GetUserHistoryReply;
 namespace cmd {
 
 /// GetUserHistory command. Gets the history of transactions for a user.
-/// Returns ???
 /// Constructor
 /// @param[in] hub::rpc::GetUserHistoryRequest
 /// @param[in] hub::rpc::GetUserHistoryReply

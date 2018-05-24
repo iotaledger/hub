@@ -20,7 +20,7 @@ class CreateUserReply;
 
 namespace cmd {
 
-/// CreateUser command. Creates a new user with a specific id. Returns ???
+/// CreateUser command. Creates a new user with a specific id.
 /// Constructor
 /// @param[in] hub::rpc::CreateUserRequest
 /// @param[in] hub::rpc::CreateUserReply
@@ -32,9 +32,9 @@ class CreateUser
 
   const std::string name() override { return "CreateUser"; }
 
-  protected:
-   grpc::Status doProcess(const hub::rpc::CreateUserRequest* request,
-                          hub::rpc::CreateUserReply* response) noexcept override;
+ protected:
+  grpc::Status doProcess(const hub::rpc::CreateUserRequest* request,
+                         hub::rpc::CreateUserReply* response) noexcept override;
 };
 }  // namespace cmd
 }  // namespace hub

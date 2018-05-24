@@ -5,7 +5,6 @@
  * Refer to the LICENSE file for licensing information
  */
 
-
 #ifndef HUB_COMMANDS_GET_DEPOSIT_ADDRESS_H_
 #define HUB_COMMANDS_GET_DEPOSIT_ADDRESS_H_
 
@@ -22,7 +21,6 @@ class GetDepositAddressReply;
 namespace cmd {
 
 /// GetDepositAddress command. Gets a new deposit address.
-/// Returns ???
 /// Constructor
 /// @param[in] hub::rpc::GetDepositAddressRequest
 /// @param[in] hub::rpc::GetDepositAddressReply
@@ -34,9 +32,10 @@ class GetDepositAddress : public Command<hub::rpc::GetDepositAddressRequest,
 
   const std::string name() override { return "GetDepositAddress"; }
 
-  protected:
-   grpc::Status doProcess(const hub::rpc::GetDepositAddressRequest* request,
-                          hub::rpc::GetDepositAddressReply* response) noexcept override;
+ protected:
+  grpc::Status doProcess(
+      const hub::rpc::GetDepositAddressRequest* request,
+      hub::rpc::GetDepositAddressReply* response) noexcept override;
 };
 }  // namespace cmd
 }  // namespace hub

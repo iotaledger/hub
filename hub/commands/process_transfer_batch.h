@@ -5,7 +5,6 @@
  * Refer to the LICENSE file for licensing information
  */
 
-
 #ifndef HUB_COMMANDS_PROCESS_TRANSFER_BATCH_H_
 #define HUB_COMMANDS_PROCESS_TRANSFER_BATCH_H_
 
@@ -22,8 +21,8 @@ class ProcessTransferBatchReply;
 
 namespace cmd {
 
-/// ProcessTransferBatch command. Invokes the processing of a batch of transfers.
-/// Returns ???
+/// ProcessTransferBatch command. Invokes the processing of a batch of
+/// transfers.
 /// Constructor
 /// @param[in] hub::rpc::ProcessTransferBatchRequest
 /// @param[in] hub::rpc::ProcessTransferBatchReply

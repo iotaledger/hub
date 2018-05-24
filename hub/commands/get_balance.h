@@ -21,7 +21,6 @@ class GetBalanceReply;
 namespace cmd {
 
 /// GetBalance command. Gets the current balance for a user with a specific id.
-/// Returns ???
 /// Constructor
 /// @param[in] hub::rpc::GetBalanceRequest
 /// @param[in] hub::rpc::GetBalanceReply
@@ -33,9 +32,9 @@ class GetBalance
 
   const std::string name() override { return "GetBalance"; }
 
-  protected:
-   grpc::Status doProcess(const hub::rpc::GetBalanceRequest* request,
-                          hub::rpc::GetBalanceReply* response) noexcept override;
+ protected:
+  grpc::Status doProcess(const hub::rpc::GetBalanceRequest* request,
+                         hub::rpc::GetBalanceReply* response) noexcept override;
 };
 }  // namespace cmd
 }  // namespace hub
