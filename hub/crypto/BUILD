@@ -26,6 +26,7 @@ cc_library(
         "@org_iota_entangled//common/kerl:converter",
         "@org_iota_entangled//common/sign/v1:iss_kerl",
         "@org_iota_entangled//common/trinary:trit_tryte",
+        "@boost//:interprocess",
     ],
 )
 
@@ -47,5 +48,6 @@ cc_test(
         ":local_provider",
         "//hub/tests",
         "@com_google_googletest//:gtest",
+        "@boost//:interprocess",
     ],
 )
