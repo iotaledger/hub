@@ -34,6 +34,12 @@ struct UserBalanceEvent {
   UserAccountBalanceReason type;
 };
 
+struct SweepEvent {
+  std::string bundleHash;
+  std::chrono::system_clock::time_point timestamp;
+  std::vector<std::string> withdrawalUUIDs;
+};
+
 struct Sweep {
   uint64_t id;
   std::string bundleHash;

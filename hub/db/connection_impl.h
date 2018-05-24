@@ -145,6 +145,11 @@ class ConnectionImpl : public Connection {
     return db::helper<Conn>::getAccountBalances(*_conn, newerThan);
   }
 
+  std::vector<SweepEvent> getSweeps(
+      std::chrono::system_clock::time_point newerThan) override {
+    return db::helper<Conn>::getSweeps(*_conn, newerThan);
+  }
+
   void insertUserTransfers(
       const std::vector<UserTransfer>& transfers) override {
     db::helper<Conn>::insertUserTransfers(*_conn, transfers);

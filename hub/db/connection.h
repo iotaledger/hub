@@ -68,6 +68,8 @@ class Connection {
   virtual void markTailAsConfirmed(const std::string& hash) = 0;
   virtual std::vector<UserBalanceEvent> getAccountBalances(
       std::chrono::system_clock::time_point newerThan) = 0;
+  virtual std::vector<SweepEvent> getSweeps(
+      std::chrono::system_clock::time_point newerThan) = 0;
   virtual void insertUserTransfers(
       const std::vector<UserTransfer>& transfers) = 0;
   virtual std::map<std::string, int64_t> userIdsFromIdentifiers(
