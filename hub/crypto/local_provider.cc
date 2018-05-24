@@ -11,12 +11,12 @@
 #include <vector>
 
 #include <argon2.h>
-#include <glog/logging.h>
 #include <gflags/gflags.h>
+#include <glog/logging.h>
+#include <boost/interprocess/sync/interprocess_semaphore.hpp>
 #include <iota/crypto/signing.hpp>
 #include <iota/models/bundle.hpp>
 #include <iota/types/trinary.hpp>
-#include <boost/interprocess/sync/interprocess_semaphore.hpp>
 
 #include "common/helpers/sign.h"
 #include "common/kerl/converter.h"
@@ -44,11 +44,8 @@ static constexpr uint32_t _argon_t_cost = 1;
 static constexpr uint32_t _argon_m_cost = 1 << 16;  // 64mebibytes
 static constexpr uint32_t _argon_parallelism = 1;
 
-#ifndef FLAGS_maxConcurrentArgon2Hash
-#define FLAGS_maxConcurrentArgon2Hash 4
-#endif
-
-boost::interprocess::interprocess_semaphore argon_semaphore(FLAGS_maxConcurrentArgon2Hash);
+DEFINE_uint32(maxConcurrentArgon2Hash, 4,
+              "Max number of concurrent Argon2 Hash processes");
 
 using TryteSeed = std::array<tryte_t, TRYTE_LEN + 1>;
 using TryteSeedPtr =
@@ -56,6 +53,9 @@ using TryteSeedPtr =
 
 TryteSeedPtr seedFromUUID(const hub::crypto::UUID& uuid,
                           const std::string& _salt) {
+  static boost::interprocess::interprocess_semaphore argon_semaphore(
+      FLAGS_maxConcurrentArgon2Hash);
+
   std::array<uint8_t, BYTE_LEN> byteSeed;
   std::array<trit_t, TRIT_LEN> seed;
 
