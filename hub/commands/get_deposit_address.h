@@ -20,8 +20,7 @@ class GetDepositAddressReply;
 
 namespace cmd {
 
-/// GetDepositAddress command. Gets a new deposit address.
-/// Constructor
+/// Gets a new deposit address.
 /// @param[in] hub::rpc::GetDepositAddressRequest
 /// @param[in] hub::rpc::GetDepositAddressReply
 class GetDepositAddress : public Command<hub::rpc::GetDepositAddressRequest,

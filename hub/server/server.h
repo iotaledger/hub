@@ -54,7 +54,8 @@ class HubServer {
   std::unique_ptr<hub::service::SweepService> _sweepService;
 
   /// Verifies that the salt provided on the command line has the correct
-  /// value for this server. On first run, will always succeed.
+  /// value for this server. Will always succeed if no user addresses exist
+  /// in the database.
   /// @return bool - true on success
   bool authenticateSalt() const;
 };

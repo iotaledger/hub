@@ -32,8 +32,8 @@ namespace service {
 class AttachmentService : public ScheduledService {
  public:
   /// constructor
-  /// \param[in] api - an hub::iota::IotaAPI compliant API provider
-  /// \param[in] interval - the tick interval in milliseconds
+  /// @param[in] api - an hub::iota::IotaAPI compliant API provider
+  /// @param[in] interval - the tick interval in milliseconds
   explicit AttachmentService(std::shared_ptr<hub::iota::IotaAPI> api,
                              std::chrono::milliseconds interval)
       : ScheduledService(interval), _api(std::move(api)) {}

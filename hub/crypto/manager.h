@@ -37,7 +37,7 @@ class CryptoManager {
   static CryptoManager& get();
 
   /// Set the cryptography provider
-  /// \param[in] provider - an instance of CryptoProvider
+  /// @param[in] provider - an instance of CryptoProvider
   void setProvider(std::unique_ptr<CryptoProvider> provider) {
     _provider = std::move(provider);
   }

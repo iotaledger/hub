@@ -48,8 +48,8 @@ class AddressMonitor : public ScheduledService {
   };
 
   /// constructor
-  /// \param[in] api - an hub::iota::IotaAPI compliant API provider
-  /// \param[in] interval - the tick interval, in milliseconds,
+  /// @param[in] api - an hub::iota::IotaAPI compliant API provider
+  /// @param[in] interval - the tick interval, in milliseconds,
   explicit AddressMonitor(std::shared_ptr<hub::iota::IotaAPI> api,
                           std::chrono::milliseconds interval)
       : ScheduledService(interval), _api(std::move(api)) {}
@@ -60,7 +60,7 @@ class AddressMonitor : public ScheduledService {
   virtual std::vector<std::tuple<uint64_t, std::string>>
   monitoredAddresses() = 0;
 
-  /// \param[in] changed - a list of addresses that have changed
+  /// @param[in] changed - a list of addresses that have changed
   //! @return true if balance changes are accepted
   virtual bool onBalancesChanged(const std::vector<BalanceChange>& changed) = 0;
 

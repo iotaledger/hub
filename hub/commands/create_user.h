@@ -20,8 +20,7 @@ class CreateUserReply;
 
 namespace cmd {
 
-/// CreateUser command. Creates a new user with a specific id.
-/// Constructor
+/// Creates a new user with a specific id.
 /// @param[in] hub::rpc::CreateUserRequest
 /// @param[in] hub::rpc::CreateUserReply
 class CreateUser

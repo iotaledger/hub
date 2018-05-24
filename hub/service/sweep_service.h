@@ -26,7 +26,7 @@ namespace service {
 class SweepService : public ScheduledService {
  public:
   /// constructor
-  /// \param[in] interval - the tick interval in milliseconds
+  /// @param[in] interval - the tick interval in milliseconds
   using ScheduledService::ScheduledService;
   /// Destructor
   virtual ~SweepService() {}
@@ -41,7 +41,7 @@ class SweepService : public ScheduledService {
 
   /// Creates a new hub address to which funds that remain after a transfer
   /// can be moved.
-  /// \param[in] remainder
+  /// @param[in] remainder
   /// @return a db::TransferOutput structure containing
   /// - the new hub address
   /// - the id of the new hub address
@@ -50,10 +50,10 @@ class SweepService : public ScheduledService {
 
   /// Compute and serialize a bundle made up of all the deposits and withdrawals
   /// identified during the sweep.
-  /// \param[in] deposits - a list of deposit transactions
-  /// \param[in] hubInputs - a list of internal transfers
-  /// \param[in] withdrawals - a list of withdrawal transactions
-  /// \param[in] hubOutput - a list of db::TransferOutput structures
+  /// @param[in] deposits - a list of deposit transactions
+  /// @param[in] hubInputs - a list of internal transfers
+  /// @param[in] withdrawals - a list of withdrawal transactions
+  /// @param[in] hubOutput - a list of db::TransferOutput structures
   /// @return a std::tuple containing
   /// - the bundle hash
   /// - the serialized bundle
@@ -65,11 +65,11 @@ class SweepService : public ScheduledService {
 
   /// Persist the bundle data to database
   /// identified during the sweep.
-  /// \param[in] bundle - the bundle hash and its serialized value
-  /// \param[in] deposits - a list of deposit transactions
-  /// \param[in] hubInputs - a list of internal transfers
-  /// \param[in] withdrawals - a list of withdrawal transactions
-  /// \param[in] hubOutput - the hub address into which the remainder is
+  /// @param[in] bundle - the bundle hash and its serialized value
+  /// @param[in] deposits - a list of deposit transactions
+  /// @param[in] hubInputs - a list of internal transfers
+  /// @param[in] withdrawals - a list of withdrawal transactions
+  /// @param[in] hubOutput - the hub address into which the remainder is
   /// deposited
   void persistToDatabase(std::tuple<hub::crypto::Hash, std::string> bundle,
                          const std::vector<db::TransferInput>& deposits,

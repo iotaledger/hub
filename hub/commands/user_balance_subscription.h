@@ -25,8 +25,6 @@ class UserBalanceEvent;
 
 namespace cmd {
 
-/// UserBalanceSubscription command.
-/// Constructor
 /// @param[in] hub::rpc::UserBalanceSubscriptionRequest
 /// @param[in] hub::rpc::ServerWriterInterface
 class UserBalanceSubscription

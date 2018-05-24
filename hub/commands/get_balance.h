@@ -20,8 +20,7 @@ class GetBalanceReply;
 
 namespace cmd {
 
-/// GetBalance command. Gets the current balance for a user with a specific id.
-/// Constructor
+/// Gets the current balance for a user with a specific id.
 /// @param[in] hub::rpc::GetBalanceRequest
 /// @param[in] hub::rpc::GetBalanceReply
 class GetBalance

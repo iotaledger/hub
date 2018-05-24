@@ -5,10 +5,6 @@
  * Refer to the LICENSE file for licensing information
  */
 
-/// \file crypto/types.h
-/// Helpers that provide functionality to deal with UUIDs, trytes and hashes
-///
-
 #ifndef HUB_CRYPTO_TYPES_H_
 #define HUB_CRYPTO_TYPES_H_
 
@@ -36,7 +32,7 @@ class UUID {
   /// Constructor
   UUID();
   /// Constructor. Creates a new UUID from a string.
-  /// \param[in] sv - string representation
+  /// @param[in] sv - string representation
   explicit UUID(const std::string_view& sv);
 
   /// String representation of UUID
@@ -57,7 +53,7 @@ class UUID {
   static std::array<uint8_t, UUID_SIZE> generate();
 
   /// Generate a new UUID from string
-  /// \param[in] sv - a string view
+  /// @param[in] sv - a string view
   /// @return std::array - binary representation
   static std::array<uint8_t, UUID_SIZE> fromStringView(
       const std::string_view& sv);
@@ -89,7 +85,7 @@ class TryteArray {
   }
 
   /// Constructor
-  /// \param[in] data - a std::string_view
+  /// @param[in] data - a std::string_view
   explicit TryteArray(const std::string_view& data) {
     validateSize(data.size());
 
@@ -105,7 +101,7 @@ class TryteArray {
   }
 
   /// Constructor
-  /// \param[in] data - a standard C string
+  /// @param[in] data - a standard C string
   explicit TryteArray(const char* data) : TryteArray(std::string(data)) {}
 
   const std::array<uint8_t, N>& data() const { return _data; }

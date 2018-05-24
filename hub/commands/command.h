@@ -29,14 +29,14 @@ template <typename REQ, typename RES>
 class Command {
  public:
   /// constructor
-  /// \param[in] session - the current client session
+  /// @param[in] session - the current client session
   explicit Command(std::shared_ptr<ClientSession> session)
       : _clientSession(std::move(session)) {}
 
   /// Process the request - invokes the protected doProcess() implementation
-  /// \param[in] request - contains the details of the request
-  /// \param[in] response - contains the details of the response
-  /// \return grpc::Status
+  /// @param[in] request - contains the details of the request
+  /// @param[in] response - contains the details of the response
+  /// @return grpc::Status
   grpc::Status process(const REQ* request, RES* response) noexcept {
     VLOG(3) << *_clientSession << name() << "::process()";
 
@@ -44,18 +44,18 @@ class Command {
   }
 
   /// Returns the descriptive name of the command
-  /// \return std::string
+  /// @return std::string
   virtual const std::string name() = 0;
 
  protected:
   /// Effectively process the request
-  /// \param[in] request - contains the details of the request
-  /// \param[in] response - contains the details of the response
-  /// \return grpc::Status
+  /// @param[in] request - contains the details of the request
+  /// @param[in] response - contains the details of the response
+  /// @return grpc::Status
   virtual grpc::Status doProcess(const REQ* request,
                                  RES* response) noexcept = 0;
   /// Get the shared client session
-  /// \return clientSession a ClientSession
+  /// @return ClientSession - a client session
   ClientSession& session() const { return *_clientSession; }
 
   /// Shared client session

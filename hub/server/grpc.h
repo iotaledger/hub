@@ -36,27 +36,27 @@ class HubImpl final : public hub::rpc::Hub::Service {
   ~HubImpl() override {}
 
   /// Creates a new user
-  /// \param[in] context - server context
-  /// \param[in] request - a rpc::CreateUserRequest request
-  /// \param[in] response - a rpc::CreateUserReply response
+  /// @param[in] context - server context
+  /// @param[in] request - a rpc::CreateUserRequest request
+  /// @param[in] response - a rpc::CreateUserReply response
   /// @return grpc::Status
   grpc::Status CreateUser(grpc::ServerContext* context,
                           const rpc::CreateUserRequest* request,
                           rpc::CreateUserReply* response) override;
 
   /// Get the balance for a given user
-  /// \param[in] context - server context
-  /// \param[in] request - a rpc::GetBalanceRequest request
-  /// \param[in] response - a rpc::GetBalanceReply response
+  /// @param[in] context - server context
+  /// @param[in] request - a rpc::GetBalanceRequest request
+  /// @param[in] response - a rpc::GetBalanceReply response
   /// @return grpc::Status
   grpc::Status GetBalance(grpc::ServerContext* context,
                           const hub::rpc::GetBalanceRequest* request,
                           hub::rpc::GetBalanceReply* response) override;
 
   /// Get a new deposit address
-  /// \param[in] context - server context
-  /// \param[in] request - a rpc::GetDepositAddressRequest request
-  /// \param[in] response - a rpc::GetDepositAddressReply response
+  /// @param[in] context - server context
+  /// @param[in] request - a rpc::GetDepositAddressRequest request
+  /// @param[in] response - a rpc::GetDepositAddressReply response
   /// @return grpc::Status
   grpc::Status GetDepositAddress(
       grpc::ServerContext* context,
@@ -64,18 +64,18 @@ class HubImpl final : public hub::rpc::Hub::Service {
       hub::rpc::GetDepositAddressReply* response) override;
 
   /// Process a withdrawal for a user
-  /// \param[in] context - server context
-  /// \param[in] request - a rpc::UserWithdrawRequest request
-  /// \param[in] response - a rpc::UserWithdrawReply response
+  /// @param[in] context - server context
+  /// @param[in] request - a rpc::UserWithdrawRequest request
+  /// @param[in] response - a rpc::UserWithdrawReply response
   /// @return grpc::Status
   grpc::Status UserWithdraw(grpc::ServerContext* context,
                             const hub::rpc::UserWithdrawRequest* request,
                             hub::rpc::UserWithdrawReply* response) override;
 
   /// Cancels a previous withdrawal request (if not processed)
-  /// \param[in] context - server context
-  /// \param[in] request - a rpc::UserWithdrawCancelRequest request
-  /// \param[in] response - a rpc::UserWithdrawCancelReply response
+  /// @param[in] context - server context
+  /// @param[in] request - a rpc::UserWithdrawCancelRequest request
+  /// @param[in] response - a rpc::UserWithdrawCancelReply response
   /// @return grpc::Status
   grpc::Status UserWithdrawCancel(
       grpc::ServerContext* context,
@@ -83,18 +83,18 @@ class HubImpl final : public hub::rpc::Hub::Service {
       hub::rpc::UserWithdrawCancelReply* response) override;
 
   /// Get the history for a user
-  /// \param[in] context - server context
-  /// \param[in] request - a rpc::GetUserHistoryRequest request
-  /// \param[in] response - a rpc::GetUserHistoryReply response
+  /// @param[in] context - server context
+  /// @param[in] request - a rpc::GetUserHistoryRequest request
+  /// @param[in] response - a rpc::GetUserHistoryReply response
   /// @return grpc::Status
   grpc::Status GetUserHistory(grpc::ServerContext* context,
                               const ::hub::rpc::GetUserHistoryRequest* request,
                               hub::rpc::GetUserHistoryReply* response) override;
 
   /// Monitors the balance for a user
-  /// \param[in] context - server context
-  /// \param[in] request - a rpc::UserBalanceSubscriptionRequest request
-  /// \param[in] writer - a grpc::ServerWriter
+  /// @param[in] context - server context
+  /// @param[in] request - a rpc::UserBalanceSubscriptionRequest request
+  /// @param[in] writer - a grpc::ServerWriter
   /// @return grpc::Status
   grpc::Status UserBalanceSubscription(
       grpc::ServerContext* context,
@@ -102,9 +102,9 @@ class HubImpl final : public hub::rpc::Hub::Service {
       grpc::ServerWriter<hub::rpc::UserBalanceEvent>* writer) override;
 
   /// Process transfers in batch
-  /// \param[in] context - server context
-  /// \param[in] request - a rpc::ProcessTransferBatchRequest request
-  /// \param[in] response - a rpc::ProcessTransferBatchReply response
+  /// @param[in] context - server context
+  /// @param[in] request - a rpc::ProcessTransferBatchRequest request
+  /// @param[in] response - a rpc::ProcessTransferBatchReply response
   /// @return grpc::Status
   grpc::Status ProcessTransferBatch(
       grpc::ServerContext* context,

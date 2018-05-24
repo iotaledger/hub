@@ -27,7 +27,7 @@ class ScheduledService : public Service {
   ScheduledService() = delete;
 
   /// constructor
-  /// \param[in] interval - the tick interval in milliseconds
+  /// @param[in] interval - the tick interval in milliseconds
   explicit ScheduledService(std::chrono::milliseconds interval)
       : _interval(interval) {}
 

@@ -21,9 +21,7 @@ class ProcessTransferBatchReply;
 
 namespace cmd {
 
-/// ProcessTransferBatch command. Invokes the processing of a batch of
-/// transfers.
-/// Constructor
+/// Invokes the processing of a batch of transfers.
 /// @param[in] hub::rpc::ProcessTransferBatchRequest
 /// @param[in] hub::rpc::ProcessTransferBatchReply
 class ProcessTransferBatch
@@ -45,7 +43,7 @@ class ProcessTransferBatch
   /// it must conform to the following criteria:
   /// - There must be no zero transfers
   /// - The sum of all transfers in the batch must amount to zero
-  /// - Funds must be available to perform each transfer
+  /// - Users must have sufficient funds available
   grpc::Status validateTransfers(
       const hub::rpc::ProcessTransferBatchRequest* request,
       const std::map<std::string, int64_t>& identifierToId) noexcept;

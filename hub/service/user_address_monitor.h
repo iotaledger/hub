@@ -30,7 +30,7 @@ class UserAddressMonitor : public AddressMonitor {
 
   std::vector<std::tuple<uint64_t, std::string>> monitoredAddresses() override;
   /// Process addresses that have changes
-  /// \param[in] changed - a list of AddressMonitor::BalanceChange structures
+  /// @param[in] changed - a list of AddressMonitor::BalanceChange structures
   /// @return bool - true if successful
   bool onBalancesChanged(
       const std::vector<AddressMonitor::BalanceChange>& changed) override;
@@ -44,8 +44,8 @@ class UserAddressMonitor : public AddressMonitor {
  protected:
   /// Check that the balance from the tangle is not less than the
   /// balance held in the database for the local address
-  /// \param[in] address - the tangle address for which to check the balance
-  /// \param[in] addressId - the database id of the local address
+  /// @param[in] address - the tangle address for which to check the balance
+  /// @param[in] addressId - the database id of the local address
   /// @return bool - true if balance valid for this address
   bool validateBalanceIsConsistent(const std::string& address,
                                    uint64_t addressId);

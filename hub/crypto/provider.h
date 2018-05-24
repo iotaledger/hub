@@ -44,8 +44,7 @@ class CryptoProvider {
   virtual size_t securityLevel() const = 0;
 
  protected:
-  /// Calculate the signature for a UUID and a bundle hash. Implementation
-  /// is left to subclasses
+  /// Calculate the signature for a UUID and a bundle hash.
   /// param[in] UUID - a UUID
   /// param[in] Hash - a bundleHash
   /// @return string - the signature
