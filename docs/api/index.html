@@ -250,6 +250,14 @@
                 </li>
               
                 <li>
+                  <a href="#hub.rpc.SweepEvent"><span class="badge">M</span>SweepEvent</a>
+                </li>
+              
+                <li>
+                  <a href="#hub.rpc.SweepSubscriptionRequest"><span class="badge">M</span>SweepSubscriptionRequest</a>
+                </li>
+              
+                <li>
                   <a href="#hub.rpc.UserBalanceEvent"><span class="badge">M</span>UserBalanceEvent</a>
                 </li>
               
@@ -378,6 +386,13 @@ Note that the amounts of this batch must sum to 0!</p></td>
                 <td><p>Provides statistics about the Hub</p></td>
               </tr>
             
+              <tr>
+                <td>SweepSubscription</td>
+                <td><a href="#hub.rpc.SweepSubscriptionRequest">SweepSubscriptionRequest</a></td>
+                <td><a href="#hub.rpc.SweepEvent">SweepEvent</a></td>
+                <td><p>Produces a stream of all sweeps since the provided timestamp</p></td>
+              </tr>
+            
           </tbody>
         </table>
       
@@ -420,7 +435,7 @@ Note that the amounts of this batch must sum to 0!</p></td>
         
       
         <h3 id="hub.rpc.Error">Error</h3>
-        <p>The generic Error that will be used to return an error code on, e.g. Status::CANCELLED.</p><p>The error will be serialised and stored in the Status' detail field.</p>
+        <p>The generic Error that will be used to return an error code on, e.g. Status::CANCELLED. 	</p><p>The error will be serialised and stored in the Status' detail field.</p>
 
         
           <table class="field-table">
@@ -666,6 +681,66 @@ Note that the amounts of this batch must sum to 0!</p></td>
         <h3 id="hub.rpc.StatsRequest">StatsRequest</h3>
         <p></p>
 
+        
+
+        
+      
+        <h3 id="hub.rpc.SweepEvent">SweepEvent</h3>
+        <p></p>
+
+        
+          <table class="field-table">
+            <thead>
+              <tr><td>Field</td><td>Type</td><td>Label</td><td>Description</td></tr>
+            </thead>
+            <tbody>
+              
+                <tr>
+                  <td>bundleHash</td>
+                  <td><a href="#string">string</a></td>
+                  <td></td>
+                  <td><p> </p></td>
+                </tr>
+              
+                <tr>
+                  <td>timestamp</td>
+                  <td><a href="#uint64">uint64</a></td>
+                  <td></td>
+                  <td><p> </p></td>
+                </tr>
+              
+                <tr>
+                  <td>withdrawalUUID</td>
+                  <td><a href="#string">string</a></td>
+                  <td>repeated</td>
+                  <td><p> </p></td>
+                </tr>
+              
+            </tbody>
+          </table>
+        
+
+        
+      
+        <h3 id="hub.rpc.SweepSubscriptionRequest">SweepSubscriptionRequest</h3>
+        <p></p>
+
+        
+          <table class="field-table">
+            <thead>
+              <tr><td>Field</td><td>Type</td><td>Label</td><td>Description</td></tr>
+            </thead>
+            <tbody>
+              
+                <tr>
+                  <td>newerThan</td>
+                  <td><a href="#uint64">uint64</a></td>
+                  <td></td>
+                  <td><p>Sweeps newer than this time (MS since epoch) will be retrievd </p></td>
+                </tr>
+              
+            </tbody>
+          </table>
         
 
         
