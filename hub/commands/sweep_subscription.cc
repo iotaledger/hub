@@ -26,10 +26,10 @@ grpc::Status SweepSubscription::doProcess(
   std::chrono::milliseconds dur(request->newerthan());
   std::chrono::time_point<std::chrono::system_clock> newerThan(dur);
 
-  hub::rpc::SweepEvent event;
   auto sweeps = getSweeps(newerThan);
   bool cancelled = false;
   for (auto& s : sweeps) {
+    hub::rpc::SweepEvent event;
     event.set_bundlehash(std::move(s.bundleHash));
     event.set_timestamp(std::chrono::duration_cast<std::chrono::milliseconds>(
                             s.timestamp.time_since_epoch())
@@ -39,7 +39,8 @@ grpc::Status SweepSubscription::doProcess(
     std::for_each(uuids.begin(), uuids.end(), [&](std::string& uuid) {
       event.add_withdrawaluuid(std::move(uuid));
     });
-    if (!writer->Write(event)) {
+
+    if (!writer->Write(std::move(event))) {
       cancelled = true;
       break;
     }
