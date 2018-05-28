@@ -45,8 +45,8 @@ grpc::Status UserWithdrawCancel::doProcess(
 
       // Add user account balance entry
       connection.createUserAccountBalanceEntry(
-          withdrawalInfo.userId, -withdrawalInfo.amount,
-          db::UserAccountBalanceReason::WITHDRAWAL_CANCEL);
+          withdrawalInfo.userId, withdrawalInfo.amount,
+          db::UserAccountBalanceReason::WITHDRAWAL_CANCEL, withdrawalInfo.id);
 
       transaction->commit();
 
