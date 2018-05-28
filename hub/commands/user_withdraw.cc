@@ -32,7 +32,6 @@ grpc::Status UserWithdraw::doProcess(
   uint64_t withdrawalId;
 
   auto withdrawalUUID = boost::uuids::random_generator()();
-  auto payoutAddress = hub::crypto::Address(request->payoutaddress());
 
   if (request->amount() <= 0) {
     return grpc::Status(grpc::StatusCode::FAILED_PRECONDITION, "",
@@ -40,6 +39,8 @@ grpc::Status UserWithdraw::doProcess(
   }
 
   try {
+    auto payoutAddress = hub::crypto::Address(request->payoutaddress());
+
     // Get userId for identifier
     {
       auto maybeUserId = connection.userIdFromIdentifier(request->userid());

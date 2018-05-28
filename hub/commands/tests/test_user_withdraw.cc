@@ -16,6 +16,25 @@ using namespace sqlpp;
 namespace {
 class UserWithdrawTest : public CommandTest {};
 
+TEST_F(UserWithdrawTest, ErrorOnInvalidPayoutAddress) {
+  rpc::UserWithdrawRequest req;
+  rpc::UserWithdrawReply res;
+  cmd::UserWithdraw command(session());
+
+  createUser(session(), "a");
+
+  req.set_userid("a");
+  req.set_amount(0);
+
+  req.set_payoutaddress("999999999");
+  ASSERT_FALSE(command.doProcess(&req, &res).ok());
+
+  req.set_payoutaddress(
+      "999999999999999999999999999999999999999999999999999999999999999999999999"
+      "99999|999");
+  ASSERT_FALSE(command.doProcess(&req, &res).ok());
+}
+
 TEST_F(UserWithdrawTest, ErrorOnZeroAmount) {
   rpc::UserWithdrawRequest req;
   rpc::UserWithdrawReply res;
