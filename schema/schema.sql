@@ -91,6 +91,7 @@ CREATE TABLE IF NOT EXISTS withdrawal (
   amount INTEGER NOT NULL,
   -- payout address
   payout_address CHAR(81) NOT NULL,
+  tag CHAR(27) DEFAULT NULL,
   -- sweep that processes this withdrawal
   sweep INTEGER DEFAULT NULL,
   requested_at DATETIME DEFAULT CURRENT_TIMESTAMP NOT NULL,

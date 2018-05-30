@@ -116,6 +116,8 @@ class TryteArray {
   /// @return uint32_t - The number of bytes used to represent the trytes
   uint32_t size() const { return _data.size(); }
 
+  static constexpr std::size_t length() { return N; }
+
  private:
   /// Internal representation of the trytes
   std::array<uint8_t, N> _data;
@@ -134,9 +136,11 @@ bool operator!=(const hub::crypto::TryteArray<N, TAG>& lhs,
 
 struct HashTag {};
 struct AddressTag {};
+struct TagTag {};
 
 using Hash = TryteArray<81, HashTag>;
 using Address = TryteArray<81, AddressTag>;
+using Tag = TryteArray<27, TagTag>;
 
 };  // namespace crypto
 }  // namespace hub

@@ -5,7 +5,6 @@
  * Refer to the LICENSE file for licensing information
  */
 
-
 #include "hub/service/sweep_service.h"
 
 #include <chrono>
@@ -49,7 +48,9 @@ db::TransferOutput SweepService::getHubOutput(uint64_t remainder) {
   auto hubOutputAddress = cryptoProvider.getAddressForUUID(hubOutputUUID);
 
   return {dbConnection.createHubAddress(hubOutputUUID, hubOutputAddress),
-          remainder, std::move(hubOutputAddress)};
+          remainder,
+          {},
+          std::move(hubOutputAddress)};
 }
 
 std::tuple<hub::crypto::Hash, std::string> SweepService::createBundle(
@@ -92,6 +93,10 @@ std::tuple<hub::crypto::Hash, std::string> SweepService::createBundle(
       tx.setAddress(wd.payoutAddress.str());
       tx.setTimestamp(timestamp);
       tx.setValue(wd.amount);
+
+      if (wd.tag) {
+        tx.setObsoleteTag(wd.tag->str());
+      }
 
       bundle.addTransaction(tx, 1);
     }
@@ -136,7 +141,10 @@ std::tuple<hub::crypto::Hash, std::string> SweepService::createBundle(
       tx.setNonce(EMPTY_NONCE);
       tx.setTrunkTransaction(EMPTY_HASH);
       tx.setBranchTransaction(EMPTY_HASH);
-      tx.setObsoleteTag(EMPTY_NONCE);
+
+      if (tx.getObsoleteTag().empty()) {
+        tx.setObsoleteTag(EMPTY_NONCE);
+      }
 
       ++it;
       continue;

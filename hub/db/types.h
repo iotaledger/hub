@@ -12,6 +12,7 @@
 #include <string>
 #include <tuple>
 #include <vector>
+#include <nonstd/optional.hpp>
 
 #include "hub/crypto/types.h"
 
@@ -81,6 +82,7 @@ struct TransferOutput {
  public:
   int64_t id;
   uint64_t amount;
+  nonstd::optional<hub::crypto::Tag> tag;
   hub::crypto::Address payoutAddress;
 };
 

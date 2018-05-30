@@ -155,12 +155,12 @@ void helper<C>::createUserAccountBalanceEntry(
 template <typename C>
 uint64_t helper<C>::createWithdrawal(
     C& connection, const std::string& uuid, uint64_t userId, uint64_t amount,
-    const hub::crypto::Address& payoutAddress) {
+    const hub::crypto::Tag& tag, const hub::crypto::Address& payoutAddress) {
   db::sql::Withdrawal tbl;
 
   return connection(insert_into(tbl).set(
       tbl.uuid = uuid, tbl.userId = userId, tbl.amount = amount,
-      tbl.payoutAddress = payoutAddress.str()));
+      tbl.payoutAddress = payoutAddress.str(), tbl.tag = tag.str()));
 }
 
 template <typename C>
@@ -492,16 +492,22 @@ std::vector<TransferOutput> helper<C>::getWithdrawalsForSweep(
   std::vector<TransferOutput> outputs;
 
   auto result =
-      connection(select(tbl.id, tbl.amount, tbl.payoutAddress)
+      connection(select(tbl.id, tbl.amount, tbl.tag, tbl.payoutAddress)
                      .from(tbl)
                      .where(tbl.requestedAt <= olderThan && tbl.sweep.is_null())
                      .order_by(tbl.requestedAt.asc())
                      .limit(max));
 
   for (const auto& row : result) {
-    outputs.emplace_back(
-        TransferOutput{row.id, static_cast<uint64_t>(row.amount),
-                       hub::crypto::Address(row.payoutAddress.value())});
+    nonstd::optional<hub::crypto::Tag> maybeTag;
+
+    if (!row.tag.is_null()) {
+      maybeTag = hub::crypto::Tag(row.tag.value());
+    }
+
+    outputs.emplace_back(TransferOutput{
+        row.id, static_cast<uint64_t>(row.amount), std::move(maybeTag),
+        hub::crypto::Address(row.payoutAddress.value())});
   }
 
   return outputs;
@@ -632,10 +638,9 @@ nonstd::optional<AddressInfo> helper<C>::getAddressInfo(
   db::sql::UserAddress add;
   db::sql::UserAccount acc;
 
-  auto result =
-      connection(select(acc.identifier)
-                     .from(add.join(acc).on(add.userId == acc.id))
-                     .where(add.address == address.str()));
+  auto result = connection(select(acc.identifier)
+                               .from(add.join(acc).on(add.userId == acc.id))
+                               .where(add.address == address.str()));
 
   if (result.empty()) {
     return {};
