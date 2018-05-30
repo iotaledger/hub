@@ -5,7 +5,6 @@
  * Refer to the LICENSE file for licensing information
  */
 
-
 #ifndef HUB_DB_HELPER_H_
 #define HUB_DB_HELPER_H_
 
@@ -16,9 +15,9 @@
 #include <set>
 #include <string>
 #include <tuple>
+#include <unordered_map>
 #include <utility>
 #include <vector>
-#include <unordered_map>
 
 #include "hub/crypto/types.h"
 #include "hub/db/db.h"
@@ -109,6 +108,9 @@ struct helper {
   static std::vector<TransferInput> getHubInputsForSweep(
       C& connection, uint64_t requiredAmount,
       const std::chrono::system_clock::time_point& olderThan);
+
+  static nonstd::optional<AddressInfo> getAddressInfo(
+      C& connection, const hub::crypto::Address& address);
 
   static bool isSweepConfirmed(C& connection, uint64_t sweepId);
 };

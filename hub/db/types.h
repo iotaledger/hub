@@ -5,7 +5,6 @@
  * Refer to the LICENSE file for licensing information
  */
 
-
 #ifndef HUB_DB_TYPES_H_
 #define HUB_DB_TYPES_H_
 
@@ -83,6 +82,11 @@ struct TransferOutput {
   int64_t id;
   uint64_t amount;
   hub::crypto::Address payoutAddress;
+};
+
+struct AddressInfo {
+ public:
+  std::string userId;
 };
 
 }  // namespace db

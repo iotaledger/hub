@@ -16,9 +16,9 @@
 #include <set>
 #include <string>
 #include <tuple>
+#include <unordered_map>
 #include <utility>
 #include <vector>
-#include <unordered_map>
 
 #include "hub/crypto/types.h"
 #include "hub/db/db.h"
@@ -258,6 +258,12 @@ class Connection {
   /// @param[in] sweepId - the sweepId if the creation results from a sweep
   /// @return bool - true if sweep is confirmed
   virtual bool isSweepConfirmed(uint64_t sweepId) = 0;
+
+  /// Provides information on an address if available
+  /// @param[in] address - the address to provide info on
+  /// @return nonstd::optional<AddressInfo> - the information if available
+  virtual nonstd::optional<AddressInfo> getAddressInfo(
+      const hub::crypto::Address& address) = 0;
 
  private:
   friend class DBManager;
