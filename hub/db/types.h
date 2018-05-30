@@ -33,11 +33,32 @@ enum class UserAccountBalanceReason {
 using AddressWithID = std::tuple<uint64_t, std::string>;
 using AddressWithUUID = std::tuple<std::string, std::string>;
 
-struct UserBalanceEvent {
+struct UserAccountBalanceEvent {
   std::string userIdentifier;
   std::chrono::system_clock::time_point timestamp;
   int64_t amount;
   UserAccountBalanceReason type;
+  std::string sweepBundleHash;
+  std::string withdrawalUUID;
+};
+
+struct UserAddressBalanceEvent {
+  std::string userIdentifier;
+  std::string userAddress;
+  int64_t amount;
+  UserAddressBalanceReason reason;
+  // Depositing bundle's tail (if reason == DEPOSIT)
+  // Bundle hash of sweep (if reason == SWEEP)
+  std::string hash;
+  std::chrono::system_clock::time_point timestamp;
+};
+
+struct HubAddressBalanceEvent {
+  std::string hubAddress;
+  int64_t amount;
+  HubAddressBalanceReason reason;
+  std::string sweepBundleHash;
+  std::chrono::system_clock::time_point timestamp;
 };
 
 struct SweepEvent {

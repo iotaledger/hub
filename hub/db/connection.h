@@ -135,8 +135,8 @@ class Connection {
 
   /// Get a list of account balances for a user
   /// @param[in] userId - the user id in the database
-  /// @return std::vector - a list of UserBalanceEvent for this user
-  virtual std::vector<UserBalanceEvent> getUserAccountBalances(
+  /// @return std::vector - a list of UserAccountBalanceEvent for this user
+  virtual std::vector<UserAccountBalanceEvent> getUserAccountBalances(
       uint64_t userId) = 0;
 
   /// Get a list of unconfirmed sweeps
@@ -161,8 +161,23 @@ class Connection {
 
   /// Get a list of account balances from a point in time
   /// @param[in] newerThan - the start point in time
-  /// @return std::vector - a list of UserBalanceEvent
-  virtual std::vector<UserBalanceEvent> getAccountBalances(
+  /// @return std::vector - a list of UserAccountBalanceEvent
+  virtual std::vector<UserAccountBalanceEvent>
+  getAllUsersAccountBalancesSinceTimePoint(
+      std::chrono::system_clock::time_point newerThan) = 0;
+
+  /// Get a list of user address balances from a point in time
+  /// @param[in] newerThan - the start point in time
+  /// @return std::vector - a list of UserAddressBalanceEvent
+  virtual std::vector<UserAddressBalanceEvent>
+  getAllUserAddressesBalancesSinceTimePoint(
+      std::chrono::system_clock::time_point newerThan) = 0;
+
+  /// Get a list of hub address balances from a point in time
+  /// @param[in] newerThan - the start point in time
+  /// @return std::vector - a list of HubAddressBalanceEvent
+  virtual std::vector<HubAddressBalanceEvent>
+  getAllHubAddressesBalancesSinceTimePoint(
       std::chrono::system_clock::time_point newerThan) = 0;
 
   /// Gets a list of sweeps with withdrawals from a point in time

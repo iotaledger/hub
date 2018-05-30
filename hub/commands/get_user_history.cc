@@ -5,7 +5,6 @@
  * Refer to the LICENSE file for licensing information
  */
 
-
 #include "hub/commands/get_user_history.h"
 
 #include <cstdint>
@@ -54,7 +53,7 @@ grpc::Status GetUserHistory::doProcess(
               b.timestamp.time_since_epoch())
               .count());
       event->set_amount(b.amount);
-      event->set_type(userBalanceEventTypeFromSql(b.type));
+      event->set_type(userAccountBalanceEventTypeFromSql(b.type));
     }
   }
 

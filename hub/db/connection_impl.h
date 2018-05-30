@@ -124,9 +124,11 @@ class ConnectionImpl : public Connection {
     db::helper<Conn>::markUUIDAsSigned(*_conn, uuid);
   }
 
-  std::vector<UserBalanceEvent> getUserAccountBalances(
-      uint64_t userId) override {
-    return db::helper<Conn>::getUserAccountBalances(*_conn, userId);
+  std::vector<UserAccountBalanceEvent>
+  getAllUsersAccountBalancesSinceTimePoint(
+      std::chrono::system_clock::time_point newerThan) override {
+    return db::helper<Conn>::getAllUsersAccountBalancesSinceTimePoint(
+        *_conn, newerThan);
   }
 
   std::vector<Sweep> getUnconfirmedSweeps(
@@ -146,9 +148,22 @@ class ConnectionImpl : public Connection {
     db::helper<Conn>::markTailAsConfirmed(*_conn, hash);
   }
 
-  std::vector<UserBalanceEvent> getAccountBalances(
+  std::vector<UserAccountBalanceEvent> getUserAccountBalances(
+      uint64_t userId) override {
+    return db::helper<Conn>::getUserAccountBalances(*_conn, userId);
+  }
+
+  std::vector<UserAddressBalanceEvent>
+  getAllUserAddressesBalancesSinceTimePoint(
       std::chrono::system_clock::time_point newerThan) override {
-    return db::helper<Conn>::getAccountBalances(*_conn, newerThan);
+    return db::helper<Conn>::getAllUserAddressesBalancesSinceTimePoint(
+        *_conn, newerThan);
+  }
+
+  std::vector<HubAddressBalanceEvent> getAllHubAddressesBalancesSinceTimePoint(
+      std::chrono::system_clock::time_point newerThan) override {
+    return db::helper<Conn>::getAllHubAddressesBalancesSinceTimePoint(
+        *_conn, newerThan);
   }
 
   std::vector<SweepEvent> getSweeps(

@@ -156,7 +156,7 @@ message GetUserHistoryRequest {
   string userId = 1;
 }
 
-enum UserBalanceEventType {
+enum UserAccountBalanceEventType {
   // Unused
   UE_UNKNOWN = 0;
   // Deposit into user account (positive amount)
@@ -170,17 +170,69 @@ enum UserBalanceEventType {
   // User lost tokens as part of a transfer batch (negative amount)
   SELL = 5;
 }
-message UserBalanceEvent {
+
+enum UserAddressBalanceReason {
+  UAB_UNKNOWN = 0;
+  // New user deposit tracked
+  UA_DEPOSIT = 1;
+  // Hub-sweep.
+  UA_SWEEP = 2;
+}
+
+enum HubAddressBalanceReason {
+  HAB_UNKNOWN = 0;
+  // Sweep inbound (used as reminader address)
+  INBOUND = 1;
+  // Sweep outbound (used as input)
+  OUTBOUND = 2;
+}
+
+message UserAccountBalanceEvent {
   string userId = 1;
   // Time since epoch in MS when the balance change occured
-                uint64 timestamp = 2;
-  UserBalanceEventType type      = 3;
-                 int64 amount    = 4;
+  uint64 timestamp = 2;
+  UserAccountBalanceEventType type      = 3;
+  int64 amount    = 4;
+  // Will contain sweep bundle hash on deposit
+  // Will contain withdrawal uuid on withdrawal or withdrawal cancel
+  string sweepBundleHash = 5;
+  string withdrawalUUID = 6;
 }
+
+message UserAddressBalanceEvent {
+  string userId = 1;
+  string userAddress = 2;
+  int64 amount = 3;
+  UserAddressBalanceReason reason = 4;
+  // Depositing bundle's tail (if reason == DEPOSIT)
+  // Bundle hash of sweep (if reason == SWEEP)
+  string hash = 5;
+  uint64 timestamp = 6;
+}
+
+message HubAddressBalanceEvent {
+  string hubAddress = 1;
+  int64 amount = 2;
+  HubAddressBalanceReason reason = 3;
+  string sweepBundleHash = 4;
+  uint64 timestamp = 5;
+}
+
+message BalanceEvent {
+  UserAccountBalanceEvent userAccountEvent = 1;
+  UserAddressBalanceEvent userAddressEvent = 2;
+  HubAddressBalanceEvent  hubAddressEvent = 3;
+}
+message BalanceSubscriptionRequest {
+  // Balances newer than this time (MS since epoch) will be retrievd
+  uint64 newerThan = 1;
+}
+
+
 
 message GetUserHistoryReply {
   // List of all user balance events for given user
-  repeated UserBalanceEvent events = 1;
+  repeated UserAccountBalanceEvent events = 1;
 }
 
 
@@ -200,10 +252,7 @@ message ProcessTransferBatchRequest {
 
 message ProcessTransferBatchReply {}
 
-message UserBalanceSubscriptionRequest {
-  // Balances newer than this time (MS since epoch) will be retrievd
-  uint64 newerThan = 1;
-}
+
 
 message SweepEvent {
   string bundleHash = 1;

@@ -96,10 +96,10 @@ class HubImpl final : public hub::rpc::Hub::Service {
   /// @param[in] request - a rpc::UserBalanceSubscriptionRequest request
   /// @param[in] writer - a grpc::ServerWriter
   /// @return grpc::Status
-  grpc::Status UserBalanceSubscription(
+  grpc::Status BalanceSubscription(
       grpc::ServerContext* context,
-      const hub::rpc::UserBalanceSubscriptionRequest* request,
-      grpc::ServerWriter<hub::rpc::UserBalanceEvent>* writer) override;
+      const hub::rpc::BalanceSubscriptionRequest* request,
+      grpc::ServerWriter<hub::rpc::BalanceEvent>* writer) override;
 
   /// Process transfers in batch
   /// @param[in] context - server context

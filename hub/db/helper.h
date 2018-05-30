@@ -60,8 +60,17 @@ struct helper {
   static nonstd::optional<AddressWithUUID> selectFirstUserAddress(
       C& connection);
   static void markUUIDAsSigned(C& connection, const hub::crypto::UUID& uuid);
-  static std::vector<UserBalanceEvent> getUserAccountBalances(C& connection,
-                                                              uint64_t userId);
+  static std::vector<UserAccountBalanceEvent> getUserAccountBalances(
+      C& connection, uint64_t userId);
+
+  static std::vector<UserAddressBalanceEvent>
+  getAllUserAddressesBalancesSinceTimePoint(
+      C& connection, std::chrono::system_clock::time_point newerThan);
+
+  static std::vector<HubAddressBalanceEvent>
+  getAllHubAddressesBalancesSinceTimePoint(
+      C& connection, std::chrono::system_clock::time_point newerThan);
+
   static std::vector<Sweep> getUnconfirmedSweeps(
       C& connection, const std::chrono::system_clock::time_point& olderThan);
   static void createTail(C& connection, uint64_t sweepId,
@@ -69,7 +78,8 @@ struct helper {
   static std::vector<std::string> getTailsForSweep(C& connection,
                                                    uint64_t sweepId);
   static void markTailAsConfirmed(C& connection, const std::string& hash);
-  static std::vector<UserBalanceEvent> getAccountBalances(
+  static std::vector<UserAccountBalanceEvent>
+  getAllUsersAccountBalancesSinceTimePoint(
       C& connection, std::chrono::system_clock::time_point newerThan);
   static std::vector<SweepEvent> getSweeps(
       C& connection, std::chrono::system_clock::time_point newerThan);
