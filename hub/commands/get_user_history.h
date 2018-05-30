@@ -5,7 +5,6 @@
  * Refer to the LICENSE file for licensing information
  */
 
-
 #ifndef HUB_COMMANDS_GET_USER_HISTORY_H_
 #define HUB_COMMANDS_GET_USER_HISTORY_H_
 

@@ -13,6 +13,7 @@
 #include <glog/logging.h>
 #include <google/protobuf/util/json_util.h>
 
+#include "hub/commands/balance_subscription.h"
 #include "hub/commands/create_user.h"
 #include "hub/commands/get_address_info.h"
 #include "hub/commands/get_balance.h"
@@ -20,7 +21,6 @@
 #include "hub/commands/get_user_history.h"
 #include "hub/commands/process_transfer_batch.h"
 #include "hub/commands/sweep_subscription.h"
-#include "hub/commands/user_balance_subscription.h"
 #include "hub/commands/user_withdraw.h"
 #include "hub/commands/user_withdraw_cancel.h"
 #include "hub/stats/session.h"
@@ -77,12 +77,12 @@ grpc::Status HubImpl::GetUserHistory(
   return cmd.process(request, response);
 }
 
-grpc::Status HubImpl::UserBalanceSubscription(
+grpc::Status HubImpl::BalanceSubscription(
     grpc::ServerContext* context,
-    const hub::rpc::UserBalanceSubscriptionRequest* request,
-    grpc::ServerWriter<hub::rpc::UserBalanceEvent>* writer) {
+    const hub::rpc::BalanceSubscriptionRequest* request,
+    grpc::ServerWriter<hub::rpc::BalanceEvent>* writer) {
   auto clientSession = std::make_shared<ClientSession>();
-  cmd::UserBalanceSubscription cmd(clientSession);
+  cmd::BalanceSubscription cmd(clientSession);
   return cmd.process(request, writer);
 }
 

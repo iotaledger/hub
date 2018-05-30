@@ -201,29 +201,6 @@ void helper<C>::markUUIDAsSigned(C& connection, const hub::crypto::UUID& uuid) {
 }
 
 template <typename C>
-std::vector<UserBalanceEvent> helper<C>::getUserAccountBalances(
-    C& connection, uint64_t userId) {
-  db::sql::UserAccountBalance bal;
-  db::sql::UserAccount acc;
-  auto result =
-      connection(select(acc.identifier, bal.amount, bal.reason, bal.occuredAt)
-                     .from(bal.join(acc).on(bal.userId == acc.id))
-                     .where(bal.userId == userId));
-
-  std::vector<UserBalanceEvent> balances;
-
-  for (auto& row : result) {
-    std::chrono::time_point<std::chrono::system_clock> ts =
-        row.occuredAt.value();
-    UserBalanceEvent event = {
-        std::move(row.identifier), ts, row.amount,
-        static_cast<UserAccountBalanceReason>((row.reason.value()))};
-    balances.emplace_back(std::move(event));
-  }
-  return balances;
-}
-
-template <typename C>
 std::vector<Sweep> helper<C>::getUnconfirmedSweeps(
     C& connection, const std::chrono::system_clock::time_point& olderThan) {
   db::sql::Sweep swp;
@@ -294,25 +271,162 @@ void helper<C>::markTailAsConfirmed(C& connection, const std::string& hash) {
 }
 
 template <typename C>
-std::vector<UserBalanceEvent> helper<C>::getAccountBalances(
-    C& connection, std::chrono::system_clock::time_point newerThan) {
+std::vector<UserAccountBalanceEvent> helper<C>::getUserAccountBalances(
+    C& connection, uint64_t userId) {
   db::sql::UserAccountBalance bal;
   db::sql::UserAccount acc;
+
+  //Might wanna add sweep's bundle hash or withdrawal uuid in the future.
   auto result =
       connection(select(acc.identifier, bal.amount, bal.reason, bal.occuredAt)
                      .from(bal.join(acc).on(bal.userId == acc.id))
-                     .where(bal.occuredAt >= newerThan)
-                     .order_by(bal.occuredAt.asc()));
+                     .where(bal.userId == userId));
 
-  std::vector<UserBalanceEvent> balances;
+  std::vector<UserAccountBalanceEvent> balances;
 
   for (auto& row : result) {
     std::chrono::time_point<std::chrono::system_clock> ts =
         row.occuredAt.value();
-    balances.emplace_back(UserBalanceEvent{
+    UserAccountBalanceEvent event = {
         std::move(row.identifier), ts, row.amount,
-        static_cast<UserAccountBalanceReason>((row.reason.value()))});
+        static_cast<UserAccountBalanceReason>((row.reason.value()))};
+    balances.emplace_back(std::move(event));
   }
+  return balances;
+}
+
+template <typename C>
+std::vector<UserAccountBalanceEvent>
+helper<C>::getAllUsersAccountBalancesSinceTimePoint(
+    C& connection, std::chrono::system_clock::time_point newerThan) {
+  db::sql::UserAccountBalance bal;
+  db::sql::UserAccount acc;
+  db::sql::Sweep swp;
+  db::sql::Withdrawal withdrawal;
+
+  auto sweepActionsResult =
+      connection(select(acc.identifier, bal.amount, bal.reason, bal.occuredAt,
+                        swp.bundleHash)
+                     .from(bal.join(acc)
+                               .on(bal.userId == acc.id)
+                               .join(swp)
+                               .on(bal.sweep == swp.id))
+                     .where(bal.occuredAt >= newerThan &&
+                            bal.reason == static_cast<int>(
+                                              UserAccountBalanceReason::SWEEP))
+                     .order_by(bal.occuredAt.asc()));
+
+  auto withdrawActionsResult = connection(
+      select(acc.identifier, bal.amount, bal.reason, bal.occuredAt,
+             withdrawal.uuid)
+          .from(bal.join(acc)
+                    .on(bal.userId == acc.id)
+                    .join(withdrawal)
+                    .on(bal.withdrawal == withdrawal.id))
+          .where(
+              bal.occuredAt >= newerThan &&
+              (bal.reason ==
+                   static_cast<int>(UserAccountBalanceReason::WITHDRAWAL) ||
+               bal.reason == static_cast<int>(
+                                 UserAccountBalanceReason::WITHDRAWAL_CANCEL)))
+          .order_by(bal.occuredAt.asc()));
+
+  std::vector<UserAccountBalanceEvent> balances;
+
+  for (auto& row : sweepActionsResult) {
+    std::chrono::time_point<std::chrono::system_clock> ts =
+        row.occuredAt.value();
+    balances.emplace_back(UserAccountBalanceEvent{
+        std::move(row.identifier), ts, row.amount,
+        static_cast<UserAccountBalanceReason>((row.reason.value())),
+        std::move(row.bundleHash), ""});
+  }
+
+  for (auto& row : withdrawActionsResult) {
+    std::chrono::time_point<std::chrono::system_clock> ts =
+        row.occuredAt.value();
+    balances.emplace_back(UserAccountBalanceEvent{
+        std::move(row.identifier), ts, row.amount,
+        static_cast<UserAccountBalanceReason>((row.reason.value())),
+        "", std::move(row.uuid)});
+  }
+
+  return balances;
+}
+
+template <typename C>
+std::vector<UserAddressBalanceEvent>
+helper<C>::getAllUserAddressesBalancesSinceTimePoint(
+    C& connection, std::chrono::system_clock::time_point newerThan) {
+  db::sql::UserAccount acc;
+  db::sql::UserAddress add;
+  db::sql::UserAddressBalance bal;
+  db::sql::Sweep swp;
+
+  auto result =
+      connection(select(acc.identifier, add.address, bal.amount, bal.reason,
+                        bal.tailHash, bal.occuredAt, swp.bundleHash)
+                     .from(bal.join(add)
+                               .on(bal.userAddress == add.id)
+                               .join(acc)
+                               .on(add.userId == acc.id)
+                               .left_outer_join(swp)
+                               .on(bal.sweep == swp.id))
+                     .where(bal.occuredAt >= newerThan)
+                     .order_by(bal.occuredAt.asc()));
+
+  std::vector<UserAddressBalanceEvent> balances;
+
+  for (auto& row : result) {
+    std::chrono::time_point<std::chrono::system_clock> ts =
+        row.occuredAt.value();
+    std::string hash =
+        (row.reason == static_cast<int>(UserAddressBalanceReason::SWEEP))
+            ? std::move(row.bundleHash)
+            : std::move(row.tailHash.value());
+
+    UserAddressBalanceEvent e{
+        std::move(row.identifier),
+        std::move(row.address),
+        row.amount,
+        static_cast<UserAddressBalanceReason>(row.reason.value()),
+        std::move(hash),
+        ts};
+
+    balances.emplace_back(std::move(e));
+  }
+
+  return balances;
+}
+
+template <typename C>
+std::vector<HubAddressBalanceEvent>
+helper<C>::getAllHubAddressesBalancesSinceTimePoint(
+    C& connection, std::chrono::system_clock::time_point newerThan) {
+  db::sql::HubAddressBalance bal;
+  db::sql::HubAddress add;
+  db::sql::Sweep swp;
+
+  auto result = connection(select(all_of(bal), add.address, swp.bundleHash)
+                               .from(bal.join(add)
+                                         .on(bal.hubAddress == add.id)
+                                         .join(swp)
+                                         .on(bal.sweep == swp.id))
+                               .where(bal.occuredAt >= newerThan)
+                               .order_by(bal.id.asc()));
+
+  std::vector<HubAddressBalanceEvent> balances;
+
+  for (auto& row : result) {
+    std::chrono::time_point<std::chrono::system_clock> ts =
+        row.occuredAt.value();
+
+    balances.emplace_back(HubAddressBalanceEvent{
+            std::move(row.address), row.amount,
+            static_cast<HubAddressBalanceReason>(row.reason.value()),
+            std::move(row.bundleHash), ts});
+  }
+
   return balances;
 }
 
