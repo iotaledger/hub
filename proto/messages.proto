@@ -29,6 +29,8 @@ enum ErrorCode {
   BATCH_AMOUNT_ZERO = 6;
   // The address is not known to the hub
   UNKNOWN_ADDRESS = 7;
+  // Either the withdrawal has been swept or cancelled already
+  WITHDRAWAL_CAN_NOT_BE_CANCELLED = 8;
 }
 
 /*

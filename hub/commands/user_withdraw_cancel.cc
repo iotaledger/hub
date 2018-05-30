@@ -5,7 +5,6 @@
  * Refer to the LICENSE file for licensing information
  */
 
-
 #include "hub/commands/user_withdraw_cancel.h"
 
 #include <cstdint>
@@ -60,6 +59,12 @@ grpc::Status UserWithdrawCancel::doProcess(
                 << " cancelled successfully.";
     } else {
       transaction->rollback();
+      LOG(ERROR)
+          << "Withdrawal: " << request->uuid()
+          << " can not be cancelled. (either it had been swept or it has "
+             "already been cancelled)";
+
+      errorCode = hub::rpc::ErrorCode::WITHDRAWAL_CAN_NOT_BE_CANCELLED;
     }
   } catch (const std::exception& ex) {
     LOG(ERROR) << session() << " Commit failed: " << ex.what();
