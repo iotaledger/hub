@@ -5,7 +5,6 @@
  * Refer to the LICENSE file for licensing information
  */
 
-
 #include "hub/server/grpc.h"
 
 #include <memory>
@@ -15,14 +14,15 @@
 #include <google/protobuf/util/json_util.h>
 
 #include "hub/commands/create_user.h"
+#include "hub/commands/get_address_info.h"
 #include "hub/commands/get_balance.h"
 #include "hub/commands/get_deposit_address.h"
 #include "hub/commands/get_user_history.h"
 #include "hub/commands/process_transfer_batch.h"
+#include "hub/commands/sweep_subscription.h"
 #include "hub/commands/user_balance_subscription.h"
 #include "hub/commands/user_withdraw.h"
 #include "hub/commands/user_withdraw_cancel.h"
-#include "hub/commands/sweep_subscription.h"
 #include "hub/stats/session.h"
 
 namespace hub {
@@ -102,6 +102,14 @@ grpc::Status HubImpl::SweepSubscription(
   auto clientSession = std::make_shared<ClientSession>();
   cmd::SweepSubscription cmd(clientSession);
   return cmd.process(request, writer);
+}
+
+grpc::Status HubImpl::GetAddressInfo(grpc::ServerContext* context,
+                                     const rpc::GetAddressInfoRequest* request,
+                                     rpc::GetAddressInfoReply* response) {
+  auto clientSession = std::make_shared<ClientSession>();
+  cmd::GetAddressInfo cmd(clientSession);
+  return cmd.process(request, response);
 }
 
 }  // namespace hub

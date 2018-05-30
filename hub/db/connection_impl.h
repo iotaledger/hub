@@ -5,7 +5,6 @@
  * Refer to the LICENSE file for licensing information
  */
 
-
 #ifndef HUB_DB_CONNECTION_IMPL_H_
 #define HUB_DB_CONNECTION_IMPL_H_
 
@@ -17,9 +16,9 @@
 #include <set>
 #include <string>
 #include <tuple>
+#include <unordered_map>
 #include <utility>
 #include <vector>
-#include <unordered_map>
 
 #include <sqlpp11/transaction.h>
 
@@ -228,6 +227,11 @@ class ConnectionImpl : public Connection {
 
   bool isSweepConfirmed(uint64_t sweepId) override {
     return db::helper<Conn>::isSweepConfirmed(*_conn, sweepId);
+  }
+
+  nonstd::optional<AddressInfo> getAddressInfo(
+      const hub::crypto::Address& address) override {
+    return db::helper<Conn>::getAddressInfo(*_conn, address);
   }
 
   void execute(const std::string& what) override { _conn->execute(what); }

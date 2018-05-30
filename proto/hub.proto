@@ -1,4 +1,5 @@
 syntax = "proto3";
+option java_package = "org.iota.rpchub";
 
 package hub.rpc;
 import "proto/messages.proto";
@@ -26,5 +27,7 @@ service Hub {
   rpc GetStats (StatsRequest) returns (StatsReply);
   // Produces a stream of all sweeps since the provided timestamp
   rpc SweepSubscription (SweepSubscriptionRequest) returns (stream SweepEvent);
+  // Provides information on an address if it's owned by the Hub
+  rpc GetAddressInfo (GetAddressInfoRequest) returns (GetAddressInfoReply);
 }
 

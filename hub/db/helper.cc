@@ -5,7 +5,6 @@
  * Refer to the LICENSE file for licensing information
  */
 
-
 #include "hub/db/helper.h"
 
 #include <algorithm>
@@ -624,6 +623,24 @@ bool helper<C>::isSweepConfirmed(C& connection, uint64_t sweepId) {
       connection(select(swp.confirmed).from(swp).where(swp.id == sweepId));
 
   return result.front().confirmed;
+}
+
+template <typename C>
+nonstd::optional<AddressInfo> helper<C>::getAddressInfo(
+    C& connection, const hub::crypto::Address& address) {
+  db::sql::UserAddress add;
+  db::sql::UserAccount acc;
+
+  auto result =
+      connection(select(acc.identifier)
+                     .from(add.join(acc).on(add.userId == acc.id))
+                     .where(add.address == address.str()));
+
+  if (result.empty()) {
+    return {};
+  } else {
+    return {AddressInfo{std::move(result.front().identifier.value())}};
+  }
 }
 
 template struct helper<sqlpp::mysql::connection>;

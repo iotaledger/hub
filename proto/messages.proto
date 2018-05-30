@@ -1,10 +1,10 @@
-
 /*
  * Hub related messages.
  
  */
 
 syntax = "proto3";
+option java_package = "org.iota.rpchub";
 
 package hub.rpc;
 
@@ -27,6 +27,8 @@ enum ErrorCode {
   BATCH_INCONSISTENT = 5;
   // The amount associated with the transfer is invalid (should be greater or less than 0)
   BATCH_AMOUNT_ZERO = 6;
+  // The address is not known to the hub
+  UNKNOWN_ADDRESS = 7;
 }
 
 /*
@@ -210,3 +212,14 @@ message SweepSubscriptionRequest {
   uint64 newerThan = 1;
 }
 
+message GetAddressInfoRequest 
+{
+  // The address to look up
+  string address = 1;
+}
+
+message GetAddressInfoReply
+{
+  // The user identifier who owns an address
+  string userId = 1;
+}
