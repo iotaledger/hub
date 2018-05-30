@@ -51,6 +51,7 @@ struct helper {
       const nonstd::optional<uint64_t> fkey = {});
   static uint64_t createWithdrawal(C& connection, const std::string& uuid,
                                    uint64_t userId, uint64_t amount,
+                                   const hub::crypto::Tag& tag,
                                    const hub::crypto::Address& payoutAddress);
   static size_t cancelWithdrawal(C& connection, const std::string& uuid);
   static size_t setWithdrawalSweep(C& connection, uint64_t id,

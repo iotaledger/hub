@@ -102,8 +102,9 @@ class ConnectionImpl : public Connection {
 
   uint64_t createWithdrawal(
       const std::string& uuid, uint64_t userId, uint64_t amount,
+      const hub::crypto::Tag& tag,
       const hub::crypto::Address& payoutAddress) override {
-    return db::helper<Conn>::createWithdrawal(*_conn, uuid, userId, amount,
+    return db::helper<Conn>::createWithdrawal(*_conn, uuid, userId, amount, tag,
                                               payoutAddress);
   }
 

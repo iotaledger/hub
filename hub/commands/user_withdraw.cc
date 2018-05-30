@@ -5,7 +5,6 @@
  * Refer to the LICENSE file for licensing information
  */
 
-
 #include "hub/commands/user_withdraw.h"
 
 #include <cstdint>
@@ -47,6 +46,10 @@ grpc::Status UserWithdraw::doProcess(
   try {
     auto payoutAddress = hub::crypto::Address(request->payoutaddress());
 
+    hub::crypto::Tag withdrawalTag(
+        request->tag() +
+        std::string(hub::crypto::Tag::length() - request->tag().size(), '9'));
+
     // Get userId for identifier
     {
       auto maybeUserId = connection.userIdFromIdentifier(request->userid());
@@ -69,9 +72,9 @@ grpc::Status UserWithdraw::doProcess(
     }
 
     // Add withdrawal
-    withdrawalId =
-        connection.createWithdrawal(boost::uuids::to_string(withdrawalUUID),
-                                    userId, request->amount(), payoutAddress);
+    withdrawalId = connection.createWithdrawal(
+        boost::uuids::to_string(withdrawalUUID), userId, request->amount(),
+        withdrawalTag, payoutAddress);
 
     // Add user account balance entry
     connection.createUserAccountBalanceEntry(

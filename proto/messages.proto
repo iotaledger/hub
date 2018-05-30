@@ -115,6 +115,8 @@ message UserWithdrawRequest {
   string payoutAddress = 2;
   // Requested withdrawal amount
   uint64 amount = 3;
+  // Tag for withdrawal
+  string tag = 4;
 }
 
 message UserWithdrawReply {

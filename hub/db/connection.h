@@ -106,10 +106,12 @@ class Connection {
   /// @param[in] uuid - the hub::crypto::UUID identifier of the withdrawal
   /// @param[in] userId - the user id in the database
   /// @param[in] amount - a int64_t, the amount to withdraw
+  /// @param[in] tag - the tag to use for the withdrawal
   /// @param[in] payoutAddress - a hub::crypto::Address, the IOTA to address
   /// @return uint64_t - 1 if successful
   virtual uint64_t createWithdrawal(
       const std::string& uuid, uint64_t userId, uint64_t amount,
+      const hub::crypto::Tag& tag,
       const hub::crypto::Address& payoutAddress) = 0;
 
   /// Cancel a withdrawal operation (if not already processed)
