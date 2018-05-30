@@ -261,7 +261,7 @@ TEST_F(ProcessTransferBatchTest, SequentialTransfersAreConsistent) {
 }
 
 TEST_F(ProcessTransferBatchTest, ConcurrentTransfersAreConsistent) {
-  static constexpr uint32_t NUM_THREADS = 100;
+  static constexpr uint32_t NUM_THREADS = 20;
 
   std::vector<std::thread> threads(NUM_THREADS);
   std::map<uint64_t, std::string> idsToUsers;

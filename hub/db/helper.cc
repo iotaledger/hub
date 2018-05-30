@@ -171,7 +171,8 @@ size_t helper<C>::cancelWithdrawal(C& connection, const std::string& uuid) {
 
   return connection(update(tbl)
                         .set(tbl.cancelledAt = now)
-                        .where(tbl.uuid == uuid && tbl.sweep.is_null()));
+                        .where(tbl.uuid == uuid && tbl.sweep.is_null() &&
+                               tbl.cancelledAt.is_null()));
 }
 
 template <typename C>
