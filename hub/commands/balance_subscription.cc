@@ -45,8 +45,8 @@ grpc::Status BalanceSubscription::doProcess(
             .count());
     userAccountEvent->set_amount(b.amount);
     userAccountEvent->set_type(userAccountBalanceEventTypeFromSql(b.type));
-    userAccountEvent->set_sweepbundlehash(b.sweepBundleHash);
-    userAccountEvent->set_withdrawaluuid(b.withdrawalUUID);
+    userAccountEvent->set_sweepbundlehash(std::move(b.sweepBundleHash));
+    userAccountEvent->set_withdrawaluuid(std::move(b.withdrawalUUID));
     event.set_allocated_useraccountevent(userAccountEvent);
     if (!writer->Write(event)) {
       return grpc::Status::CANCELLED;
@@ -76,8 +76,7 @@ grpc::Status BalanceSubscription::doProcess(
     }
   }
 
-  auto hubAddressBalances =
-      getAllHubAddressesBalancesSinceTimePoint(newerThan);
+  auto hubAddressBalances = getAllHubAddressesBalancesSinceTimePoint(newerThan);
 
   for (auto& b : hubAddressBalances) {
     hub::rpc::BalanceEvent event;
@@ -89,7 +88,7 @@ grpc::Status BalanceSubscription::doProcess(
             b.timestamp.time_since_epoch())
             .count());
     hubAddressEvent->set_amount(b.amount);
-    hubAddressEvent->set_sweepbundlehash(b.sweepBundleHash);
+    hubAddressEvent->set_sweepbundlehash(std::move(b.sweepBundleHash));
     hubAddressEvent->set_reason(hubAddressBalanceTypeFromSql(b.reason));
     event.set_allocated_hubaddressevent(hubAddressEvent);
     if (!writer->Write(event)) {
