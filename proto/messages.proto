@@ -158,7 +158,7 @@ message GetUserHistoryRequest {
 
 enum UserAccountBalanceEventType {
   // Unused
-  UE_UNKNOWN = 0;
+  UAB_UNKNOWN = 0;
   // Deposit into user account (positive amount)
   DEPOSIT = 1;
   // User received tokens as part of a transfer batch (positive amount)
@@ -172,7 +172,7 @@ enum UserAccountBalanceEventType {
 }
 
 enum UserAddressBalanceReason {
-  UAB_UNKNOWN = 0;
+  UADD_UNKNOWN = 0;
   // New user deposit tracked
   UA_DEPOSIT = 1;
   // Hub-sweep.
@@ -180,7 +180,7 @@ enum UserAddressBalanceReason {
 }
 
 enum HubAddressBalanceReason {
-  HAB_UNKNOWN = 0;
+  HUB_UNKNOWN = 0;
   // Sweep inbound (used as reminader address)
   INBOUND = 1;
   // Sweep outbound (used as input)
@@ -219,9 +219,11 @@ message HubAddressBalanceEvent {
 }
 
 message BalanceEvent {
-  UserAccountBalanceEvent userAccountEvent = 1;
-  UserAddressBalanceEvent userAddressEvent = 2;
-  HubAddressBalanceEvent  hubAddressEvent = 3;
+  oneof theEvent {
+    UserAccountBalanceEvent userAccountEvent = 1;
+    UserAddressBalanceEvent userAddressEvent = 2;
+    HubAddressBalanceEvent  hubAddressEvent = 3;
+  }
 }
 message BalanceSubscriptionRequest {
   // Balances newer than this time (MS since epoch) will be retrievd

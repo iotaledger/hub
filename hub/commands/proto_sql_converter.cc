@@ -26,7 +26,7 @@ rpc::UserAccountBalanceEventType userAccountBalanceEventTypeFromSql(
     case REASON::SELL:
       return rpc::UserAccountBalanceEventType::SELL;
     default:
-      return rpc::UserAccountBalanceEventType::UE_UNKNOWN;
+      return rpc::UserAccountBalanceEventType::UAB_UNKNOWN;
   }
 }
 
@@ -40,7 +40,7 @@ rpc::UserAddressBalanceReason userAddressBalanceEventTypeFromSql(
     case REASON::SWEEP:
       return rpc::UserAddressBalanceReason::UA_SWEEP;
     default:
-      return rpc::UserAddressBalanceReason::UAB_UNKNOWN;
+      return rpc::UserAddressBalanceReason::UADD_UNKNOWN;
   }
 }
 
@@ -54,7 +54,7 @@ hub::rpc::HubAddressBalanceReason hubAddressBalanceTypeFromSql(
     case REASON::OUTBOUND:
       return rpc::HubAddressBalanceReason::OUTBOUND;
     default:
-      return rpc::HubAddressBalanceReason::HAB_UNKNOWN;
+      return rpc::HubAddressBalanceReason::HUB_UNKNOWN;
   }
 }
 

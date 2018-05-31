@@ -93,7 +93,7 @@ class HubImpl final : public hub::rpc::Hub::Service {
 
   /// Monitors the balance for a user
   /// @param[in] context - server context
-  /// @param[in] request - a rpc::UserBalanceSubscriptionRequest request
+  /// @param[in] request - a rpc::BalanceSubscriptionRequest request
   /// @param[in] writer - a grpc::ServerWriter
   /// @return grpc::Status
   grpc::Status BalanceSubscription(
