@@ -563,7 +563,7 @@ std::vector<TransferInput> helper<C>::getHubInputsForSweep(
   auto availableAddressesResult = connection(
       select(add.id, add.address, add.balance, add.seedUuid)
           .from(add)
-          .where(add.createdAt < olderThan && !(add.isColdStorage != 0) &&
+          .where(add.createdAt < olderThan && add.isColdStorage == 0 &&
                  add.balance > 0 &&
                  !exists(select(bal.id).from(bal).where(
                      bal.hubAddress == add.id &&
