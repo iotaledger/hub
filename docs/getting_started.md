@@ -1,4 +1,4 @@
-# IOTA hub getting started.
+# IOTA Hub getting started.
 
 ## Before we start:
 
@@ -14,9 +14,8 @@
 
 ## Setup the database (this example is using MariaDB)
 
-- Install mysql/mariadb
-
-- run mysql:
+- Install mariadb
+- run mariadb CLI:
     - mysql -h127.0.0.1 --user root -ppassword
     - MariaDB [(none)]> create database db_name;
     - MariaDB [(none)]> use db_name;
@@ -26,7 +25,6 @@
 ## Runnig the hub
 
 - ./bazel-bin/hub/hub --salt yoursaltcharachters --apiAddress your_iri_node_uri --db db_name --dbUser your_user --dbPassword user_password --monitorInterval xxx --attachmentInterval yyy --sweepInterval zzz
-
 - For detailed explanation about program arguments, see README
 
 
