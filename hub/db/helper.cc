@@ -276,7 +276,7 @@ std::vector<UserAccountBalanceEvent> helper<C>::getUserAccountBalances(
   db::sql::UserAccountBalance bal;
   db::sql::UserAccount acc;
 
-  //Might wanna add sweep's bundle hash or withdrawal uuid in the future.
+  // Might wanna add sweep's bundle hash or withdrawal uuid in the future.
   auto result =
       connection(select(acc.identifier, bal.amount, bal.reason, bal.occuredAt)
                      .from(bal.join(acc).on(bal.userId == acc.id))
@@ -304,51 +304,40 @@ helper<C>::getAllUsersAccountBalancesSinceTimePoint(
   db::sql::Sweep swp;
   db::sql::Withdrawal withdrawal;
 
-  auto sweepActionsResult =
-      connection(select(acc.identifier, bal.amount, bal.reason, bal.occuredAt,
-                        swp.bundleHash)
-                     .from(bal.join(acc)
-                               .on(bal.userId == acc.id)
-                               .join(swp)
-                               .on(bal.sweep == swp.id))
-                     .where(bal.occuredAt >= newerThan &&
-                            bal.reason == static_cast<int>(
-                                              UserAccountBalanceReason::SWEEP))
-                     .order_by(bal.occuredAt.asc()));
-
-  auto withdrawActionsResult = connection(
+  auto result = connection(
       select(acc.identifier, bal.amount, bal.reason, bal.occuredAt,
-             withdrawal.uuid)
+             withdrawal.uuid, swp.bundleHash)
           .from(bal.join(acc)
                     .on(bal.userId == acc.id)
-                    .join(withdrawal)
+                    .left_outer_join(swp)
+                    .on(bal.sweep == swp.id)
+                    .left_outer_join(withdrawal)
                     .on(bal.withdrawal == withdrawal.id))
-          .where(
-              bal.occuredAt >= newerThan &&
-              (bal.reason ==
-                   static_cast<int>(UserAccountBalanceReason::WITHDRAWAL) ||
-               bal.reason == static_cast<int>(
-                                 UserAccountBalanceReason::WITHDRAWAL_CANCEL)))
+          .where(bal.occuredAt >= newerThan &&
+                 (bal.reason ==
+                      static_cast<int>(UserAccountBalanceReason::SWEEP) ||
+                  (bal.reason ==
+                       static_cast<int>(UserAccountBalanceReason::WITHDRAWAL) ||
+                   bal.reason ==
+                       static_cast<int>(
+                           UserAccountBalanceReason::WITHDRAWAL_CANCEL))))
           .order_by(bal.occuredAt.asc()));
 
   std::vector<UserAccountBalanceEvent> balances;
 
-  for (auto& row : sweepActionsResult) {
+  for (auto& row : result) {
     std::chrono::time_point<std::chrono::system_clock> ts =
         row.occuredAt.value();
-    balances.emplace_back(UserAccountBalanceEvent{
-        std::move(row.identifier), ts, row.amount,
-        static_cast<UserAccountBalanceReason>((row.reason.value())),
-        std::move(row.bundleHash), ""});
-  }
-
-  for (auto& row : withdrawActionsResult) {
-    std::chrono::time_point<std::chrono::system_clock> ts =
-        row.occuredAt.value();
-    balances.emplace_back(UserAccountBalanceEvent{
-        std::move(row.identifier), ts, row.amount,
-        static_cast<UserAccountBalanceReason>((row.reason.value())),
-        "", std::move(row.uuid)});
+    auto reason = static_cast<UserAccountBalanceReason>(row.reason.value());
+    if (reason == UserAccountBalanceReason::SWEEP) {
+      balances.emplace_back(
+          UserAccountBalanceEvent{std::move(row.identifier), ts, row.amount,
+                                  reason, std::move(row.bundleHash), ""});
+    } else {
+      balances.emplace_back(UserAccountBalanceEvent{std::move(row.identifier),
+                                                    ts, row.amount, reason, "",
+                                                    std::move(row.uuid)});
+    }
   }
 
   return balances;
@@ -422,9 +411,9 @@ helper<C>::getAllHubAddressesBalancesSinceTimePoint(
         row.occuredAt.value();
 
     balances.emplace_back(HubAddressBalanceEvent{
-            std::move(row.address), row.amount,
-            static_cast<HubAddressBalanceReason>(row.reason.value()),
-            std::move(row.bundleHash), ts});
+        std::move(row.address), row.amount,
+        static_cast<HubAddressBalanceReason>(row.reason.value()),
+        std::move(row.bundleHash), ts});
   }
 
   return balances;
