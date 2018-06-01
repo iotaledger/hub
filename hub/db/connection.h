@@ -282,6 +282,18 @@ class Connection {
   virtual nonstd::optional<AddressInfo> getAddressInfo(
       const hub::crypto::Address& address) = 0;
 
+  /// Looks up a sweep by a withdrawal UUID
+  /// @param[in] uuid - the withdrawal UUID to use for the lookup.
+  /// #return nonstd::optional<SweepEvent> - the sweep if found
+  virtual nonstd::optional<SweepEvent> getSweepByWithdrawalUUID(
+      const std::string& uuid) = 0;
+
+  /// Looks up a sweep by bundle hash
+  /// @param[in] bundleHash - the bundle hash to use for the lookup.
+  /// #return nonstd::optional<SweepEvent> - the sweep if found
+  virtual nonstd::optional<SweepEvent> getSweepByBundleHash(
+      const hub::crypto::Hash& bundleHash) = 0;
+
  private:
   friend class DBManager;
 

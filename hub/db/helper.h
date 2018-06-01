@@ -95,6 +95,11 @@ struct helper {
   static WithdrawalInfo getWithdrawalInfoFromUUID(C& connection,
                                                   const std::string& uuid);
 
+  static nonstd::optional<SweepEvent> getSweepByWithdrawalUUID(
+      C& connection, const std::string& uuid);
+  static nonstd::optional<SweepEvent> getSweepByBundleHash(
+      C& connection, const hub::crypto::Hash& bundleHash);
+
   static int64_t createHubAddress(C& connection, const hub::crypto::UUID& uuid,
                                   const hub::crypto::Address& address);
   static void createHubAddressBalanceEntry(C& connection, uint64_t hubAddress,

@@ -20,6 +20,7 @@
 #include "hub/commands/get_deposit_address.h"
 #include "hub/commands/get_user_history.h"
 #include "hub/commands/process_transfer_batch.h"
+#include "hub/commands/sweep_info.h"
 #include "hub/commands/sweep_subscription.h"
 #include "hub/commands/user_withdraw.h"
 #include "hub/commands/user_withdraw_cancel.h"
@@ -109,6 +110,14 @@ grpc::Status HubImpl::GetAddressInfo(grpc::ServerContext* context,
                                      rpc::GetAddressInfoReply* response) {
   auto clientSession = std::make_shared<ClientSession>();
   cmd::GetAddressInfo cmd(clientSession);
+  return cmd.process(request, response);
+}
+
+grpc::Status HubImpl::SweepInfo(grpc::ServerContext* context,
+                                const rpc::SweepInfoRequest* request,
+                                rpc::SweepEvent* response) {
+  auto clientSession = std::make_shared<ClientSession>();
+  cmd::SweepInfo cmd(clientSession);
   return cmd.process(request, response);
 }
 

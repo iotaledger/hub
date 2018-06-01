@@ -124,8 +124,7 @@ class ConnectionImpl : public Connection {
     db::helper<Conn>::markUUIDAsSigned(*_conn, uuid);
   }
 
-  std::vector<UserAccountBalanceEvent>
-  getAllUsersAccountBalancesSinceTimePoint(
+  std::vector<UserAccountBalanceEvent> getAllUsersAccountBalancesSinceTimePoint(
       std::chrono::system_clock::time_point newerThan) override {
     return db::helper<Conn>::getAllUsersAccountBalancesSinceTimePoint(
         *_conn, newerThan);
@@ -248,6 +247,16 @@ class ConnectionImpl : public Connection {
   nonstd::optional<AddressInfo> getAddressInfo(
       const hub::crypto::Address& address) override {
     return db::helper<Conn>::getAddressInfo(*_conn, address);
+  }
+
+  nonstd::optional<SweepEvent> getSweepByBundleHash(
+      const hub::crypto::Hash& bundleHash) override {
+    return db::helper<Conn>::getSweepByBundleHash(*_conn, bundleHash);
+  }
+
+  nonstd::optional<SweepEvent> getSweepByWithdrawalUUID(
+      const std::string& uuid) override {
+    return db::helper<Conn>::getSweepByWithdrawalUUID(*_conn, uuid);
   }
 
   void execute(const std::string& what) override { _conn->execute(what); }
