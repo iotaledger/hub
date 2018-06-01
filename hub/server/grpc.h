@@ -118,6 +118,9 @@ class HubImpl final : public hub::rpc::Hub::Service {
   grpc::Status GetAddressInfo(grpc::ServerContext* context,
                               const ::hub::rpc::GetAddressInfoRequest* request,
                               hub::rpc::GetAddressInfoReply* response) override;
+  grpc::Status SweepInfo(grpc::ServerContext* context,
+                         const hub::rpc::SweepInfoRequest* request,
+                         hub::rpc::SweepEvent* response) override;
 };
 
 }  // namespace hub

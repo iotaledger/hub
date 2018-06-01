@@ -369,10 +369,10 @@ helper<C>::getAllUserAddressesBalancesSinceTimePoint(
   for (auto& row : result) {
     std::chrono::time_point<std::chrono::system_clock> ts =
         row.occuredAt.value();
-    std::string hash =
-        (row.reason == static_cast<int>(UserAddressBalanceReason::SWEEP))
-            ? std::move(row.bundleHash)
-            : std::move(row.tailHash.value());
+    std::string hash = (row.reason.value() ==
+                        static_cast<int>(UserAddressBalanceReason::SWEEP))
+                           ? std::move(row.bundleHash)
+                           : std::move(row.tailHash.value());
 
     UserAddressBalanceEvent e{
         std::move(row.identifier),
@@ -750,6 +750,59 @@ nonstd::optional<AddressInfo> helper<C>::getAddressInfo(
   } else {
     return {AddressInfo{std::move(result.front().identifier.value())}};
   }
+}
+
+template <typename C>
+nonstd::optional<SweepEvent> helper<C>::getSweepByWithdrawalUUID(
+    C& connection, const std::string& uuid) {
+  db::sql::Withdrawal wdl;
+  db::sql::Sweep swp;
+
+  auto withdrawal =
+      connection(select(wdl.sweep).from(wdl).where(wdl.uuid == uuid));
+
+  if (withdrawal.empty() || withdrawal.front().sweep.is_null()) {
+    return {};
+  }
+
+  auto sweepResult =
+      connection(select(swp.bundleHash, swp.createdAt, wdl.uuid)
+                     .from(swp.left_outer_join(wdl).on(swp.id == wdl.sweep))
+                     .where(swp.id == withdrawal.front().sweep));
+
+  SweepEvent evt;
+
+  evt.bundleHash = std::move(sweepResult.front().bundleHash.value());
+  evt.timestamp = sweepResult.front().createdAt.value();
+
+  for (const auto& w : sweepResult) {
+    evt.withdrawalUUIDs.emplace_back(std::move(w.uuid.value()));
+  }
+
+  return evt;
+}
+
+template <typename C>
+nonstd::optional<SweepEvent> helper<C>::getSweepByBundleHash(
+    C& connection, const hub::crypto::Hash& bundleHash) {
+  db::sql::Sweep swp;
+  db::sql::Withdrawal wdl;
+
+  auto sweepResult =
+      connection(select(swp.bundleHash, swp.createdAt, wdl.uuid)
+                     .from(swp.left_outer_join(wdl).on(swp.id == wdl.sweep))
+                     .where(swp.bundleHash == bundleHash.str()));
+
+  SweepEvent evt;
+
+  evt.bundleHash = std::move(sweepResult.front().bundleHash.value());
+  evt.timestamp = sweepResult.front().createdAt.value();
+
+  for (const auto& w : sweepResult) {
+    evt.withdrawalUUIDs.emplace_back(std::move(w.uuid.value()));
+  }
+
+  return evt;
 }
 
 template struct helper<sqlpp::mysql::connection>;

@@ -1,16 +1,16 @@
+
 /*
  * Hub related messages.
- 
  */
 
 syntax = "proto3";
+
 option java_package = "org.iota.rpchub";
 
 package hub.rpc;
 
 /*
   Error codes that can be returned by the hub.
- 
  */
 enum ErrorCode {
   // Unused.
@@ -37,7 +37,6 @@ enum ErrorCode {
  * The generic Error that will be used to return an error code on, e.g. Status::CANCELLED. 	
  *
  * The error will be serialised and stored in the Status' detail field.
- 
  */
 message Error {
   ErrorCode code = 1;
@@ -46,7 +45,6 @@ message Error {
 
 /*
  * Request for creating a new user.  
- 
  */
 message CreateUserRequest {
   string userId = 1;
@@ -57,14 +55,12 @@ message CreateUserRequest {
  * Reply for creating a new user.
  *
  * Currently unused.
- 
  */
 message CreateUserReply {}
 
 
 /*
  * Request for requesting a user's currently available balance.
- 
  */
 message GetBalanceRequest {
   string userId = 1;
@@ -73,7 +69,6 @@ message GetBalanceRequest {
 
 /*
  * Reply containing a user's currently available balanc.e
- 
  */
 message GetBalanceReply {
   // User balance that is currently available for withdrawal / trades
@@ -86,7 +81,6 @@ message GetBalanceReply {
 
 /*
  * Request for creating a new deposit address for a user.
- 
  */
 message GetDepositAddressRequest {
   string userId = 1;
@@ -95,7 +89,6 @@ message GetDepositAddressRequest {
 
 /*
  * Reply containing the new deposit address.
- 
  */
 message GetDepositAddressReply {
   // Newly created deposit address
@@ -107,7 +100,6 @@ message GetDepositAddressReply {
  * Requests a user-submitted withdrawal.
  *
  * This will fail if the user does not have sufficient balance available.
- 
  */
 message UserWithdrawRequest {
   string userId = 1;
@@ -127,7 +119,6 @@ message UserWithdrawReply {
 
 /*
  * Request to cancel an already submitted withdrawal.
- 
  */
 message UserWithdrawCancelRequest {
   // Withdrawal UUID that is to be canceled
@@ -137,7 +128,6 @@ message UserWithdrawCancelRequest {
 
 /*
  * Reply for withdrawal cancellation.
- 
  */
 message UserWithdrawCancelReply {
   // True if withdrawal could be canceled
@@ -170,7 +160,6 @@ enum UserAccountBalanceEventType {
   // User lost tokens as part of a transfer batch (negative amount)
   SELL = 5;
 }
-
 enum UserAddressBalanceReason {
   UADD_UNKNOWN = 0;
   // New user deposit tracked
@@ -178,7 +167,6 @@ enum UserAddressBalanceReason {
   // Hub-sweep.
   UA_SWEEP = 2;
 }
-
 enum HubAddressBalanceReason {
   HUB_UNKNOWN = 0;
   // Sweep inbound (used as reminader address)
@@ -186,51 +174,49 @@ enum HubAddressBalanceReason {
   // Sweep outbound (used as input)
   OUTBOUND = 2;
 }
-
 message UserAccountBalanceEvent {
   string userId = 1;
   // Time since epoch in MS when the balance change occured
-  uint64 timestamp = 2;
+                       uint64 timestamp = 2;
   UserAccountBalanceEventType type      = 3;
-  int64 amount    = 4;
+                        int64 amount    = 4;
   // Will contain sweep bundle hash on deposit
   // Will contain withdrawal uuid on withdrawal or withdrawal cancel
   string sweepBundleHash = 5;
-  string withdrawalUUID = 6;
+  string withdrawalUUID  = 6;
 }
 
 message UserAddressBalanceEvent {
-  string userId = 1;
-  string userAddress = 2;
-  int64 amount = 3;
-  UserAddressBalanceReason reason = 4;
+                    string userId      = 1;
+                    string userAddress = 2;
+                     int64 amount      = 3;
+  UserAddressBalanceReason reason      = 4;
   // Depositing bundle's tail (if reason == DEPOSIT)
   // Bundle hash of sweep (if reason == SWEEP)
-  string hash = 5;
+  string hash      = 5;
   uint64 timestamp = 6;
 }
 
 message HubAddressBalanceEvent {
-  string hubAddress = 1;
-  int64 amount = 2;
-  HubAddressBalanceReason reason = 3;
-  string sweepBundleHash = 4;
-  uint64 timestamp = 5;
+                   string hubAddress      = 1;
+                    int64 amount          = 2;
+  HubAddressBalanceReason reason          = 3;
+                   string sweepBundleHash = 4;
+                   uint64 timestamp       = 5;
 }
 
 message BalanceEvent {
   oneof theEvent {
     UserAccountBalanceEvent userAccountEvent = 1;
     UserAddressBalanceEvent userAddressEvent = 2;
-    HubAddressBalanceEvent  hubAddressEvent = 3;
+     HubAddressBalanceEvent hubAddressEvent  = 3;
   }
 }
+
 message BalanceSubscriptionRequest {
   // Balances newer than this time (MS since epoch) will be retrievd
   uint64 newerThan = 1;
 }
-
-
 
 message GetUserHistoryReply {
   // List of all user balance events for given user
@@ -241,7 +227,6 @@ message GetUserHistoryReply {
 /*
   This request contains a netted transfer batch. 
   UserIds must be unique.
- 
  */
 message ProcessTransferBatchRequest {
   message Transfer {
@@ -254,11 +239,9 @@ message ProcessTransferBatchRequest {
 
 message ProcessTransferBatchReply {}
 
-
-
 message SweepEvent {
-  string bundleHash = 1;
-  uint64 timestamp = 2;
+           string bundleHash     = 1;
+           uint64 timestamp      = 2;
   repeated string withdrawalUUID = 3;
 }
 
@@ -267,14 +250,22 @@ message SweepSubscriptionRequest {
   uint64 newerThan = 1;
 }
 
-message GetAddressInfoRequest 
-{
+message GetAddressInfoRequest {
   // The address to look up
   string address = 1;
 }
 
-message GetAddressInfoReply
-{
+message GetAddressInfoReply {
   // The user identifier who owns an address
   string userId = 1;
 }
+
+message SweepInfoRequest {
+  oneof requestBy {
+    // WIthdrawal UUID to look up
+    string withdrawalUUID = 1;
+    // Sweep's bundle hash
+    string bundleHash = 2;
+  }
+}
+
