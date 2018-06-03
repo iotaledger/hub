@@ -8,8 +8,8 @@
 #include "hub/commands/sweep_info.h"
 
 #include <cstdint>
-#include <utility>
 #include <nonstd/optional.hpp>
+#include <utility>
 
 #include "hub/commands/helper.h"
 #include "hub/crypto/types.h"
@@ -30,9 +30,14 @@ grpc::Status SweepInfo::doProcess(const hub::rpc::SweepInfoRequest* request,
 
   if (request->requestBy_case() ==
       hub::rpc::SweepInfoRequest::kWithdrawalUUID) {
-    // We could parse the withdrawal UUID to boost here for validation.
-    // But we can just as well ask the DB.
-    maybeEvent = connection.getSweepByWithdrawalUUID(request->withdrawaluuid());
+    try {
+      // We could parse the withdrawal UUID to boost here for validation.
+      // But we can just as well ask the DB.
+      maybeEvent =
+          connection.getSweepByWithdrawalUUID(request->withdrawaluuid());
+    } catch (const std::exception& ex) {
+      // ignore, DB !probably failed.
+    }
   } else if (request->requestBy_case() ==
              hub::rpc::SweepInfoRequest::kBundleHash) {
     try {
