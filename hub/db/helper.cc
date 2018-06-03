@@ -244,10 +244,10 @@ void helper<C>::createTail(C& connection, uint64_t sweepId,
 }
 
 template <typename C>
-std::vector<std::string> helper<C>::getTailsForSweep(C& connection,
+std::vector<SweepTail> helper<C>::getTailsForSweep(C& connection,
                                                      uint64_t sweepId) {
   db::sql::SweepTails tls;
-  std::vector<std::string> tails;
+  std::vector<SweepTail> tails;
 
   auto result = connection(select(tls.hash, tls.sweep, tls.createdAt)
                                .from(tls)
@@ -257,7 +257,7 @@ std::vector<std::string> helper<C>::getTailsForSweep(C& connection,
   for (const auto& row : result) {
     std::chrono::time_point<std::chrono::system_clock> ts =
         row.createdAt.value();
-    tails.emplace_back(std::move(row.hash));
+    tails.emplace_back(SweepTail{std::move(row.hash), ts});
   }
 
   return tails;

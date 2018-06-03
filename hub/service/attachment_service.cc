@@ -5,14 +5,15 @@
  * Refer to the LICENSE file for licensing information
  */
 
-
 #include "hub/service/attachment_service.h"
 
 #include <algorithm>
 #include <chrono>
+#include <iterator>
 #include <unordered_map>
 #include <vector>
 
+#include <gflags/gflags.h>
 #include <glog/logging.h>
 #include <boost/functional/hash.hpp>
 #include <iota/models/bundle.hpp>
@@ -21,6 +22,13 @@
 #include "common/helpers/digest.h"
 #include "hub/db/helper.h"
 #include "hub/iota/pow.h"
+
+namespace {
+DEFINE_uint32(max_promotion_age, 30,
+              "Maximum age for a sweep's tail which allows promotion, (i.e - a "
+              "tail that's older than that will not be promoted, rather sweep "
+              "will be reattached)");
+}  // namespace
 
 namespace hub {
 namespace service {
@@ -173,13 +181,18 @@ bool AttachmentService::doTick() {
 
     try {
       // 2. Get (tails, timestamp) for these sweeps
-      const auto initialSweepTails = connection.getTailsForSweep(sweep.id);
+      const auto initialSweepInfos = connection.getTailsForSweep(sweep.id);
+
+      std::vector<std::string> initialSweepTailHashes;
+      std::transform(std::begin(initialSweepInfos), std::end(initialSweepInfos),
+                     std::back_inserter(initialSweepTailHashes),
+                     [](const auto& sweepTail) { return sweepTail.hash; });
 
       // 3. Check if one of the tails is confirmed.
       // 4. If not, check if a user reattachment was confirmed
       if (checkSweepTailsForConfirmation(connection, sweep,
-                                         initialSweepTails) ||
-          checkForUserReattachment(connection, sweep, initialSweepTails)) {
+                                         initialSweepTailHashes) ||
+          checkForUserReattachment(connection, sweep, initialSweepTailHashes)) {
         LOG(INFO) << "Sweep " << sweep.id << " is CONFIRMED.";
       } else {
         LOG(INFO) << "Sweep " << sweep.id << " is still unconfirmed.";
@@ -189,21 +202,29 @@ bool AttachmentService::doTick() {
         // Requerying list of tails because `checkForUserReattachment` might
         // have added some.
         const auto sweepTails = connection.getTailsForSweep(sweep.id);
-        auto consistentTails = _api->filterConsistentTails(sweepTails);
+        std::vector<std::string> sweepTailHashes;
+        std::transform(std::begin(sweepTails), std::end(sweepTails),
+                       std::back_inserter(sweepTailHashes),
+                       [](const auto& sweepTail) { return sweepTail.hash; });
+        auto consistentTails = _api->filterConsistentTails(sweepTailHashes);
         // 5.1. If yes, pick most recent and promote.
         if (consistentTails.size() > 0) {
           // Get newest tail.
-          auto toPromote = std::find_if(sweepTails.begin(), sweepTails.end(),
-                                        [&consistentTails](const auto& tail) {
-                                          return consistentTails.find(tail) !=
-                                                 consistentTails.end();
-                                        });
+          auto toPromote = std::find_if(
+              sweepTails.begin(), sweepTails.end(),
+              [&consistentTails](const auto& tail) {
+                return consistentTails.find(tail.hash) !=
+                           consistentTails.end() &&
+                       std::chrono::duration_cast<std::chrono::minutes>(
+                           std::chrono::system_clock::now() - tail.createdAt)
+                               .count() < FLAGS_max_promotion_age;
+              });
 
           // Promotion can fail if getTransactionsToApprove fails!
           // In this case, we just catch and reattach.
           try {
             promoteSweep(connection, powProvider, sweep,
-                         hub::crypto::Hash(*toPromote));
+                         hub::crypto::Hash((*toPromote).hash));
           } catch (const std::exception& ex) {
             LOG(INFO) << "Promotion failed. Reattaching.";
 

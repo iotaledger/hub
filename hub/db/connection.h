@@ -152,8 +152,8 @@ class Connection {
 
   /// Get a list of tails for a sweep
   /// @param[in] sweepId - the id of the sweep for which to create a tail
-  /// @return std::vector - a list of tail hashes
-  virtual std::vector<std::string> getTailsForSweep(uint64_t sweepId) = 0;
+  /// @return std::vector - a list of SweepTail-s
+  virtual std::vector<SweepTail> getTailsForSweep(uint64_t sweepId) = 0;
 
   /// Mark a sweep tail as confirmed
   /// @param[in] hash - the tail hash
