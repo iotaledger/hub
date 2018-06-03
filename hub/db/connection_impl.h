@@ -140,7 +140,7 @@ class ConnectionImpl : public Connection {
     db::helper<Conn>::createTail(*_conn, sweepId, hash);
   }
 
-  std::vector<std::string> getTailsForSweep(uint64_t sweepId) override {
+  std::vector<SweepTail> getTailsForSweep(uint64_t sweepId) override {
     return db::helper<Conn>::getTailsForSweep(*_conn, sweepId);
   }
 

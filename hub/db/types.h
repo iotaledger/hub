@@ -112,6 +112,11 @@ struct AddressInfo {
   std::string userId;
 };
 
+struct SweepTail {
+    std::string hash;
+    std::chrono::system_clock::time_point createdAt;
+};
+
 }  // namespace db
 }  // namespace hub
 

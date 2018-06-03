@@ -75,7 +75,7 @@ struct helper {
       C& connection, const std::chrono::system_clock::time_point& olderThan);
   static void createTail(C& connection, uint64_t sweepId,
                          const std::string& hash);
-  static std::vector<std::string> getTailsForSweep(C& connection,
+  static std::vector<SweepTail> getTailsForSweep(C& connection,
                                                    uint64_t sweepId);
   static void markTailAsConfirmed(C& connection, const std::string& hash);
   static std::vector<UserAccountBalanceEvent>
