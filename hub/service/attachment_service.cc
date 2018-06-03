@@ -24,10 +24,11 @@
 #include "hub/iota/pow.h"
 
 namespace {
-DEFINE_uint32(max_promotion_age, 30,
-              "Maximum age for a sweep's tail which allows promotion, (i.e - a "
-              "tail that's older than that will not be promoted, rather sweep "
-              "will be reattached)");
+DEFINE_uint32(
+    max_promotion_age, 30,
+    "Maximum age [minutes] for a sweep's tail which allows promotion, (i.e - a "
+    "tail that's older than that will not be promoted, rather sweep "
+    "will be reattached)");
 }  // namespace
 
 namespace hub {
@@ -220,15 +221,17 @@ bool AttachmentService::doTick() {
                                .count() < FLAGS_max_promotion_age;
               });
 
-          // Promotion can fail if getTransactionsToApprove fails!
-          // In this case, we just catch and reattach.
-          try {
-            promoteSweep(connection, powProvider, sweep,
-                         hub::crypto::Hash((*toPromote).hash));
-          } catch (const std::exception& ex) {
-            LOG(INFO) << "Promotion failed. Reattaching.";
-
-            // 6. If not, reattach and commit tail to DB.
+          if (toPromote != sweepTails.end()) {
+            // Promotion can fail if getTransactionsToApprove fails!
+            // In this case, we just catch and reattach.
+            try {
+              promoteSweep(connection, powProvider, sweep,
+                           hub::crypto::Hash((*toPromote).hash));
+            } catch (const std::exception& ex) {
+              LOG(INFO) << "Promotion failed. Reattaching.";
+              reattachSweep(connection, powProvider, sweep);
+            }
+          } else {
             reattachSweep(connection, powProvider, sweep);
           }
         } else {
