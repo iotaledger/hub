@@ -5,7 +5,6 @@
  * Refer to the LICENSE file for licensing information
  */
 
-
 #ifndef HUB_SERVER_SERVER_H_
 #define HUB_SERVER_SERVER_H_
 
@@ -25,6 +24,7 @@
 namespace grpc {
 class Server;
 class ServerBuilder;
+class ServerCredentials;
 }  // namespace grpc
 
 namespace hub {
@@ -58,6 +58,8 @@ class HubServer {
   /// in the database.
   /// @return bool - true on success
   bool authenticateSalt() const;
+
+  std::shared_ptr<grpc::ServerCredentials> makeCredentials();
 };
 
 }  // namespace hub
