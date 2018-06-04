@@ -41,6 +41,9 @@ _Note that this means that the RPCHub does not track individual per-user balance
 2. Exchange sends funds from cold wallet to this deposit address
 3. Hub receives deposit and moves to internal address as part of a sweep.
 
+#### User B buys tokens from user A on exchange
+1. No action happens on the Hub, all accounting is done internally on the Exchange side.
+
 ### Discussion of Pros & Cons
 - (+) Easy management of cold / hot funds
 - (+) Likely to be easier to integrate on exchange side.
@@ -94,6 +97,10 @@ None. Start the Hub.
 2. Exchange stops Hub.
 3. Exchange sets `is_cold_storage` to `0` on these `hub_address` rows and restores the `seed_uuid` values.
 4. Exchange restarts hub.
+
+#### User B buys tokens from user A on exchange
+1. If not already exists, User B is created on Hub (`CreateUser`)
+2. As part of next batch, exchange issues a transfer between the two users (`ProcessTransfers`)
 
 ### Discussion of Pros & Cons
 - (+) Balances are tracked on a per-user level and thus Hub can do a sanity check on the requests the exchange sends.
