@@ -5,10 +5,12 @@
  * Refer to the LICENSE file for licensing information
  */
 
-
 #include "hub/server/server.h"
 
 #include <chrono>
+#include <fstream>
+#include <iostream>
+#include <sstream>
 
 #include <gflags/gflags.h>
 #include <glog/logging.h>
@@ -27,7 +29,6 @@ DEFINE_string(salt, "", "Salt for local seed provider");
 DEFINE_string(listenAddress, "0.0.0.0:50051", "address to listen on");
 DEFINE_string(apiAddress, "127.0.0.1:14265",
               "IRI node api to listen on. Format [host:port]");
-DEFINE_string(authMode, "none", "credentials to use. can be {none}");
 
 DEFINE_uint32(monitorInterval, 60000, "Address monitor check interval [ms]");
 DEFINE_uint32(attachmentInterval, 240000,
@@ -38,11 +39,47 @@ DEFINE_uint32(sweepInterval, 600000, "Sweep interval [ms]");
 DEFINE_uint32(minWeightMagnitude, 9, "Minimum weight magnitude for POW");
 DEFINE_uint32(depth, 3, "Value for getTransacationToApprove depth parameter");
 
+DEFINE_string(authMode, "none", "credentials to use. can be {none, ssl}");
+DEFINE_string(sslCert, "/dev/null", "Path to SSL certificate");
+DEFINE_string(sslKey, "/dev/null", "Path to SSL certificate key");
+DEFINE_string(sslCA, "/dev/null", "Path to CA root");
+
 using grpc::Server;
 using grpc::ServerBuilder;
 
+namespace {
+std::string readFile(const std::string& fileName) {
+  std::ifstream ifs(fileName.c_str());
+  std::stringstream buffer;
+
+  buffer << ifs.rdbuf();
+  return buffer.str();
+}
+
+}  // namespace
+
 namespace hub {
 HubServer::HubServer() {}
+
+std::shared_ptr<grpc::ServerCredentials> HubServer::makeCredentials() {
+  LOG(INFO) << "Using auth mode: " << FLAGS_authMode;
+  if (FLAGS_authMode == "none") {
+    return grpc::InsecureServerCredentials();
+  } else if (FLAGS_authMode == "ssl") {
+    grpc::SslServerCredentialsOptions options;
+
+    grpc::SslServerCredentialsOptions::PemKeyCertPair keycert = {
+        readFile(FLAGS_sslKey), readFile(FLAGS_sslCert)};
+
+    options.pem_key_cert_pairs.push_back(keycert);
+    options.pem_root_certs = readFile(FLAGS_sslCA);
+    options.client_certificate_request =
+        GRPC_SSL_REQUEST_AND_REQUIRE_CLIENT_CERTIFICATE_AND_VERIFY;
+    return grpc::SslServerCredentials(options);
+  }
+
+  LOG(FATAL) << "Unknown auth mode: " << FLAGS_authMode;
+}
 
 void HubServer::initialise() {
   if (FLAGS_salt.size() <= 20) {
@@ -79,8 +116,7 @@ void HubServer::initialise() {
 
   ServerBuilder builder;
 
-  builder.AddListeningPort(FLAGS_listenAddress,
-                           grpc::InsecureServerCredentials());
+  builder.AddListeningPort(FLAGS_listenAddress, makeCredentials());
   builder.RegisterService(&_service);
 
   _server = builder.BuildAndStart();
