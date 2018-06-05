@@ -1,4 +1,6 @@
 # IOTA Hub
+[![Build status](https://badge.buildkite.com/4e6fd31338b859f47d49eb2771d2189ef2f4ec908dacd7fde7.svg)](https://buildkite.com/th0rg/rpchub-ci)
+
 ## Dependencies
 - Modern GCC or Clang
 - [bazel](https://github.com/bazelbuild/bazel/releases)
