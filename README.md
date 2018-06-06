@@ -66,5 +66,5 @@ You can build a docker image for `RPCHub` via `bazel build -c opt //docker:hub`
 ## Useful things
 - Use `clang-format`
 - Use `protofmt` from `go get -u -v github.com/emicklei/proto-contrib/cmd/protofmt` to format
-- Use `grpcc` to test: `grpcc -i -a localhost:50051 - p proto/hub.protoc`
+- Use `grpcc` to test: `grpcc -i -a localhost:50051 -p proto/hub.proto`
 - Use `https://github.com/pseudomuto/protoc-gen-doc` to generate protobuf documentation
