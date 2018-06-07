@@ -45,17 +45,11 @@ grpc::Status GetDepositAddress::doProcess(
   {
     std::vector<uint32_t> userIds = {userId};
     auto unsweptUserAddresses = connection.unsweptUserAddresses({userIds});
-    std::vector<uint32_t> ids;
-
-    std::transform(
-        std::begin(unsweptUserAddresses), std::end(unsweptUserAddresses),
-        std::back_inserter(ids),
-        [](const auto& addressWithId) { return std::get<0>(addressWithId); });
 
     auto it = std::find_if(
         unsweptUserAddresses.begin(), unsweptUserAddresses.end(),
         [&](const hub::db::AddressWithID& addWId) {
-          return !connection.hasUserAddressGotDeposits(std::get<0>(addWId));
+          return !connection.wasUserAddressUsed(std::get<0>(addWId));
         });
 
     if (it != unsweptUserAddresses.end()) {

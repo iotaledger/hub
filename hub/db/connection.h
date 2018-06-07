@@ -300,7 +300,7 @@ class Connection {
   /// Looks up for deposit records for that address
   /// @param[in] addressId - the address id to use for the lookup.
   /// #return bool- if a deposit was found for the address
-  virtual bool hasUserAddressGotDeposits(uint32_t addressId) = 0;
+  virtual bool wasUserAddressUsed(uint32_t addressId) = 0;
 
  private:
   friend class DBManager;

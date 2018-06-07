@@ -260,8 +260,8 @@ class ConnectionImpl : public Connection {
     return db::helper<Conn>::getSweepByWithdrawalUUID(*_conn, uuid);
   }
 
-  bool hasUserAddressGotDeposits(uint32_t addressId) override {
-    return db::helper<Conn>::hasUserAddressGotDeposits(*_conn, addressId);
+  bool wasUserAddressUsed(uint32_t addressId) override {
+    return db::helper<Conn>::wasUserAddressUsed(*_conn, addressId);
   }
 
   void execute(const std::string& what) override { _conn->execute(what); }
