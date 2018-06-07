@@ -3,8 +3,8 @@ workspace(name = "org_iota_hub")
 # EXTERNAL RULES
 git_repository(
     name = "org_pubref_rules_protobuf",
+    commit = "0c59d9145c0d3bfba2a61a04392a950b088a9b83",
     remote = "https://github.com/pubref/rules_protobuf",
-    tag = "v0.8.2",
 )
 
 http_archive(
