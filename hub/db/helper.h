@@ -130,7 +130,7 @@ struct helper {
   static nonstd::optional<AddressInfo> getAddressInfo(
       C& connection, const hub::crypto::Address& address);
 
-  static bool hasUserAddressGotDeposits(C& connection, uint32_t addressId);
+  static bool wasUserAddressUsed(C& connection, uint32_t addressId);
 
   static bool isSweepConfirmed(C& connection, uint64_t sweepId);
 };

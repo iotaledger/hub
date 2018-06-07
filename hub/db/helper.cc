@@ -49,22 +49,24 @@ std::vector<AddressWithID> helper<C>::unsweptUserAddresses(
 
   std::vector<AddressWithID> addresses;
 
-  auto result =
-      connection(select(addr.id, addr.address, addr.userId)
-                     .from(addr)
-                     .where(!(exists(select(bal.id).from(bal).where(
-                         bal.userAddress == addr.id && bal.reason == 1)))));
-
   if (userIds.has_value()) {
-    auto ids = userIds.value();
-    for (const auto& row : result) {
-      if (std::find(std::begin(ids), std::end(ids), row.userId) !=
-          std::end(ids)) {
-        addresses.push_back({row.id, row.address});
-      }
-    }
+    auto result = connection(
+        select(addr.id, addr.address, addr.userId)
+            .from(addr)
+            .where(!(exists(select(bal.id).from(bal).where(
+                       bal.userAddress == addr.id && bal.reason == 1))) &&
+                   (addr.userId.in(sqlpp::value_list(userIds.value())))));
 
+    for (const auto& row : result) {
+      addresses.push_back({row.id, row.address});
+    }
   } else {
+    auto result =
+        connection(select(addr.id, addr.address, addr.userId)
+                       .from(addr)
+                       .where(!(exists(select(bal.id).from(bal).where(
+                           bal.userAddress == addr.id && bal.reason == 1)))));
+
     for (const auto& row : result) {
       addresses.push_back({row.id, row.address});
     }
@@ -818,11 +820,11 @@ nonstd::optional<SweepEvent> helper<C>::getSweepByBundleHash(
 }
 
 template <typename C>
-bool helper<C>::hasUserAddressGotDeposits(C& connection, uint32_t addressId) {
+bool helper<C>::wasUserAddressUsed(C& connection, uint32_t addressId) {
   db::sql::UserAddressBalance bal;
 
   auto result = connection(select(bal.id).from(bal).where(
-      bal.userAddress == addressId && bal.reason == 0));
+      bal.userAddress == addressId));
 
   return !result.empty();
 }
