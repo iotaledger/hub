@@ -42,20 +42,32 @@ nonstd::optional<int64_t> helper<C>::userIdFromIdentifier(
 }
 
 template <typename C>
-std::vector<AddressWithID> helper<C>::unsweptUserAddresses(C& connection) {
+std::vector<AddressWithID> helper<C>::unsweptUserAddresses(
+    C& connection, const nonstd::optional<std::vector<uint32_t>>& userIds) {
   db::sql::UserAddress addr;
   db::sql::UserAddressBalance bal;
 
   std::vector<AddressWithID> addresses;
 
   auto result =
-      connection(select(addr.id, addr.address)
+      connection(select(addr.id, addr.address, addr.userId)
                      .from(addr)
                      .where(!(exists(select(bal.id).from(bal).where(
                          bal.userAddress == addr.id && bal.reason == 1)))));
 
-  for (const auto& row : result) {
-    addresses.push_back({row.id, row.address});
+  if (userIds.has_value()) {
+    auto ids = userIds.value();
+    for (const auto& row : result) {
+      if (std::find(std::begin(ids), std::end(ids), row.userId) !=
+          std::end(ids)) {
+        addresses.push_back({row.id, row.address});
+      }
+    }
+
+  } else {
+    for (const auto& row : result) {
+      addresses.push_back({row.id, row.address});
+    }
   }
 
   return addresses;
@@ -245,7 +257,7 @@ void helper<C>::createTail(C& connection, uint64_t sweepId,
 
 template <typename C>
 std::vector<SweepTail> helper<C>::getTailsForSweep(C& connection,
-                                                     uint64_t sweepId) {
+                                                   uint64_t sweepId) {
   db::sql::SweepTails tls;
   std::vector<SweepTail> tails;
 
@@ -803,6 +815,16 @@ nonstd::optional<SweepEvent> helper<C>::getSweepByBundleHash(
   }
 
   return evt;
+}
+
+template <typename C>
+bool helper<C>::hasUserAddressGotDeposits(C& connection, uint32_t addressId) {
+  db::sql::UserAddressBalance bal;
+
+  auto result = connection(select(bal.id).from(bal).where(
+      bal.userAddress == addressId && bal.reason == 0));
+
+  return !result.empty();
 }
 
 template struct helper<sqlpp::mysql::connection>;

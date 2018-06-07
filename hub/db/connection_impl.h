@@ -65,8 +65,9 @@ class ConnectionImpl : public Connection {
     return db::helper<Conn>::userIdFromIdentifier(*_conn, identifier);
   }
 
-  std::vector<AddressWithID> unsweptUserAddresses() override {
-    return db::helper<Conn>::unsweptUserAddresses(*_conn);
+  std::vector<AddressWithID> unsweptUserAddresses(
+      const nonstd::optional<std::vector<uint32_t>>& userIds = {}) override {
+    return db::helper<Conn>::unsweptUserAddresses(*_conn, userIds);
   }
 
   std::unordered_multimap<uint64_t, std::string> tailsForUserAddresses(
@@ -257,6 +258,10 @@ class ConnectionImpl : public Connection {
   nonstd::optional<SweepEvent> getSweepByWithdrawalUUID(
       const std::string& uuid) override {
     return db::helper<Conn>::getSweepByWithdrawalUUID(*_conn, uuid);
+  }
+
+  bool hasUserAddressGotDeposits(uint32_t addressId) override {
+    return db::helper<Conn>::hasUserAddressGotDeposits(*_conn, addressId);
   }
 
   void execute(const std::string& what) override { _conn->execute(what); }

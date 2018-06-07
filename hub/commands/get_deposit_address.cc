@@ -5,11 +5,11 @@
  * Refer to the LICENSE file for licensing information
  */
 
-
 #include "hub/commands/get_deposit_address.h"
 
 #include <sqlpp11/exception.h>
 #include <cstdint>
+#include <vector>
 
 #include "hub/commands/helper.h"
 #include "hub/crypto/manager.h"
@@ -40,6 +40,28 @@ grpc::Status GetDepositAddress::doProcess(
     }
 
     userId = maybeUserId.value();
+  }
+
+  {
+    std::vector<uint32_t> userIds = {userId};
+    auto unsweptUserAddresses = connection.unsweptUserAddresses({userIds});
+    std::vector<uint32_t> ids;
+
+    std::transform(
+        std::begin(unsweptUserAddresses), std::end(unsweptUserAddresses),
+        std::back_inserter(ids),
+        [](const auto& addressWithId) { return std::get<0>(addressWithId); });
+
+    auto it = std::find_if(
+        unsweptUserAddresses.begin(), unsweptUserAddresses.end(),
+        [&](const hub::db::AddressWithID& addWId) {
+          return !connection.hasUserAddressGotDeposits(std::get<0>(addWId));
+        });
+
+    if (it != unsweptUserAddresses.end()) {
+      response->set_address(std::get<1>(*it));
+      return grpc::Status::OK;
+    }
   }
 
   hub::crypto::UUID uuid;

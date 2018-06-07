@@ -55,8 +55,11 @@ class Connection {
       const std::string& identifier) = 0;
 
   /// Find all the user addresses that haven't been swept yet
+  /// @param[in] userIds - a nonstd::optional<std::vector<uint32> > with user
+  /// identifiers to look for unswept addresses
   /// @return std::vector - a list of non swept AddressWithID
-  virtual std::vector<AddressWithID> unsweptUserAddresses() = 0;
+  virtual std::vector<AddressWithID> unsweptUserAddresses(
+      const nonstd::optional<std::vector<uint32_t> >& userIds = {}) = 0;
 
   /// Find all the user addresses that haven't been swept yet
   /// @param[in] userIds - a vector of userIds to query
@@ -293,6 +296,11 @@ class Connection {
   /// #return nonstd::optional<SweepEvent> - the sweep if found
   virtual nonstd::optional<SweepEvent> getSweepByBundleHash(
       const hub::crypto::Hash& bundleHash) = 0;
+
+  /// Looks up for deposit records for that address
+  /// @param[in] addressId - the address id to use for the lookup.
+  /// #return bool- if a deposit was found for the address
+  virtual bool hasUserAddressGotDeposits(uint32_t addressId) = 0;
 
  private:
   friend class DBManager;
