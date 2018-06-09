@@ -31,9 +31,7 @@ template <typename C>
 struct helper {
   static nonstd::optional<int64_t> userIdFromIdentifier(
       C& connection, const std::string& identifier);
-  static std::vector<AddressWithID> unsweptUserAddresses(
-      C& connection,
-      const nonstd::optional<std::vector<uint32_t> >& userIds = {});
+  static std::vector<AddressWithID> unsweptUserAddresses(C& connection);
   static std::unordered_multimap<uint64_t, std::string> tailsForUserAddresses(
       C& connection, const std::vector<uint64_t>& userIds);
   static uint64_t availableBalanceForUser(C& connection, uint64_t userId);
@@ -78,7 +76,7 @@ struct helper {
   static void createTail(C& connection, uint64_t sweepId,
                          const std::string& hash);
   static std::vector<SweepTail> getTailsForSweep(C& connection,
-                                                 uint64_t sweepId);
+                                                   uint64_t sweepId);
   static void markTailAsConfirmed(C& connection, const std::string& hash);
   static std::vector<UserAccountBalanceEvent>
   getAllUsersAccountBalancesSinceTimePoint(
@@ -129,8 +127,6 @@ struct helper {
 
   static nonstd::optional<AddressInfo> getAddressInfo(
       C& connection, const hub::crypto::Address& address);
-
-  static bool hasUserAddressGotDeposits(C& connection, uint32_t addressId);
 
   static bool isSweepConfirmed(C& connection, uint64_t sweepId);
 };
