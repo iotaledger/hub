@@ -24,10 +24,17 @@ class IotaJsonAPITest : public ::testing::Test {};
 
 class MockAPI : public IotaJsonAPI {
  public:
-  json req;
-  json res;
+  nonstd::optional<json> post(const json& in) override {
+    auto res = post_(in.dump());
 
-  MOCK_METHOD1(post, nonstd::optional<json>(const json&));
+    if (res) {
+      return json::parse(*res);
+    }
+
+    return {};
+  }
+
+  MOCK_METHOD1(post_, nonstd::optional<std::string>(const std::string&));
 };
 
 TEST_F(IotaJsonAPITest, GetBalances) {
@@ -45,10 +52,13 @@ TEST_F(IotaJsonAPITest, GetBalances) {
   req["command"] = "getBalances";
   req["threshold"] = 100;
   req["addresses"] = addresses;
+
   json res;
   res["balances"] = std::vector<std::string>{"1000"};
 
-  EXPECT_CALL(api, post(req)).Times(1).WillOnce(Return(res));
+  EXPECT_CALL(api, post_(req.dump()))
+      .Times(1)
+      .WillOnce(Return(nonstd::optional<std::string>{res.dump()}));
 
   auto response = api.getBalances(addresses);
 
