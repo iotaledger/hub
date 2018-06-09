@@ -26,35 +26,11 @@ git_repository(
     tag = "0.5.0",
 )
 
-git_repository(
-    name = "com_github_nelhage_rules_boost",
-    commit = "69e96e724cbe746f63d993fa8f6bf772e1ebc5cc",
-    remote = "https://github.com/nelhage/rules_boost",
-)
-
 # DEPENDENCIES
 git_repository(
     name = "io_bazel_rules_docker",
     remote = "https://github.com/bazelbuild/rules_docker.git",
     tag = "v0.4.0",
-)
-
-git_repository(
-    name = "com_github_gflags_gflags",
-    commit = "e292e0452fcfd5a8ae055b59052fc041cbab4abf",
-    remote = "https://github.com/gflags/gflags.git",
-)
-
-git_repository(
-    name = "com_github_google_glog",
-    commit = "2f493d292c92abf16ebd46cfd0cc0bf8eef5724d",
-    remote = "https://github.com/google/glog.git",
-)
-
-git_repository(
-    name = "com_google_googletest",
-    commit = "a6f06bf2fd3b832822cd4e9e554b7d47f32ec084",
-    remote = "https://github.com/google/googletest.git",
 )
 
 new_git_repository(
@@ -103,8 +79,8 @@ new_http_archive(
 
 git_repository(
     name = "rules_iota",
-    commit = "5622593910361262b248ad165aaf60bc87d0fa16",
-    remote = "https://gitlab.com/iota-foundation/software/rules_iota.git",
+    commit = "941f32af098a6976dfdb137550da6b58811d4432",
+    remote = "https://github.com/iotaledger/rules_iota.git",
 )
 
 http_archive(
@@ -112,22 +88,6 @@ http_archive(
     strip_prefix = "entangled-develop",
     url =
         "https://gitlab.com/iota-foundation/software/entangled/-/archive/develop/entangled-develop.tar.gz",
-)
-
-new_git_repository(
-    name = "nlohmann",
-    build_file = "third-party/nlohmann_json/BUILD",
-    commit = "435fc32a697188a43c86c559e60069711317ffc9",
-    remote = "https://github.com/th0br0/json.git",
-)
-
-new_http_archive(
-    name = "keccak",
-    build_file = "@rules_iota//:build/BUILD.keccak",
-    sha256 = "35c63620721ac4da418d4bb427ba7ae9aae76b4a1bea7758d6694a29f6e6488a",
-    strip_prefix = "KeccakCodePackage-c737139c81fd191699886a9a74d3220f6e300b29",
-    url =
-        "https://github.com/gvanas/KeccakCodePackage/archive/c737139c81fd191699886a9a74d3220f6e300b29.zip",
 )
 
 new_git_repository(
@@ -144,13 +104,7 @@ new_git_repository(
     remote = "https://github.com/MariaDB/mariadb-connector-c.git",
 )
 
-new_git_repository(
-    name = "optional_lite",
-    build_file = "third-party/optional_lite/BUILD",
-    commit = "807da49219e55210614402e4937f364f486b897d",
-    remote = "https://github.com/martinmoene/optional-lite.git",
-)
-
+load("@rules_iota//:defs.bzl", "iota_deps")
 load(
     "@io_bazel_rules_docker//container:container.bzl",
     "container_pull",
@@ -160,7 +114,6 @@ load(
     "@io_bazel_rules_docker//cc:image.bzl",
     _cc_image_repos = "repositories",
 )
-load("@com_github_nelhage_rules_boost//:boost/boost.bzl", "boost_deps")
 load("@org_pubref_rules_protobuf//cpp:rules.bzl", "cpp_proto_repositories")
 load(
     "@io_bazel_rules_go//go:def.bzl",
@@ -176,7 +129,7 @@ load(
 
 _cc_image_repos()
 
-boost_deps()
+iota_deps()
 
 cpp_proto_repositories()
 
