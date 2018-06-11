@@ -5,11 +5,11 @@
  * Refer to the LICENSE file for licensing information
  */
 
-
 #include "hub/iota/beast.h"
 
 #include <nonstd/optional.hpp>
 
+#include <glog/logging.h>
 #include <boost/asio/connect.hpp>
 #include <boost/asio/ip/tcp.hpp>
 #include <boost/beast/core.hpp>
@@ -48,12 +48,16 @@ nonstd::optional<json> BeastIotaAPI::post(const json& input) {
     req.body() = input.dump();
     req.content_length(req.body().size());
 
+    VLOG(7) << __FUNCTION__ << " - req:\n" << req;
+
     http::write(socket, req);
     boost::beast::flat_buffer buffer;
     http::response<http::string_body> res;
 
     http::read(socket, buffer, res);
     result = json::parse(res.body());
+
+    VLOG(7) << __FUNCTION__ << " - res:\n" << res;
 
     socket.shutdown(tcp::socket::shutdown_both, ec);
 
