@@ -5,7 +5,6 @@
  * Refer to the LICENSE file for licensing information
  */
 
-
 #include "hub/iota/api_json.h"
 
 #include <algorithm>
@@ -92,6 +91,10 @@ std::unordered_map<std::string, uint64_t> IotaJsonAPI::getBalances(
     }
 
     auto& response = maybeResponse.value();
+    if (response["balances"].is_null()) {
+      LOG(INFO) << __FUNCTION__ << " request failed. getBalances returned null";
+      return {};
+    }
     auto balances = response["balances"].get<std::vector<std::string>>();
 
     for (const auto& tup : boost::combine(currAddresses, balances)) {
@@ -129,6 +132,9 @@ std::vector<std::string> IotaJsonAPI::findTransactions(
     return {};
   }
 
+  if (maybeResponse.value()["hashes"].is_null()) {
+    return {};
+  }
   return maybeResponse.value()["hashes"].get<std::vector<std::string>>();
 }
 
@@ -144,6 +150,10 @@ std::vector<Transaction> IotaJsonAPI::getTrytes(
     return {};
   }
 
+  if (maybeResponse.value()["trytes"].is_null()) {
+    LOG(INFO) << __FUNCTION__ << " request failed, getTrytes returned null.";
+    return {};
+  }
   auto trytes = maybeResponse.value()["trytes"].get<std::vector<std::string>>();
 
   std::vector<Transaction> txs;
@@ -273,6 +283,12 @@ std::unordered_set<std::string> IotaJsonAPI::filterConfirmedTails(
   }
 
   auto& response = maybeResponse.value();
+  if (response["states"].is_null()) {
+    LOG(INFO) << __FUNCTION__
+              << " request failed, getInclusionsStates returned null.";
+    return {};
+  }
+
   auto states = response["states"].get<std::vector<bool>>();
 
   std::unordered_set<std::string> confirmedTails;
@@ -330,6 +346,9 @@ std::vector<std::string> IotaJsonAPI::attachToTangle(
     return {};
   }
 
+  if (maybeResponse.value()["trytes"].is_null()) {
+    return {};
+  }
   return maybeResponse.value()["trytes"].get<std::vector<std::string>>();
 }
 
@@ -367,7 +386,8 @@ std::unordered_set<std::string> IotaJsonAPI::filterConsistentTails(
       continue;
     }
 
-    if (maybeResponse.value()["state"].get<bool>()) {
+    if (!maybeResponse.value()["state"].is_null() &&
+        maybeResponse.value()["state"].get<bool>()) {
       ret.insert(tail);
     }
   }
