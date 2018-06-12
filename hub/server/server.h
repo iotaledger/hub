@@ -13,7 +13,7 @@
 
 #include <grpc++/grpc++.h>
 
-#include "hub/iota/api.h"
+#include "cppclient/api.h"
 #include "hub/server/grpc.h"
 #include "hub/service/attachment_service.h"
 #include "hub/service/sweep_service.h"
@@ -31,7 +31,7 @@ namespace hub {
 
 /// HubServer class.
 /// The HubServer runs the local services and holds the instance of the
-/// hub::iota::IotaAPI complient API interface to the tangle. It also holds
+/// cppclient::IotaAPI complient API interface to the tangle. It also holds
 /// an instance of the hub service that will accept requests
 class HubServer {
  public:
@@ -48,7 +48,7 @@ class HubServer {
   /// The hub::HubImpl service that listens to requests from clients
   hub::HubImpl _service;
 
-  std::shared_ptr<hub::iota::IotaAPI> _api;
+  std::shared_ptr<cppclient::IotaAPI> _api;
   std::unique_ptr<hub::service::UserAddressMonitor> _userAddressMonitor;
   std::unique_ptr<hub::service::AttachmentService> _attachmentService;
   std::unique_ptr<hub::service::SweepService> _sweepService;

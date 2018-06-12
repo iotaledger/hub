@@ -80,7 +80,7 @@ bool UserAddressMonitor::onBalancesChanged(
       }
 
       auto confirmedBundlesER = confirmedBundlesMap.equal_range(change.address);
-      std::vector<hub::iota::Bundle> unknownBundles;
+      std::vector<cppclient::Bundle> unknownBundles;
 
       for (auto it = confirmedBundlesER.first; it != confirmedBundlesER.second;
            ++it) {

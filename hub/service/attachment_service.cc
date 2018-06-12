@@ -57,9 +57,9 @@ bool AttachmentService::checkSweepTailsForConfirmation(
 bool AttachmentService::checkForUserReattachment(
     db::Connection& connection, const db::Sweep& sweep,
     const std::vector<std::string>& knownTails) {
-  auto bundleTransactionHashes =
-      _api->findTransactions({}, std::vector<std::string>{sweep.bundleHash});
-  auto bundleTransactions = _api->getTrytes(bundleTransactionHashes);
+  auto bundleTransactionHashes = _api->findTransactions(
+      {}, std::vector<std::string>{sweep.bundleHash}, {});
+  auto bundleTransactions = _api->getTransactions(bundleTransactionHashes);
 
   // Remove non-tails or tails that we know of
   bundleTransactions.erase(
@@ -148,8 +148,8 @@ void AttachmentService::promoteSweep(db::Connection& connection,
 
   const auto& tx = bundle.getTransactions()[0];
 
-  auto attachedTrytes =
-      powProvider.doPOW({tx.toTrytes()}, toApprove.first, toApprove.second);
+  auto attachedTrytes = powProvider.doPOW(
+      {tx.toTrytes()}, toApprove.trunkTransaction, toApprove.branchTransaction);
 
   _api->storeTransactions(attachedTrytes);
   _api->broadcastTransactions(attachedTrytes);

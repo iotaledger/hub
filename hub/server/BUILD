@@ -6,7 +6,6 @@ cc_library(
     deps = [
         "//hub/commands",
         "//hub/db",
-        "//hub/iota:beast",
         "//hub/iota:pow",
         "//hub/iota:remote_pow",
         "//hub/service:attachment_service",
@@ -16,5 +15,6 @@ cc_library(
         "//proto:cpp",
         "@com_github_gflags_gflags//:gflags",
         "@com_github_google_glog//:glog",
+        "@org_iota_entangled//cppclient:beast",
     ],
 )

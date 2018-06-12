@@ -17,13 +17,13 @@ cc_library(
     deps = [
         ":scheduled_service",
         "//hub/db",
-        "//hub/iota:api",
         "//hub/iota:pow",
         "@boost//:functional",
         "@boost//:range",
         "@com_github_google_glog//:glog",
         "@iota_lib_cpp",
         "@org_iota_entangled//common/helpers:digest",
+        "@org_iota_entangled//cppclient:beast",
     ],
 )
 
@@ -36,12 +36,12 @@ cc_library(
         ":scheduled_service",
         "//hub/crypto",
         "//hub/db",
-        "//hub/iota:api",
         "@boost//:range",
         "@boost//:uuid",
         "@com_github_gflags_gflags//:gflags",
         "@com_github_google_glog//:glog",
         "@iota_lib_cpp",
+        "@org_iota_entangled//cppclient:beast",
     ],
 )
 
@@ -52,8 +52,8 @@ cc_library(
     visibility = ["//visibility:public"],
     deps = [
         ":scheduled_service",
-        "//hub/iota:api",
         "@com_github_google_glog//:glog",
+        "@org_iota_entangled//cppclient:beast",
     ],
 )
 

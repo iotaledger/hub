@@ -15,7 +15,7 @@
 #include <unordered_map>
 #include <vector>
 
-#include "hub/iota/api.h"
+#include "cppclient/api.h"
 #include "hub/service/address_monitor.h"
 
 namespace hub {

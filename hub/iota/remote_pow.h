@@ -15,7 +15,7 @@
 #include <utility>
 #include <vector>
 
-#include "hub/iota/api.h"
+#include "cppclient/api.h"
 #include "hub/iota/pow.h"
 
 namespace hub {

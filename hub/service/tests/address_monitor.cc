@@ -6,14 +6,14 @@
 #include <chrono>
 #include <thread>
 
-#include "hub/iota/api.h"
+#include "cppclient/api.h"
 #include "hub/service/address_monitor.h"
 
 using namespace testing;
 
 using namespace hub;
-using namespace hub::iota;
 using namespace hub::service;
+using namespace cppclient;
 
 namespace {
 
@@ -34,7 +34,7 @@ class MockMonitor : public AddressMonitor {
   const std::string name() const override { return "MockMonitor"; }
 };
 
-class MockAPI : public iota::IotaAPI {
+class MockAPI : public cppclient::IotaAPI {
  public:
   virtual ~MockAPI() {}
 
@@ -52,20 +52,25 @@ class MockAPI : public iota::IotaAPI {
                    const std::vector<std::string>& tails,
                    const nonstd::optional<std::string>& reference));
 
-  MOCK_METHOD2(findTransactions,
+  MOCK_METHOD3(findTransactions,
                std::vector<std::string>(
                    nonstd::optional<std::vector<std::string>> addresses,
-                   nonstd::optional<std::vector<std::string>> bundles));
+                   nonstd::optional<std::vector<std::string>> bundles,
+                   nonstd::optional<std::vector<std::string>> approvees));
 
   MOCK_METHOD0(getNodeInfo, NodeInfo());
 
-  MOCK_METHOD1(getTrytes,
+  MOCK_METHOD1(getTransactions,
                std::vector<Transaction>(const std::vector<std::string>&));
+
+  MOCK_METHOD1(getTrytes,
+               std::vector<std::string>(const std::vector<std::string>&));
+
   MOCK_METHOD1(filterConsistentTails, std::unordered_set<std::string>(
                                           const std::vector<std::string>&));
 
   MOCK_METHOD2(getTransactionsToApprove,
-               std::pair<std::string, std::string>(
+               cppclient::GetTransactionsToApproveResponse(
                    size_t, const nonstd::optional<std::string>&));
 
   MOCK_METHOD4(attachToTangle,
@@ -75,6 +80,10 @@ class MockAPI : public iota::IotaAPI {
 
   MOCK_METHOD1(storeTransactions, bool(const std::vector<std::string>&));
   MOCK_METHOD1(broadcastTransactions, bool(const std::vector<std::string>&));
+
+  MOCK_METHOD2(getInclusionStates, cppclient::GetInclusionStatesResponse(
+                                       const std::vector<std::string>&,
+                                       const std::vector<std::string>&));
 };
 
 TEST_F(AddressMonitorTest, OnStartShouldInitialise) {
