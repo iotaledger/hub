@@ -1,5 +1,5 @@
 # IOTA Hub
-[![Build status](https://badge.buildkite.com/4e6fd31338b859f47d49eb2771d2189ef2f4ec908dacd7fde7.svg)](https://buildkite.com/th0rg/rpchub-ci)
+[![Build status](https://badge.buildkite.com/9c05b4a87f2242c78d62709136ca54a6d63fd48aa9b764f3e1.svg)](https://buildkite.com/iota-foundation/rpchub)
 
 ## Dependencies
 - Modern GCC or Clang
