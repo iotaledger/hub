@@ -18,7 +18,7 @@
 #include <utility>
 #include <vector>
 
-#include "hub/iota/api.h"
+#include "cppclient/api.h"
 #include "hub/service/scheduled_service.h"
 
 namespace hub {
@@ -48,9 +48,9 @@ class AddressMonitor : public ScheduledService {
   };
 
   /// constructor
-  /// @param[in] api - an hub::iota::IotaAPI compliant API provider
+  /// @param[in] api - an cppclient::IotaAPI compliant API provider
   /// @param[in] interval - the tick interval, in milliseconds,
-  explicit AddressMonitor(std::shared_ptr<hub::iota::IotaAPI> api,
+  explicit AddressMonitor(std::shared_ptr<cppclient::IotaAPI> api,
                           std::chrono::milliseconds interval)
       : ScheduledService(interval), _api(std::move(api)) {}
   /// Destructor
@@ -87,8 +87,8 @@ class AddressMonitor : public ScheduledService {
       const std::unordered_map<std::string, uint64_t>& addressToIds);
 
  protected:
-  /// an hub::iota::IotaAPI compliant API provider
-  const std::shared_ptr<hub::iota::IotaAPI> _api;
+  /// an cppclient::IotaAPI compliant API provider
+  const std::shared_ptr<cppclient::IotaAPI> _api;
 
  private:
   /// A list of persisted balances ebtween calls

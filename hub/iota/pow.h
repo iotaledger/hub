@@ -14,16 +14,17 @@
 #include <utility>
 #include <vector>
 
+#include "cppclient/api.h"
+
 namespace hub {
 namespace iota {
 
-class IotaAPI;
 
 /// POWProvider (Proof Of Work provider)
 class POWProvider {
  public:
   /// Constructor
-  POWProvider(std::shared_ptr<iota::IotaAPI> api, size_t depth, size_t mwm)
+  POWProvider(std::shared_ptr<cppclient::IotaAPI> api, size_t depth, size_t mwm)
       : _api(std::move(api)), _depth(depth), _mwm(mwm) {}
 
   /// Destructor
@@ -32,13 +33,13 @@ class POWProvider {
   size_t mwm() const { return _mwm; }
   size_t depth() const { return _depth; }
 
-  virtual std::pair<std::string, std::string> getAttachmentPoint(
+  virtual cppclient::GetTransactionsToApproveResponse getAttachmentPoint(
       const nonstd::optional<std::string>& reference = {}) const;
 
   virtual std::vector<std::string> performPOW(
       const std::vector<std::string>& trytes) const {
     auto location = getAttachmentPoint({});
-    return doPOW(trytes, location.first, location.second);
+    return doPOW(trytes, location.trunkTransaction, location.branchTransaction);
   }
 
   virtual std::vector<std::string> doPOW(const std::vector<std::string>& trytes,
@@ -46,7 +47,7 @@ class POWProvider {
                                          const std::string& branch) const = 0;
 
  protected:
-  const std::shared_ptr<iota::IotaAPI> _api;
+  const std::shared_ptr<cppclient::IotaAPI> _api;
   const size_t _depth;
   const size_t _mwm;
 };

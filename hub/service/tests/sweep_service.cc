@@ -6,17 +6,17 @@
 #include <chrono>
 #include <thread>
 
+#include "cppclient/api.h"
 #include "hub/db/db.h"
 #include "hub/db/helper.h"
-#include "hub/iota/api.h"
 #include "hub/service/sweep_service.h"
 #include "hub/tests/runner.h"
 
 using namespace testing;
 
 using namespace hub;
-using namespace hub::iota;
 using namespace hub::service;
+using namespace cppclient;
 
 namespace {
 
@@ -30,7 +30,7 @@ class MockMonitor : public SweepService {
   const std::string name() const override { return "MockSweepService"; }
 };
 
-class MockAPI : public iota::IotaAPI {
+class MockAPI : public cppclient::IotaAPI {
  public:
   virtual ~MockAPI() {}
 
@@ -47,7 +47,6 @@ class MockAPI : public iota::IotaAPI {
       std::unordered_set<std::string>(const std::vector<std::string>& tails));
 };
 
-TEST_F(SweepServiceTest, DoSomething) {
-}
+TEST_F(SweepServiceTest, DoSomething) {}
 
 }  // namespace

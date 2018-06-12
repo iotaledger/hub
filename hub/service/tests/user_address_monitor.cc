@@ -6,16 +6,15 @@
 #include <chrono>
 #include <thread>
 
-#include "hub/iota/api.h"
+#include "cppclient/api.h"
 #include "hub/service/user_address_monitor.h"
 #include "hub/tests/runner.h"
 
 using namespace testing;
 
 using namespace hub;
-using namespace hub::iota;
 using namespace hub::service;
-
+using namespace cppclient;
 namespace {
 
 class UserAddressMonitorTest : public hub::Test {};
@@ -31,7 +30,7 @@ class MockMonitor : public UserAddressMonitor {
   const std::string name() const override { return "MockMonitor"; }
 };
 
-class MockAPI : public iota::IotaAPI {
+class MockAPI : public cppclient::IotaAPI {
  public:
   virtual ~MockAPI() {}
 

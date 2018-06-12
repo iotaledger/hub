@@ -22,7 +22,7 @@
 #include "hub/crypto/manager.h"
 #include "hub/db/db.h"
 #include "hub/db/helper.h"
-#include "hub/iota/beast.h"
+#include "cppclient/beast.h"
 #include "hub/iota/pow.h"
 #include "hub/iota/remote_pow.h"
 #include "hub/service/sweep_service.h"
@@ -112,7 +112,7 @@ void HubServer::initialise() {
     auto host = FLAGS_apiAddress.substr(0, portIdx);
     auto port = std::stoi(FLAGS_apiAddress.substr(portIdx + 1));
 
-    _api = std::make_shared<iota::BeastIotaAPI>(host, port);
+    _api = std::make_shared<cppclient::BeastIotaAPI>(host, port);
   }
 
   iota::POWManager::get().setProvider(std::make_unique<iota::RemotePOW>(
