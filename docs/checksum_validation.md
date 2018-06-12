@@ -10,6 +10,9 @@ to complete, to keep everyone happy.
 **1.UserWithdraw will now validate provided address is valid using checksum.
 2.GetDepositAddress will return the checksum**
 
+## Proposed implemntation
+
+modify existing `message` objects:
 ```proto
 // add `checksum` to GetDepositAddressReply:
 message GetDepositAddressReply {
@@ -27,5 +30,22 @@ message UserWithdrawRequest {
   // Tag for withdrawal
   string tag = 4;
 }
+enum ErrorCode {
+
+
+  // Provided `payoutAddressWithChecksum` first 81 trytes
+  // does not checksum to the last 9
+  WITHDRAWAL_WRONG_PAYOUT_ADDRESS = 9;
+}
+
 ```
+Add method in `local_provider.h`
+
+`Optional<Address> verifyAndStripChecksum(const string& addressWithChecksum)` 
+
+that will check if first 81 trytes checksums to last 9 of `addressWithChecksum`
+and will only return an address if it does checksum
+so, in case it does not withdrawal will fail
+
+
 
