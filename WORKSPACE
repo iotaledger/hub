@@ -59,35 +59,35 @@ git_repository(
 
 new_git_repository(
     name = "hinnant_date",
-    build_file = "third-party/date/BUILD",
+    build_file = "third-party/date/BUILD.bzl",
     commit = "e5c69d84ab5db3e06170b8eedec1d87841c7fb22",
     remote = "https://github.com/HowardHinnant/date.git",
 )
 
 new_git_repository(
     name = "sqlpp11",
-    build_file = "third-party/sqlpp11/BUILD",
+    build_file = "third-party/sqlpp11/BUILD.bzl",
     commit = "9d64a5c7411f84cad1da71b23118634b5a62a063",
     remote = "https://github.com/rbock/sqlpp11.git",
 )
 
 new_git_repository(
     name = "sqlpp11sqlite",
-    build_file = "third-party/sqlpp11sqlite/BUILD",
+    build_file = "third-party/sqlpp11sqlite/BUILD.bzl",
     commit = "cf37829fc9828a36afa050f960d09abcaf6aeb6a",
     remote = "https://github.com/rbock/sqlpp11-connector-sqlite3.git",
 )
 
 new_git_repository(
     name = "sqlpp11mysql",
-    build_file = "third-party/sqlpp11mysql/BUILD",
+    build_file = "third-party/sqlpp11mysql/BUILD.bzl",
     commit = "8a48bc2d6157fc445cda5b9beac9b7901fff625c",
     remote = "https://github.com/rbock/sqlpp11-connector-mysql.git",
 )
 
 new_http_archive(
     name = "argon2",
-    build_file = "third-party/argon2/BUILD",
+    build_file = "third-party/argon2/BUILD.bzl",
     sha256 = "eaea0172c1f4ee4550d1b6c9ce01aab8d1ab66b4207776aa67991eb5872fdcd8",
     strip_prefix = "phc-winner-argon2-20171227",
     url = "https://github.com/P-H-C/phc-winner-argon2/archive/20171227.tar.gz",
@@ -95,7 +95,7 @@ new_http_archive(
 
 new_http_archive(
     name = "sqlite3",
-    build_file = "third-party/sqlite3/BUILD",
+    build_file = "third-party/sqlite3/BUILD.bzl",
     sha256 = "4239a1f69e5721d07d9a374eb84d594225229e54be4ee628da2995f4315d8dfc",
     strip_prefix = "sqlite-amalgamation-3230100",
     url = "https://www.sqlite.org/2018/sqlite-amalgamation-3230100.zip",
@@ -116,7 +116,7 @@ http_archive(
 
 new_git_repository(
     name = "nlohmann",
-    build_file = "third-party/nlohmann_json/BUILD",
+    build_file = "third-party/nlohmann_json/BUILD.bzl",
     commit = "435fc32a697188a43c86c559e60069711317ffc9",
     remote = "https://github.com/th0br0/json.git",
 )
@@ -132,21 +132,21 @@ new_http_archive(
 
 new_git_repository(
     name = "iota_lib_cpp",
-    build_file = "third-party/iota_lib_cpp/BUILD",
+    build_file = "third-party/iota_lib_cpp/BUILD.bzl",
     commit = "9971c832e6a38972803a4d1506a78c36451c3df3",
     remote = "https://github.com/th0br0/iota.lib.cpp.git",
 )
 
 new_git_repository(
     name = "mariadb_connector",
-    build_file = "third-party/mariadb_connector/BUILD",
+    build_file = "third-party/mariadb_connector/BUILD.bzl",
     commit = "184a16d2f1d0bb24bea6bcf23e1604093fef8f93",
     remote = "https://github.com/MariaDB/mariadb-connector-c.git",
 )
 
 new_git_repository(
     name = "optional_lite",
-    build_file = "third-party/optional_lite/BUILD",
+    build_file = "third-party/optional_lite/BUILD.bzl",
     commit = "807da49219e55210614402e4937f364f486b897d",
     remote = "https://github.com/martinmoene/optional-lite.git",
 )
