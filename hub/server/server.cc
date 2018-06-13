@@ -17,7 +17,7 @@
 #include <grpc++/grpc++.h>
 #include "hub/auth/dummy_provider.h"
 #include "hub/auth/manager.h"
-#include "hub/crypto/local_provider.h"
+#include "hub/crypto/argon2_provider.h"
 #include "hub/crypto/manager.h"
 #include "hub/db/db.h"
 #include "hub/db/helper.h"
@@ -27,7 +27,7 @@
 #include "hub/service/sweep_service.h"
 #include "hub/service/user_address_monitor.h"
 
-DEFINE_string(salt, "", "Salt for local seed provider");
+DEFINE_string(salt, "", "Salt for argon2 seed provider");
 DEFINE_string(listenAddress, "0.0.0.0:50051", "address to listen on");
 DEFINE_string(apiAddress, "127.0.0.1:14265",
               "IRI node api to listen on. Format [host:port]");
@@ -88,14 +88,14 @@ void HubServer::initialise() {
     LOG(FATAL) << "Salt must be more than 20 characters long.";
   }
   crypto::CryptoManager::get().setProvider(
-      std::make_unique<crypto::LocalProvider>(FLAGS_salt));
+      std::make_unique<crypto::Argon2Provider>(FLAGS_salt));
 
   auth::AuthManager::get().setProvider(std::make_unique<auth::DummyProvider>());
 
   db::DBManager::get().loadConnectionConfigFromArgs();
 
   if (!authenticateSalt()) {
-    LOG(FATAL) << "The provided salt is not valid for "
+    LOG(FATAL) << "The provided salt or provider parameters are not valid for "
                   "this database. Did you mistype?";
   }
 

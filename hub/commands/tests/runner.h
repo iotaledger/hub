@@ -6,7 +6,6 @@
 #include <gtest/gtest.h>
 
 #include "hub/commands/create_user.h"
-#include "hub/crypto/local_provider.h"
 #include "hub/crypto/manager.h"
 #include "hub/db/db.h"
 #include "hub/stats/session.h"

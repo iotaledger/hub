@@ -8,7 +8,7 @@ cc_library(
         "//hub/auth:dummy_provider",
         "//hub/commands",
         "//hub/crypto",
-        "//hub/crypto:local_provider",
+        "//hub/crypto:argon2_provider",
         "//hub/db",
         "//hub/iota:beast",
         "//hub/iota:pow",
