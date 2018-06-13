@@ -6,8 +6,8 @@
  */
 
 
-#ifndef HUB_CRYPTO_LOCAL_PROVIDER_H_
-#define HUB_CRYPTO_LOCAL_PROVIDER_H_
+#ifndef HUB_CRYPTO_ARGON2_PROVIDER_H_
+#define HUB_CRYPTO_ARGON2_PROVIDER_H_
 
 #include <cstdint>
 #include <string>
@@ -17,15 +17,15 @@
 namespace hub {
 namespace crypto {
 
-/// LocalProvider class.
-/// The local provider provides the cryptographic services necessary to
+/// Argon2Provider class.
+/// The argon2 provider provides the cryptographic services necessary to
 /// obtain new addresses based on salt and sign bundle hashes.
-class LocalProvider : public CryptoProvider {
+class Argon2Provider : public CryptoProvider {
  public:
-  LocalProvider() = delete;
+  Argon2Provider() = delete;
   /// Constructor
   /// param[in] salt - the salt that will be used in calculations
-  explicit LocalProvider(std::string salt);
+  explicit Argon2Provider(std::string salt);
 
   /// Get a new address for a given UUID and the salt
   /// param[in] UUID - a UUID
@@ -54,4 +54,4 @@ class LocalProvider : public CryptoProvider {
 
 }  // namespace crypto
 }  // namespace hub
-#endif  // HUB_CRYPTO_LOCAL_PROVIDER_H_
+#endif  // HUB_CRYPTO_ARGON2_PROVIDER_H_
