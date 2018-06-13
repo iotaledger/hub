@@ -9,10 +9,10 @@
 #define HUB_DB_TYPES_H_
 
 #include <chrono>
+#include <nonstd/optional.hpp>
 #include <string>
 #include <tuple>
 #include <vector>
-#include <nonstd/optional.hpp>
 
 #include "hub/crypto/types.h"
 
@@ -110,11 +110,13 @@ struct TransferOutput {
 struct AddressInfo {
  public:
   std::string userId;
+  hub::crypto::UUID uuid;
+  bool usedForSweep;
 };
 
 struct SweepTail {
-    std::string hash;
-    std::chrono::system_clock::time_point createdAt;
+  std::string hash;
+  std::chrono::system_clock::time_point createdAt;
 };
 
 }  // namespace db

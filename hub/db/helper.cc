@@ -245,7 +245,7 @@ void helper<C>::createTail(C& connection, uint64_t sweepId,
 
 template <typename C>
 std::vector<SweepTail> helper<C>::getTailsForSweep(C& connection,
-                                                     uint64_t sweepId) {
+                                                   uint64_t sweepId) {
   db::sql::SweepTails tls;
   std::vector<SweepTail> tails;
 
@@ -739,16 +739,25 @@ template <typename C>
 nonstd::optional<AddressInfo> helper<C>::getAddressInfo(
     C& connection, const hub::crypto::Address& address) {
   db::sql::UserAddress add;
+  db::sql::UserAddressBalance bal;
   db::sql::UserAccount acc;
 
-  auto result = connection(select(acc.identifier)
-                               .from(add.join(acc).on(add.userId == acc.id))
-                               .where(add.address == address.str()));
+  auto result = connection(
+      select(
+          acc.identifier, add.seedUuid,
+          exists(select(bal.id).from(bal).where(
+              bal.userAddress == add.id &&
+              bal.reason == static_cast<int>(UserAddressBalanceReason::SWEEP))))
+          .from(add.join(acc).on(add.userId == acc.id))
+          .where(add.address == address.str()));
 
   if (result.empty()) {
     return {};
   } else {
-    return {AddressInfo{std::move(result.front().identifier.value())}};
+    auto& front = result.front();
+    return {AddressInfo{std::move(front.identifier.value()),
+                        hub::crypto::UUID(front.seedUuid.value()),
+                        front.exists}};
   }
 }
 

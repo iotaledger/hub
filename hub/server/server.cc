@@ -15,6 +15,8 @@
 #include <gflags/gflags.h>
 #include <glog/logging.h>
 #include <grpc++/grpc++.h>
+#include "hub/auth/dummy_provider.h"
+#include "hub/auth/manager.h"
 #include "hub/crypto/local_provider.h"
 #include "hub/crypto/manager.h"
 #include "hub/db/db.h"
@@ -87,6 +89,8 @@ void HubServer::initialise() {
   }
   crypto::CryptoManager::get().setProvider(
       std::make_unique<crypto::LocalProvider>(FLAGS_salt));
+
+  auth::AuthManager::get().setProvider(std::make_unique<auth::DummyProvider>());
 
   db::DBManager::get().loadConnectionConfigFromArgs();
 

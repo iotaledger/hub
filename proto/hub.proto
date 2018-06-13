@@ -32,5 +32,7 @@ service Hub {
   rpc GetAddressInfo (GetAddressInfoRequest) returns (GetAddressInfoReply);
   // Provides information on the sweep for the given withdrawal or bundle hash
   rpc SweepInfo (SweepInfoRequest) returns (SweepEvent);
+  // Provides a signature for a bundle hash
+  rpc SignBundle(SignBundleRequest) returns (SignBundleReply);  
 }
 
