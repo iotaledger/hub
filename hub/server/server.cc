@@ -85,7 +85,7 @@ std::shared_ptr<grpc::ServerCredentials> HubServer::makeCredentials() {
 
 void HubServer::initialise() {
   if (FLAGS_salt.size() <= 20) {
-    LOG(FATAL) << "Salt must be at least 20 characters long.";
+    LOG(FATAL) << "Salt must be more than 20 characters long.";
   }
   crypto::CryptoManager::get().setProvider(
       std::make_unique<crypto::LocalProvider>(FLAGS_salt));
