@@ -133,7 +133,8 @@ grpc::Status HubImpl::SignBundle(grpc::ServerContext* context,
 
   if (!FLAGS_SignBundle_enabled) {
     LOG(ERROR) << clientSession
-               << " attempted to call SignBundle but was disabled.";
+               << ": SignBundle is disabled";
+    return grpc::Status::CANCELLED;
   }
 
   cmd::SignBundle cmd(clientSession);
