@@ -5,7 +5,6 @@
  * Refer to the LICENSE file for licensing information
  */
 
-
 #ifndef HUB_CRYPTO_PROVIDER_H_
 #define HUB_CRYPTO_PROVIDER_H_
 
@@ -31,12 +30,23 @@ class CryptoProvider {
   /// param[in] connection - connection to the local database
   /// param[in] UUID - a UUID
   /// param[in] Hash - a bundleHash
+  /// @throws sqlpp::exception if UUID was already used for a signature
   /// @return string - the signature
   std::string getSignatureForUUID(hub::db::Connection& connection,
                                   const UUID& uuid,
                                   const Hash& bundleHash) const {
     connection.markUUIDAsSigned(uuid);
 
+    return doGetSignatureForUUID(uuid, bundleHash);
+  }
+
+  /// Forces the calculation of a signature for a UUID and a bundle hash
+  /// param[in] connection - connection to the local database
+  /// param[in] UUID - a UUID
+  /// param[in] Hash - a bundleHash
+  /// @return string - the signature
+  std::string forceGetSignatureForUUID(const UUID& uuid,
+                                       const Hash& bundleHash) const {
     return doGetSignatureForUUID(uuid, bundleHash);
   }
 

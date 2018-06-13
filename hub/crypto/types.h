@@ -35,6 +35,11 @@ class UUID {
   /// @param[in] sv - string representation
   explicit UUID(const std::string_view& sv);
 
+  /// Destructor. Zeroes array upon destruction.
+  ~UUID() {
+    _data.fill(0);
+  }
+
   /// String representation of UUID
   /// @return string - string representation
   std::string str() const;
