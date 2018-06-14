@@ -13,7 +13,10 @@
 namespace hub {
 namespace auth {
 
-enum AuthContext { UNDEFINED = 0, SIGN_BUNDLE = 1 };
+class AuthContext {
+ public:
+  virtual const std::string message() const noexcept = 0;
+};
 
 /// AuthProvider abstract class.
 /// Provides facilities to authenticate certain requests.
@@ -26,7 +29,7 @@ class AuthProvider {
   /// param[in] the token context
   /// param[in] token the token
   /// returns true if token was valid
-  virtual bool validateToken(const AuthContext context,
+  virtual bool validateToken(const AuthContext& context,
                              const std::string& token) noexcept = 0;
 };
 
