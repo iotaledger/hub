@@ -12,8 +12,8 @@
 
 #include <sqlpp11/exception.h>
 
+#include "hub/auth/hmac_provider.h"
 #include "hub/auth/manager.h"
-#include "hub/auth/provider.h"
 #include "hub/commands/helper.h"
 #include "hub/crypto/manager.h"
 #include "hub/crypto/types.h"
@@ -51,8 +51,9 @@ grpc::Status SignBundle::doProcess(
     }
 
     // 2. Verify authentication token
-    if (!authProvider.validateToken(auth::AuthContext::SIGN_BUNDLE,
-                                    request->authentication())) {
+    if (!authProvider.validateToken(
+            auth::SignBundleContext(bundleHash, address),
+            request->authentication())) {
       return grpc::Status(
           grpc::StatusCode::FAILED_PRECONDITION, "",
           errorToString(hub::rpc::ErrorCode::INVALID_AUTHENTICATION));

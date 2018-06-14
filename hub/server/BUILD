@@ -6,6 +6,7 @@ cc_library(
     deps = [
         "//hub/auth",
         "//hub/auth:dummy_provider",
+        "//hub/auth:hmac_provider",
         "//hub/commands",
         "//hub/crypto",
         "//hub/crypto:argon2_provider",
