@@ -14,7 +14,7 @@ SignBundleContext::SignBundleContext(const hub::crypto::Hash& bundleHash,
                                      const hub::crypto::Address& address) {
   _message = bundleHash.str() + address.str();
 }
-const std::string SignBundleContext::message() const noexcept {
+const std::string& SignBundleContext::message() const noexcept {
   return _message;
 }
 }  // namespace auth

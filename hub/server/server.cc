@@ -47,6 +47,7 @@ DEFINE_string(sslCert, "/dev/null", "Path to SSL certificate");
 DEFINE_string(sslKey, "/dev/null", "Path to SSL certificate key");
 DEFINE_string(sslCA, "/dev/null", "Path to CA root");
 DEFINE_string(HMACKKeyPath, "/dev/null", "path to key used for HMAC encyption");
+DEFINE_string(authProvider, "none", "provider to use. can be {none, hmac}");
 
 using grpc::Server;
 using grpc::ServerBuilder;
@@ -97,10 +98,15 @@ void HubServer::initialise() {
   crypto::CryptoManager::get().setProvider(
       std::make_unique<crypto::Argon2Provider>(FLAGS_salt));
 
-  auth::AuthManager::get().setProvider(
-      std::make_unique<auth::HMACProvider>(readFile(FLAGS_HMACKKeyPath)));
-  FLAGS_HMACKKeyPath.replace(0, FLAGS_HMACKKeyPath.size(),
-                             FLAGS_HMACKKeyPath.size(), '0');
+  if (FLAGS_authProvider == "none") {
+    auth::AuthManager::get().setProvider(
+        std::make_unique<auth::DummyProvider>());
+  } else if (FLAGS_authProvider == "hmac") {
+    auth::AuthManager::get().setProvider(
+        std::make_unique<auth::HMACProvider>(readFile(FLAGS_HMACKKeyPath)));
+  } else {
+    LOG(FATAL) << "Unknown auth provider: " << FLAGS_authProvider;
+  }
 
   db::DBManager::get().loadConnectionConfigFromArgs();
 
