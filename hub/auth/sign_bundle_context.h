@@ -20,7 +20,7 @@ class SignBundleContext : public AuthContext {
  public:
   SignBundleContext(const hub::crypto::Hash& bundleHash,
                     const hub::crypto::Address& address);
-  const std::string message() const noexcept override;
+  const std::string& message() const noexcept override;
 
  private:
   std::string _message;

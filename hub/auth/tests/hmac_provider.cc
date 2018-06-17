@@ -24,9 +24,7 @@ TEST_F(HMACProviderTest, EnforceKeyLength) {
 }
 
 TEST_F(HMACProviderTest, ShouldValidateOnCorrectToken) {
-  std::string key =
-      "d42712f2b5a4321d34eed0b0503d618058041638d057f6b4f168574f6362df1c12694cd8"
-      "234916349b6780e8abd00dc4f3ab7df0829468886c070b64ac38694f";
+  std::string key = "El6vxEO4rR009/U/u70SgPa6C7GVZQzXZOUQrkMnXFI";
   HMACProvider provider(key);
 
   hub::crypto::Hash bundleHash(
@@ -37,18 +35,13 @@ TEST_F(HMACProviderTest, ShouldValidateOnCorrectToken) {
       "9YU999ZBA");
   auth::SignBundleContext context(bundleHash, address);
 
-  constexpr auto token =
-      "$argon2id$v=19$m=131072,t=4,p=1$"
-      "ZDQyNzEyZjJiNWE0MzIxZDM0ZWVkMGIwNTAzZDYxODA1ODA0MTYzOGQwNTdmNmI0ZjE2ODU3"
-      "NGY2MzYyZGYxYzEyNjk0Y2Q4";
+  constexpr auto token = "RWw2dnhFTzRyUjAwOS9VL3U3MFNnUGE2QzdHVlpRelh";
 
   ASSERT_TRUE(provider.validateToken(context, token));
 }
 
 TEST_F(HMACProviderTest, ShouldRejectOnIncorrectToken) {
-  std::string key =
-      "d42712f2b5a4321d34eed0b0503d618058041638d057f6b4f168574f6362df1c12694cd8"
-      "234916349b6780e8abd00dc4f3ab7df0829468886c070b64ac38694f";
+  std::string key = "El6vxEO4rR009/U/u70SgPa6C7GVZQzXZOUQrkMnXFI";
   HMACProvider provider(key);
 
   hub::crypto::Hash bundleHash(
@@ -60,10 +53,7 @@ TEST_F(HMACProviderTest, ShouldRejectOnIncorrectToken) {
   auth::SignBundleContext context(bundleHash, address);
 
   // changed last character
-  constexpr auto token =
-      "$argon2id$v=19$m=131072,t=4,p=1$"
-      "ZDQyNzEyZjJiNWE0MzIxZDM0ZWVkMGIwNTAzZDYxODA1ODA0MTYzOGQwNTdmNmI0ZjE2ODU3"
-      "NGY2MzYyZGYxYzEyNjk0Y2Q5";
+  constexpr auto token = "RWw2dnhFTzRyUjAwOS9VL3U3MFNnUGE2QzdHVlpRelz";
 
   ASSERT_FALSE(provider.validateToken(context, token));
 }

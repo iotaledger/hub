@@ -15,7 +15,7 @@ namespace auth {
 
 class AuthContext {
  public:
-  virtual const std::string message() const noexcept = 0;
+  virtual const std::string& message() const noexcept = 0;
 };
 
 /// AuthProvider abstract class.
