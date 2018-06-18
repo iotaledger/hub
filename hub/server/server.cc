@@ -46,7 +46,7 @@ DEFINE_string(authMode, "none", "credentials to use. can be {none, ssl}");
 DEFINE_string(sslCert, "/dev/null", "Path to SSL certificate");
 DEFINE_string(sslKey, "/dev/null", "Path to SSL certificate key");
 DEFINE_string(sslCA, "/dev/null", "Path to CA root");
-DEFINE_string(HMACKKeyPath, "/dev/null", "path to key used for HMAC encyption");
+DEFINE_string(hmacKeyPath, "/dev/null", "path to key used for HMAC encyption");
 DEFINE_string(authProvider, "none", "provider to use. can be {none, hmac}");
 
 using grpc::Server;
@@ -98,15 +98,7 @@ void HubServer::initialise() {
   crypto::CryptoManager::get().setProvider(
       std::make_unique<crypto::Argon2Provider>(FLAGS_salt));
 
-  if (FLAGS_authProvider == "none") {
-    auth::AuthManager::get().setProvider(
-        std::make_unique<auth::DummyProvider>());
-  } else if (FLAGS_authProvider == "hmac") {
-    auth::AuthManager::get().setProvider(
-        std::make_unique<auth::HMACProvider>(readFile(FLAGS_HMACKKeyPath)));
-  } else {
-    LOG(FATAL) << "Unknown auth provider: " << FLAGS_authProvider;
-  }
+  initialiseAuthProvider();
 
   db::DBManager::get().loadConnectionConfigFromArgs();
 
@@ -160,6 +152,18 @@ bool HubServer::authenticateSalt() const {
   auto address = provider.getAddressForUUID(crypto::UUID(uuid));
 
   return address.str_view() == existantAddress;
+}
+
+void HubServer::initialiseAuthProvider() const {
+  if (FLAGS_authProvider == "none") {
+    auth::AuthManager::get().setProvider(
+        std::make_unique<auth::DummyProvider>());
+  } else if (FLAGS_authProvider == "hmac") {
+    auth::AuthManager::get().setProvider(
+        std::make_unique<auth::HMACProvider>(readFile(FLAGS_hmacKeyPath)));
+  } else {
+    LOG(FATAL) << "Unknown auth provider: " << FLAGS_authProvider;
+  }
 }
 
 }  // namespace hub
