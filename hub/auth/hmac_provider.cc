@@ -55,7 +55,12 @@ std::string_view HMACProvider::stripEncodedPrefix(const std::string_view& e) {
   std::string_view curr(e);
   while (dollarSignCounter < NUM_DOLLAR_SIGNS_IN_PREFIX) {
     curr = e.substr(prefixSize, KEY_SIZE);
-    curr = curr.substr(0, curr.find_first_of('$') + 1);
+    auto pos = curr.find_first_of('$');
+    if (pos == std::string::npos) {
+      LOG(ERROR) << "Failed in " << __FUNCTION__;
+      break;
+    }
+    curr = curr.substr(0, pos + 1);
     prefixSize += curr.size();
     dollarSignCounter++;
   }
