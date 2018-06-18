@@ -7,8 +7,10 @@ by user or wrong use of hub on the exchange side, we wouldn't want the transacti
 to happen in the first place, to keep everyone happy.
 
 ## Proposed solution
-**1.UserWithdraw will now validate provided address is valid using checksum.
-2.GetDepositAddress will return the checksum**
+
+1. UserWithdraw will now validate provided address is valid using checksum.
+
+2. GetDepositAddress will return the checksum
 
 ## Proposed implemntation
 
@@ -30,8 +32,6 @@ message UserWithdrawRequest {
   string tag = 4;
 }
 enum ErrorCode {
-
-
   // Provided `payoutAddress` first 81 trytes
   // does not checksum to the last 9
   CHECKSUM_INVALID = 9;
@@ -43,7 +43,7 @@ declare/instantiate types in `crypto/types.h`:
 struct ChecksumTag {};
 using Checksum = TryteArray<9, ChecksumTag>;
 
-Add methods in `local_provider.h`
+Add methods:
 
 `Checksum calcChecksum(const string& address)`
 `nonstd::optional<Address> verifyAndStripChecksum(const string& address)`
