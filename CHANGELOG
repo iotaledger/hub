@@ -1,0 +1,4 @@
+- Jun 13 2018, PR #154 - hub/crypto: change default argon2 method & parameters
+	Default argon2 method was changed from argon2i to argon2id
+	Default argon2 time cost was changed from 1 to 4
+	Default argon2 memory cost was changed from 1<<16 to 1<<17

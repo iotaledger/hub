@@ -62,14 +62,6 @@ new_git_repository(
 )
 
 new_http_archive(
-    name = "argon2",
-    build_file = "third-party/argon2/BUILD.bzl",
-    sha256 = "eaea0172c1f4ee4550d1b6c9ce01aab8d1ab66b4207776aa67991eb5872fdcd8",
-    strip_prefix = "phc-winner-argon2-20171227",
-    url = "https://github.com/P-H-C/phc-winner-argon2/archive/20171227.tar.gz",
-)
-
-new_http_archive(
     name = "sqlite3",
     build_file = "third-party/sqlite3/BUILD.bzl",
     sha256 = "4239a1f69e5721d07d9a374eb84d594225229e54be4ee628da2995f4315d8dfc",
@@ -79,7 +71,7 @@ new_http_archive(
 
 git_repository(
     name = "rules_iota",
-    commit = "b5e5b91d955f257e47c7803808073658387f8a86",
+    commit = "aa09cfc6e6613a25a7b48dcf4ddccbe86b5654c1",
     remote = "https://github.com/iotaledger/rules_iota.git",
 )
 

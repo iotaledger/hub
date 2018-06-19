@@ -5,8 +5,7 @@
  * Refer to the LICENSE file for licensing information
  */
 
-
-#include "hub/crypto/local_provider.h"
+#include "hub/crypto/argon2_provider.h"
 
 #include <array>
 #include <cstdint>
@@ -31,6 +30,7 @@
 #include "common/trinary/trits.h"
 #include "common/trinary/tryte.h"
 #include "hub/crypto/types.h"
+#include "hub/argon_flags.h"
 
 // FIXME (th0br0) fix up entangled
 extern "C" {
@@ -45,13 +45,6 @@ static constexpr size_t TRYTE_LEN = 81;
 
 static constexpr size_t KEY_IDX = 0;
 static constexpr size_t KEY_SEC = 2;
-
-static constexpr uint32_t _argon_t_cost = 1;
-static constexpr uint32_t _argon_m_cost = 1 << 16;  // 64mebibytes
-static constexpr uint32_t _argon_parallelism = 1;
-
-DEFINE_uint32(maxConcurrentArgon2Hash, 4,
-              "Max number of concurrent Argon2 Hash processes");
 
 using TryteSeed = std::array<tryte_t, TRYTE_LEN + 1>;
 using TryteSeedPtr =
@@ -71,9 +64,22 @@ TryteSeedPtr seedFromUUID(const hub::crypto::UUID& uuid,
   });
 
   argon_semaphore.wait();
-  argon2i_hash_raw(_argon_t_cost, _argon_m_cost, _argon_parallelism,
-                   uuid.str_view().data(), hub::crypto::UUID::UUID_SIZE,
-                   _salt.c_str(), _salt.length(), byteSeed.data(), BYTE_LEN);
+
+  switch (FLAGS_argon2Mode) {
+    case 1:
+      argon2i_hash_raw(FLAGS_argon2TCost, FLAGS_argon2MCost,
+                       FLAGS_argon2Parallelism, uuid.str_view().data(),
+                       hub::crypto::UUID::UUID_SIZE, _salt.c_str(),
+                       _salt.length(), byteSeed.data(), BYTE_LEN);
+      break;
+    default:
+    case 2:
+      argon2id_hash_raw(FLAGS_argon2TCost, FLAGS_argon2MCost,
+                        FLAGS_argon2Parallelism, uuid.str_view().data(),
+                        hub::crypto::UUID::UUID_SIZE, _salt.c_str(),
+                        _salt.length(), byteSeed.data(), BYTE_LEN);
+      break;
+  }
   argon_semaphore.post();
 
   bytes_to_trits(byteSeed.data(), seed.data());
@@ -90,8 +96,10 @@ TryteSeedPtr seedFromUUID(const hub::crypto::UUID& uuid,
 namespace hub {
 namespace crypto {
 
-LocalProvider::LocalProvider(std::string salt) : _salt(std::move(salt)) {
+Argon2Provider::Argon2Provider(std::string salt) : _salt(std::move(salt)) {
   using std::string_literals::operator""s;
+
+  LOG(INFO) << "Initialising Argon2 provider in mode: " << FLAGS_argon2Mode;
 
   if (_salt.length() < ARGON2_MIN_SALT_LENGTH) {
     throw std::runtime_error(
@@ -100,7 +108,7 @@ LocalProvider::LocalProvider(std::string salt) : _salt(std::move(salt)) {
   }
 }
 
-Address LocalProvider::getAddressForUUID(const hub::crypto::UUID& uuid) const {
+Address Argon2Provider::getAddressForUUID(const hub::crypto::UUID& uuid) const {
   LOG(INFO) << "Generating address for: " << uuid.str().substr(0, 16);
 
   auto seed = seedFromUUID(uuid, _salt);
@@ -110,10 +118,10 @@ Address LocalProvider::getAddressForUUID(const hub::crypto::UUID& uuid) const {
   return ret;
 }
 
-size_t LocalProvider::securityLevel() const { return KEY_SEC; }
+size_t Argon2Provider::securityLevel() const { return KEY_SEC; }
 
-std::string LocalProvider::doGetSignatureForUUID(const hub::crypto::UUID& uuid,
-                                                 const Hash& bundleHash) const {
+std::string Argon2Provider::doGetSignatureForUUID(
+    const hub::crypto::UUID& uuid, const Hash& bundleHash) const {
   LOG(INFO) << "Generating signature for: " << uuid.str().substr(0, 16)
             << ", bundle: " << bundleHash.str_view();
 

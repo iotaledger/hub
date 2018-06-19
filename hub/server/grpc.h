@@ -115,12 +115,18 @@ class HubImpl final : public hub::rpc::Hub::Service {
       grpc::ServerContext* context,
       const hub::rpc::SweepSubscriptionRequest* request,
       grpc::ServerWriter<hub::rpc::SweepEvent>* writer) override;
+
   grpc::Status GetAddressInfo(grpc::ServerContext* context,
                               const ::hub::rpc::GetAddressInfoRequest* request,
                               hub::rpc::GetAddressInfoReply* response) override;
+
   grpc::Status SweepInfo(grpc::ServerContext* context,
                          const hub::rpc::SweepInfoRequest* request,
                          hub::rpc::SweepEvent* response) override;
+
+  grpc::Status SignBundle(grpc::ServerContext* context,
+                          const hub::rpc::SignBundleRequest* request,
+                          hub::rpc::SignBundleReply* response) override;
 };
 
 }  // namespace hub

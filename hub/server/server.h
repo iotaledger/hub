@@ -60,6 +60,7 @@ class HubServer {
   bool authenticateSalt() const;
 
   std::shared_ptr<grpc::ServerCredentials> makeCredentials();
+    void initialiseAuthProvider() const;
 };
 
 }  // namespace hub

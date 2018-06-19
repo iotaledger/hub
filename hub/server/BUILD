@@ -4,7 +4,12 @@ cc_library(
     hdrs = glob(["**/*.h"]),
     visibility = ["//visibility:public"],
     deps = [
+        "//hub/auth",
+        "//hub/auth:dummy_provider",
+        "//hub/auth:hmac_provider",
         "//hub/commands",
+        "//hub/crypto",
+        "//hub/crypto:argon2_provider",
         "//hub/db",
         "//hub/iota:pow",
         "//hub/iota:remote_pow",

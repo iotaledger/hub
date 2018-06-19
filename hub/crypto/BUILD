@@ -13,12 +13,13 @@ cc_library(
 )
 
 cc_library(
-    name = "local_provider",
-    srcs = ["local_provider.cc"],
-    hdrs = ["local_provider.h"],
+    name = "argon2_provider",
+    srcs = ["argon2_provider.cc"],
+    hdrs = ["argon2_provider.h"],
     visibility = ["//visibility:public"],
     deps = [
         ":crypto",
+        "//hub:argon_flags",
         "@argon2",
         "@boost//:interprocess",
         "@com_github_google_glog//:glog",
@@ -45,7 +46,7 @@ cc_test(
         "tests/**/*.cc",
     ]),
     deps = [
-        ":local_provider",
+        ":argon2_provider",
         "//hub/tests",
         "@boost//:interprocess",
         "@com_google_googletest//:gtest",

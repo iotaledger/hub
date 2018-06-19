@@ -10,6 +10,7 @@
 #include <memory>
 #include <string>
 
+#include <gflags/gflags.h>
 #include <glog/logging.h>
 #include <google/protobuf/util/json_util.h>
 
@@ -20,11 +21,15 @@
 #include "hub/commands/get_deposit_address.h"
 #include "hub/commands/get_user_history.h"
 #include "hub/commands/process_transfer_batch.h"
+#include "hub/commands/sign_bundle.h"
 #include "hub/commands/sweep_info.h"
 #include "hub/commands/sweep_subscription.h"
 #include "hub/commands/user_withdraw.h"
 #include "hub/commands/user_withdraw_cancel.h"
 #include "hub/stats/session.h"
+
+DEFINE_bool(SignBundle_enabled, false,
+            "Whether the SignBundle API call should be available");
 
 namespace hub {
 
@@ -118,6 +123,21 @@ grpc::Status HubImpl::SweepInfo(grpc::ServerContext* context,
                                 rpc::SweepEvent* response) {
   auto clientSession = std::make_shared<ClientSession>();
   cmd::SweepInfo cmd(clientSession);
+  return cmd.process(request, response);
+}
+
+grpc::Status HubImpl::SignBundle(grpc::ServerContext* context,
+                                 const hub::rpc::SignBundleRequest* request,
+                                 hub::rpc::SignBundleReply* response) {
+  auto clientSession = std::make_shared<ClientSession>();
+
+  if (!FLAGS_SignBundle_enabled) {
+    LOG(ERROR) << clientSession
+               << ": SignBundle is disabled";
+    return grpc::Status::CANCELLED;
+  }
+
+  cmd::SignBundle cmd(clientSession);
   return cmd.process(request, response);
 }
 

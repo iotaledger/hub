@@ -8,7 +8,7 @@
 
 #include <gtest/gtest.h>
 
-#include "hub/crypto/local_provider.h"
+#include "hub/crypto/argon2_provider.h"
 #include "hub/crypto/manager.h"
 #include "hub/crypto/types.h"
 #include "hub/db/db.h"
@@ -19,7 +19,7 @@ class Test : public ::testing::Test {
  public:
   virtual void SetUp() {
     hub::crypto::CryptoManager::get().setProvider(
-        std::make_unique<crypto::LocalProvider>("abcdefghij"));
+        std::make_unique<crypto::Argon2Provider>("abcdefghij"));
 
     db::Config config;
 
