@@ -83,8 +83,7 @@ bool AttachmentService::checkForUserReattachment(
     }
 
     auto confirmedTails = _api->filterConfirmedTails(userTails, {});
-    if (confirmedTails.size() != 0) {
-      // FIXME what if error logic more than one confirmed tail
+    if (confirmedTails.size() == 1) {
       const auto& tail = *confirmedTails.cbegin();
       LOG(INFO) << "Inserting confirmed user-attached tail: " << tail;
       connection.createTail(sweep.id, tail);
@@ -92,6 +91,14 @@ bool AttachmentService::checkForUserReattachment(
       LOG(INFO) << "Marking tail as confirmed: " << tail;
       connection.markTailAsConfirmed(tail);
       return true;
+    }
+
+    if (confirmedTails.size() > 1) {
+      // This should be impossible since bundle spends all funds
+      // in any input address, meaning that it won't be validated after one
+      // bundle has been confirmed
+      LOG(FATAL) << "Bundle hash: " << sweep.bundleHash
+                 << " has more than one confirmed tail";
     }
 
     // This also makes sure that we only add bundles that IRI has seen
