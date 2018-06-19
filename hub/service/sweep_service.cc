@@ -243,7 +243,7 @@ bool SweepService::doTick() {
     LOG(INFO) << "Found " << deposits.size()
               << " deposits with total amount: " << depositsTotal;
 
-    // 2.1. Abort if no deposits or withdrawals found.
+    // 2.1. Abort if no deposits and no withdrawals were found.
     if (deposits.size() == 0 && withdrawals.size() == 0) {
       LOG(INFO) << "No deposits or withdrawal requests found. Aborting sweep.";
 
