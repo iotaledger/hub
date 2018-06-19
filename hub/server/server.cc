@@ -16,6 +16,7 @@
 #include <glog/logging.h>
 #include <grpc++/grpc++.h>
 #include "hub/auth/dummy_provider.h"
+#include "hub/auth/hmac_provider.h"
 #include "hub/auth/manager.h"
 #include "hub/crypto/argon2_provider.h"
 #include "hub/crypto/manager.h"
@@ -45,6 +46,8 @@ DEFINE_string(authMode, "none", "credentials to use. can be {none, ssl}");
 DEFINE_string(sslCert, "/dev/null", "Path to SSL certificate");
 DEFINE_string(sslKey, "/dev/null", "Path to SSL certificate key");
 DEFINE_string(sslCA, "/dev/null", "Path to CA root");
+DEFINE_string(hmacKeyPath, "/dev/null", "path to key used for HMAC encyption");
+DEFINE_string(authProvider, "none", "provider to use. can be {none, hmac}");
 
 using grpc::Server;
 using grpc::ServerBuilder;
@@ -52,6 +55,11 @@ using grpc::ServerBuilder;
 namespace {
 std::string readFile(const std::string& fileName) {
   std::ifstream ifs(fileName.c_str());
+
+  if (!ifs.good()) {
+    LOG(FATAL) << "File: " << fileName << " does not exist.";
+  }
+
   std::stringstream buffer;
 
   buffer << ifs.rdbuf();
@@ -90,7 +98,7 @@ void HubServer::initialise() {
   crypto::CryptoManager::get().setProvider(
       std::make_unique<crypto::Argon2Provider>(FLAGS_salt));
 
-  auth::AuthManager::get().setProvider(std::make_unique<auth::DummyProvider>());
+  initialiseAuthProvider();
 
   db::DBManager::get().loadConnectionConfigFromArgs();
 
@@ -144,6 +152,18 @@ bool HubServer::authenticateSalt() const {
   auto address = provider.getAddressForUUID(crypto::UUID(uuid));
 
   return address.str_view() == existantAddress;
+}
+
+void HubServer::initialiseAuthProvider() const {
+  if (FLAGS_authProvider == "none") {
+    auth::AuthManager::get().setProvider(
+        std::make_unique<auth::DummyProvider>());
+  } else if (FLAGS_authProvider == "hmac") {
+    auth::AuthManager::get().setProvider(
+        std::make_unique<auth::HMACProvider>(readFile(FLAGS_hmacKeyPath)));
+  } else {
+    LOG(FATAL) << "Unknown auth provider: " << FLAGS_authProvider;
+  }
 }
 
 }  // namespace hub

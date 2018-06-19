@@ -23,7 +23,7 @@ class DummyProvider : public AuthProvider {
   /// Constructor
   DummyProvider() {}
 
-  bool validateToken(const AuthContext context,
+  bool validateToken(const AuthContext& context,
                      const std::string& token) noexcept override {
     return true;
   }

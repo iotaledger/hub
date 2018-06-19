@@ -30,6 +30,7 @@
 #include "common/trinary/trits.h"
 #include "common/trinary/tryte.h"
 #include "hub/crypto/types.h"
+#include "hub/argon_flags.h"
 
 // FIXME (th0br0) fix up entangled
 extern "C" {
@@ -44,14 +45,6 @@ static constexpr size_t TRYTE_LEN = 81;
 
 static constexpr size_t KEY_IDX = 0;
 static constexpr size_t KEY_SEC = 2;
-
-DEFINE_uint32(maxConcurrentArgon2Hash, 4,
-              "Max number of concurrent Argon2 Hash processes");
-DEFINE_uint32(argon2TCost, 4, "Time cost of Argon2");
-DEFINE_uint32(argon2MCost, 1 << 17, "Memory cost of Argon2 in bytes");
-DEFINE_uint32(argon2Parallelism, 1,
-              "Number of threads to use in parallel for Argon2");
-DEFINE_uint32(argon2Mode, 2, "Argon2 mode to use: 1=argon2i;2,else=argon2id");
 
 using TryteSeed = std::array<tryte_t, TRYTE_LEN + 1>;
 using TryteSeedPtr =

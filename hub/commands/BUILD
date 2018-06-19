@@ -10,7 +10,7 @@ cc_library(
     ),
     visibility = ["//visibility:public"],
     deps = [
-        "//hub/auth",
+        "//hub/auth:hmac_provider",
         "//hub/crypto",
         "//hub/db",
         "//hub/stats",
