@@ -98,10 +98,7 @@ bool UserAddressMonitor::onBalancesChanged(
           if (tx.address == change.address && tx.value) {
             aggregateSum += tx.value;
 
-            if (tx.value < 0 &&
-                !connection
-                     .getSweepByBundleHash(hub::crypto::Hash(tx.bundleHash))
-                     .has_value()) {
+            if (tx.value < 0) {
               LOG(FATAL) << "Funds have been spent from deposit address: "
                          << tx.address << " (bundle hash: " << tx.bundleHash
                          << ")";
