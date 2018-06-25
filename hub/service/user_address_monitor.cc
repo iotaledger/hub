@@ -5,14 +5,13 @@
  * Refer to the LICENSE file for licensing information
  */
 
-
 #include "hub/service/user_address_monitor.h"
 
 #include <algorithm>
 #include <iterator>
+#include <set>
 #include <utility>
 #include <vector>
-#include <set>
 
 #include <glog/logging.h>
 #include <boost/move/move.hpp>
@@ -100,8 +99,9 @@ bool UserAddressMonitor::onBalancesChanged(
             aggregateSum += tx.value;
 
             if (tx.value < 0) {
-              // TODO(th0br0) verify that this was a sweep. Else we've got a
-              // problem.
+              LOG(FATAL) << "Funds have been spent from deposit address: "
+                         << tx.address << " (bundle hash: " << tx.bundleHash
+                         << ")";
             } else {
               LOG(INFO) << "Creating UserAddressBalance(" << change.addressId
                         << "," << tx.value << ",DEPOSIT," << tail << ")";
