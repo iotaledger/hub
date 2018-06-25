@@ -31,6 +31,11 @@
 #include "hub/db/helper.h"
 
 namespace {
+constexpr size_t FRAGMENT_LEN = 2187;
+const std::string EMPTY_FRAG(FRAGMENT_LEN, '9');
+const std::string EMPTY_NONCE(27, '9');
+const std::string EMPTY_HASH(81, '9');
+
 DEFINE_uint32(sweep_max_withdraw, 7,
               "Maximum number of withdraw requests to service per sweep.");
 DEFINE_uint32(sweep_max_deposit, 5,
@@ -40,6 +45,7 @@ DEFINE_uint32(sweep_max_deposit, 5,
 
 namespace hub {
 namespace service {
+
 db::TransferOutput SweepService::getHubOutput(uint64_t remainder) {
   auto& dbConnection = db::DBManager::get().connection();
   auto& cryptoProvider = crypto::CryptoManager::get().provider();
@@ -124,12 +130,6 @@ std::tuple<hub::crypto::Hash, std::string> SweepService::createBundle(
     signaturesForAddress[in.address] =
         cryptoProvider.getSignatureForUUID(dbConnection, in.uuid, bundleHash);
   }
-
-  // FIXME(th0br0) move this somewhere proper
-  constexpr size_t FRAGMENT_LEN = 2187;
-  std::string EMPTY_FRAG(FRAGMENT_LEN, '9');
-  std::string EMPTY_NONCE(27, '9');
-  std::string EMPTY_HASH(81, '9');
 
   auto it = bundle.getTransactions().begin();
 
@@ -243,7 +243,7 @@ bool SweepService::doTick() {
     LOG(INFO) << "Found " << deposits.size()
               << " deposits with total amount: " << depositsTotal;
 
-    // 2.1. Abort if no deposits or withdrawals found.
+    // 2.1. Abort if no deposits and no withdrawals were found.
     if (deposits.size() == 0 && withdrawals.size() == 0) {
       LOG(INFO) << "No deposits or withdrawal requests found. Aborting sweep.";
 
