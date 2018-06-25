@@ -63,6 +63,7 @@ TEST_F(UserWithdrawTest, WithdrawalUpdatesUserBalance) {
   req.set_userid(username);
   createBalanceForUsers({1}, 100);
   req.set_amount(50);
+  req.set_validatechecksum(true);
   req.set_payoutaddress(
       "WLVZXWARPSYCWJMBZJGXHUOVYBVCEKMNQDMXHCAEJZFLFLMHFYYQQSSLVYWAZWESKXZOROLU"
       "9OQFRVDEWCHKKXPWGY");

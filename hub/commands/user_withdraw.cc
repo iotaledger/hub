@@ -45,13 +45,19 @@ grpc::Status UserWithdraw::doProcess(
   }
 
   try {
-    auto payoutAddressOptional = std::move(
-        hub::crypto::CryptoManager::get().provider().verifyAndStripChecksum(
-            request->payoutaddress()));
+    nonstd::optional<crypto::Address> address;
+    if (request->validatechecksum()) {
+      address = std::move(
+          hub::crypto::CryptoManager::get().provider().verifyAndStripChecksum(
+              request->payoutaddress()));
 
-    if (!payoutAddressOptional.has_value()) {
-      return grpc::Status(grpc::StatusCode::FAILED_PRECONDITION, "",
-                          errorToString(hub::rpc::ErrorCode::CHECKSUM_INVALID));
+      if (!address.has_value()) {
+        return grpc::Status(
+            grpc::StatusCode::FAILED_PRECONDITION, "",
+            errorToString(hub::rpc::ErrorCode::CHECKSUM_INVALID));
+      }
+    } else {
+      address = {crypto::Address(request->payoutaddress())};
     }
 
     hub::crypto::Tag withdrawalTag(
@@ -82,7 +88,7 @@ grpc::Status UserWithdraw::doProcess(
     // Add withdrawal
     withdrawalId = connection.createWithdrawal(
         boost::uuids::to_string(withdrawalUUID), userId, request->amount(),
-        withdrawalTag, payoutAddressOptional.value());
+        withdrawalTag, address.value());
 
     // Add user account balance entry
     connection.createUserAccountBalanceEntry(

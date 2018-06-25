@@ -42,6 +42,7 @@ TEST_F(UserWithdrawCancelTest, WithdrawalCancelUpdatesUserBalance) {
   withdrawRequest.set_payoutaddress(
       "WLVZXWARPSYCWJMBZJGXHUOVYBVCEKMNQDMXHCAEJZFLFLMHFYYQQSSLVYWAZWESKXZOROLU"
       "9OQFRVDEWCHKKXPWGY");
+  withdrawRequest.set_validatechecksum(true);
 
   auto status = withdrawCmd.doProcess(&withdrawRequest, &withdrawReply);
 
@@ -87,6 +88,7 @@ TEST_F(UserWithdrawCancelTest, WithdrawalCancelOnlyOnce) {
   withdrawRequest.set_payoutaddress(
       "WLVZXWARPSYCWJMBZJGXHUOVYBVCEKMNQDMXHCAEJZFLFLMHFYYQQSSLVYWAZWESKXZOROLU"
       "9OQFRVDEWCHKKXPWGY");
+  withdrawRequest.set_validatechecksum(true);
 
   auto status = withdrawCmd.doProcess(&withdrawRequest, &withdrawReply);
 

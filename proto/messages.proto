@@ -88,6 +88,7 @@ message GetBalanceReply {
  */
 message GetDepositAddressRequest {
   string userId = 1;
+  bool includeChecksum = 2 ;
 }
 
 
@@ -113,6 +114,8 @@ message UserWithdrawRequest {
   uint64 amount = 3;
   // Tag for withdrawal
   string tag = 4;
+  // should command validate address
+  bool validateChecksum = 5 ;
 }
 
 message UserWithdrawReply {
@@ -280,6 +283,8 @@ message SignBundleRequest {
   string bundleHash = 2;
   // Authentication token 
   string authentication = 3;
+  // should command validate address
+  bool validateChecksum = 4 ;
 }
 
 message SignBundleReply {
