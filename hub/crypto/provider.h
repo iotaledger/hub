@@ -53,6 +53,17 @@ class CryptoProvider {
   /// The desired security level
   virtual size_t securityLevel() const = 0;
 
+  /// takes a 81 trytes address and calculates 9 trytes checksum on it
+  /// param[in] address - the address on which checksum is calculated
+  /// @return Checksum - the checksum of the address
+  Checksum calcChecksum(std::string_view address) const;
+
+  /// Checks if first 81 trytes checksums to last 9 of `addressWithChecksum`
+  /// param[in] address - the address including the checksum - 90 trytes
+  /// @return Address - the 81 trytes address if it validates
+  nonstd::optional<Address> verifyAndStripChecksum(
+      const std::string& address) const;
+
  protected:
   /// Calculate the signature for a UUID and a bundle hash.
   /// param[in] UUID - a UUID

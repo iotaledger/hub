@@ -34,7 +34,16 @@ grpc::Status SignBundle::doProcess(
   auto& authProvider = auth::AuthManager::get().provider();
 
   try {
-    hub::crypto::Address address(request->address());
+    auto addressOptional = std::move(
+        hub::crypto::CryptoManager::get().provider().verifyAndStripChecksum(
+            request->address()));
+
+    if (!addressOptional.has_value()) {
+      return grpc::Status(grpc::StatusCode::FAILED_PRECONDITION, "",
+                          errorToString(hub::rpc::ErrorCode::CHECKSUM_INVALID));
+    }
+
+    hub::crypto::Address address(std::move(addressOptional.value()));
     hub::crypto::Hash bundleHash(request->bundlehash());
 
     // 1. Check that address was used before

@@ -5,7 +5,6 @@
  * Refer to the LICENSE file for licensing information
  */
 
-
 #include "hub/commands/get_deposit_address.h"
 
 #include <sqlpp11/exception.h>
@@ -46,7 +45,10 @@ grpc::Status GetDepositAddress::doProcess(
   auto address =
       hub::crypto::CryptoManager::get().provider().getAddressForUUID(uuid);
 
-  response->set_address(address.str());
+  response->set_address(address.str() + hub::crypto::CryptoManager::get()
+                                            .provider()
+                                            .calcChecksum(address.str())
+                                            .str());
 
   // Add new user address.
   auto transaction = connection.transaction();

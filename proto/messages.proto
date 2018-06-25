@@ -34,6 +34,8 @@ enum ErrorCode {
   INELIGIBLE_ADDRESS = 9;
   // Provided authentication token was invalid.
   INVALID_AUTHENTICATION = 10;
+  //Provided address contained invalid checksum
+  CHECKSUM_INVALID = 11;
 }
 
 /*

@@ -79,7 +79,7 @@ http_archive(
     name = "org_iota_entangled",
     strip_prefix = "entangled-develop",
     url =
-        "https://gitlab.com/iota-foundation/software/entangled/-/archive/develop/entangled-develop.tar.gz",
+        "https://github.com/iotaledger/entangled/archive/develop.zip",
 )
 
 new_git_repository(

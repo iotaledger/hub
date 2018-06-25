@@ -40,8 +40,8 @@ TEST_F(UserWithdrawCancelTest, WithdrawalCancelUpdatesUserBalance) {
   createBalanceForUsers({1}, USER_BALANCE);
   withdrawRequest.set_amount(toWithdraw);
   withdrawRequest.set_payoutaddress(
-      "999999999999999999999999999999999999999999999999999999999999999999999999"
-      "999999999");
+      "WLVZXWARPSYCWJMBZJGXHUOVYBVCEKMNQDMXHCAEJZFLFLMHFYYQQSSLVYWAZWESKXZOROLU"
+      "9OQFRVDEWCHKKXPWGY");
 
   auto status = withdrawCmd.doProcess(&withdrawRequest, &withdrawReply);
 
@@ -85,8 +85,8 @@ TEST_F(UserWithdrawCancelTest, WithdrawalCancelOnlyOnce) {
   createBalanceForUsers({1}, USER_BALANCE);
   withdrawRequest.set_amount(toWithdraw);
   withdrawRequest.set_payoutaddress(
-      "999999999999999999999999999999999999999999999999999999999999999999999999"
-      "999999999");
+      "WLVZXWARPSYCWJMBZJGXHUOVYBVCEKMNQDMXHCAEJZFLFLMHFYYQQSSLVYWAZWESKXZOROLU"
+      "9OQFRVDEWCHKKXPWGY");
 
   auto status = withdrawCmd.doProcess(&withdrawRequest, &withdrawReply);
 
