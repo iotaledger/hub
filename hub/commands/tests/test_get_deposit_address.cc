@@ -49,7 +49,6 @@ TEST_F(GetDepositAddressTest, AddressCountInDatabaseShouldChange) {
   createUser(session(), username);
 
   req.set_userid(username);
-  //req.set_includechecksum(false) - default;
 
   cmd::GetDepositAddress command(session());
 

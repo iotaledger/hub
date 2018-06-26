@@ -12,16 +12,19 @@ namespace hub {
 namespace crypto {
 
 Checksum CryptoProvider::calcChecksum(std::string_view address) const {
-  return Checksum(
-      iota_checksum(address.data(), address.size(), Checksum::length()));
+  char* checksumPtr =
+      iota_checksum(address.data(), address.size(), Checksum::length());
+  auto result = Checksum(checksumPtr);
+  std::free(checksumPtr);
+  return result;
 }
 
 nonstd::optional<Address> CryptoProvider::verifyAndStripChecksum(
     const std::string& address) const {
-  if (calcChecksum(std::string_view(address).substr(0, Address::length()))
-          .str_view() ==
-      std::string_view(address).substr(
-          Address::length(), Address::length() + Checksum::length())) {
+  auto addressView = std::string_view(address).substr(0, Address::length());
+  auto checksumView = std::string_view(address).substr(
+      Address::length(), Address::length() + Checksum::length());
+  if (calcChecksum(addressView).str_view() == checksumView) {
     return Address(address.substr(0, Address::length()));
   }
   return {};
