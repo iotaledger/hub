@@ -6,6 +6,7 @@
 #include <sqlpp11/select.h>
 
 #include "hub/commands/get_deposit_address.h"
+#include "hub/crypto/types.h"
 #include "hub/db/db.h"
 #include "hub/db/helper.h"
 #include "hub/stats/session.h"
@@ -53,9 +54,11 @@ TEST_F(GetDepositAddressTest, AddressCountInDatabaseShouldChange) {
 
   ASSERT_TRUE(command.process(&req, &res).ok());
   std::string address1 = res.address();
-  ASSERT_EQ(res.address().length(), 81);
+  ASSERT_EQ(res.address().length(),
+            hub::crypto::Address::length());
   ASSERT_TRUE(command.process(&req, &res).ok());
-  ASSERT_EQ(res.address().length(), 81);
+  ASSERT_EQ(res.address().length(),
+            hub::crypto::Address::length());
   ASSERT_NE(address1, res.address());
 
   /*ASSERT_EQ(
@@ -66,13 +69,15 @@ TEST_F(GetDepositAddressTest, AddressCountInDatabaseShouldChange) {
   ASSERT_EQ(2, unswept.size());
   ASSERT_NE(std::find_if(unswept.begin(), unswept.end(),
                          [&address1](auto& ref) {
-                           return std::get<1>(ref) == address1;
+                           return std::get<1>(ref) ==
+                                  address1;
                          }),
             unswept.end());
 
   ASSERT_NE(std::find_if(unswept.begin(), unswept.end(),
                          [&res](auto& ref) {
-                           return std::get<1>(ref) == res.address();
+                           return std::get<1>(ref) ==
+                                  res.address();
                          }),
             unswept.end());
 }
@@ -87,11 +92,16 @@ TEST_F(GetDepositAddressTest, AddressShouldHaveCorrectLength) {
   createUser(session(), username);
 
   req.set_userid(username);
+  req.set_includechecksum(true);
 
   cmd::GetDepositAddress command(session());
 
   ASSERT_TRUE(command.process(&req, &res).ok());
-  ASSERT_EQ(res.address().length(), 81);
+  ASSERT_EQ(res.address().length(), hub::crypto::Address::length() + hub::crypto::Checksum::length());
+
+  req.set_includechecksum(false);
+  ASSERT_TRUE(command.process(&req, &res).ok());
+  ASSERT_EQ(res.address().length(), hub::crypto::Address::length());
 }
 
 };  // namespace

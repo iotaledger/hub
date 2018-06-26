@@ -21,6 +21,7 @@
 #include "schema/schema.h"
 
 #include "hub/commands/helper.h"
+#include "hub/crypto/manager.h"
 #include "hub/crypto/types.h"
 
 namespace hub {
@@ -44,7 +45,20 @@ grpc::Status UserWithdraw::doProcess(
   }
 
   try {
-    auto payoutAddress = hub::crypto::Address(request->payoutaddress());
+    nonstd::optional<crypto::Address> address;
+    if (request->validatechecksum()) {
+      address = std::move(
+          hub::crypto::CryptoManager::get().provider().verifyAndStripChecksum(
+              request->payoutaddress()));
+
+      if (!address.has_value()) {
+        return grpc::Status(
+            grpc::StatusCode::FAILED_PRECONDITION, "",
+            errorToString(hub::rpc::ErrorCode::CHECKSUM_INVALID));
+      }
+    } else {
+      address = {crypto::Address(request->payoutaddress())};
+    }
 
     hub::crypto::Tag withdrawalTag(
         request->tag() +
@@ -74,7 +88,7 @@ grpc::Status UserWithdraw::doProcess(
     // Add withdrawal
     withdrawalId = connection.createWithdrawal(
         boost::uuids::to_string(withdrawalUUID), userId, request->amount(),
-        withdrawalTag, payoutAddress);
+        withdrawalTag, address.value());
 
     // Add user account balance entry
     connection.createUserAccountBalanceEntry(

@@ -1,6 +1,9 @@
 cc_library(
     name = "crypto",
-    srcs = ["manager.cc"],
+    srcs = [
+        "manager.cc",
+        "provider.cc",
+    ],
     hdrs = [
         "manager.h",
         "provider.h",
@@ -9,6 +12,7 @@ cc_library(
     deps = [
         ":types",
         "//hub/db",
+        "@org_iota_entangled//common/helpers:checksum",
     ],
 )
 

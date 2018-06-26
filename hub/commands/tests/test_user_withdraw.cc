@@ -31,11 +31,6 @@ TEST_F(UserWithdrawTest, ErrorOnInvalidPayoutAddress) {
 
   req.set_payoutaddress("999999999");
   ASSERT_FALSE(command.doProcess(&req, &res).ok());
-
-  req.set_payoutaddress(
-      "999999999999999999999999999999999999999999999999999999999999999999999999"
-      "99999|999");
-  ASSERT_FALSE(command.doProcess(&req, &res).ok());
 }
 
 TEST_F(UserWithdrawTest, ErrorOnZeroAmount) {
@@ -48,8 +43,8 @@ TEST_F(UserWithdrawTest, ErrorOnZeroAmount) {
   req.set_userid("a");
   req.set_amount(0);
   req.set_payoutaddress(
-      "999999999999999999999999999999999999999999999999999999999999999999999999"
-      "999999999");
+      "WLVZXWARPSYCWJMBZJGXHUOVYBVCEKMNQDMXHCAEJZFLFLMHFYYQQSSLVYWAZWESKXZOROLU"
+      "9OQFRVDEWCHKKXPWGY");
 
   auto status = command.process(&req, &res);
 
@@ -68,9 +63,10 @@ TEST_F(UserWithdrawTest, WithdrawalUpdatesUserBalance) {
   req.set_userid(username);
   createBalanceForUsers({1}, 100);
   req.set_amount(50);
+  req.set_validatechecksum(true);
   req.set_payoutaddress(
-      "999999999999999999999999999999999999999999999999999999999999999999999999"
-      "999999999");
+      "WLVZXWARPSYCWJMBZJGXHUOVYBVCEKMNQDMXHCAEJZFLFLMHFYYQQSSLVYWAZWESKXZOROLU"
+      "9OQFRVDEWCHKKXPWGY");
 
   auto status = command.doProcess(&req, &res);
 
@@ -86,6 +82,29 @@ TEST_F(UserWithdrawTest, WithdrawalUpdatesUserBalance) {
   ASSERT_TRUE(balCommand.doProcess(&balReq, &balRes).ok());
 
   ASSERT_EQ(50, balRes.available());
+}
+
+TEST_F(UserWithdrawTest, ErrorOnInvalidChecksumForPayoutAddress) {
+  rpc::UserWithdrawRequest req;
+  rpc::UserWithdrawReply res;
+  cmd::UserWithdraw command(session());
+
+  constexpr auto username = "User1";
+
+  createUser(session(), username);
+
+  req.set_userid(username);
+  createBalanceForUsers({1}, 100);
+  req.set_amount(50);
+
+  // checksum last letter: Y -> Z
+  req.set_payoutaddress(
+      "WLVZXWARPSYCWJMBZJGXHUOVYBVCEKMNQDMXHCAEJZFLFLMHFYYQQSSLVYWAZWESKXZOROLU"
+      "9OQFRVDEWCHKKXPWGZ");
+
+  auto status = command.doProcess(&req, &res);
+
+  ASSERT_FALSE(status.ok());
 }
 
 };  // namespace

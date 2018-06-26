@@ -142,7 +142,9 @@ bool operator!=(const hub::crypto::TryteArray<N, TAG>& lhs,
 struct HashTag {};
 struct AddressTag {};
 struct TagTag {};
+struct ChecksumTag {};
 
+using Checksum = TryteArray<9, ChecksumTag>;
 using Hash = TryteArray<81, HashTag>;
 using Address = TryteArray<81, AddressTag>;
 using Tag = TryteArray<27, TagTag>;
