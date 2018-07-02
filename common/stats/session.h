@@ -15,12 +15,12 @@
 
 #include <glog/logging.h>
 
-#include "hub/crypto/types.h"
+#include "common/types/types.h"
 
-namespace hub {
+namespace common {
 class ClientSession {
  public:
-  ClientSession() : _tag(hub::crypto::UUID().str()), _str(rep_str()) {}
+  ClientSession() : _tag(crypto::UUID().str()), _str(rep_str()) {}
 
   ~ClientSession() { LOG(INFO) << *this << "destroyed."; }
 
@@ -29,7 +29,7 @@ class ClientSession {
 
  private:
   friend std::ostream& operator<<(std::ostream& os,
-                                  const hub::ClientSession& stats);
+                                  const ClientSession& stats);
 
   std::string rep_str() const {
     std::ostringstream ostr;

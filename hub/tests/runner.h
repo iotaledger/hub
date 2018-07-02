@@ -8,9 +8,9 @@
 
 #include <gtest/gtest.h>
 
+#include "common/types/types.h"
 #include "hub/crypto/argon2_provider.h"
 #include "hub/crypto/manager.h"
-#include "hub/crypto/types.h"
 #include "hub/db/db.h"
 #include "hub/stats/session.h"
 

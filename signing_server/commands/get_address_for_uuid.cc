@@ -4,7 +4,7 @@
 #include "proto/signing_server.pb.h"
 #include "proto/signing_server_messages.pb.h"
 
-#include "hub/crypto/types.h"
+#include "common/types/types.h"
 #include "proto/messages.pb.h"
 #include "signing_server/commands/helper.h"
 
@@ -17,7 +17,7 @@ grpc::Status GetAddressForUUID::doProcess(
   try {
     LOG(INFO) << session() << " GetAddressForUUID: " << request->uuid();
 
-    hub::crypto::UUID uuid(request->uuid());
+    common::crypto::UUID uuid(request->uuid());
     auto address =
         hub::crypto::CryptoManager::get().provider().getAddressForUUID(uuid);
     response->set_address(address.str());

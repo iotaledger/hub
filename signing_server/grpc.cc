@@ -6,8 +6,8 @@
  */
 
 #include "signing_server/grpc.h"
+#include "common/stats/session.h"
 #include "hub/crypto/provider.h"
-#include "hub/stats/session.h"
 #include "signing_server/commands/get_address_for_uuid.h"
 #include "signing_server/commands/get_security_level.h"
 #include "signing_server/commands/get_signature_for_uuid.h"
@@ -22,7 +22,7 @@ namespace rpc {
 grpc::Status SigningServerImpl::GetAddressForUUID(
     ::grpc::ServerContext* context, const GetAddressForUUIDRequest* request,
     GetAddressForUUIDReply* response) {
-  auto clientSession = std::make_shared<hub::ClientSession>();
+  auto clientSession = std::make_shared<common::ClientSession>();
   cmd::GetAddressForUUID cmd(clientSession);
   return cmd.process(request, response);
 }
@@ -30,7 +30,7 @@ grpc::Status SigningServerImpl::GetAddressForUUID(
 grpc::Status SigningServerImpl::GetSignatureForUUID(
     ::grpc::ServerContext* context, const GetSignatureForUUIDRequest* request,
     GetSignatureForUUIDReply* response) {
-  auto clientSession = std::make_shared<hub::ClientSession>();
+  auto clientSession = std::make_shared<common::ClientSession>();
   cmd::GetSignatureForUUID cmd(clientSession);
   return cmd.process(request, response);
 }
@@ -38,7 +38,7 @@ grpc::Status SigningServerImpl::GetSignatureForUUID(
 grpc::Status SigningServerImpl::GetSecurityLevel(
     ::grpc::ServerContext* context, const GetSecurityLevelRequest* request,
     GetSecurityLevelReply* response) {
-  auto clientSession = std::make_shared<hub::ClientSession>();
+  auto clientSession = std::make_shared<common::ClientSession>();
   cmd::GetSecurityLevel cmd(clientSession);
   return cmd.process(request, response);
 }

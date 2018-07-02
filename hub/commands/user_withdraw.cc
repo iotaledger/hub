@@ -14,15 +14,15 @@
 #include <boost/uuid/uuid.hpp>
 #include <boost/uuid/uuid_io.hpp>
 
+#include "common/stats/session.h"
 #include "hub/db/db.h"
 #include "hub/db/helper.h"
-#include "hub/stats/session.h"
 #include "proto/hub.pb.h"
 #include "schema/schema.h"
 
+#include "common/types/types.h"
 #include "hub/commands/helper.h"
 #include "hub/crypto/manager.h"
-#include "hub/crypto/types.h"
 
 namespace hub {
 namespace cmd {
@@ -45,7 +45,7 @@ grpc::Status UserWithdraw::doProcess(
   }
 
   try {
-    nonstd::optional<crypto::Address> address;
+    nonstd::optional<common::crypto::Address> address;
     if (request->validatechecksum()) {
       address = std::move(
           hub::crypto::CryptoManager::get().provider().verifyAndStripChecksum(
@@ -57,12 +57,13 @@ grpc::Status UserWithdraw::doProcess(
             errorToString(hub::rpc::ErrorCode::CHECKSUM_INVALID));
       }
     } else {
-      address = {crypto::Address(request->payoutaddress())};
+      address = {common::crypto::Address(request->payoutaddress())};
     }
 
-    hub::crypto::Tag withdrawalTag(
+    common::crypto::Tag withdrawalTag(
         request->tag() +
-        std::string(hub::crypto::Tag::length() - request->tag().size(), '9'));
+        std::string(common::crypto::Tag::length() - request->tag().size(),
+                    '9'));
 
     // Get userId for identifier
     {

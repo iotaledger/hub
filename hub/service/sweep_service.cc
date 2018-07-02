@@ -24,9 +24,9 @@
 #include <iota/models/bundle.hpp>
 #include <iota/models/transaction.hpp>
 
+#include "common/types/types.h"
 #include "hub/crypto/manager.h"
 #include "hub/crypto/provider.h"
-#include "hub/crypto/types.h"
 #include "hub/db/db.h"
 #include "hub/db/helper.h"
 
@@ -50,7 +50,7 @@ db::TransferOutput SweepService::getHubOutput(uint64_t remainder) {
   auto& dbConnection = db::DBManager::get().connection();
   auto& cryptoProvider = crypto::CryptoManager::get().provider();
 
-  hub::crypto::UUID hubOutputUUID;
+  common::crypto::UUID hubOutputUUID;
   auto hubOutputAddress = cryptoProvider.getAddressForUUID(hubOutputUUID);
 
   return {dbConnection.createHubAddress(hubOutputUUID, hubOutputAddress),
@@ -59,7 +59,7 @@ db::TransferOutput SweepService::getHubOutput(uint64_t remainder) {
           std::move(hubOutputAddress)};
 }
 
-std::tuple<hub::crypto::Hash, std::string> SweepService::createBundle(
+std::tuple<common::crypto::Hash, std::string> SweepService::createBundle(
     const std::vector<db::TransferInput>& deposits,
     const std::vector<db::TransferInput>& hubInputs,
     const std::vector<db::TransferOutput>& withdrawals,
@@ -118,10 +118,10 @@ std::tuple<hub::crypto::Hash, std::string> SweepService::createBundle(
 
   bundle.finalize();
 
-  hub::crypto::Hash bundleHash(bundle.getHash());
+  common::crypto::Hash bundleHash(bundle.getHash());
 
   // 5.2 Generate signatures
-  std::unordered_map<hub::crypto::Address, std::string> signaturesForAddress;
+  std::unordered_map<common::crypto::Address, std::string> signaturesForAddress;
   for (const auto& in : deposits) {
     signaturesForAddress[in.address] =
         cryptoProvider.getSignatureForUUID(dbConnection, in.uuid, bundleHash);
@@ -151,7 +151,7 @@ std::tuple<hub::crypto::Hash, std::string> SweepService::createBundle(
     }
 
     std::string_view signature = signaturesForAddress.at(
-        hub::crypto::Address(tx.getAddress().toTrytes()));
+        common::crypto::Address(tx.getAddress().toTrytes()));
 
     while (!signature.empty()) {
       (*it).setSignatureFragments(
@@ -175,7 +175,7 @@ std::tuple<hub::crypto::Hash, std::string> SweepService::createBundle(
 }
 
 void SweepService::persistToDatabase(
-    std::tuple<hub::crypto::Hash, std::string> bundle,
+    std::tuple<common::crypto::Hash, std::string> bundle,
     const std::vector<db::TransferInput>& deposits,
     const std::vector<db::TransferInput>& hubInputs,
     const std::vector<db::TransferOutput>& withdrawals,

@@ -15,9 +15,9 @@
 #include <glog/logging.h>
 #include <grpc++/grpc++.h>
 
-#include "hub/stats/session.h"
+#include "common/stats/session.h"
 
-namespace hub {
+namespace common {
 class ClientSession;
 
 namespace cmd {

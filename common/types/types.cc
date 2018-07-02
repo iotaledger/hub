@@ -5,13 +5,13 @@
  * Refer to the LICENSE file for licensing information
  */
 
-#include "hub/crypto/types.h"
+#include "common/types/types.h"
 
 #include <cstring>
 #include <random>
 #include <utility>
 
-namespace hub {
+namespace common {
 namespace crypto {
 
 std::array<uint8_t, UUID::UUID_SIZE> UUID::generate() {
@@ -43,15 +43,15 @@ std::string_view UUID::str_view() const {
                           UUID_SIZE);
 }
 
-const std::array<uint8_t, hub::crypto::UUID::UUID_SIZE>& UUID::data() const {
+const std::array<uint8_t, common::crypto::UUID::UUID_SIZE>& UUID::data() const {
   return _data;
 }
 
-bool operator==(const hub::crypto::UUID& lhs, const hub::crypto::UUID& rhs) {
+bool operator==(const common::crypto::UUID& lhs, const common::crypto::UUID& rhs) {
   return lhs.data() == rhs.data();
 }
 
-bool operator!=(const hub::crypto::UUID& lhs, const hub::crypto::UUID& rhs) {
+bool operator!=(const common::crypto::UUID& lhs, const common::crypto::UUID& rhs) {
   return !(lhs == rhs);
 }
 }  // namespace crypto

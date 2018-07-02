@@ -21,7 +21,7 @@ class ServerBuilder;
 class ServerCredentials;
 }  // namespace grpc
 
-namespace hub {
+namespace signing {
 
 namespace crypto {
 
@@ -38,6 +38,6 @@ class SigningServer : public common::ServerBase {
 };
 }  // namespace crypto
 
-}  // namespace hub
+}  // namespace signing
 
 #endif  // HUB_CRYPTO_SERVER_H_

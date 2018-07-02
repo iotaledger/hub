@@ -134,7 +134,7 @@ void AttachmentService::reattachSweep(db::Connection& dbConnection,
 void AttachmentService::promoteSweep(db::Connection& connection,
                                      const iota::POWProvider& powProvider,
                                      const db::Sweep& sweep,
-                                     const hub::crypto::Hash& tailHash) {
+                                     const common::crypto::Hash& tailHash) {
   auto toApprove = _api->getTransactionsToApprove(0, {tailHash.str()});
   auto timestamp = std::chrono::duration_cast<std::chrono::seconds>(
                        std::chrono::system_clock::now().time_since_epoch())
@@ -233,7 +233,7 @@ bool AttachmentService::doTick() {
             // In this case, we just catch and reattach.
             try {
               promoteSweep(connection, powProvider, sweep,
-                           hub::crypto::Hash((*toPromote).hash));
+                           common::crypto::Hash((*toPromote).hash));
             } catch (const std::exception& ex) {
               LOG(INFO) << "Promotion failed. Reattaching.";
               reattachSweep(connection, powProvider, sweep);

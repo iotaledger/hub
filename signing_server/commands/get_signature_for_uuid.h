@@ -10,7 +10,7 @@
 
 #include <string>
 
-#include "hub/commands/command.h"
+#include "common/command.h"
 
 namespace signing {
 namespace rpc {
@@ -21,14 +21,14 @@ class GetSignatureForUUIDReply;
 namespace cmd {
 
 /// Gets information on an signature
-/// @param[in] hub::rpc::GetSignatureForUUIDRequest
-/// @param[in] hub::rpc::GetSignatureForUUIDReply
+/// @param[in] common::rpc::GetSignatureForUUIDRequest
+/// @param[in] common::rpc::GetSignatureForUUIDReply
 class GetSignatureForUUID
-    : public hub::cmd::Command<signing::rpc::GetSignatureForUUIDRequest,
-                               signing::rpc::GetSignatureForUUIDReply> {
+    : public common::cmd::Command<signing::rpc::GetSignatureForUUIDRequest,
+                                  signing::rpc::GetSignatureForUUIDReply> {
  public:
-  using hub::cmd::Command<signing::rpc::GetSignatureForUUIDRequest,
-                          signing::rpc::GetSignatureForUUIDReply>::Command;
+  using common::cmd::Command<signing::rpc::GetSignatureForUUIDRequest,
+                             signing::rpc::GetSignatureForUUIDReply>::Command;
 
   const std::string name() override { return "GetSignatureForUUID"; }
 

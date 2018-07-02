@@ -5,7 +5,6 @@
  * Refer to the LICENSE file for licensing information
  */
 
-
 #ifndef HUB_ARGON_FLAGS_H
 #define HUB_ARGON_FLAGS_H
 
@@ -17,4 +16,4 @@ DECLARE_uint32(argon2MCost);
 DECLARE_uint32(argon2Parallelism);
 DECLARE_uint32(argon2Mode);
 
-#endif //HUB_ARGON_FLAGS_H
+#endif  // HUB_ARGON_FLAGS_H

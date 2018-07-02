@@ -29,8 +29,8 @@
 #include "common/sign/v1/iss_kerl.h"
 #include "common/trinary/trits.h"
 #include "common/trinary/tryte.h"
+#include "common/types/types.h"
 #include "hub/argon_flags.h"
-#include "hub/crypto/types.h"
 
 // FIXME (th0br0) fix up entangled
 extern "C" {
@@ -50,7 +50,7 @@ using TryteSeed = std::array<tryte_t, TRYTE_LEN + 1>;
 using TryteSeedPtr =
     std::unique_ptr<TryteSeed, std::function<void(TryteSeed*)>>;
 
-TryteSeedPtr seedFromUUID(const hub::crypto::UUID& uuid,
+TryteSeedPtr seedFromUUID(const common::crypto::UUID& uuid,
                           const std::string& _salt) {
   static boost::interprocess::interprocess_semaphore argon_semaphore(
       FLAGS_maxConcurrentArgon2Hash);
@@ -69,14 +69,14 @@ TryteSeedPtr seedFromUUID(const hub::crypto::UUID& uuid,
     case 1:
       argon2i_hash_raw(FLAGS_argon2TCost, FLAGS_argon2MCost,
                        FLAGS_argon2Parallelism, uuid.str_view().data(),
-                       hub::crypto::UUID::UUID_SIZE, _salt.c_str(),
+                       common::crypto::UUID::UUID_SIZE, _salt.c_str(),
                        _salt.length(), byteSeed.data(), BYTE_LEN);
       break;
     default:
     case 2:
       argon2id_hash_raw(FLAGS_argon2TCost, FLAGS_argon2MCost,
                         FLAGS_argon2Parallelism, uuid.str_view().data(),
-                        hub::crypto::UUID::UUID_SIZE, _salt.c_str(),
+                        common::crypto::UUID::UUID_SIZE, _salt.c_str(),
                         _salt.length(), byteSeed.data(), BYTE_LEN);
       break;
   }
@@ -108,20 +108,24 @@ Argon2Provider::Argon2Provider(std::string salt) : _salt(std::move(salt)) {
   }
 }
 
-Address Argon2Provider::getAddressForUUID(const hub::crypto::UUID& uuid) const {
+common::crypto::Address Argon2Provider::getAddressForUUID(
+    const common::crypto::UUID& uuid) const {
   LOG(INFO) << "Generating address for: " << uuid.str().substr(0, 16);
 
   auto seed = seedFromUUID(uuid, _salt);
   auto add = iota_sign_address_gen((const char*)seed->data(), KEY_IDX, KEY_SEC);
-  Address ret(add);
+  common::crypto::Address ret(add);
   std::free(add);
   return ret;
 }
 
-size_t Argon2Provider::securityLevel(const UUID& uuid) const { return KEY_SEC; }
+size_t Argon2Provider::securityLevel(const common::crypto::UUID& uuid) const {
+  return KEY_SEC;
+}
 
 std::string Argon2Provider::doGetSignatureForUUID(
-    const hub::crypto::UUID& uuid, const Hash& bundleHash) const {
+    const common::crypto::UUID& uuid,
+    const common::crypto::Hash& bundleHash) const {
   LOG(INFO) << "Generating signature for: " << uuid.str().substr(0, 16)
             << ", bundle: " << bundleHash.str_view();
 

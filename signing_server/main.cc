@@ -19,7 +19,7 @@ int main(int argc, char** argv) {
 
   LOG(INFO) << "Crypto provider starting up.";
 
-  hub::crypto::SigningServer server;
+  signing::crypto::SigningServer server;
 
   server.initialise();
   server.runAndWait();

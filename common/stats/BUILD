@@ -4,7 +4,7 @@ cc_library(
     hdrs = glob(["**/*.h"]),
     visibility = ["//visibility:public"],
     deps = [
-        "//hub/crypto:types",
+        "//common/types",
         "@com_github_google_glog//:glog",
     ],
 )

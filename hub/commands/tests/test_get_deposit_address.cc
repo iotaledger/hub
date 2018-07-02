@@ -6,7 +6,7 @@
 #include <sqlpp11/select.h>
 
 #include "hub/commands/get_deposit_address.h"
-#include "hub/crypto/types.h"
+#include "common/types/types.h"
 #include "hub/db/db.h"
 #include "hub/db/helper.h"
 #include "hub/stats/session.h"
@@ -55,10 +55,10 @@ TEST_F(GetDepositAddressTest, AddressCountInDatabaseShouldChange) {
   ASSERT_TRUE(command.process(&req, &res).ok());
   std::string address1 = res.address();
   ASSERT_EQ(res.address().length(),
-            hub::crypto::Address::length());
+            common::crypto::Address::length());
   ASSERT_TRUE(command.process(&req, &res).ok());
   ASSERT_EQ(res.address().length(),
-            hub::crypto::Address::length());
+            common::crypto::Address::length());
   ASSERT_NE(address1, res.address());
 
   /*ASSERT_EQ(
@@ -97,11 +97,11 @@ TEST_F(GetDepositAddressTest, AddressShouldHaveCorrectLength) {
   cmd::GetDepositAddress command(session());
 
   ASSERT_TRUE(command.process(&req, &res).ok());
-  ASSERT_EQ(res.address().length(), hub::crypto::Address::length() + hub::crypto::Checksum::length());
+  ASSERT_EQ(res.address().length(), common::crypto::Address::length() + hub::crypto::Checksum::length());
 
   req.set_includechecksum(false);
   ASSERT_TRUE(command.process(&req, &res).ok());
-  ASSERT_EQ(res.address().length(), hub::crypto::Address::length());
+  ASSERT_EQ(res.address().length(), common::crypto::Address::length());
 }
 
 };  // namespace

@@ -10,12 +10,12 @@
 #include <sqlpp11/exception.h>
 #include <cstdint>
 
+#include "common/stats/session.h"
+#include "common/types/types.h"
 #include "hub/commands/helper.h"
 #include "hub/crypto/manager.h"
-#include "hub/crypto/types.h"
 #include "hub/db/db.h"
 #include "hub/db/helper.h"
-#include "hub/stats/session.h"
 #include "proto/hub.pb.h"
 #include "schema/schema.h"
 
@@ -41,7 +41,7 @@ grpc::Status GetDepositAddress::doProcess(
     userId = maybeUserId.value();
   }
 
-  hub::crypto::UUID uuid;
+  common::crypto::UUID uuid;
   auto address =
       hub::crypto::CryptoManager::get().provider().getAddressForUUID(uuid);
 

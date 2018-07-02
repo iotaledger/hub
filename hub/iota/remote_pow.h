@@ -5,7 +5,6 @@
  * Refer to the LICENSE file for licensing information
  */
 
-
 #ifndef HUB_IOTA_REMOTE_POW_H_
 #define HUB_IOTA_REMOTE_POW_H_
 

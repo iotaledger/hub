@@ -7,7 +7,7 @@
 #include <string>
 
 #include "hub/auth/hmac_provider.h"
-#include "hub/crypto/types.h"
+#include "common/types/types.h"
 #include "hub/db/db.h"
 #include "hub/tests/runner.h"
 
@@ -27,10 +27,10 @@ TEST_F(HMACProviderTest, ShouldValidateOnCorrectToken) {
   std::string key = "El6vxEO4rR009/U/u70SgPa6C7GVZQzXZOUQrkMnXFI";
   HMACProvider provider(key);
 
-  hub::crypto::Hash bundleHash(
+  common::crypto::Hash bundleHash(
       "9999999999999999999999999999999999999999999999999999999D9999999999999999"
       "999999999");
-  hub::crypto::Address address(
+  common::crypto::Address address(
       "999ZZS9LS99LPKLDGHTU999999PP9KH9K9JH999999PLR99IO999T999H9999999999HHL99"
       "9YU999ZBA");
   auth::SignBundleContext context(bundleHash, address);
@@ -44,10 +44,10 @@ TEST_F(HMACProviderTest, ShouldRejectOnIncorrectToken) {
   std::string key = "El6vxEO4rR009/U/u70SgPa6C7GVZQzXZOUQrkMnXFI";
   HMACProvider provider(key);
 
-  hub::crypto::Hash bundleHash(
+  common::crypto::Hash bundleHash(
       "9999999999999999999999999999999999999999999999999999999D9999999999999999"
       "999999999");
-  hub::crypto::Address address(
+  common::crypto::Address address(
       "999ZZS9LS99LPKLDGHTU999999PP9KH9K9JH999999PLR99IO999T999H9999999999HHL99"
       "9YU999ZBA");
   auth::SignBundleContext context(bundleHash, address);

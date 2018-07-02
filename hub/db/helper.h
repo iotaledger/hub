@@ -19,7 +19,7 @@
 #include <utility>
 #include <vector>
 
-#include "hub/crypto/types.h"
+#include "common/types/types.h"
 #include "hub/db/db.h"
 #include "hub/db/types.h"
 #include "schema/schema.h"
@@ -37,9 +37,9 @@ struct helper {
   static uint64_t availableBalanceForUser(C& connection, uint64_t userId);
   static void createUser(C& connection, const std::string& identifier);
   static uint64_t createUserAddress(C& connection,
-                                    const hub::crypto::Address& address,
+                                    const common::crypto::Address& address,
                                     uint64_t userId,
-                                    const hub::crypto::UUID& uuid);
+                                    const common::crypto::UUID& uuid);
   static void createUserAddressBalanceEntry(
       C& connection, uint64_t addressId, int64_t amount,
       const UserAddressBalanceReason reason,
@@ -49,17 +49,17 @@ struct helper {
       C& connection, uint64_t userId, int64_t amount,
       const UserAccountBalanceReason reason,
       const nonstd::optional<uint64_t> fkey = {});
-  static uint64_t createWithdrawal(C& connection, const std::string& uuid,
-                                   uint64_t userId, uint64_t amount,
-                                   const hub::crypto::Tag& tag,
-                                   const hub::crypto::Address& payoutAddress);
+  static uint64_t createWithdrawal(
+      C& connection, const std::string& uuid, uint64_t userId, uint64_t amount,
+      const common::crypto::Tag& tag,
+      const common::crypto::Address& payoutAddress);
   static size_t cancelWithdrawal(C& connection, const std::string& uuid);
   static size_t setWithdrawalSweep(C& connection, uint64_t id,
                                    uint64_t sweepId);
 
   static nonstd::optional<AddressWithUUID> selectFirstUserAddress(
       C& connection);
-  static void markUUIDAsSigned(C& connection, const hub::crypto::UUID& uuid);
+  static void markUUIDAsSigned(C& connection, const common::crypto::UUID& uuid);
   static std::vector<UserAccountBalanceEvent> getUserAccountBalances(
       C& connection, uint64_t userId);
 
@@ -76,7 +76,7 @@ struct helper {
   static void createTail(C& connection, uint64_t sweepId,
                          const std::string& hash);
   static std::vector<SweepTail> getTailsForSweep(C& connection,
-                                                   uint64_t sweepId);
+                                                 uint64_t sweepId);
   static void markTailAsConfirmed(C& connection, const std::string& hash);
   static std::vector<UserAccountBalanceEvent>
   getAllUsersAccountBalancesSinceTimePoint(
@@ -98,10 +98,11 @@ struct helper {
   static nonstd::optional<SweepEvent> getSweepByWithdrawalUUID(
       C& connection, const std::string& uuid);
   static nonstd::optional<SweepEvent> getSweepByBundleHash(
-      C& connection, const hub::crypto::Hash& bundleHash);
+      C& connection, const common::crypto::Hash& bundleHash);
 
-  static int64_t createHubAddress(C& connection, const hub::crypto::UUID& uuid,
-                                  const hub::crypto::Address& address);
+  static int64_t createHubAddress(C& connection,
+                                  const common::crypto::UUID& uuid,
+                                  const common::crypto::Address& address);
   static void createHubAddressBalanceEntry(C& connection, uint64_t hubAddress,
                                            int64_t amount,
                                            const HubAddressBalanceReason reason,
@@ -109,7 +110,8 @@ struct helper {
   static uint64_t getHubAddressBalance(C& connection, uint64_t hubAddress);
   static uint64_t getUserAddressBalance(C& connection, uint64_t userAddress);
 
-  static int64_t createSweep(C& connection, const hub::crypto::Hash& bundleHash,
+  static int64_t createSweep(C& connection,
+                             const common::crypto::Hash& bundleHash,
                              const std::string& bundleTrytes,
                              uint64_t intoHubAddress);
 
@@ -126,7 +128,7 @@ struct helper {
       const std::chrono::system_clock::time_point& olderThan);
 
   static nonstd::optional<AddressInfo> getAddressInfo(
-      C& connection, const hub::crypto::Address& address);
+      C& connection, const common::crypto::Address& address);
 
   static bool isSweepConfirmed(C& connection, uint64_t sweepId);
 };

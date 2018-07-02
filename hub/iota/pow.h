@@ -19,7 +19,6 @@
 namespace hub {
 namespace iota {
 
-
 /// POWProvider (Proof Of Work provider)
 class POWProvider {
  public:

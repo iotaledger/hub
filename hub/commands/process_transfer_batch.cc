@@ -5,7 +5,6 @@
  * Refer to the LICENSE file for licensing information
  */
 
-
 #include "hub/commands/process_transfer_batch.h"
 
 #include <algorithm>
@@ -21,9 +20,9 @@
 #include <sqlpp11/functions.h>
 #include <sqlpp11/select.h>
 
+#include "common/stats/session.h"
 #include "hub/db/db.h"
 #include "hub/db/helper.h"
-#include "hub/stats/session.h"
 #include "proto/hub.pb.h"
 #include "schema/schema.h"
 

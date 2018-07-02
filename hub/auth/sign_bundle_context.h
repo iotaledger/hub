@@ -10,16 +10,16 @@
 
 #include <string>
 
+#include "common/types/types.h"
 #include "hub/auth/provider.h"
-#include "hub/crypto/types.h"
 
 namespace hub {
 namespace auth {
 
 class SignBundleContext : public AuthContext {
  public:
-  SignBundleContext(const hub::crypto::Hash& bundleHash,
-                    const hub::crypto::Address& address);
+  SignBundleContext(const common::crypto::Hash& bundleHash,
+                    const common::crypto::Address& address);
   const std::string& message() const noexcept override;
 
  private:

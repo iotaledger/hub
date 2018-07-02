@@ -5,7 +5,7 @@
 #include <stdexcept>
 #include <string>
 
-#include "hub/crypto/types.h"
+#include "common/types/types.h"
 #include "hub/tests/runner.h"
 
 using namespace hub;

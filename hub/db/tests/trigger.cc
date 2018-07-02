@@ -8,7 +8,7 @@
 #include <string>
 #include <vector>
 
-#include "hub/crypto/types.h"
+#include "common/types/types.h"
 #include "hub/db/helper.h"
 #include "hub/db/types.h"
 #include "hub/tests/runner.h"
@@ -28,7 +28,7 @@ TEST_F(DBTest, SweepTriggerWorks) {
   UUID uuid;
   auto hubOutputAddress = cryptoProvider.getAddressForUUID(uuid);
   auto hubAddressId = connection.createHubAddress(uuid, hubOutputAddress);
-  auto hash = hub::crypto::Hash(
+  auto hash = common::crypto::Hash(
       "999999999999999999999999999999999999999999999999999999"
       "999999999999999999999999999");
 
@@ -59,7 +59,7 @@ TEST_F(DBTest, HubAddressTriggerWorks) {
   }
 
   auto sweepId = connection.createSweep(
-      hub::crypto::Hash("999999999999999999999999999999999999999999999999999999"
+      common::crypto::Hash("999999999999999999999999999999999999999999999999999999"
                         "999999999999999999999999999"),
       "", hubAddressIds[0]);
 
@@ -91,7 +91,7 @@ TEST_F(DBTest, UserAddressTriggerWorks) {
   auto hubOutputAddress = cryptoProvider.getAddressForUUID(uuid);
   auto hubAddressId = connection.createHubAddress(uuid, hubOutputAddress);
   auto sweepId = connection.createSweep(
-      hub::crypto::Hash("999999999999999999999999999999999999999999999999999999"
+      common::crypto::Hash("999999999999999999999999999999999999999999999999999999"
                         "999999999999999999999999999"),
       "", hubAddressId);
 

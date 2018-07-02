@@ -136,7 +136,7 @@ bool HubServer::authenticateSalt() const {
 
   const auto& provider = crypto::CryptoManager::get().provider();
   const auto& [existantAddress, uuid] = addAndUuidRes.value();
-  auto address = provider.getAddressForUUID(crypto::UUID(uuid));
+  auto address = provider.getAddressForUUID(common::crypto::UUID(uuid));
 
   return address.str_view() == existantAddress;
 }

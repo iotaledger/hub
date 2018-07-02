@@ -10,7 +10,7 @@
 
 #include <string>
 
-#include "hub/commands/command.h"
+#include "common/command.h"
 
 namespace hub {
 namespace rpc {
@@ -23,17 +23,16 @@ namespace cmd {
 /// Gets information on an address
 /// @param[in] hub::rpc::SignBundleRequest
 /// @param[in] hub::rpc::SignBundleReply
-class SignBundle : public Command<hub::rpc::SignBundleRequest,
-                                         hub::rpc::SignBundleReply> {
+class SignBundle : public common::cmd::Command<hub::rpc::SignBundleRequest,
+                                               hub::rpc::SignBundleReply> {
  public:
   using Command<hub::rpc::SignBundleRequest,
                 hub::rpc::SignBundleReply>::Command;
 
   const std::string name() override { return "SignBundle"; }
 
-  grpc::Status doProcess(
-      const hub::rpc::SignBundleRequest* request,
-      hub::rpc::SignBundleReply* response) noexcept override;
+  grpc::Status doProcess(const hub::rpc::SignBundleRequest* request,
+                         hub::rpc::SignBundleReply* response) noexcept override;
 };
 }  // namespace cmd
 }  // namespace hub

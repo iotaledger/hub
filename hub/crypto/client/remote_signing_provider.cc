@@ -51,7 +51,7 @@ RemoteSigningProvider::RemoteSigningProvider(const std::string& url,
 
 /// Get a new address for a given UUID and the salt
 /// param[in] UUID - a UUID
-Address RemoteSigningProvider::getAddressForUUID(const UUID& uuid) const {
+    common::crypto::Address RemoteSigningProvider::getAddressForUUID(const common::crypto::UUID& uuid) const {
   ClientContext context;
   signing::rpc::GetAddressForUUIDRequest request;
   request.set_uuid(uuid.str());
@@ -62,12 +62,12 @@ Address RemoteSigningProvider::getAddressForUUID(const UUID& uuid) const {
     std::cout << "getAddressForUUID rpc failed." << std::endl;
     return NULL_ADDRESS;
   }
-  return hub::crypto::Address(response.address());
+  return common::crypto::Address(response.address());
 }
 
 /// The current security level
 /// @return size_t - the security level (1 - 3)
-size_t RemoteSigningProvider::securityLevel(const UUID& uuid) const {
+size_t RemoteSigningProvider::securityLevel(const common::crypto::UUID& uuid) const {
   ClientContext context;
   signing::rpc::GetSecurityLevelRequest request;
   signing::rpc::GetSecurityLevelReply response;
@@ -85,7 +85,7 @@ size_t RemoteSigningProvider::securityLevel(const UUID& uuid) const {
 /// param[in] Hash - a bundleHash
 /// @return string - the signature
 std::string RemoteSigningProvider::doGetSignatureForUUID(
-    const UUID& uuid, const Hash& bundleHash) const {
+    const common::crypto::UUID& uuid, const common::crypto::Hash& bundleHash) const {
   ClientContext context;
   signing::rpc::GetSignatureForUUIDRequest request;
   request.set_uuid(uuid.str());

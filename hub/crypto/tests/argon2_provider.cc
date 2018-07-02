@@ -6,7 +6,7 @@
 #include <string>
 
 #include "hub/crypto/argon2_provider.h"
-#include "hub/crypto/types.h"
+#include "common/types/types.h"
 #include "hub/db/db.h"
 #include "hub/tests/runner.h"
 
@@ -67,7 +67,7 @@ TEST_F(Argon2ProviderTest, CorrectSignature) {
   // seed =
   // TTUVCDOGKVNMAPWDOIZPTBXAJDONMORWUMYWVFNDNYTYQUNREPBHTRVHKAJWXXVTHSRIFSCRGTOGZXPPD
   UUID uuid("43vgLK8NYigfKagfahbCSm+lMFcilNjZyV8Jj6blqX5u98Lx7vjH98AG1oh/ezOR");
-  hub::crypto::Hash bundleHash(
+  common::crypto::Hash bundleHash(
       "VLZTNAO9IHHDFDKDICSYXWIKZELHMPYKKGHCALIUTKEGNDLCSJGASEMVLGCGIVQSHPCLFRZJ"
       "ZKUOLAAAA");
 

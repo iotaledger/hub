@@ -16,7 +16,7 @@ using grpc::Server;
 using grpc::ServerBuilder;
 using namespace common::flags;
 
-namespace hub {
+namespace signing {
 
 namespace crypto {
 
@@ -40,4 +40,4 @@ void SigningServer::initialise() {
 }
 
 }  // namespace crypto
-}  // namespace hub
+}  // namespace signing

@@ -4,7 +4,7 @@
 #include "proto/signing_server.pb.h"
 #include "proto/signing_server_messages.pb.h"
 
-#include "hub/crypto/types.h"
+#include "common/types/types.h"
 
 namespace signing {
 namespace cmd {
@@ -16,7 +16,7 @@ grpc::Status GetSecurityLevel::doProcess(
     LOG(INFO) << session() << " GetSecurityLevel";
 
     auto security = hub::crypto::CryptoManager::get().provider().securityLevel(
-        hub::crypto::UUID(request->uuid()));
+        common::crypto::UUID(request->uuid()));
     response->set_securitylevel(security);
   } catch (const std::runtime_error& ex) {
     LOG(ERROR) << session() << "Failed: " << ex.what();

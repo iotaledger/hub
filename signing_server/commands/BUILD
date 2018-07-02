@@ -13,7 +13,7 @@ cc_library(
     ),
     visibility = ["//visibility:public"],
     deps = [
-        "//hub/commands:base_command",
+        "//common",
         "//hub/crypto:argon2_provider",
         "//proto:signing_server_cpp",
     ],

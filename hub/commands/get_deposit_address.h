@@ -10,7 +10,7 @@
 
 #include <string>
 
-#include "hub/commands/command.h"
+#include "common/command.h"
 
 namespace hub {
 namespace rpc {
@@ -23,8 +23,9 @@ namespace cmd {
 /// Gets a new deposit address.
 /// @param[in] hub::rpc::GetDepositAddressRequest
 /// @param[in] hub::rpc::GetDepositAddressReply
-class GetDepositAddress : public Command<hub::rpc::GetDepositAddressRequest,
-                                         hub::rpc::GetDepositAddressReply> {
+class GetDepositAddress
+    : public common::cmd::Command<hub::rpc::GetDepositAddressRequest,
+                                  hub::rpc::GetDepositAddressReply> {
  public:
   using Command<hub::rpc::GetDepositAddressRequest,
                 hub::rpc::GetDepositAddressReply>::Command;

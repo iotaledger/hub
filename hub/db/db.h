@@ -5,7 +5,6 @@
  * Refer to the LICENSE file for licensing information
  */
 
-
 #ifndef HUB_DB_DB_H_
 #define HUB_DB_DB_H_
 

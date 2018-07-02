@@ -13,8 +13,8 @@
 
 #include <grpc++/grpc++.h>
 
-#include "cppclient/api.h"
 #include "common/server_base.h"
+#include "cppclient/api.h"
 #include "hub/server/grpc.h"
 #include "hub/service/attachment_service.h"
 #include "hub/service/sweep_service.h"

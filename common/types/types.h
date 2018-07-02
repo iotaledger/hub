@@ -18,7 +18,7 @@
 #include <string_view>
 #include <utility>
 
-namespace hub {
+namespace common {
 namespace crypto {
 
 /// UUID class.
@@ -65,8 +65,8 @@ class UUID {
   std::array<uint8_t, UUID_SIZE> _data;
 };
 
-bool operator==(const hub::crypto::UUID& lhs, const hub::crypto::UUID& rhs);
-bool operator!=(const hub::crypto::UUID& lhs, const hub::crypto::UUID& rhs);
+bool operator==(const common::crypto::UUID& lhs, const common::crypto::UUID& rhs);
+bool operator!=(const common::crypto::UUID& lhs, const common::crypto::UUID& rhs);
 
 static constexpr auto TRYTE_CHARS = "9ABCDEFGHIJKLMNOPQRSTUVWXYZ";
 static constexpr uint8_t MIN_TRYTE = 'A';
@@ -127,13 +127,13 @@ class TryteArray {
 };
 
 template <std::size_t N, typename TAG>
-bool operator==(const hub::crypto::TryteArray<N, TAG>& lhs,
-                const hub::crypto::TryteArray<N, TAG>& rhs) {
+bool operator==(const common::crypto::TryteArray<N, TAG>& lhs,
+                const common::crypto::TryteArray<N, TAG>& rhs) {
   return lhs.data() == rhs.data();
 }
 template <std::size_t N, typename TAG>
-bool operator!=(const hub::crypto::TryteArray<N, TAG>& lhs,
-                const hub::crypto::TryteArray<N, TAG>& rhs) {
+bool operator!=(const common::crypto::TryteArray<N, TAG>& lhs,
+                const common::crypto::TryteArray<N, TAG>& rhs) {
   return !(lhs == rhs);
 }
 
@@ -153,23 +153,23 @@ using Tag = TryteArray<27, TagTag>;
 namespace std {
 
 template <std::size_t N, typename TAG>
-struct hash<hub::crypto::TryteArray<N, TAG>> {
+struct hash<common::crypto::TryteArray<N, TAG>> {
  public:
-  std::size_t operator()(const hub::crypto::TryteArray<N, TAG>& k) const {
+  std::size_t operator()(const common::crypto::TryteArray<N, TAG>& k) const {
     return std::hash<std::string_view>()(k.str_view());
   }
 };
 
 template <>
-struct hash<hub::crypto::UUID> {
+struct hash<common::crypto::UUID> {
  public:
-  std::size_t operator()(const hub::crypto::UUID& k) const {
+  std::size_t operator()(const common::crypto::UUID& k) const {
     return std::hash<std::string_view>()(k.str_view());
   }
 };
 }  // namespace std
 
-static const hub::crypto::Address NULL_ADDRESS(
+static const common::crypto::Address NULL_ADDRESS(
     "99999999999999999999999999999999999999999999999999999999999999999999999999"
     "9999999");
 

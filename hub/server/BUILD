@@ -5,6 +5,7 @@ cc_library(
     visibility = ["//visibility:public"],
     deps = [
         "//common",
+        "//common/stats",
         "//hub/auth",
         "//hub/auth:dummy_provider",
         "//hub/auth:hmac_provider",
@@ -18,7 +19,6 @@ cc_library(
         "//hub/service:attachment_service",
         "//hub/service:sweep_service",
         "//hub/service:user_address_monitor",
-        "//hub/stats",
         "//proto:hub_cpp",
         "@com_github_gflags_gflags//:gflags",
         "@com_github_google_glog//:glog",

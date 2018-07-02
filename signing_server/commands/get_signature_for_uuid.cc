@@ -4,7 +4,7 @@
 #include "proto/signing_server.pb.h"
 #include "proto/signing_server_messages.pb.h"
 
-#include "hub/crypto/types.h"
+#include "common/types/types.h"
 
 namespace signing {
 namespace cmd {
@@ -15,8 +15,8 @@ grpc::Status GetSignatureForUUID::doProcess(
   try {
     LOG(INFO) << session() << " GetSignatureForUUID: " << request->uuid();
 
-    hub::crypto::UUID uuid(request->uuid());
-    hub::crypto::Hash bundleHash(request->bundlehash());
+    common::crypto::UUID uuid(request->uuid());
+    common::crypto::Hash bundleHash(request->bundlehash());
     auto signature =
         hub::crypto::CryptoManager::get().provider().forceGetSignatureForUUID(
             uuid, bundleHash);

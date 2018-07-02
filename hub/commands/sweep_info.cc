@@ -11,11 +11,11 @@
 #include <nonstd/optional.hpp>
 #include <utility>
 
+#include "common/stats/session.h"
+#include "common/types/types.h"
 #include "hub/commands/helper.h"
-#include "hub/crypto/types.h"
 #include "hub/db/connection.h"
 #include "hub/db/types.h"
-#include "hub/stats/session.h"
 #include "proto/hub.pb.h"
 #include "schema/schema.h"
 
@@ -41,7 +41,7 @@ grpc::Status SweepInfo::doProcess(const hub::rpc::SweepInfoRequest* request,
   } else if (request->requestBy_case() ==
              hub::rpc::SweepInfoRequest::kBundleHash) {
     try {
-      hub::crypto::Hash bundleHash(request->bundlehash());
+      common::crypto::Hash bundleHash(request->bundlehash());
       maybeEvent = connection.getSweepByBundleHash(bundleHash);
     } catch (const std::exception& ex) {
       // ignore, hash parsing probably failed.

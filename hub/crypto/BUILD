@@ -10,7 +10,7 @@ cc_library(
     ],
     visibility = ["//visibility:public"],
     deps = [
-        ":types",
+        "//common/types",
         "//hub/db",
         "//proto:signing_server_cpp",
         "@org_iota_entangled//common/helpers:checksum",
@@ -34,15 +34,6 @@ cc_library(
         "@org_iota_entangled//common/sign/v1:iss_kerl",
         "@org_iota_entangled//common/trinary:trit_tryte",
     ],
-)
-
-cc_library(
-    name = "types",
-    srcs = ["types.cc"],
-    hdrs = [
-        "types.h",
-    ],
-    visibility = ["//visibility:public"],
 )
 
 cc_test(

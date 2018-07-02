@@ -5,7 +5,6 @@
  * Refer to the LICENSE file for licensing information
  */
 
-
 #include "hub/service/scheduled_service.h"
 
 #include <iostream>

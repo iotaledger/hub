@@ -6,10 +6,10 @@
  */
 
 
-#include "hub/stats/session.h"
+#include "common/stats/session.h"
 
-namespace hub {
-std::ostream& operator<<(std::ostream& os, const hub::ClientSession& session) {
+namespace common {
+std::ostream& operator<<(std::ostream& os, const ClientSession& session) {
   os << session.to_str();
   return os;
 }

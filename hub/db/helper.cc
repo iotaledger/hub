@@ -99,9 +99,9 @@ void helper<C>::createUser(C& connection, const std::string& identifier) {
 
 template <typename C>
 uint64_t helper<C>::createUserAddress(C& connection,
-                                      const hub::crypto::Address& address,
+                                      const common::crypto::Address& address,
                                       uint64_t userId,
-                                      const hub::crypto::UUID& uuid) {
+                                      const common::crypto::UUID& uuid) {
   db::sql::UserAddress userAddress;
 
   return connection(insert_into(userAddress)
@@ -155,7 +155,8 @@ void helper<C>::createUserAccountBalanceEntry(
 template <typename C>
 uint64_t helper<C>::createWithdrawal(
     C& connection, const std::string& uuid, uint64_t userId, uint64_t amount,
-    const hub::crypto::Tag& tag, const hub::crypto::Address& payoutAddress) {
+    const common::crypto::Tag& tag,
+    const common::crypto::Address& payoutAddress) {
   db::sql::Withdrawal tbl;
 
   return connection(insert_into(tbl).set(
@@ -194,7 +195,8 @@ nonstd::optional<AddressWithUUID> helper<C>::selectFirstUserAddress(
 }
 
 template <typename C>
-void helper<C>::markUUIDAsSigned(C& connection, const hub::crypto::UUID& uuid) {
+void helper<C>::markUUIDAsSigned(C& connection,
+                                 const common::crypto::UUID& uuid) {
   db::sql::SignedUuids tbl;
 
   connection(insert_into(tbl).set(tbl.uuid = uuid.str()));
@@ -538,8 +540,8 @@ WithdrawalInfo helper<C>::getWithdrawalInfoFromUUID(C& connection,
 
 template <typename C>
 int64_t helper<C>::createHubAddress(C& connection,
-                                    const hub::crypto::UUID& uuid,
-                                    const hub::crypto::Address& address) {
+                                    const common::crypto::UUID& uuid,
+                                    const common::crypto::Address& address) {
   db::sql::HubAddress tbl;
 
   return connection(insert_into(tbl).set(tbl.seedUuid = uuid.str(),
@@ -576,7 +578,7 @@ uint64_t helper<C>::getUserAddressBalance(C& connection,
 
 template <typename C>
 int64_t helper<C>::createSweep(C& connection,
-                               const hub::crypto::Hash& bundleHash,
+                               const common::crypto::Hash& bundleHash,
                                const std::string& bundleTrytes,
                                uint64_t intoHubAddress) {
   db::sql::Sweep tbl;
@@ -602,15 +604,15 @@ std::vector<TransferOutput> helper<C>::getWithdrawalsForSweep(
                      .limit(max));
 
   for (const auto& row : result) {
-    nonstd::optional<hub::crypto::Tag> maybeTag;
+    nonstd::optional<common::crypto::Tag> maybeTag;
 
     if (!row.tag.is_null()) {
-      maybeTag = hub::crypto::Tag(row.tag.value());
+      maybeTag = common::crypto::Tag(row.tag.value());
     }
 
     outputs.emplace_back(TransferOutput{
         row.id, static_cast<uint64_t>(row.amount), std::move(maybeTag),
-        hub::crypto::Address(row.payoutAddress.value())});
+        common::crypto::Address(row.payoutAddress.value())});
   }
 
   return outputs;
@@ -645,8 +647,8 @@ std::vector<TransferInput> helper<C>::getDepositsForSweep(
 
   for (const auto& row : result) {
     TransferInput ti = {row.id, row.userId,
-                        hub::crypto::Address(row.address.value()),
-                        hub::crypto::UUID(row.seedUuid.value()),
+                        common::crypto::Address(row.address.value()),
+                        common::crypto::UUID(row.seedUuid.value()),
                         static_cast<uint64_t>(row.balance)};
     deposits.push_back(std::move(ti));
   }
@@ -678,8 +680,8 @@ std::vector<TransferInput> helper<C>::getHubInputsForSweep(
   for (const auto& row : availableAddressesResult) {
     auto id = row.id;
 
-    TransferInput input = {id, 0, hub::crypto::Address(row.address.value()),
-                           hub::crypto::UUID(row.seedUuid.value()),
+    TransferInput input = {id, 0, common::crypto::Address(row.address.value()),
+                           common::crypto::UUID(row.seedUuid.value()),
                            static_cast<uint64_t>(row.balance)};
 
     addressIds.push_back(id);
@@ -737,7 +739,7 @@ bool helper<C>::isSweepConfirmed(C& connection, uint64_t sweepId) {
 
 template <typename C>
 nonstd::optional<AddressInfo> helper<C>::getAddressInfo(
-    C& connection, const hub::crypto::Address& address) {
+    C& connection, const common::crypto::Address& address) {
   db::sql::UserAddress add;
   db::sql::UserAddressBalance bal;
   db::sql::UserAccount acc;
@@ -756,7 +758,7 @@ nonstd::optional<AddressInfo> helper<C>::getAddressInfo(
   } else {
     auto& front = result.front();
     return {AddressInfo{std::move(front.identifier.value()),
-                        hub::crypto::UUID(front.seedUuid.value()),
+                        common::crypto::UUID(front.seedUuid.value()),
                         front.exists}};
   }
 }
@@ -793,7 +795,7 @@ nonstd::optional<SweepEvent> helper<C>::getSweepByWithdrawalUUID(
 
 template <typename C>
 nonstd::optional<SweepEvent> helper<C>::getSweepByBundleHash(
-    C& connection, const hub::crypto::Hash& bundleHash) {
+    C& connection, const common::crypto::Hash& bundleHash) {
   db::sql::Sweep swp;
   db::sql::Withdrawal wdl;
 

@@ -5,7 +5,6 @@
  * Refer to the LICENSE file for licensing information
  */
 
-
 #ifndef HUB_SERVICE_ADDRESS_MONITOR_H_
 #define HUB_SERVICE_ADDRESS_MONITOR_H_
 
