@@ -5,26 +5,26 @@
  * Refer to the LICENSE file for licensing information
  */
 
-#ifndef HUB_CRYPTO_ARGON2_PROVIDER_H_
-#define HUB_CRYPTO_ARGON2_PROVIDER_H_
+#ifndef HUB_CRYPTO_CLIENT_H_
+#define HUB_CRYPTO_CLIENT_H_
 
-#include <cstdint>
 #include <string>
-
 #include "hub/crypto/provider.h"
+
+#include "proto/signing_server.grpc.pb.h"
+#include "proto/signing_server.pb.h"
+
 
 namespace hub {
 namespace crypto {
 
-/// Argon2Provider class.
-/// The argon2 provider provides the cryptographic services necessary to
-/// obtain new addresses based on salt and sign bundle hashes.
-class Argon2Provider : public CryptoProvider {
+class CryptoProviderApi : public CryptoProvider {
  public:
-  Argon2Provider() = delete;
   /// Constructor
-  /// param[in] salt - the salt that will be used in calculations
-  explicit Argon2Provider(std::string salt);
+  /// param[in] url - the url for the grpc service
+  explicit CryptoProviderApi(const std::string& url,
+                             const std::string& authMode,
+                             const std::string& certPath);
 
   /// Get a new address for a given UUID and the salt
   /// param[in] UUID - a UUID
@@ -43,14 +43,9 @@ class Argon2Provider : public CryptoProvider {
                                     const Hash& bundleHash) const override;
 
  private:
-  /// The salt that will be used all throughout the lifetime of the provider
-  const std::string _salt;
-
-  static constexpr uint32_t _argon_t_cost{1};
-  static constexpr uint32_t _argon_m_cost{1 << 16};  // 64mebibytes
-  static constexpr uint32_t _argon_parallelism{1};
+  std::unique_ptr<rpc::crypto::SigningServer::Stub> _stub;
 };
 
 }  // namespace crypto
 }  // namespace hub
-#endif  // HUB_CRYPTO_ARGON2_PROVIDER_H_
+#endif  // HUB_CRYPTO_CLIENT_H_

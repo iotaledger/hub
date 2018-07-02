@@ -8,7 +8,7 @@
 #include <gflags/gflags.h>
 #include <glog/logging.h>
 
-#include "server/server.h"
+#include "signing_server/server.h"
 
 int main(int argc, char** argv) {
   google::InstallFailureSignalHandler();
@@ -17,9 +17,9 @@ int main(int argc, char** argv) {
   google::InitGoogleLogging(programName);
   gflags::ParseCommandLineFlags(&argc, &argv, true);
 
-  LOG(INFO) << "Hub starting up.";
+  LOG(INFO) << "Crypto provider starting up.";
 
-  hub::HubServer server;
+  hub::crypto::SigningServer server;
 
   server.initialise();
   server.runAndWait();

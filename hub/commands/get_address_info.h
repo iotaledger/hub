@@ -24,7 +24,7 @@ namespace cmd {
 /// @param[in] hub::rpc::GetAddressInfoRequest
 /// @param[in] hub::rpc::GetAddressInfoReply
 class GetAddressInfo : public Command<hub::rpc::GetAddressInfoRequest,
-                                         hub::rpc::GetAddressInfoReply> {
+                                      hub::rpc::GetAddressInfoReply> {
  public:
   using Command<hub::rpc::GetAddressInfoRequest,
                 hub::rpc::GetAddressInfoReply>::Command;

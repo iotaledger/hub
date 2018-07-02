@@ -41,7 +41,6 @@ class CryptoProvider {
   }
 
   /// Forces the calculation of a signature for a UUID and a bundle hash
-  /// param[in] connection - connection to the local database
   /// param[in] UUID - a UUID
   /// param[in] Hash - a bundleHash
   /// @return string - the signature

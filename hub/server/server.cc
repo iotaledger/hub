@@ -8,27 +8,32 @@
 #include "hub/server/server.h"
 
 #include <chrono>
-#include <fstream>
-#include <iostream>
-#include <sstream>
 
 #include <gflags/gflags.h>
 #include <glog/logging.h>
 #include <grpc++/grpc++.h>
+#include "cppclient/beast.h"
+#include "common/common.h"
 #include "hub/auth/dummy_provider.h"
 #include "hub/auth/hmac_provider.h"
 #include "hub/auth/manager.h"
 #include "hub/crypto/argon2_provider.h"
+#include "hub/crypto/client/crypto_provider_api.h"
 #include "hub/crypto/manager.h"
 #include "hub/db/db.h"
 #include "hub/db/helper.h"
-#include "cppclient/beast.h"
 #include "hub/iota/pow.h"
 #include "hub/iota/remote_pow.h"
 #include "hub/service/sweep_service.h"
 #include "hub/service/user_address_monitor.h"
 
-DEFINE_string(salt, "", "Salt for argon2 seed provider");
+DEFINE_bool(
+    remoteCryptoProvider, false,
+    "Should hub use local crypto provider or should it use a remote service");
+DEFINE_string(salt, "",
+              "Salt for argon2 seed provider, should be provider here only if "
+              "remoteCryptoProvider = false");
+
 DEFINE_string(listenAddress, "0.0.0.0:50051", "address to listen on");
 DEFINE_string(apiAddress, "127.0.0.1:14265",
               "IRI node api to listen on. Format [host:port]");
@@ -49,63 +54,43 @@ DEFINE_string(sslCA, "/dev/null", "Path to CA root");
 DEFINE_string(hmacKeyPath, "/dev/null", "path to key used for HMAC encyption");
 DEFINE_string(authProvider, "none", "provider to use. can be {none, hmac}");
 
+// remote crypto provider settings
+DEFINE_string(
+    cryptoProviderAddress, "0.0.0.0:50052",
+    "crypto provider address, should be provided if remoteCryptoProvider=true");
+// credentials
+DEFINE_string(providerAuthMode, "none",
+              "credentials to use. can be {none, ssl}");
+DEFINE_string(providerSslCert, "/dev/null", "Path to SSL certificate");
+
 using grpc::Server;
 using grpc::ServerBuilder;
-
-namespace {
-std::string readFile(const std::string& fileName) {
-  std::ifstream ifs(fileName.c_str());
-
-  if (!ifs.good()) {
-    LOG(FATAL) << "File: " << fileName << " does not exist.";
-  }
-
-  std::stringstream buffer;
-
-  buffer << ifs.rdbuf();
-  return buffer.str();
-}
-
-}  // namespace
 
 namespace hub {
 HubServer::HubServer() {}
 
-std::shared_ptr<grpc::ServerCredentials> HubServer::makeCredentials() {
-  LOG(INFO) << "Using auth mode: " << FLAGS_authMode;
-  if (FLAGS_authMode == "none") {
-    return grpc::InsecureServerCredentials();
-  } else if (FLAGS_authMode == "ssl") {
-    grpc::SslServerCredentialsOptions options;
-
-    grpc::SslServerCredentialsOptions::PemKeyCertPair keycert = {
-        readFile(FLAGS_sslKey), readFile(FLAGS_sslCert)};
-
-    options.pem_key_cert_pairs.push_back(keycert);
-    options.pem_root_certs = readFile(FLAGS_sslCA);
-    options.client_certificate_request =
-        GRPC_SSL_REQUEST_AND_REQUIRE_CLIENT_CERTIFICATE_AND_VERIFY;
-    return grpc::SslServerCredentials(options);
-  }
-
-  LOG(FATAL) << "Unknown auth mode: " << FLAGS_authMode;
-}
-
 void HubServer::initialise() {
-  if (FLAGS_salt.size() <= 20) {
-    LOG(FATAL) << "Salt must be more than 20 characters long.";
+  if (FLAGS_remoteCryptoProvider) {
+    crypto::CryptoManager::get().setProvider(
+        std::make_unique<crypto::CryptoProviderApi>(FLAGS_cryptoProviderAddress,
+                                                    FLAGS_providerAuthMode,
+                                                    FLAGS_providerSslCert));
+  } else {
+    if (FLAGS_salt.size() <= 20) {
+      LOG(FATAL) << "Salt must be more than 20 characters long.";
+    }
+    crypto::CryptoManager::get().setProvider(
+        std::make_unique<crypto::Argon2Provider>(FLAGS_salt));
   }
-  crypto::CryptoManager::get().setProvider(
-      std::make_unique<crypto::Argon2Provider>(FLAGS_salt));
 
   initialiseAuthProvider();
 
   db::DBManager::get().loadConnectionConfigFromArgs();
 
-  if (!authenticateSalt()) {
+ /* if (!authenticateSalt()) {
     LOG(FATAL) << "The provided salt or provider parameters are not valid for "
                   "this database. Did you mistype?";
-  }
+  }*/
 
   {
     size_t portIdx = FLAGS_apiAddress.find(':');
@@ -128,7 +113,9 @@ void HubServer::initialise() {
 
   ServerBuilder builder;
 
-  builder.AddListeningPort(FLAGS_listenAddress, makeCredentials());
+  builder.AddListeningPort(FLAGS_listenAddress,
+                           makeCredentials(FLAGS_authMode, FLAGS_sslCert,
+                                           FLAGS_sslKey, FLAGS_sslCA));
   builder.RegisterService(&_service);
 
   _server = builder.BuildAndStart();
@@ -138,8 +125,6 @@ void HubServer::initialise() {
 
   LOG(INFO) << "Server listening on " << FLAGS_listenAddress;
 }
-
-void HubServer::runAndWait() { _server->Wait(); }
 
 bool HubServer::authenticateSalt() const {
   auto& connection = db::DBManager::get().connection();
@@ -159,8 +144,8 @@ void HubServer::initialiseAuthProvider() const {
     auth::AuthManager::get().setProvider(
         std::make_unique<auth::DummyProvider>());
   } else if (FLAGS_authProvider == "hmac") {
-    auth::AuthManager::get().setProvider(
-        std::make_unique<auth::HMACProvider>(readFile(FLAGS_hmacKeyPath)));
+    auth::AuthManager::get().setProvider(std::make_unique<auth::HMACProvider>(
+        common::readFile(FLAGS_hmacKeyPath)));
   } else {
     LOG(FATAL) << "Unknown auth provider: " << FLAGS_authProvider;
   }

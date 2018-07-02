@@ -34,4 +34,4 @@ class CommandTest : public hub::Test {
 };
 
 }  // namespace hub
-#endif // HUB_COMMANDS_TESTS_RUNNER_H_
+#endif  // HUB_COMMANDS_TESTS_RUNNER_H_

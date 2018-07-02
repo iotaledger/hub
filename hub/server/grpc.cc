@@ -132,8 +132,7 @@ grpc::Status HubImpl::SignBundle(grpc::ServerContext* context,
   auto clientSession = std::make_shared<ClientSession>();
 
   if (!FLAGS_SignBundle_enabled) {
-    LOG(ERROR) << clientSession
-               << ": SignBundle is disabled";
+    LOG(ERROR) << clientSession << ": SignBundle is disabled";
     return grpc::Status::CANCELLED;
   }
 

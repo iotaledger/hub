@@ -5,7 +5,6 @@
  * Refer to the LICENSE file for licensing information
  */
 
-
 #ifndef HUB_CRYPTO_MANAGER_H_
 #define HUB_CRYPTO_MANAGER_H_
 

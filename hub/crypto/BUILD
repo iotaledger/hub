@@ -12,6 +12,7 @@ cc_library(
     deps = [
         ":types",
         "//hub/db",
+        "//proto:signing_server_cpp",
         "@org_iota_entangled//common/helpers:checksum",
     ],
 )

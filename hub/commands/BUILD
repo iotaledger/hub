@@ -1,4 +1,21 @@
 cc_library(
+    name = "base_command",
+    srcs = glob(
+        ["command.h"],
+        exclude = ["tests/**/*"],
+    ),
+    hdrs = glob(
+        ["command.h"],
+        exclude = ["tests/**/*"],
+    ),
+    visibility = ["//visibility:public"],
+    deps = [
+        "//hub/stats",
+        "//proto:hub_cpp",
+    ],
+)
+
+cc_library(
     name = "commands",
     srcs = glob(
         ["**/*.cc"],
@@ -14,7 +31,7 @@ cc_library(
         "//hub/crypto",
         "//hub/db",
         "//hub/stats",
-        "//proto:cpp",
+        "//proto:hub_cpp",
         "@boost//:range",
     ],
 )

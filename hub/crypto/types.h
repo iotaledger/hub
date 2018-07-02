@@ -36,9 +36,7 @@ class UUID {
   explicit UUID(const std::string_view& sv);
 
   /// Destructor. Zeroes array upon destruction.
-  ~UUID() {
-    _data.fill(0);
-  }
+  ~UUID() { _data.fill(0); }
 
   /// String representation of UUID
   /// @return string - string representation
@@ -170,5 +168,9 @@ struct hash<hub::crypto::UUID> {
   }
 };
 }  // namespace std
+
+static const hub::crypto::Address NULL_ADDRESS(
+    "99999999999999999999999999999999999999999999999999999999999999999999999999"
+    "9999999");
 
 #endif  // HUB_CRYPTO_TYPES_H_
