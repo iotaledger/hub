@@ -5,19 +5,17 @@
  * Refer to the LICENSE file for licensing information
  */
 
-#ifndef HUB_COMMANDS_CRYPTO_PROVIDER_GET_SIGNATURE_FOR_UUID_H_
-#define HUB_COMMANDS_CRYPTO_PROVIDER_GET_SIGNATURE_FOR_UUID_H_
+#ifndef HUB_COMMANDS_SIGNING_SERVER_GET_SIGNATURE_FOR_UUID_H_
+#define HUB_COMMANDS_SIGNING_SERVER_GET_SIGNATURE_FOR_UUID_H_
 
 #include <string>
 
 #include "hub/commands/command.h"
 
-namespace hub {
+namespace signing {
 namespace rpc {
-namespace crypto {
 class GetSignatureForUUIDRequest;
 class GetSignatureForUUIDReply;
-}  // namespace crypto
 }  // namespace rpc
 
 namespace cmd {
@@ -26,19 +24,19 @@ namespace cmd {
 /// @param[in] hub::rpc::GetSignatureForUUIDRequest
 /// @param[in] hub::rpc::GetSignatureForUUIDReply
 class GetSignatureForUUID
-    : public Command<rpc::crypto::GetSignatureForUUIDRequest,
-                     rpc::crypto::GetSignatureForUUIDReply> {
+    : public hub::cmd::Command<signing::rpc::GetSignatureForUUIDRequest,
+                               signing::rpc::GetSignatureForUUIDReply> {
  public:
-  using Command<rpc::crypto::GetSignatureForUUIDRequest,
-                rpc::crypto::GetSignatureForUUIDReply>::Command;
+  using hub::cmd::Command<signing::rpc::GetSignatureForUUIDRequest,
+                          signing::rpc::GetSignatureForUUIDReply>::Command;
 
   const std::string name() override { return "GetSignatureForUUID"; }
 
   grpc::Status doProcess(
-      const rpc::crypto::GetSignatureForUUIDRequest* request,
-      rpc::crypto::GetSignatureForUUIDReply* response) noexcept override;
+      const signing::rpc::GetSignatureForUUIDRequest* request,
+      signing::rpc::GetSignatureForUUIDReply* response) noexcept override;
 };
 }  // namespace cmd
-}  // namespace hub
+}  // namespace signing
 
-#endif  // HUB_COMMANDS_CRYPTO_PROVIDER_GET_SIGNATURE_FOR_UUID_H_
+#endif  // HUB_COMMANDS_SIGNING_SERVER_GET_SIGNATURE_FOR_UUID_H_

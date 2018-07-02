@@ -14,17 +14,18 @@
 #include "proto/signing_server.grpc.pb.h"
 #include "proto/signing_server.pb.h"
 
-
 namespace hub {
 namespace crypto {
 
-class CryptoProviderApi : public CryptoProvider {
+class RemoteSigningProvider : public CryptoProvider {
  public:
   /// Constructor
   /// param[in] url - the url for the grpc service
-  explicit CryptoProviderApi(const std::string& url,
-                             const std::string& authMode,
-                             const std::string& certPath);
+  explicit RemoteSigningProvider(const std::string& url,
+                                 const std::string& authMode,
+                                 const std::string& certPath,
+                                 const std::string& chainPath,
+                                 const std::string& keyPath);
 
   /// Get a new address for a given UUID and the salt
   /// param[in] UUID - a UUID
@@ -32,7 +33,7 @@ class CryptoProviderApi : public CryptoProvider {
 
   /// The current security level
   /// @return size_t - the security level (1 - 3)
-  size_t securityLevel() const override;
+  size_t securityLevel(const UUID& uuid) const override;
 
  protected:
   /// Calculate the signature for a UUID and a bundle hash
@@ -43,7 +44,7 @@ class CryptoProviderApi : public CryptoProvider {
                                     const Hash& bundleHash) const override;
 
  private:
-  std::unique_ptr<rpc::crypto::SigningServer::Stub> _stub;
+  std::unique_ptr<signing::rpc::SigningServer::Stub> _stub;
 };
 
 }  // namespace crypto

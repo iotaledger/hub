@@ -6,11 +6,20 @@ syntax = "proto3";
 
 option java_package = "org.iota.crypto_provider";
 
-package hub.rpc.crypto;
+package signing.rpc;
 
 enum ErrorCode {
     // Unused.
     EC_UNKNOWN = 0;
+}
+
+/*
+ * The generic Error that will be used to return an error code on, e.g. Status::CANCELLED.
+ *
+ * The error will be serialised and stored in the Status' detail field.
+ */
+message Error {
+  ErrorCode code = 1;
 }
 
 /*
@@ -46,6 +55,7 @@ message GetSignatureForUUIDReply {
  * Request for getting security level
  */
 message GetSecurityLevelRequest {
+    string uuid = 1;
 }
 /*
  * Reply for getting security level

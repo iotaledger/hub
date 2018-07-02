@@ -15,5 +15,6 @@ cc_library(
     deps = [
         "//hub/commands:base_command",
         "//hub/crypto:argon2_provider",
+        "//proto:signing_server_cpp",
     ],
 )

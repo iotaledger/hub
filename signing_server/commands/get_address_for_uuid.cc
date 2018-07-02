@@ -5,24 +5,27 @@
 #include "proto/signing_server_messages.pb.h"
 
 #include "hub/crypto/types.h"
+#include "proto/messages.pb.h"
+#include "signing_server/commands/helper.h"
 
-namespace hub {
+namespace signing {
 namespace cmd {
 
 grpc::Status GetAddressForUUID::doProcess(
-    const rpc::crypto::GetAddressForUUIDRequest* request,
-    rpc::crypto::GetAddressForUUIDReply* response) noexcept {
+    const signing::rpc::GetAddressForUUIDRequest* request,
+    signing::rpc::GetAddressForUUIDReply* response) noexcept {
   try {
     LOG(INFO) << session() << " GetAddressForUUID: " << request->uuid();
 
     hub::crypto::UUID uuid(request->uuid());
     auto address =
-        crypto::CryptoManager::get().provider().getAddressForUUID(uuid);
+        hub::crypto::CryptoManager::get().provider().getAddressForUUID(uuid);
     response->set_address(address.str());
   } catch (const std::runtime_error& ex) {
     LOG(ERROR) << session() << "Failed: " << ex.what();
 
-    return grpc::Status(grpc::StatusCode::FAILED_PRECONDITION, "", "");
+    return grpc::Status(grpc::StatusCode::FAILED_PRECONDITION, "",
+                        errorToString(signing::rpc::ErrorCode::EC_UNKNOWN));
   }
 
   return grpc::Status::OK;
@@ -30,4 +33,4 @@ grpc::Status GetAddressForUUID::doProcess(
 
 }  // namespace cmd
 
-}  // namespace hub
+}  // namespace signing

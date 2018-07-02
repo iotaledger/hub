@@ -11,7 +11,7 @@ cc_library(
         "//hub/commands",
         "//hub/crypto",
         "//hub/crypto:argon2_provider",
-        "//hub/crypto/client:crypto_provider_api",
+        "//hub/crypto/client:remote_signing_server",
         "//hub/db",
         "//hub/iota:pow",
         "//hub/iota:remote_pow",

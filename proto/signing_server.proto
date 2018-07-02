@@ -2,7 +2,7 @@ syntax = "proto3";
 
 option java_package = "org.iota.crypto_provider";
 
-package hub.rpc.crypto;
+package signing.rpc;
 import "proto/signing_server_messages.proto";
 
 service SigningServer {

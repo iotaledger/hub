@@ -82,7 +82,7 @@ std::tuple<hub::crypto::Hash, std::string> SweepService::createBundle(
       tx.setTimestamp(timestamp);
       tx.setValue((-1uLL) * deposit.amount);
 
-      bundle.addTransaction(tx, cryptoProvider.securityLevel());
+      bundle.addTransaction(tx, cryptoProvider.securityLevel(deposit.uuid));
     }
     // inputs: hubInputs
     for (const auto& input : hubInputs) {
@@ -91,7 +91,7 @@ std::tuple<hub::crypto::Hash, std::string> SweepService::createBundle(
       tx.setTimestamp(timestamp);
       tx.setValue((-1uLL) * input.amount);
 
-      bundle.addTransaction(tx, cryptoProvider.securityLevel());
+      bundle.addTransaction(tx, cryptoProvider.securityLevel(input.uuid));
     }
     // outputs: withdrawals
     for (const auto& wd : withdrawals) {

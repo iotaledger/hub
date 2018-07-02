@@ -6,44 +6,42 @@
  */
 
 #include "signing_server/grpc.h"
-#include "signing_server/commands/get_address_for_uuid.h"
-#include "signing_server/commands/get_signature_for_uuid.h"
 #include "hub/crypto/provider.h"
 #include "hub/stats/session.h"
+#include "signing_server/commands/get_address_for_uuid.h"
+#include "signing_server/commands/get_security_level.h"
+#include "signing_server/commands/get_signature_for_uuid.h"
 
 #include <memory>
 #include <string>
 
-namespace hub {
-
+namespace signing {
 namespace rpc {
-
-namespace crypto {
 
 // Gets the address for the UUID
 grpc::Status SigningServerImpl::GetAddressForUUID(
-    ::grpc::ServerContext* context,
-    const rpc::crypto::GetAddressForUUIDRequest* request,
-    rpc::crypto::GetAddressForUUIDReply* response) {
-  auto clientSession = std::make_shared<ClientSession>();
+    ::grpc::ServerContext* context, const GetAddressForUUIDRequest* request,
+    GetAddressForUUIDReply* response) {
+  auto clientSession = std::make_shared<hub::ClientSession>();
   cmd::GetAddressForUUID cmd(clientSession);
   return cmd.process(request, response);
 }
 // Gets the signature for the UUID
 grpc::Status SigningServerImpl::GetSignatureForUUID(
-    ::grpc::ServerContext* context,
-    const rpc::crypto::GetSignatureForUUIDRequest* request,
-    rpc::crypto::GetSignatureForUUIDReply* response) {
-  auto clientSession = std::make_shared<ClientSession>();
+    ::grpc::ServerContext* context, const GetSignatureForUUIDRequest* request,
+    GetSignatureForUUIDReply* response) {
+  auto clientSession = std::make_shared<hub::ClientSession>();
   cmd::GetSignatureForUUID cmd(clientSession);
   return cmd.process(request, response);
 }
 // Gets the security level of the provider
 grpc::Status SigningServerImpl::GetSecurityLevel(
-    ::grpc::ServerContext* context,
-    const rpc::crypto::GetSecurityLevelRequest* request,
-    GetSecurityLevelReply* response) {}
-}  // namespace crypto
-}  // namespace rpc
+    ::grpc::ServerContext* context, const GetSecurityLevelRequest* request,
+    GetSecurityLevelReply* response) {
+  auto clientSession = std::make_shared<hub::ClientSession>();
+  cmd::GetSecurityLevel cmd(clientSession);
+  return cmd.process(request, response);
+}
 
-}  // namespace hub
+}  // namespace rpc
+}  // namespace signing

@@ -1,12 +1,13 @@
 cc_library(
-    name = "crypto_provider_api",
-    srcs = ["crypto_provider_api.cc"],
+    name = "remote_signing_server",
+    srcs = ["remote_signing_provider.cc"],
     hdrs = [
-        "crypto_provider_api.h",
+        "remote_signing_provider.h",
     ],
     visibility = ["//visibility:public"],
     deps = [
         "//common",
         "//hub/crypto",
+        "//proto:signing_server_cpp",
     ],
 )

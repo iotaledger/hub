@@ -6,16 +6,17 @@
 
 #include "hub/crypto/types.h"
 
-namespace hub {
+namespace signing {
 namespace cmd {
 
 grpc::Status GetSecurityLevel::doProcess(
-    const rpc::crypto::GetSecurityLevelRequest* request,
-    rpc::crypto::GetSecurityLevelReply* response) noexcept {
+    const signing::rpc::GetSecurityLevelRequest* request,
+    signing::rpc::GetSecurityLevelReply* response) noexcept {
   try {
     LOG(INFO) << session() << " GetSecurityLevel";
 
-    auto security = crypto::CryptoManager::get().provider().securityLevel();
+    auto security = hub::crypto::CryptoManager::get().provider().securityLevel(
+        hub::crypto::UUID(request->uuid()));
     response->set_securitylevel(security);
   } catch (const std::runtime_error& ex) {
     LOG(ERROR) << session() << "Failed: " << ex.what();
@@ -28,4 +29,4 @@ grpc::Status GetSecurityLevel::doProcess(
 
 }  // namespace cmd
 
-}  // namespace hub
+}  // namespace signing

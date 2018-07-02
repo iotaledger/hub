@@ -34,7 +34,7 @@ class SigningServer : public common::ServerBase {
   void initialise() override;
 
  private:
-  rpc::crypto::SigningServerImpl _service;
+  signing::rpc::SigningServerImpl _service;
 };
 }  // namespace crypto
 

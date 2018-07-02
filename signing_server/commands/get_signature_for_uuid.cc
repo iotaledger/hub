@@ -6,19 +6,19 @@
 
 #include "hub/crypto/types.h"
 
-namespace hub {
+namespace signing {
 namespace cmd {
 
 grpc::Status GetSignatureForUUID::doProcess(
-    const rpc::crypto::GetSignatureForUUIDRequest* request,
-    rpc::crypto::GetSignatureForUUIDReply* response) noexcept {
+    const signing::rpc::GetSignatureForUUIDRequest* request,
+    signing::rpc::GetSignatureForUUIDReply* response) noexcept {
   try {
     LOG(INFO) << session() << " GetSignatureForUUID: " << request->uuid();
 
     hub::crypto::UUID uuid(request->uuid());
     hub::crypto::Hash bundleHash(request->bundlehash());
     auto signature =
-        crypto::CryptoManager::get().provider().forceGetSignatureForUUID(
+        hub::crypto::CryptoManager::get().provider().forceGetSignatureForUUID(
             uuid, bundleHash);
     response->set_signature(signature);
   } catch (const std::runtime_error& ex) {
@@ -32,7 +32,7 @@ grpc::Status GetSignatureForUUID::doProcess(
 
 }  // namespace cmd
 
-}  // namespace hub
+}  // namespace signing
 
 //
 // Created by tsvi on 6/27/18.

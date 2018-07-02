@@ -19,7 +19,7 @@ cc_library(
 )
 
 cc_binary(
-    name = "crypto_provider",
+    name = "signing_server",
     srcs = ["main.cc"],
     visibility = ["//visibility:public"],
     deps = [

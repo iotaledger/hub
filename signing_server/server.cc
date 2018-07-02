@@ -8,18 +8,13 @@
 #include <grpc++/grpc++.h>
 
 #include "common/common.h"
+#include "common/flags.h"
 #include "hub/crypto/argon2_provider.h"
 #include "hub/crypto/manager.h"
 
-DEFINE_string(salt, "", "Salt for argon2 seed provider");
-DEFINE_string(listenAddress, "0.0.0.0:50052", "address to listen on");
-DEFINE_string(authMode, "none", "credentials to use. can be {none, ssl}");
-DEFINE_string(sslCert, "/dev/null", "Path to SSL certificate");
-DEFINE_string(sslKey, "/dev/null", "Path to SSL certificate key");
-DEFINE_string(sslCA, "/dev/null", "Path to CA root");
-
 using grpc::Server;
 using grpc::ServerBuilder;
+using namespace common::flags;
 
 namespace hub {
 

@@ -118,7 +118,7 @@ Address Argon2Provider::getAddressForUUID(const hub::crypto::UUID& uuid) const {
   return ret;
 }
 
-size_t Argon2Provider::securityLevel() const { return KEY_SEC; }
+size_t Argon2Provider::securityLevel(const UUID& uuid) const { return KEY_SEC; }
 
 std::string Argon2Provider::doGetSignatureForUUID(
     const hub::crypto::UUID& uuid, const Hash& bundleHash) const {

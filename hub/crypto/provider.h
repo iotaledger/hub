@@ -50,7 +50,7 @@ class CryptoProvider {
   }
 
   /// The desired security level
-  virtual size_t securityLevel() const = 0;
+  virtual size_t securityLevel(const UUID& uuid) const = 0;
 
   /// takes a 81 trytes address and calculates 9 trytes checksum on it
   /// param[in] address - the address on which checksum is calculated

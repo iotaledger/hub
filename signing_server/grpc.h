@@ -16,11 +16,10 @@
 #include "proto/signing_server.pb.h"
 #include "proto/signing_server_messages.pb.h"
 
-namespace hub {
+namespace signing {
 namespace rpc {
-namespace crypto {
 
-class SigningServerImpl final : public crypto::SigningServer::Service {
+class SigningServerImpl final : public SigningServer::Service {
  public:
   /// Constructor
   SigningServerImpl() {}
@@ -28,24 +27,20 @@ class SigningServerImpl final : public crypto::SigningServer::Service {
   ~SigningServerImpl() override {}
 
   // Gets the address for the UUID
-  grpc::Status GetAddressForUUID(
-      ::grpc::ServerContext* context,
-      const crypto::GetAddressForUUIDRequest* request,
-      crypto::GetAddressForUUIDReply* response) override;
+  grpc::Status GetAddressForUUID(::grpc::ServerContext* context,
+                                 const GetAddressForUUIDRequest* request,
+                                 GetAddressForUUIDReply* response) override;
   // Gets the signature for the UUID
-  grpc::Status GetSignatureForUUID(
-      ::grpc::ServerContext* context,
-      const crypto::GetSignatureForUUIDRequest* request,
-      crypto::GetSignatureForUUIDReply* response) override;
+  grpc::Status GetSignatureForUUID(::grpc::ServerContext* context,
+                                   const GetSignatureForUUIDRequest* request,
+                                   GetSignatureForUUIDReply* response) override;
   // Gets the security level of the provider
-  grpc::Status GetSecurityLevel(
-      ::grpc::ServerContext* context,
-      const crypto::GetSecurityLevelRequest* request,
-      crypto::GetSecurityLevelReply* response) override;
+  grpc::Status GetSecurityLevel(::grpc::ServerContext* context,
+                                const GetSecurityLevelRequest* request,
+                                GetSecurityLevelReply* response) override;
 };
 
-}  // namespace crypto
 }  // namespace rpc
-}  // namespace hub
+}  // namespace signing
 
 #endif  // HUB_CRYPTO_GRPC_H_

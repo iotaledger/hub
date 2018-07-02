@@ -5,7 +5,7 @@
  * Refer to the LICENSE file for licensing information
  */
 
-#include "crypto_provider_api.h"
+#include "remote_signing_provider.h"
 #include <glog/logging.h>
 #include "common/common.h"
 
@@ -22,22 +22,28 @@ using grpc::Status;
 namespace hub {
 namespace crypto {
 
-CryptoProviderApi::CryptoProviderApi(const std::string& url,
-                                     const std::string& authMode,
-                                     const std::string& certPath) {
+RemoteSigningProvider::RemoteSigningProvider(const std::string& url,
+                                             const std::string& authMode,
+                                             const std::string& certPath,
+                                             const std::string& chainPath,
+                                             const std::string& keyPath) {
   if (authMode == "none") {
     auto channelSharedPtr =
         grpc::CreateChannel(url, grpc::InsecureChannelCredentials());
-    _stub = rpc::crypto::SigningServer::NewStub(channelSharedPtr);
+    _stub = signing::rpc::SigningServer::NewStub(channelSharedPtr);
   } else if (authMode == "ssl") {
     std::string cert = common::readFile(certPath);
+    std::string chain = common::readFile(chainPath);
+    std::string key = common::readFile(keyPath);
     grpc::SslCredentialsOptions opts;
     opts.pem_root_certs = cert;
+    opts.pem_cert_chain = chain;
+    opts.pem_private_key = key;
 
     auto credentials = grpc::SslCredentials(opts);
 
     auto channelSharedPtr = grpc::CreateChannel(url, credentials);
-    _stub = rpc::crypto::SigningServer::NewStub(channelSharedPtr);
+    _stub = signing::rpc::SigningServer::NewStub(channelSharedPtr);
   } else {
     LOG(FATAL) << "Unknown auth mode: " << authMode;
   }
@@ -45,11 +51,11 @@ CryptoProviderApi::CryptoProviderApi(const std::string& url,
 
 /// Get a new address for a given UUID and the salt
 /// param[in] UUID - a UUID
-Address CryptoProviderApi::getAddressForUUID(const UUID& uuid) const {
+Address RemoteSigningProvider::getAddressForUUID(const UUID& uuid) const {
   ClientContext context;
-  rpc::crypto::GetAddressForUUIDRequest request;
+  signing::rpc::GetAddressForUUIDRequest request;
   request.set_uuid(uuid.str());
-  rpc::crypto::GetAddressForUUIDReply response;
+  signing::rpc::GetAddressForUUIDReply response;
 
   Status status = _stub->GetAddressForUUID(&context, request, &response);
   if (!status.ok()) {
@@ -61,10 +67,10 @@ Address CryptoProviderApi::getAddressForUUID(const UUID& uuid) const {
 
 /// The current security level
 /// @return size_t - the security level (1 - 3)
-size_t CryptoProviderApi::securityLevel() const {
+size_t RemoteSigningProvider::securityLevel(const UUID& uuid) const {
   ClientContext context;
-  rpc::crypto::GetSecurityLevelRequest request;
-  rpc::crypto::GetSecurityLevelReply response;
+  signing::rpc::GetSecurityLevelRequest request;
+  signing::rpc::GetSecurityLevelReply response;
 
   Status status = _stub->GetSecurityLevel(&context, request, &response);
   if (!status.ok()) {
@@ -78,13 +84,13 @@ size_t CryptoProviderApi::securityLevel() const {
 /// param[in] UUID - a UUID
 /// param[in] Hash - a bundleHash
 /// @return string - the signature
-std::string CryptoProviderApi::doGetSignatureForUUID(
+std::string RemoteSigningProvider::doGetSignatureForUUID(
     const UUID& uuid, const Hash& bundleHash) const {
   ClientContext context;
-  rpc::crypto::GetSignatureForUUIDRequest request;
+  signing::rpc::GetSignatureForUUIDRequest request;
   request.set_uuid(uuid.str());
   request.set_bundlehash(bundleHash.str());
-  rpc::crypto::GetSignatureForUUIDReply response;
+  signing::rpc::GetSignatureForUUIDReply response;
 
   Status status = _stub->GetSignatureForUUID(&context, request, &response);
   if (!status.ok()) {

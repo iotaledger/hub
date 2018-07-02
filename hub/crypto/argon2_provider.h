@@ -32,7 +32,7 @@ class Argon2Provider : public CryptoProvider {
 
   /// The current security level
   /// @return size_t - the security level (1 - 3)
-  size_t securityLevel() const override;
+  size_t securityLevel(const UUID& uuid) const override;
 
  protected:
   /// Calculate the signature for a UUID and a bundle hash
