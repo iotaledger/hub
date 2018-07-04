@@ -5,15 +5,19 @@
  * Refer to the LICENSE file for licensing information
  */
 
-#include "remote_signing_provider.h"
-#include <glog/logging.h>
-#include "common/common.h"
+#include "hub/crypto/remote_signing_provider.h"
 
+#include <utility>
+
+#include <glog/logging.h>
 #include <grpc/grpc.h>
 #include <grpcpp/channel.h>
 #include <grpcpp/client_context.h>
 #include <grpcpp/create_channel.h>
 #include <grpcpp/security/credentials.h>
+
+#include "common/common.h"
+#include "hub/db/db.h"
 
 using grpc::Channel;
 using grpc::ClientContext;
@@ -29,8 +33,8 @@ RemoteSigningProvider::RemoteSigningProvider(const std::string& url,
                                              const std::string& keyPath) {
   if (authMode == "none") {
     auto channelSharedPtr =
-        grpc::CreateChannel(url, grpc::InsecureChannelCredentials());
-    _stub = signing::rpc::SigningServer::NewStub(channelSharedPtr);
+        grpc::CreateChannel(url, std::move(grpc::InsecureChannelCredentials()));
+    _stub = signing::rpc::SigningServer::NewStub(std::move(channelSharedPtr));
   } else if (authMode == "ssl") {
     std::string cert = common::readFile(certPath);
     std::string chain = common::readFile(chainPath);
@@ -51,7 +55,9 @@ RemoteSigningProvider::RemoteSigningProvider(const std::string& url,
 
 /// Get a new address for a given UUID and the salt
 /// param[in] UUID - a UUID
-    common::crypto::Address RemoteSigningProvider::getAddressForUUID(const common::crypto::UUID& uuid) const {
+nonstd::optional<common::crypto::Address>
+RemoteSigningProvider::getAddressForUUID(
+    const common::crypto::UUID& uuid) const {
   ClientContext context;
   signing::rpc::GetAddressForUUIDRequest request;
   request.set_uuid(uuid.str());
@@ -59,33 +65,45 @@ RemoteSigningProvider::RemoteSigningProvider(const std::string& url,
 
   Status status = _stub->GetAddressForUUID(&context, request, &response);
   if (!status.ok()) {
-    std::cout << "getAddressForUUID rpc failed." << std::endl;
-    return NULL_ADDRESS;
+    std::cout << "getAddressForUUID rpc failed:" << status.error_message();
+    return {};
   }
-  return common::crypto::Address(response.address());
+  return {common::crypto::Address(response.address())};
 }
 
 /// The current security level
 /// @return size_t - the security level (1 - 3)
-size_t RemoteSigningProvider::securityLevel(const common::crypto::UUID& uuid) const {
+nonstd::optional<size_t> RemoteSigningProvider::securityLevel(
+    const common::crypto::UUID& uuid) const {
   ClientContext context;
   signing::rpc::GetSecurityLevelRequest request;
   signing::rpc::GetSecurityLevelReply response;
+  request.set_uuid(uuid.str());
 
   Status status = _stub->GetSecurityLevel(&context, request, &response);
   if (!status.ok()) {
-    LOG(ERROR) << "GetSecurityLevel rpc failed.";
-    return 0;
+    LOG(ERROR) << "GetSecurityLevel rpc failed: " << status.error_message();
+    return {};
   }
-  return response.securitylevel();
+  return {response.securitylevel()};
+}
+
+nonstd::optional<std::string> RemoteSigningProvider::getSignatureForUUID(
+    const common::crypto::UUID& uuid,
+    const common::crypto::Hash& bundleHash) const {
+  auto& connection = hub::db::DBManager::get().connection();
+  connection.markUUIDAsSigned(uuid);
+
+  return doGetSignatureForUUID(uuid, bundleHash);
 }
 
 /// Calculate the signature for a UUID and a bundle hash
 /// param[in] UUID - a UUID
 /// param[in] Hash - a bundleHash
 /// @return string - the signature
-std::string RemoteSigningProvider::doGetSignatureForUUID(
-    const common::crypto::UUID& uuid, const common::crypto::Hash& bundleHash) const {
+nonstd::optional<std::string> RemoteSigningProvider::doGetSignatureForUUID(
+    const common::crypto::UUID& uuid,
+    const common::crypto::Hash& bundleHash) const {
   ClientContext context;
   signing::rpc::GetSignatureForUUIDRequest request;
   request.set_uuid(uuid.str());
@@ -94,10 +112,12 @@ std::string RemoteSigningProvider::doGetSignatureForUUID(
 
   Status status = _stub->GetSignatureForUUID(&context, request, &response);
   if (!status.ok()) {
-    LOG(ERROR) << "GetSignatureForUUID rpc failed.";
+    LOG(ERROR) << "GetSignatureForUUID rpc failed:" << status.error_message();
+    return {};
   }
-  return response.signature();
+  return {response.signature()};
 }
 
 }  // namespace crypto
 }  // namespace hub
+

@@ -14,7 +14,7 @@
 #include "hub/tests/runner.h"
 
 using namespace hub;
-using namespace hub::crypto;
+using namespace common::crypto;
 using namespace hub::db;
 
 namespace {
@@ -23,10 +23,10 @@ class DBTest : public hub::Test {};
 
 TEST_F(DBTest, SweepTriggerWorks) {
   auto& connection = db::DBManager::get().connection();
-  auto& cryptoProvider = crypto::CryptoManager::get().provider();
+  auto& cryptoProvider = common::crypto::CryptoManager::get().provider();
 
   UUID uuid;
-  auto hubOutputAddress = cryptoProvider.getAddressForUUID(uuid);
+  auto hubOutputAddress = cryptoProvider.getAddressForUUID(uuid).value();
   auto hubAddressId = connection.createHubAddress(uuid, hubOutputAddress);
   auto hash = common::crypto::Hash(
       "999999999999999999999999999999999999999999999999999999"
@@ -44,13 +44,13 @@ TEST_F(DBTest, SweepTriggerWorks) {
 
 TEST_F(DBTest, HubAddressTriggerWorks) {
   auto& connection = db::DBManager::get().connection();
-  auto& cryptoProvider = crypto::CryptoManager::get().provider();
+  auto& cryptoProvider = common::crypto::CryptoManager::get().provider();
   auto balances = {100, 540, 60, 700};
 
   uint64_t stepSize = 10;
 
   UUID uuid;
-  auto hubOutputAddress = cryptoProvider.getAddressForUUID(uuid);
+  auto hubOutputAddress = cryptoProvider.getAddressForUUID(uuid).value();
 
   std::vector<uint64_t> hubAddressIds;
   for (auto b : balances) {
@@ -59,8 +59,9 @@ TEST_F(DBTest, HubAddressTriggerWorks) {
   }
 
   auto sweepId = connection.createSweep(
-      common::crypto::Hash("999999999999999999999999999999999999999999999999999999"
-                        "999999999999999999999999999"),
+      common::crypto::Hash(
+          "999999999999999999999999999999999999999999999999999999"
+          "999999999999999999999999999"),
       "", hubAddressIds[0]);
 
   uint32_t step = 0;
@@ -80,7 +81,7 @@ TEST_F(DBTest, HubAddressTriggerWorks) {
 
 TEST_F(DBTest, UserAddressTriggerWorks) {
   auto& connection = db::DBManager::get().connection();
-  auto& cryptoProvider = crypto::CryptoManager::get().provider();
+  auto& cryptoProvider = common::crypto::CryptoManager::get().provider();
 
   std::set<std::string> users = {"Ricky", "Stephen", "Karl"};
   std::vector<uint64_t> userBalances = {90000, 10000, 1000};
@@ -88,11 +89,12 @@ TEST_F(DBTest, UserAddressTriggerWorks) {
   uint64_t stepSize = 100;
 
   UUID uuid;
-  auto hubOutputAddress = cryptoProvider.getAddressForUUID(uuid);
+  auto hubOutputAddress = cryptoProvider.getAddressForUUID(uuid).value();
   auto hubAddressId = connection.createHubAddress(uuid, hubOutputAddress);
   auto sweepId = connection.createSweep(
-      common::crypto::Hash("999999999999999999999999999999999999999999999999999999"
-                        "999999999999999999999999999"),
+      common::crypto::Hash(
+          "999999999999999999999999999999999999999999999999999999"
+          "999999999999999999999999999"),
       "", hubAddressId);
 
   for (auto u : users) {
@@ -105,7 +107,7 @@ TEST_F(DBTest, UserAddressTriggerWorks) {
   auto userNum = 0;
   for (const auto& kv : identifiersToIds) {
     UUID uuid;
-    auto userAddress = cryptoProvider.getAddressForUUID(uuid);
+    auto userAddress = cryptoProvider.getAddressForUUID(uuid).value();
     auto addId = connection.createUserAddress(userAddress, kv.second, uuid);
     usersToBalance[addId] = userBalances[userNum];
 

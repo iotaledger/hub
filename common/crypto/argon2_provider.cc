@@ -1,11 +1,11 @@
 /*
  * Copyright (c) 2018 IOTA Stiftung
- * https://github.com/iotaledger/rpchub
+ * https://gitcommon.com/iotaledger/rpccommon
  *
  * Refer to the LICENSE file for licensing information
  */
 
-#include "hub/crypto/argon2_provider.h"
+#include "common/crypto/argon2_provider.h"
 
 #include <array>
 #include <cstdint>
@@ -18,11 +18,12 @@
 #include <argon2.h>
 #include <gflags/gflags.h>
 #include <glog/logging.h>
-#include <boost/interprocess/sync/interprocess_semaphore.hpp>
 #include <iota/crypto/signing.hpp>
 #include <iota/models/bundle.hpp>
 #include <iota/types/trinary.hpp>
+#include "boost/interprocess/sync/interprocess_semaphore.hpp"
 
+#include "common/flags.h"
 #include "common/helpers/sign.h"
 #include "common/kerl/converter.h"
 #include "common/kerl/kerl.h"
@@ -30,7 +31,6 @@
 #include "common/trinary/trits.h"
 #include "common/trinary/tryte.h"
 #include "common/types/types.h"
-#include "hub/argon_flags.h"
 
 // FIXME (th0br0) fix up entangled
 extern "C" {
@@ -53,7 +53,7 @@ using TryteSeedPtr =
 TryteSeedPtr seedFromUUID(const common::crypto::UUID& uuid,
                           const std::string& _salt) {
   static boost::interprocess::interprocess_semaphore argon_semaphore(
-      FLAGS_maxConcurrentArgon2Hash);
+      common::flags::FLAGS_maxConcurrentArgon2Hash);
 
   std::array<uint8_t, BYTE_LEN> byteSeed;
   std::array<trit_t, TRIT_LEN> seed;
@@ -65,19 +65,21 @@ TryteSeedPtr seedFromUUID(const common::crypto::UUID& uuid,
 
   argon_semaphore.wait();
 
-  switch (FLAGS_argon2Mode) {
+  switch (common::flags::FLAGS_argon2Mode) {
     case 1:
-      argon2i_hash_raw(FLAGS_argon2TCost, FLAGS_argon2MCost,
-                       FLAGS_argon2Parallelism, uuid.str_view().data(),
-                       common::crypto::UUID::UUID_SIZE, _salt.c_str(),
-                       _salt.length(), byteSeed.data(), BYTE_LEN);
+      argon2i_hash_raw(
+          common::flags::FLAGS_argon2TCost, common::flags::FLAGS_argon2MCost,
+          common::flags::FLAGS_argon2Parallelism, uuid.str_view().data(),
+          common::crypto::UUID::UUID_SIZE, _salt.c_str(), _salt.length(),
+          byteSeed.data(), BYTE_LEN);
       break;
     default:
     case 2:
-      argon2id_hash_raw(FLAGS_argon2TCost, FLAGS_argon2MCost,
-                        FLAGS_argon2Parallelism, uuid.str_view().data(),
-                        common::crypto::UUID::UUID_SIZE, _salt.c_str(),
-                        _salt.length(), byteSeed.data(), BYTE_LEN);
+      argon2id_hash_raw(
+          common::flags::FLAGS_argon2TCost, common::flags::FLAGS_argon2MCost,
+          common::flags::FLAGS_argon2Parallelism, uuid.str_view().data(),
+          common::crypto::UUID::UUID_SIZE, _salt.c_str(), _salt.length(),
+          byteSeed.data(), BYTE_LEN);
       break;
   }
   argon_semaphore.post();
@@ -93,13 +95,14 @@ TryteSeedPtr seedFromUUID(const common::crypto::UUID& uuid,
 }
 }  // namespace
 
-namespace hub {
+namespace common {
 namespace crypto {
 
 Argon2Provider::Argon2Provider(std::string salt) : _salt(std::move(salt)) {
   using std::string_literals::operator""s;
 
-  LOG(INFO) << "Initialising Argon2 provider in mode: " << FLAGS_argon2Mode;
+  LOG(INFO) << "Initialising Argon2 provider in mode: "
+            << common::flags::FLAGS_argon2Mode;
 
   if (_salt.length() < ARGON2_MIN_SALT_LENGTH) {
     throw std::runtime_error(
@@ -108,7 +111,7 @@ Argon2Provider::Argon2Provider(std::string salt) : _salt(std::move(salt)) {
   }
 }
 
-common::crypto::Address Argon2Provider::getAddressForUUID(
+nonstd::optional<common::crypto::Address> Argon2Provider::getAddressForUUID(
     const common::crypto::UUID& uuid) const {
   LOG(INFO) << "Generating address for: " << uuid.str().substr(0, 16);
 
@@ -116,14 +119,15 @@ common::crypto::Address Argon2Provider::getAddressForUUID(
   auto add = iota_sign_address_gen((const char*)seed->data(), KEY_IDX, KEY_SEC);
   common::crypto::Address ret(add);
   std::free(add);
-  return ret;
+  return {ret};
 }
 
-size_t Argon2Provider::securityLevel(const common::crypto::UUID& uuid) const {
+nonstd::optional<size_t> Argon2Provider::securityLevel(
+    const common::crypto::UUID& uuid) const {
   return KEY_SEC;
 }
 
-std::string Argon2Provider::doGetSignatureForUUID(
+nonstd::optional<std::string> Argon2Provider::doGetSignatureForUUID(
     const common::crypto::UUID& uuid,
     const common::crypto::Hash& bundleHash) const {
   LOG(INFO) << "Generating signature for: " << uuid.str().substr(0, 16)
@@ -164,4 +168,4 @@ std::string Argon2Provider::doGetSignatureForUUID(
 }
 
 }  // namespace crypto
-}  // namespace hub
+}  // namespace common

@@ -1,12 +1,12 @@
 /*
  * Copyright (c) 2018 IOTA Stiftung
- * https://github.com/iotaledger/rpchub
+ * https://gitcommon.com/iotaledger/rpccommon
  *
  * Refer to the LICENSE file for licensing information
  */
 
-#ifndef HUB_COMMANDS_SIGNING_SERVER_GET_ADDRESS_FOR_UUID_H_
-#define HUB_COMMANDS_SIGNING_SERVER_GET_ADDRESS_FOR_UUID_H_
+#ifndef SIGNING_SERVER_COMMANDS_GET_ADDRESS_FOR_UUID_H_
+#define SIGNING_SERVER_COMMANDS_GET_ADDRESS_FOR_UUID_H_
 
 #include <string>
 
@@ -39,4 +39,4 @@ class GetAddressForUUID
 }  // namespace cmd
 }  // namespace signing
 
-#endif  // HUB_COMMANDS_SIGNING_SERVER_GET_ADDRESS_FOR_UUID_H_
+#endif  // SIGNING_SERVER_COMMANDS_GET_ADDRESS_FOR_UUID_H_

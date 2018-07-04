@@ -1,13 +1,12 @@
 /*
  * Copyright (c) 2018 IOTA Stiftung
- * https://github.com/iotaledger/rpchub
+ * https://gitcommon.com/iotaledger/rpccommon
  *
  * Refer to the LICENSE file for licensing information
  */
 
-
-#ifndef HUB_STATS_SESSION_H_
-#define HUB_STATS_SESSION_H_
+#ifndef COMMON_STATS_SESSION_H_
+#define COMMON_STATS_SESSION_H_
 
 #include <cstdint>
 #include <ostream>
@@ -28,8 +27,7 @@ class ClientSession {
   const std::string& to_str() const { return _str; }
 
  private:
-  friend std::ostream& operator<<(std::ostream& os,
-                                  const ClientSession& stats);
+  friend std::ostream& operator<<(std::ostream& os, const ClientSession& stats);
 
   std::string rep_str() const {
     std::ostringstream ostr;
@@ -41,6 +39,6 @@ class ClientSession {
   const std::string _str;
 };
 
-};  // namespace hub
+};  // namespace common
 
-#endif  // HUB_STATS_SESSION_H_
+#endif  // COMMON_STATS_SESSION_H_

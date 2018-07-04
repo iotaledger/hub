@@ -1,19 +1,19 @@
 /*
  * Copyright (c) 2018 IOTA Stiftung
- * https://github.com/iotaledger/rpchub
+ * https://gitcommon.com/iotaledger/rpccommon
  *
  * Refer to the LICENSE file for licensing information
  */
 
-#ifndef HUB_CRYPTO_MANAGER_H_
-#define HUB_CRYPTO_MANAGER_H_
+#ifndef COMMON_CRYPTO_MANAGER_H_
+#define COMMON_CRYPTO_MANAGER_H_
 
 #include <memory>
 #include <utility>
 
-#include "hub/crypto/provider.h"
+#include "common/crypto/provider_base.h"
 
-namespace hub {
+namespace common {
 namespace crypto {
 
 /// CryptoManager holds the single instance of a CryptoProvider
@@ -37,19 +37,19 @@ class CryptoManager {
 
   /// Set the cryptography provider
   /// @param[in] provider - an instance of CryptoProvider
-  void setProvider(std::unique_ptr<CryptoProvider> provider) {
+  void setProvider(std::unique_ptr<CryptoProviderBase> provider) {
     _provider = std::move(provider);
   }
 
   /// Get the cryptography provider
   /// @return CryptoProvider - an instance of CryptoProvider
-  CryptoProvider& provider() { return *_provider; }
+  CryptoProviderBase& provider() { return *_provider; }
 
  private:
   /// The cryptography provider
-  std::unique_ptr<CryptoProvider> _provider;
+  std::unique_ptr<CryptoProviderBase> _provider;
 };
 
 }  // namespace crypto
-}  // namespace hub
-#endif  // HUB_CRYPTO_MANAGER_H_
+}  // namespace common
+#endif  // COMMON_CRYPTO_MANAGER_H_

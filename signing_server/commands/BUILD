@@ -14,7 +14,7 @@ cc_library(
     visibility = ["//visibility:public"],
     deps = [
         "//common",
-        "//hub/crypto:argon2_provider",
+        "//common/crypto:argon2_provider",
         "//proto:signing_server_cpp",
     ],
 )

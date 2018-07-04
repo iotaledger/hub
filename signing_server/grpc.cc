@@ -1,13 +1,13 @@
 /*
  * Copyright (c) 2018 IOTA Stiftung
- * https://github.com/iotaledger/rpchub
+ * https://gitcommon.com/iotaledger/rpccommon
  *
  * Refer to the LICENSE file for licensing information
  */
 
 #include "signing_server/grpc.h"
 #include "common/stats/session.h"
-#include "hub/crypto/provider.h"
+#include "common/crypto/provider_base.h"
 #include "signing_server/commands/get_address_for_uuid.h"
 #include "signing_server/commands/get_security_level.h"
 #include "signing_server/commands/get_signature_for_uuid.h"

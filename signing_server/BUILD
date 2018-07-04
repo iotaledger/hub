@@ -11,7 +11,7 @@ cc_library(
     visibility = ["//visibility:public"],
     deps = [
         "//common",
-        "//hub/crypto:argon2_provider",
+        "//common/crypto:argon2_provider",
         "//signing_server/commands",
         "@com_github_gflags_gflags//:gflags",
         "@com_github_google_glog//:glog",

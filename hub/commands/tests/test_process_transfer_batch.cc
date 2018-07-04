@@ -37,9 +37,8 @@ class ProcessTransferBatchTest : public CommandTest {};
 
 void processRandomTransfer(std::map<uint64_t, std::string>& idsToUsers,
                            std::map<uint64_t, int64_t>& idsToBalances,
-                           std::shared_ptr<hub::ClientSession> session,
+                           std::shared_ptr<common::ClientSession> session,
                            bool threadSafe = false) {
-
   static std::mutex m;
   std::random_device rd;   // obtain a random number from hardware
   std::mt19937 eng(rd());  // seed the generator

@@ -1,58 +1,44 @@
 /*
  * Copyright (c) 2018 IOTA Stiftung
- * https://github.com/iotaledger/rpchub
+ * https://gitcommon.com/iotaledger/rpccommon
  *
  * Refer to the LICENSE file for licensing information
  */
 
-#ifndef HUB_CRYPTO_PROVIDER_H_
-#define HUB_CRYPTO_PROVIDER_H_
+#ifndef COMMON_CRYPTO_PROVIDER_BASE_H_
+#define COMMON_CRYPTO_PROVIDER_BASE_H_
 
 #include <string>
 
+#include <nonstd/optional.hpp>
 #include "common/types/types.h"
-#include "hub/db/db.h"
-#include "hub/db/helper.h"
 
-namespace hub {
+namespace common {
 namespace crypto {
 
 /// CryptoProvider abstract class.
 /// Provides the cryptographic services necessary to
 /// obtain new addresses based on salt and sign bundle hashes.
-class CryptoProvider {
+class CryptoProviderBase {
  public:
   /// Destructor
-  virtual ~CryptoProvider() {}
-  virtual common::crypto::Address getAddressForUUID(
+  virtual ~CryptoProviderBase() {}
+  virtual nonstd::optional<common::crypto::Address> getAddressForUUID(
       const common::crypto::UUID& uuid) const = 0;
-
-  /// Calculate the signature for a UUID and a bundle hash
-  /// param[in] connection - connection to the local database
-  /// param[in] UUID - a UUID
-  /// param[in] Hash - a bundleHash
-  /// @throws sqlpp::exception if UUID was already used for a signature
-  /// @return string - the signature
-  std::string getSignatureForUUID(
-      hub::db::Connection& connection, const common::crypto::UUID& uuid,
-      const common::crypto::Hash& bundleHash) const {
-    connection.markUUIDAsSigned(uuid);
-
-    return doGetSignatureForUUID(uuid, bundleHash);
-  }
 
   /// Forces the calculation of a signature for a UUID and a bundle hash
   /// param[in] UUID - a UUID
   /// param[in] Hash - a bundleHash
   /// @return string - the signature
-  std::string forceGetSignatureForUUID(
+  nonstd::optional<std::string> forceGetSignatureForUUID(
       const common::crypto::UUID& uuid,
       const common::crypto::Hash& bundleHash) const {
     return doGetSignatureForUUID(uuid, bundleHash);
   }
 
   /// The desired security level
-  virtual size_t securityLevel(const common::crypto::UUID& uuid) const = 0;
+  virtual nonstd::optional<size_t> securityLevel(
+      const common::crypto::UUID& uuid) const = 0;
 
   /// takes a 81 trytes address and calculates 9 trytes checksum on it
   /// param[in] address - the address on which checksum is calculated
@@ -65,16 +51,26 @@ class CryptoProvider {
   nonstd::optional<common::crypto::Address> verifyAndStripChecksum(
       const std::string& address) const;
 
- protected:
   /// Calculate the signature for a UUID and a bundle hash.
   /// param[in] UUID - a UUID
   /// param[in] Hash - a bundleHash
   /// @return string - the signature
-  virtual std::string doGetSignatureForUUID(
+  virtual nonstd::optional<std::string> getSignatureForUUID(
+      const common::crypto::UUID& uuid,
+      const common::crypto::Hash& bundleHash) const{
+      return doGetSignatureForUUID(uuid, bundleHash);
+  }
+
+ protected:
+  /// Calculate the signature for a UUID and a bundle hash
+  /// param[in] UUID - a UUID
+  /// param[in] Hash - a bundleHash
+  /// @return string - the signature
+  virtual nonstd::optional<std::string> doGetSignatureForUUID(
       const common::crypto::UUID& uuid,
       const common::crypto::Hash& bundleHash) const = 0;
 };
 
 }  // namespace crypto
-}  // namespace hub
-#endif  // HUB_CRYPTO_PROVIDER_H_
+}  // namespace common
+#endif  // COMMON_CRYPTO_PROVIDER_BASE_H_

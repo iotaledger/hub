@@ -6,18 +6,14 @@
 #include <string>
 
 #include "common/types/types.h"
-#include "hub/tests/runner.h"
-
-using namespace hub;
-using namespace hub::crypto;
 
 namespace {
 
 struct TestTag {};
 
-using TestArr = TryteArray<12, TestTag>;
+using TestArr = common::crypto::TryteArray<12, TestTag>;
 
-class TrytesArrayTest : public hub::Test {};
+class TrytesArrayTest : public ::testing::Test {};
 
 TEST_F(TrytesArrayTest, EnforceCorrectLength) {
   EXPECT_THROW(TestArr{""}, std::runtime_error);
@@ -31,17 +27,17 @@ TEST_F(TrytesArrayTest, AssertInternalRepresentationIsConsistent) {
   auto data =
       "AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA"
       "AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA";
-  Hash testHash(data);
+  common::crypto::Hash testHash(data);
   ASSERT_EQ(testHash.str(), data);
 }
 
-class UUIDTest : public hub::Test {};
+class UUIDTest : public ::testing::Test {};
 
 TEST_F(UUIDTest, AssertInternalRepresentationIsConsistent) {
-  UUID uuidOrig;
+  common::crypto::UUID uuidOrig;
   std::string_view stringRepresentation = uuidOrig.str_view();
 
-  auto uuidClone = UUID(stringRepresentation);
+  auto uuidClone = common::crypto::UUID(stringRepresentation);
 
   ASSERT_EQ(uuidClone.str(), uuidOrig.str());
 }

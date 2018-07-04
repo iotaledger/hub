@@ -1,12 +1,12 @@
 /*
  * Copyright (c) 2018 IOTA Stiftung
- * https://github.com/iotaledger/rpchub
+ * https://gitcommon.com/iotaledger/rpccommon
  *
  * Refer to the LICENSE file for licensing information
  */
 
-#ifndef HUB_COMMANDS_SIGNING_SERVER_GET_SECURITY_LEVEL_H_
-#define HUB_COMMANDS_SIGNING_SERVER_GET_SECURITY_LEVEL_H_
+#ifndef SIGNING_SERVER_COMMANDS_GET_SECURITY_LEVEL_H_
+#define SIGNING_SERVER_COMMANDS_GET_SECURITY_LEVEL_H_
 
 #include <string>
 
@@ -30,7 +30,7 @@ class GetSecurityLevel
   using common::cmd::Command<signing::rpc::GetSecurityLevelRequest,
                              signing::rpc::GetSecurityLevelReply>::Command;
 
-  const std::string name() override { return "GetSignatureForUUID"; }
+  const std::string name() override { return "GetSecurityLevel"; }
 
   grpc::Status doProcess(
       const signing::rpc::GetSecurityLevelRequest* request,
@@ -39,4 +39,4 @@ class GetSecurityLevel
 }  // namespace cmd
 }  // namespace signing
 
-#endif  // HUB_COMMANDS_SIGNING_SERVER_GET_SECURITY_LEVEL_H_
+#endif  // SIGNING_SERVER_COMMANDS_GET_SECURITY_LEVEL_H_

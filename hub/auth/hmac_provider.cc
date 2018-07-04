@@ -8,7 +8,7 @@
 #include <glog/logging.h>
 #include <string>
 
-#include "hub/argon_flags.h"
+#include "common/flags.h"
 #include "hub/auth/hmac_provider.h"
 
 namespace hub {
@@ -32,9 +32,10 @@ bool HMACProvider::validateToken(const AuthContext& context,
   char encoded[HASH_SIZE * 6];
 
   if (argon2id_hash_encoded(
-          FLAGS_argon2TCost, FLAGS_argon2MCost, FLAGS_argon2Parallelism,
-          context.message().c_str(), context.message().size(), _key.c_str(),
-          _key.size(), HASH_SIZE * 2, encoded, HASH_SIZE * 6) != ARGON2_OK) {
+          common::flags::FLAGS_argon2TCost, common::flags::FLAGS_argon2MCost,
+          common::flags::FLAGS_argon2Parallelism, context.message().c_str(),
+          context.message().size(), _key.c_str(), _key.size(), HASH_SIZE * 2,
+          encoded, HASH_SIZE * 6) != ARGON2_OK) {
     LOG(ERROR) << "Failed in " << __FUNCTION__;
     return false;
   }

@@ -1,6 +1,6 @@
 #include "get_address_for_uuid.h"
 
-#include "hub/crypto/manager.h"
+#include "common/crypto/manager.h"
 #include "proto/signing_server.pb.h"
 #include "proto/signing_server_messages.pb.h"
 
@@ -18,8 +18,10 @@ grpc::Status GetAddressForUUID::doProcess(
     LOG(INFO) << session() << " GetAddressForUUID: " << request->uuid();
 
     common::crypto::UUID uuid(request->uuid());
-    auto address =
-        hub::crypto::CryptoManager::get().provider().getAddressForUUID(uuid);
+    auto address = common::crypto::CryptoManager::get()
+                       .provider()
+                       .getAddressForUUID(uuid)
+                       .value();
     response->set_address(address.str());
   } catch (const std::runtime_error& ex) {
     LOG(ERROR) << session() << "Failed: " << ex.what();

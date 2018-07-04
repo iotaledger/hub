@@ -1,38 +1,39 @@
 cc_library(
-    name = "crypto",
-    srcs = [
-        "manager.cc",
-        "provider.cc",
-    ],
+    name = "local_signing_provider",
+    srcs = ["local_provider.cc"],
     hdrs = [
-        "manager.h",
-        "provider.h",
+        "local_provider.h",
     ],
     visibility = ["//visibility:public"],
     deps = [
-        "//common/types",
+        "//common",
+        "//common/crypto:argon2_provider",
         "//hub/db",
-        "//proto:signing_server_cpp",
-        "@org_iota_entangled//common/helpers:checksum",
     ],
 )
 
 cc_library(
-    name = "argon2_provider",
-    srcs = ["argon2_provider.cc"],
-    hdrs = ["argon2_provider.h"],
+    name = "remote_signing_server",
+    srcs = ["remote_signing_provider.cc"],
+    hdrs = [
+        "remote_signing_provider.h",
+    ],
     visibility = ["//visibility:public"],
     deps = [
-        ":crypto",
-        "//hub:argon_flags",
-        "@argon2",
-        "@boost//:interprocess",
-        "@com_github_google_glog//:glog",
-        "@iota_lib_cpp",
-        "@org_iota_entangled//common/helpers:sign",
-        "@org_iota_entangled//common/kerl:converter",
-        "@org_iota_entangled//common/sign/v1:iss_kerl",
-        "@org_iota_entangled//common/trinary:trit_tryte",
+        "//common",
+        "//common/crypto",
+        "//hub/db",
+        "//proto:signing_server_cpp",
+        "@optional_lite",
+    ],
+)
+
+cc_library(
+    name = "signing",
+    visibility = ["//visibility:public"],
+    deps = [
+        ":local_signing_provider",
+        ":remote_signing_server",
     ],
 )
 
@@ -42,7 +43,8 @@ cc_test(
         "tests/**/*.cc",
     ]),
     deps = [
-        ":argon2_provider",
+        ":local_signing_provider",
+        "//common/tests",
         "//hub/tests",
         "@boost//:interprocess",
         "@com_google_googletest//:gtest",

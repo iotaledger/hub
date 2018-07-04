@@ -15,7 +15,7 @@
 #include "common/stats/session.h"
 #include "common/types/types.h"
 #include "hub/commands/helper.h"
-#include "hub/crypto/manager.h"
+#include "common/crypto/manager.h"
 #include "hub/db/db.h"
 #include "hub/db/helper.h"
 #include "proto/hub.pb.h"

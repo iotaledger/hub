@@ -9,6 +9,7 @@
 
 #include <cstdint>
 #include <exception>
+#include <utility>
 
 #include <boost/uuid/random_generator.hpp>
 #include <boost/uuid/uuid.hpp>
@@ -20,9 +21,9 @@
 #include "proto/hub.pb.h"
 #include "schema/schema.h"
 
+#include "common/crypto/manager.h"
 #include "common/types/types.h"
 #include "hub/commands/helper.h"
-#include "hub/crypto/manager.h"
 
 namespace hub {
 namespace cmd {
@@ -47,9 +48,10 @@ grpc::Status UserWithdraw::doProcess(
   try {
     nonstd::optional<common::crypto::Address> address;
     if (request->validatechecksum()) {
-      address = std::move(
-          hub::crypto::CryptoManager::get().provider().verifyAndStripChecksum(
-              request->payoutaddress()));
+      address =
+          std::move(common::crypto::CryptoManager::get()
+                        .provider()
+                        .verifyAndStripChecksum(request->payoutaddress()));
 
       if (!address.has_value()) {
         return grpc::Status(

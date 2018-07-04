@@ -1,12 +1,12 @@
 /*
  * Copyright (c) 2018 IOTA Stiftung
- * https://github.com/iotaledger/rpchub
+ * https://gitcommon.com/iotaledger/rpccommon
  *
  * Refer to the LICENSE file for licensing information
  */
 
-#ifndef HUB_SIGNING_SERVER_COMMANDS_HELPER_H_
-#define HUB_SIGNING_SERVER_COMMANDS_HELPER_H_
+#ifndef SIGNING_SERVER_COMMANDS_HELPER_H_
+#define SIGNING_SERVER_COMMANDS_HELPER_H_
 
 #include <string>
 
@@ -19,4 +19,4 @@ std::string errorToString(const signing::rpc::ErrorCode& e);
 }
 }  // namespace signing
 
-#endif  // HUB_SIGNING_SERVER_COMMANDS_HELPER_H_
+#endif  // SIGNING_SERVER_COMMANDS_HELPER_H_

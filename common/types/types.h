@@ -1,12 +1,12 @@
 /*
  * Copyright (c) 2018 IOTA Stiftung
- * https://github.com/iotaledger/rpchub
+ * https://gitcommon.com/iotaledger/rpccommon
  *
  * Refer to the LICENSE file for licensing information
  */
 
-#ifndef HUB_CRYPTO_TYPES_H_
-#define HUB_CRYPTO_TYPES_H_
+#ifndef COMMON_TYPES_H_
+#define COMMON_TYPES_H_
 
 #include <algorithm>
 #include <array>
@@ -65,8 +65,10 @@ class UUID {
   std::array<uint8_t, UUID_SIZE> _data;
 };
 
-bool operator==(const common::crypto::UUID& lhs, const common::crypto::UUID& rhs);
-bool operator!=(const common::crypto::UUID& lhs, const common::crypto::UUID& rhs);
+bool operator==(const common::crypto::UUID& lhs,
+                const common::crypto::UUID& rhs);
+bool operator!=(const common::crypto::UUID& lhs,
+                const common::crypto::UUID& rhs);
 
 static constexpr auto TRYTE_CHARS = "9ABCDEFGHIJKLMNOPQRSTUVWXYZ";
 static constexpr uint8_t MIN_TRYTE = 'A';
@@ -148,7 +150,7 @@ using Address = TryteArray<81, AddressTag>;
 using Tag = TryteArray<27, TagTag>;
 
 };  // namespace crypto
-}  // namespace hub
+}  // namespace common
 
 namespace std {
 
@@ -169,8 +171,4 @@ struct hash<common::crypto::UUID> {
 };
 }  // namespace std
 
-static const common::crypto::Address NULL_ADDRESS(
-    "99999999999999999999999999999999999999999999999999999999999999999999999999"
-    "9999999");
-
-#endif  // HUB_CRYPTO_TYPES_H_
+#endif  // COMMON_TYPES_H_

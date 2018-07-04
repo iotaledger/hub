@@ -1,6 +1,6 @@
 /*
  * Copyright (c) 2018 IOTA Stiftung
- * https://github.com/iotaledger/rpchub
+ * https://gitcommon.com/iotaledger/rpccommon
  *
  * Refer to the LICENSE file for licensing information
  */
@@ -10,10 +10,9 @@
 
 #include <glog/logging.h>
 
-
 namespace common {
 
-void ServerBase::runAndWait() {_server->Wait();}
+void ServerBase::runAndWait() { _server->Wait(); }
 
 std::shared_ptr<grpc::ServerCredentials> ServerBase::makeCredentials(
     const std::string& authMode, const std::string& sslCertPath,

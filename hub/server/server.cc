@@ -13,14 +13,15 @@
 #include <glog/logging.h>
 #include <grpc++/grpc++.h>
 #include "common/common.h"
+#include "common/crypto/argon2_provider.h"
+#include "common/crypto/manager.h"
 #include "common/flags.h"
 #include "cppclient/beast.h"
 #include "hub/auth/dummy_provider.h"
 #include "hub/auth/hmac_provider.h"
 #include "hub/auth/manager.h"
-#include "hub/crypto/argon2_provider.h"
-#include "hub/crypto/client/remote_signing_provider.h"
-#include "hub/crypto/manager.h"
+#include "hub/crypto/remote_signing_provider.h"
+#include "hub/crypto/local_provider.h"
 #include "hub/db/db.h"
 #include "hub/db/helper.h"
 #include "hub/iota/pow.h"
@@ -67,7 +68,7 @@ HubServer::HubServer() {}
 
 void HubServer::initialise() {
   if (FLAGS_signingMode == "remote") {
-    crypto::CryptoManager::get().setProvider(
+    common::crypto::CryptoManager::get().setProvider(
         std::make_unique<crypto::RemoteSigningProvider>(
             FLAGS_signingProviderAddress, FLAGS_signingAuthMode,
             FLAGS_providerSslCert, FLAGS_providerChainCert,
@@ -76,8 +77,9 @@ void HubServer::initialise() {
     if (common::flags::FLAGS_salt.size() <= 20) {
       LOG(FATAL) << "Salt must be more than 20 characters long.";
     }
-    crypto::CryptoManager::get().setProvider(
-        std::make_unique<crypto::Argon2Provider>(common::flags::FLAGS_salt));
+    common::crypto::CryptoManager::get().setProvider(
+        std::make_unique<hub::crypto::LocalSigningProvider>(
+            common::flags::FLAGS_salt));
   } else {
     LOG(FATAL) << "Signing mode: \"" << FLAGS_signingMode
                << "\" not recognized";
@@ -134,9 +136,15 @@ bool HubServer::authenticateSalt() const {
 
   if (!addAndUuidRes.has_value()) return true;
 
-  const auto& provider = crypto::CryptoManager::get().provider();
+  const auto& provider = common::crypto::CryptoManager::get().provider();
   const auto& [existantAddress, uuid] = addAndUuidRes.value();
-  auto address = provider.getAddressForUUID(common::crypto::UUID(uuid));
+
+  auto maybeAddress = provider.getAddressForUUID(common::crypto::UUID(uuid));
+  if (!maybeAddress.has_value()) {
+    LOG(ERROR) << "Could not get address from provider.";
+    return false;
+  }
+  auto address = maybeAddress.value();
 
   return address.str_view() == existantAddress;
 }

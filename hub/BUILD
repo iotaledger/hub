@@ -9,13 +9,3 @@ cc_binary(
         "@com_github_google_glog//:glog",
     ],
 )
-
-cc_library(
-    name = "argon_flags",
-    srcs = ["argon_flags.cc"],
-    hdrs = ["argon_flags.h"],
-    visibility = ["//visibility:public"],
-    deps = [
-        "@com_github_gflags_gflags//:gflags",
-    ],
-)

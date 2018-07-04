@@ -1,12 +1,12 @@
 /*
  * Copyright (c) 2018 IOTA Stiftung
- * https://github.com/iotaledger/rpchub
+ * https://gitcommon.com/iotaledger/rpccommon
  *
  * Refer to the LICENSE file for licensing information
  */
 
-#ifndef HUB_CRYPTO_GRPC_H_
-#define HUB_CRYPTO_GRPC_H_
+#ifndef SIGNING_SERVER_GRPC_H_
+#define SIGNING_SERVER_GRPC_H_
 
 #include <memory>
 
@@ -43,4 +43,4 @@ class SigningServerImpl final : public SigningServer::Service {
 }  // namespace rpc
 }  // namespace signing
 
-#endif  // HUB_CRYPTO_GRPC_H_
+#endif  // SIGNING_SERVER_GRPC_H_

@@ -1,18 +1,17 @@
 /*
  * Copyright (c) 2018 IOTA Stiftung
- * https://github.com/iotaledger/rpchub
+ * https://gitcommon.com/iotaledger/rpccommon
  *
  * Refer to the LICENSE file for licensing information
  */
 
-#ifndef HUB_COMMON_SERVER_BASE_H_
-#define HUB_COMMON_SERVER_BASE_H_
+#ifndef COMMON_SERVER_BASE_H_
+#define COMMON_SERVER_BASE_H_
 
 #include <memory>
 #include <string>
 
 #include <grpc++/grpc++.h>
-
 
 namespace common {
 
@@ -31,5 +30,4 @@ class ServerBase {
 };
 }  // namespace common
 
-
-#endif  // HUB_COMMON_SERVER_BASE_H_
+#endif  // COMMON_SERVER_BASE_H_

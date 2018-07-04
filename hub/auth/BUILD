@@ -30,8 +30,8 @@ cc_library(
     visibility = ["//visibility:public"],
     deps = [
         ":auth",
-        "//hub:argon_flags",
-        "//hub/crypto",
+        "//common",
+        "//common/crypto",
         "@argon2",
         "@com_github_google_glog//:glog",
     ],

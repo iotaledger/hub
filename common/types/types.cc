@@ -1,6 +1,6 @@
 /*
  * Copyright (c) 2018 IOTA Stiftung
- * https://github.com/iotaledger/rpchub
+ * https://gitcommon.com/iotaledger/rpccommon
  *
  * Refer to the LICENSE file for licensing information
  */
@@ -47,12 +47,14 @@ const std::array<uint8_t, common::crypto::UUID::UUID_SIZE>& UUID::data() const {
   return _data;
 }
 
-bool operator==(const common::crypto::UUID& lhs, const common::crypto::UUID& rhs) {
+bool operator==(const common::crypto::UUID& lhs,
+                const common::crypto::UUID& rhs) {
   return lhs.data() == rhs.data();
 }
 
-bool operator!=(const common::crypto::UUID& lhs, const common::crypto::UUID& rhs) {
+bool operator!=(const common::crypto::UUID& lhs,
+                const common::crypto::UUID& rhs) {
   return !(lhs == rhs);
 }
 }  // namespace crypto
-}  // namespace hub
+}  // namespace common

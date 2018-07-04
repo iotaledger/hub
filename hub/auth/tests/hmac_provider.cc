@@ -6,8 +6,8 @@
 #include <stdexcept>
 #include <string>
 
-#include "hub/auth/hmac_provider.h"
 #include "common/types/types.h"
+#include "hub/auth/hmac_provider.h"
 #include "hub/db/db.h"
 #include "hub/tests/runner.h"
 

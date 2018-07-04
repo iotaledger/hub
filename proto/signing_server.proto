@@ -1,6 +1,6 @@
 syntax = "proto3";
 
-option java_package = "org.iota.crypto_provider";
+option java_package = "org.iota.signing_server";
 
 package signing.rpc;
 import "proto/signing_server_messages.proto";

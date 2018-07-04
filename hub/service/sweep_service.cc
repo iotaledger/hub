@@ -24,9 +24,9 @@
 #include <iota/models/bundle.hpp>
 #include <iota/models/transaction.hpp>
 
+#include "common/crypto/manager.h"
+#include "common/crypto/provider_base.h"
 #include "common/types/types.h"
-#include "hub/crypto/manager.h"
-#include "hub/crypto/provider.h"
 #include "hub/db/db.h"
 #include "hub/db/helper.h"
 
@@ -48,15 +48,15 @@ namespace service {
 
 db::TransferOutput SweepService::getHubOutput(uint64_t remainder) {
   auto& dbConnection = db::DBManager::get().connection();
-  auto& cryptoProvider = crypto::CryptoManager::get().provider();
+  auto& cryptoProvider = common::crypto::CryptoManager::get().provider();
 
   common::crypto::UUID hubOutputUUID;
-  auto hubOutputAddress = cryptoProvider.getAddressForUUID(hubOutputUUID);
+  auto address = cryptoProvider.getAddressForUUID(hubOutputUUID).value();
 
-  return {dbConnection.createHubAddress(hubOutputUUID, hubOutputAddress),
+  return {dbConnection.createHubAddress(hubOutputUUID, address),
           remainder,
           {},
-          std::move(hubOutputAddress)};
+          std::move(address)};
 }
 
 std::tuple<common::crypto::Hash, std::string> SweepService::createBundle(
@@ -65,7 +65,7 @@ std::tuple<common::crypto::Hash, std::string> SweepService::createBundle(
     const std::vector<db::TransferOutput>& withdrawals,
     const db::TransferOutput& hubOutput) {
   auto& dbConnection = db::DBManager::get().connection();
-  auto& cryptoProvider = crypto::CryptoManager::get().provider();
+  auto& cryptoProvider = common::crypto::CryptoManager::get().provider();
 
   // 5.1. Generate bundle hash & transactions
   IOTA::Models::Bundle bundle;
@@ -82,7 +82,8 @@ std::tuple<common::crypto::Hash, std::string> SweepService::createBundle(
       tx.setTimestamp(timestamp);
       tx.setValue((-1uLL) * deposit.amount);
 
-      bundle.addTransaction(tx, cryptoProvider.securityLevel(deposit.uuid));
+      bundle.addTransaction(tx,
+                            cryptoProvider.securityLevel(deposit.uuid).value());
     }
     // inputs: hubInputs
     for (const auto& input : hubInputs) {
@@ -91,7 +92,8 @@ std::tuple<common::crypto::Hash, std::string> SweepService::createBundle(
       tx.setTimestamp(timestamp);
       tx.setValue((-1uLL) * input.amount);
 
-      bundle.addTransaction(tx, cryptoProvider.securityLevel(input.uuid));
+      bundle.addTransaction(tx,
+                            cryptoProvider.securityLevel(input.uuid).value());
     }
     // outputs: withdrawals
     for (const auto& wd : withdrawals) {
@@ -122,13 +124,14 @@ std::tuple<common::crypto::Hash, std::string> SweepService::createBundle(
 
   // 5.2 Generate signatures
   std::unordered_map<common::crypto::Address, std::string> signaturesForAddress;
+
   for (const auto& in : deposits) {
     signaturesForAddress[in.address] =
-        cryptoProvider.getSignatureForUUID(dbConnection, in.uuid, bundleHash);
+        cryptoProvider.getSignatureForUUID(in.uuid, bundleHash).value();
   }
   for (const auto& in : hubInputs) {
     signaturesForAddress[in.address] =
-        cryptoProvider.getSignatureForUUID(dbConnection, in.uuid, bundleHash);
+        cryptoProvider.getSignatureForUUID(in.uuid, bundleHash).value();
   }
 
   auto it = bundle.getTransactions().begin();

@@ -5,68 +5,69 @@
 #include <stdexcept>
 #include <string>
 
-#include "hub/crypto/argon2_provider.h"
+#include "common/crypto/argon2_provider.h"
 #include "common/types/types.h"
-#include "hub/db/db.h"
+#include "hub/crypto/local_provider.h"
 #include "hub/tests/runner.h"
-
-using namespace hub;
-using namespace hub::crypto;
 
 namespace {
 
-class Argon2ProviderTest : public hub::Test {};
+class LocalSigningProviderTest : public hub::Test {};
 
-TEST_F(Argon2ProviderTest, EnforceMinimumSeedLength) {
-  EXPECT_THROW(Argon2Provider{std::string("abcdefg")}, std::runtime_error);
+TEST_F(LocalSigningProviderTest, EnforceMinimumSeedLength) {
+  EXPECT_THROW(hub::crypto::LocalSigningProvider{std::string("abcdefg")},
+               std::runtime_error);
 }
 
-TEST_F(Argon2ProviderTest, ShouldReturnValidAddress) {
-  Argon2Provider provider(std::string("abcdefgh"));
-  UUID uuid;
-  auto address = provider.getAddressForUUID(uuid);
+TEST_F(LocalSigningProviderTest, ShouldReturnValidAddress) {
+  hub::crypto::LocalSigningProvider provider(std::string("abcdefgh"));
+  common::crypto::UUID uuid;
+  auto address = provider.getAddressForUUID(uuid).value();
 
   EXPECT_EQ(address.size(), 81);
 }
 
-TEST_F(Argon2ProviderTest, ConstantAddressForUUID) {
-  Argon2Provider provider(std::string("abcdefgh"));
-  UUID uuid;
-  auto address1 = provider.getAddressForUUID(uuid);
-  auto address2 = provider.getAddressForUUID(uuid);
+TEST_F(LocalSigningProviderTest, ConstantAddressForUUID) {
+  hub::crypto::LocalSigningProvider provider(std::string("abcdefgh"));
+  common::crypto::UUID uuid;
+  auto address1 = provider.getAddressForUUID(uuid).value();
+  auto address2 = provider.getAddressForUUID(uuid).value();
 
   EXPECT_EQ(address1, address2);
 }
 
-TEST_F(Argon2ProviderTest, DifferentUUIDsHaveDifferentAddresses) {
-  Argon2Provider provider(std::string("abcdefgh"));
-  UUID uuid1;
-  UUID uuid2;
+TEST_F(LocalSigningProviderTest, DifferentUUIDsHaveDifferentAddresses) {
+  hub::crypto::LocalSigningProvider provider(std::string("abcdefgh"));
+  common::crypto::UUID uuid1;
+  common::crypto::UUID uuid2;
   EXPECT_NE(uuid1, uuid2);
 
-  auto address1 = provider.getAddressForUUID(uuid1);
-  auto address2 = provider.getAddressForUUID(uuid2);
+  auto address1 = provider.getAddressForUUID(uuid1).value();
+  auto address2 = provider.getAddressForUUID(uuid2).value();
 
   EXPECT_NE(address1, address2);
 }
 
-TEST_F(Argon2ProviderTest, CorrectAddress) {
-  Argon2Provider provider(std::string("abcdefghijklmnopqrstuvwxyz"));
-  UUID uuid("43vgLK8NYigfKagfahbCSm+lMFcilNjZyV8Jj6blqX5u98Lx7vjH98AG1oh/ezOR");
+TEST_F(LocalSigningProviderTest, CorrectAddress) {
+  hub::crypto::LocalSigningProvider provider(
+      std::string("abcdefghijklmnopqrstuvwxyz"));
+  common::crypto::UUID uuid(
+      "43vgLK8NYigfKagfahbCSm+lMFcilNjZyV8Jj6blqX5u98Lx7vjH98AG1oh/ezOR");
 
-  auto address = provider.getAddressForUUID(uuid);
+  auto address = provider.getAddressForUUID(uuid).value();
 
   ASSERT_EQ(address.str(),
             "TLGUJV9NKSKKLQYBABOPVINMHRMPOOADQPWGFAFULPVXFQBFDJXQGJVLELQECCIQAX"
             "JCBXKVPDCWYWYQB");
 }
 
-TEST_F(Argon2ProviderTest, CorrectSignature) {
-  auto& connection = db::DBManager::get().connection();
-  Argon2Provider provider(std::string("abcdefghijklmnopqrstuvwxyz"));
+TEST_F(LocalSigningProviderTest, CorrectSignature) {
+  hub::crypto::LocalSigningProvider provider(
+      std::string("abcdefghijklmnopqrstuvwxyz"));
   // seed =
   // TTUVCDOGKVNMAPWDOIZPTBXAJDONMORWUMYWVFNDNYTYQUNREPBHTRVHKAJWXXVTHSRIFSCRGTOGZXPPD
-  UUID uuid("43vgLK8NYigfKagfahbCSm+lMFcilNjZyV8Jj6blqX5u98Lx7vjH98AG1oh/ezOR");
+  common::crypto::UUID uuid(
+      "43vgLK8NYigfKagfahbCSm+lMFcilNjZyV8Jj6blqX5u98Lx7vjH98AG1oh/ezOR");
   common::crypto::Hash bundleHash(
       "VLZTNAO9IHHDFDKDICSYXWIKZELHMPYKKGHCALIUTKEGNDLCSJGASEMVLGCGIVQSHPCLFRZJ"
       "ZKUOLAAAA");
@@ -134,28 +135,28 @@ TEST_F(Argon2ProviderTest, CorrectSignature) {
       "CHYPRQKMYMQB9JKYXENQUADITVQAKLGXWRCSAMOEVY9B9FPLIZGTLCULSERQLBQXATTMHRBB"
       "POVDTQVLSKPTFCDDVOUXDIVDSBEEBUILMYHZIXGHQFNMWUPGGZVLIW";
 
-  auto signature = provider.getSignatureForUUID(connection, uuid, bundleHash);
+  auto signature = provider.getSignatureForUUID(uuid, bundleHash).value();
 
   EXPECT_EQ(signature, expectedSignature);
 }
 
-TEST_F(Argon2ProviderTest, ShouldOnlySignOnce) {
-  Argon2Provider provider(std::string("abcdefgh"));
-  UUID uuid;
+TEST_F(LocalSigningProviderTest, ShouldOnlySignOnce) {
+  hub::crypto::LocalSigningProvider provider(std::string("abcdefgh"));
+  common::crypto::UUID uuid;
 
-  auto& connection = db::DBManager::get().connection();
+  auto& connection = hub::db::DBManager::get().connection();
 
   // First time should work.
   provider.getSignatureForUUID(
-      connection, uuid,
-      Hash("AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA"
-           "AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA"));
+      uuid,
+      common::crypto::Hash("AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA"
+                           "AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA"));
 
   // Second time should fail.
   ASSERT_THROW(provider.getSignatureForUUID(
-                   connection, uuid,
-                   Hash("BBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBB"
-                        "BBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBB")),
+                   uuid, common::crypto::Hash(
+                             "BBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBB"
+                             "BBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBB")),
                std::exception);
 }
 

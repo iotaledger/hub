@@ -1,17 +1,17 @@
 /*
  * Copyright (c) 2018 IOTA Stiftung
- * https://github.com/iotaledger/rpchub
+ * https://gitcommon.com/iotaledger/rpccommon
  *
  * Refer to the LICENSE file for licensing information
  */
 
-#include "hub/crypto/provider.h"
+#include "common/crypto/provider_base.h"
 #include "common/helpers/checksum.h"
 
-namespace hub {
+namespace common {
 namespace crypto {
 
-common::crypto::Checksum CryptoProvider::calcChecksum(
+common::crypto::Checksum CryptoProviderBase::calcChecksum(
     std::string_view address) const {
   char* checksumPtr = iota_checksum(address.data(), address.size(),
                                     common::crypto::Checksum::length());
@@ -21,7 +21,7 @@ common::crypto::Checksum CryptoProvider::calcChecksum(
 }
 
 nonstd::optional<common::crypto::Address>
-CryptoProvider::verifyAndStripChecksum(const std::string& address) const {
+CryptoProviderBase::verifyAndStripChecksum(const std::string& address) const {
   auto addressView =
       std::string_view(address).substr(0, common::crypto::Address::length());
   auto checksumView = std::string_view(address).substr(
@@ -35,4 +35,4 @@ CryptoProvider::verifyAndStripChecksum(const std::string& address) const {
 }
 
 }  // namespace crypto
-}  // namespace hub
+}  // namespace common

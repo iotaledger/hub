@@ -1,12 +1,12 @@
 /*
  * Copyright (c) 2018 IOTA Stiftung
- * https://github.com/iotaledger/rpchub
+ * https://gitcommon.com/iotaledger/rpccommon
  *
  * Refer to the LICENSE file for licensing information
  */
 
-#ifndef HUB_CRYPTO_SERVER_H_
-#define HUB_CRYPTO_SERVER_H_
+#ifndef SIGNING_SERVER_SERVER_H_
+#define SIGNING_SERVER_SERVER_H_
 
 #include <memory>
 #include <string>
@@ -40,4 +40,4 @@ class SigningServer : public common::ServerBase {
 
 }  // namespace signing
 
-#endif  // HUB_CRYPTO_SERVER_H_
+#endif  // SIGNING_SERVER_SERVER_H_

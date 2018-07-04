@@ -1,13 +1,13 @@
 /*
  * Copyright (c) 2018 IOTA Stiftung
- * https://github.com/iotaledger/rpchub
+ * https://gitcommon.com/iotaledger/rpccommon
  *
  * Refer to the LICENSE file for licensing information
  */
 
-#include "hub/crypto/manager.h"
+#include "common/crypto/manager.h"
 
-namespace hub {
+namespace common {
 namespace crypto {
 
 CryptoManager& CryptoManager::get() {
@@ -17,4 +17,4 @@ CryptoManager& CryptoManager::get() {
 }
 
 }  // namespace crypto
-}  // namespace hub
+}  // namespace common
