@@ -48,7 +48,7 @@ DEFINE_string(authProvider, "none", "provider to use. can be {none, hmac}");
 DEFINE_string(signingMode, "local", "signing method to use {local,remote}");
 DEFINE_string(
     signingProviderAddress, "0.0.0.0:50052",
-    "crypto provider address, should be provided if remoteCryptoProvider=true");
+    "crypto provider address, should be provided if signingMode=remote");
 // remote signing_server credentials
 DEFINE_string(signingAuthMode, "none",
               "credentials to use. can be {none, ssl}");
