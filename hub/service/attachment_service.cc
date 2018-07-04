@@ -178,14 +178,13 @@ bool AttachmentService::doTick() {
 
   auto tickStart = std::chrono::system_clock::now();
 
-  auto milestone = _api->getNodeInfo().latestMilestone;
-
   // 1. Get Unconfirmed sweeps from database.
   auto unconfirmedSweeps = connection.getUnconfirmedSweeps(tickStart);
   LOG(INFO) << "Found " << unconfirmedSweeps.size() << " unconfirmed sweeps.";
 
   for (const auto& sweep : unconfirmedSweeps) {
     auto transaction = connection.transaction();
+    auto milestone = _api->getNodeInfo().value().latestMilestone;
 
     try {
       // 2. Get (tails, timestamp) for these sweeps

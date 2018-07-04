@@ -58,7 +58,7 @@ class MockAPI : public cppclient::IotaAPI {
                    nonstd::optional<std::vector<std::string>> bundles,
                    nonstd::optional<std::vector<std::string>> approvees));
 
-  MOCK_METHOD0(getNodeInfo, NodeInfo());
+  MOCK_METHOD0(getNodeInfo, nonstd::optional<NodeInfo>());
 
   MOCK_METHOD1(getTransactions,
                std::vector<Transaction>(const std::vector<std::string>&));
