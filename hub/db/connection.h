@@ -20,7 +20,7 @@
 #include <utility>
 #include <vector>
 
-#include "hub/crypto/types.h"
+#include "common/crypto/types.h"
 #include "hub/db/db.h"
 #include "hub/db/helper.h"
 #include "hub/db/types.h"
@@ -85,13 +85,13 @@ class Connection {
       nonstd::optional<uint64_t> sweepId) = 0;
 
   /// Inserts a new user address entry in the database
-  /// @param[in] address - a hub::crypto::Address, an IOTA address
+  /// @param[in] address - a common::crypto::Address, an IOTA address
   /// @param[in] userId - the user id in the database
-  /// @param[in] uuid - a hub::crypto::UUID
+  /// @param[in] uuid - a common::crypto::UUID
   /// @return uint64_t - The id of the new address in the database
-  virtual uint64_t createUserAddress(const hub::crypto::Address& address,
+  virtual uint64_t createUserAddress(const common::crypto::Address& address,
                                      uint64_t userId,
-                                     const hub::crypto::UUID& uuid) = 0;
+                                     const common::crypto::UUID& uuid) = 0;
 
   /// Create a new user account balance entry in the database
   /// @param[in] userId - the user id in the database
@@ -103,19 +103,19 @@ class Connection {
       const nonstd::optional<uint64_t> fkey = {}) = 0;
 
   /// Create a withdrawal entry for the user at from given address
-  /// @param[in] uuid - the hub::crypto::UUID identifier of the withdrawal
+  /// @param[in] uuid - the common::crypto::UUID identifier of the withdrawal
   /// @param[in] userId - the user id in the database
   /// @param[in] amount - a int64_t, the amount to withdraw
   /// @param[in] tag - the tag to use for the withdrawal
-  /// @param[in] payoutAddress - a hub::crypto::Address, the IOTA to address
+  /// @param[in] payoutAddress - a common::crypto::Address, the IOTA to address
   /// @return uint64_t - 1 if successful
   virtual uint64_t createWithdrawal(
       const std::string& uuid, uint64_t userId, uint64_t amount,
-      const hub::crypto::Tag& tag,
-      const hub::crypto::Address& payoutAddress) = 0;
+      const common::crypto::Tag& tag,
+      const common::crypto::Address& payoutAddress) = 0;
 
   /// Cancel a withdrawal operation (if not already processed)
-  /// @param[in] uuid - the hub::crypto::UUID identifier of the withdrawal
+  /// @param[in] uuid - the common::crypto::UUID identifier of the withdrawal
   /// @return size_t - 1 if successful
   virtual size_t cancelWithdrawal(const std::string& uuid) = 0;
 
@@ -130,8 +130,8 @@ class Connection {
   virtual nonstd::optional<AddressWithUUID> selectFirstUserAddress() = 0;
 
   /// Mark a given UUID as signed
-  /// @param[in] uuid - the hub::crypto::UUID to mark as signed
-  virtual void markUUIDAsSigned(const hub::crypto::UUID& uuid) = 0;
+  /// @param[in] uuid - the common::crypto::UUID to mark as signed
+  virtual void markUUIDAsSigned(const common::crypto::UUID& uuid) = 0;
 
   /// Get a list of account balances for a user
   /// @param[in] userId - the user id in the database
@@ -210,16 +210,16 @@ class Connection {
       const std::set<uint64_t>& ids) = 0;
 
   /// Gets info for a given withdrawal operation
-  /// @param[in] uuid - the hub::crypto::UUID identifier of the withdrawal
+  /// @param[in] uuid - the common::crypto::UUID identifier of the withdrawal
   /// @return WithdrawalInfo - info on the withdrawal
   virtual WithdrawalInfo getWithdrawalInfoFromUUID(const std::string& uuid) = 0;
 
   /// Create a new hub address from a UUID and IOTA address
-  /// @param[in] uuid - a hub::crypto::UUID
+  /// @param[in] uuid - a common::crypto::UUID
   /// @param[in] address - an address
   /// @return int64_t - 1 on success
-  virtual int64_t createHubAddress(const hub::crypto::UUID& uuid,
-                                   const hub::crypto::Address& address) = 0;
+  virtual int64_t createHubAddress(const common::crypto::UUID& uuid,
+                                   const common::crypto::Address& address) = 0;
 
   /// Create a new hub address balance record with a specific amount
   /// @param[in] hubAddress - the hub address id in the database
@@ -246,7 +246,7 @@ class Connection {
   /// @param[in] bundleTrytes - the serialized bundle in trytes
   /// @param[in] intoHubAddress - the hub address for remainder if any
   /// @return int64_t - the database id of the new sweep
-  virtual int64_t createSweep(const hub::crypto::Hash& bundleHash,
+  virtual int64_t createSweep(const common::crypto::Hash& bundleHash,
                               const std::string& bundleTrytes,
                               uint64_t intoHubAddress) = 0;
 
@@ -280,7 +280,7 @@ class Connection {
   /// @param[in] address - the address to provide info on
   /// @return nonstd::optional<AddressInfo> - the information if available
   virtual nonstd::optional<AddressInfo> getAddressInfo(
-      const hub::crypto::Address& address) = 0;
+      const common::crypto::Address& address) = 0;
 
   /// Looks up a sweep by a withdrawal UUID
   /// @param[in] uuid - the withdrawal UUID to use for the lookup.
@@ -292,7 +292,7 @@ class Connection {
   /// @param[in] bundleHash - the bundle hash to use for the lookup.
   /// @return nonstd::optional<SweepEvent> - the sweep if found
   virtual nonstd::optional<SweepEvent> getSweepByBundleHash(
-      const hub::crypto::Hash& bundleHash) = 0;
+      const common::crypto::Hash& bundleHash) = 0;
 
  private:
   friend class DBManager;

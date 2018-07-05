@@ -5,7 +5,6 @@
  * Refer to the LICENSE file for licensing information
  */
 
-
 #ifndef HUB_SERVICE_ATTACHMENT_SERVICE_H_
 #define HUB_SERVICE_ATTACHMENT_SERVICE_H_
 
@@ -15,8 +14,8 @@
 #include <utility>
 #include <vector>
 
-#include "hub/db/db.h"
 #include "cppclient/api.h"
+#include "hub/db/db.h"
 #include "hub/iota/pow.h"
 #include "hub/service/scheduled_service.h"
 
@@ -55,7 +54,8 @@ class AttachmentService : public ScheduledService {
 
   void promoteSweep(db::Connection& connection,
                     const iota::POWProvider& powProvider,
-                    const db::Sweep& sweep, const hub::crypto::Hash& tailHash);
+                    const db::Sweep& sweep,
+                    const common::crypto::Hash& tailHash);
 
   bool checkForUserReattachment(db::Connection& connection,
                                 const db::Sweep& sweep,

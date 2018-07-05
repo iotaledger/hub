@@ -22,7 +22,7 @@
 
 #include <sqlpp11/transaction.h>
 
-#include "hub/crypto/types.h"
+#include "common/crypto/types.h"
 #include "hub/db/connection.h"
 #include "hub/db/db.h"
 #include "hub/db/helper.h"
@@ -78,9 +78,9 @@ class ConnectionImpl : public Connection {
     return db::helper<Conn>::availableBalanceForUser(*_conn, userId);
   }
 
-  uint64_t createUserAddress(const hub::crypto::Address& address,
+  uint64_t createUserAddress(const common::crypto::Address& address,
                              uint64_t userId,
-                             const hub::crypto::UUID& uuid) override {
+                             const common::crypto::UUID& uuid) override {
     return db::helper<Conn>::createUserAddress(*_conn, address, userId, uuid);
   }
 
@@ -102,8 +102,8 @@ class ConnectionImpl : public Connection {
 
   uint64_t createWithdrawal(
       const std::string& uuid, uint64_t userId, uint64_t amount,
-      const hub::crypto::Tag& tag,
-      const hub::crypto::Address& payoutAddress) override {
+      const common::crypto::Tag& tag,
+      const common::crypto::Address& payoutAddress) override {
     return db::helper<Conn>::createWithdrawal(*_conn, uuid, userId, amount, tag,
                                               payoutAddress);
   }
@@ -120,7 +120,7 @@ class ConnectionImpl : public Connection {
     return db::helper<Conn>::selectFirstUserAddress(*_conn);
   }
 
-  void markUUIDAsSigned(const hub::crypto::UUID& uuid) override {
+  void markUUIDAsSigned(const common::crypto::UUID& uuid) override {
     db::helper<Conn>::markUUIDAsSigned(*_conn, uuid);
   }
 
@@ -194,8 +194,8 @@ class ConnectionImpl : public Connection {
     return db::helper<Conn>::getWithdrawalInfoFromUUID(*_conn, uuid);
   }
 
-  int64_t createHubAddress(const hub::crypto::UUID& uuid,
-                           const hub::crypto::Address& address) override {
+  int64_t createHubAddress(const common::crypto::UUID& uuid,
+                           const common::crypto::Address& address) override {
     return db::helper<Conn>::createHubAddress(*_conn, uuid, address);
   }
 
@@ -214,7 +214,7 @@ class ConnectionImpl : public Connection {
     return db::helper<Conn>::getUserAddressBalance(*_conn, userAddress);
   }
 
-  int64_t createSweep(const hub::crypto::Hash& bundleHash,
+  int64_t createSweep(const common::crypto::Hash& bundleHash,
                       const std::string& bundleTrytes,
                       uint64_t intoHubAddress) override {
     return db::helper<Conn>::createSweep(*_conn, bundleHash, bundleTrytes,
@@ -245,12 +245,12 @@ class ConnectionImpl : public Connection {
   }
 
   nonstd::optional<AddressInfo> getAddressInfo(
-      const hub::crypto::Address& address) override {
+      const common::crypto::Address& address) override {
     return db::helper<Conn>::getAddressInfo(*_conn, address);
   }
 
   nonstd::optional<SweepEvent> getSweepByBundleHash(
-      const hub::crypto::Hash& bundleHash) override {
+      const common::crypto::Hash& bundleHash) override {
     return db::helper<Conn>::getSweepByBundleHash(*_conn, bundleHash);
   }
 

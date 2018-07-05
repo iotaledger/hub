@@ -8,18 +8,18 @@
 
 #include <gtest/gtest.h>
 
-#include "hub/crypto/argon2_provider.h"
-#include "hub/crypto/manager.h"
-#include "hub/crypto/types.h"
+#include "common/crypto/types.h"
+#include "common/crypto/argon2_provider.h"
+#include "common/crypto/manager.h"
+#include "common/stats/session.h"
 #include "hub/db/db.h"
-#include "hub/stats/session.h"
 
 namespace hub {
 class Test : public ::testing::Test {
  public:
   virtual void SetUp() {
-    hub::crypto::CryptoManager::get().setProvider(
-        std::make_unique<crypto::Argon2Provider>("abcdefghij"));
+    common::crypto::CryptoManager::get().setProvider(
+        std::make_unique<common::crypto::Argon2Provider>("abcdefghij"));
 
     db::Config config;
 
@@ -27,7 +27,7 @@ class Test : public ::testing::Test {
 
     config.type = "sqlite3";
     config.database =
-        "file:"s + hub::crypto::UUID().str() + "?mode=memory&cache=shared"s;
+        "file:"s + common::crypto::UUID().str() + "?mode=memory&cache=shared"s;
 
     std::replace(config.database.begin(), config.database.end(), '+', 'X');
     std::replace(config.database.begin(), config.database.end(), '/', 'Y');
@@ -36,7 +36,7 @@ class Test : public ::testing::Test {
     db.setConnectionConfig(config);
     db.loadSchema();
 
-    _session = std::make_shared<ClientSession>();
+    _session = std::make_shared<common::ClientSession>();
   }
 
   virtual void TearDown() {
@@ -45,10 +45,10 @@ class Test : public ::testing::Test {
     _session = nullptr;
   }
 
-  std::shared_ptr<ClientSession> session() { return _session; }
+  std::shared_ptr<common::ClientSession> session() { return _session; }
 
  private:
-  std::shared_ptr<ClientSession> _session;
+  std::shared_ptr<common::ClientSession> _session;
 };
 
 }  //  namespace hub

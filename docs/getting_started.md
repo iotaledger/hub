@@ -8,9 +8,15 @@
 
 - In case user sent tokens to a deposit address that has been swept, we offer a mechanism to recover the funds (see docs/hip/001-get_address_secret.md)
 
-## Building
+## Building the hub
 
-- see README file
+- bazel run -c opt //hub:hub -- <parameters>
+- bazel build //hub:hub
+
+## Building signing_server (for remote signing_server)
+
+- bazel run -c opt //signing_server:signing_server -- <parameters>
+- bazel build //signing_server:signing_server
 
 ## Setup the database (this example is using MariaDB)
 
@@ -26,7 +32,13 @@
 
 - ./bazel-bin/hub/hub --salt yoursaltcharachters --apiAddress your_iri_node_uri --db db_name --dbUser your_user --dbPassword user_password --monitorInterval xxx --attachmentInterval yyy --sweepInterval zzz
 - For detailed explanation about program arguments, see README
+- For running the hub with remote salt provider (--signingMode=remote) run the signing_provider first
 
+## Running the signing_server
+- ./bazel-bin/signing_server/signing_server --salt abcdefghijklmnopqrstuvwxyz --authMode=ssl  -sslKey docs/ssl/server.key -sslCert docs/ssl/server.crt -sslCA docs/ssl/ca.crt --listenAddress=localhost:50052
+
+### Run via Docker
+You can build a docker image for `RPCHub` via `bazel build -c opt //docker:hub`
 
 ## Calling client commands
 

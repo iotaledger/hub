@@ -30,8 +30,8 @@ TEST_F(CreateUserTest, ErrorOnDuplicate) {
 
   ASSERT_EQ(grpc::StatusCode::FAILED_PRECONDITION, status.error_code());
   ASSERT_EQ(err.code(), rpc::ErrorCode::USER_EXISTS);
-  /*  ASSERT_EQ(1, conn(select(count(tbl.identifier)).from(tbl).unconditionally())
-                   .front()
+  /*  ASSERT_EQ(1,
+     conn(select(count(tbl.identifier)).from(tbl).unconditionally()) .front()
                    .count);*/
 }
 

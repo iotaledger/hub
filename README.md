@@ -17,13 +17,9 @@
 - Be sure to run `./hooks/autohook.sh install` after checkout!
 - Pass `-c dbg` for building with debug symbols.
 
-## How to run
-- `bazel run -c opt //hub:hub -- <parameters>`
-- `bazel build //hub:hub`
-- `rm hub.db; sqlite3 hub.db < schema/schema.sql; GLOG_logtostderr=true GLOG_v=3 ./bazel-bin/hub/hub --salt abcdefghijklmnopqrstuvwxyz --apiAddress localhost:14700`
+## How to build and run 
 
-### Run via Docker
-You can build a docker image for `RPCHub` via `bazel build -c opt //docker:hub`
+- see docs/getting_started.md
 
 ## Configuration
 - If running on mainnet, set `-minWeightMagnitude` to at least 14
@@ -32,6 +28,22 @@ You can build a docker image for `RPCHub` via `bazel build -c opt //docker:hub`
 
 ## Command Line Arguments
 ```
+  Flags from common/flags/flags.h (used for both hub/signing_server binaries):
+  
+    -salt (Salt for local seed provider) type: string default: "" 
+    -listenAddress (address to listen on) type: string default: "0.0.0.0:50051"
+    -authMode ("credentials to use. can be {none, ssl}") type: string default: "none"
+    -sslKey docs/ssl/server.key (path to SSL certificate key) type: string default: "/dev/null"
+    -sslCert docs/ssl/server.crt (path to SSL certificate) type: string default: "/dev/null"
+    -sslCA docs/ssl/ca.crt (Path to CA root) type: string default: "/dev/null"
+    -maxConcurrentArgon2Hash (Max number of concurrent Argon2 Hash processes) type: int default: 4
+    -argon2TCost (Time cost of Argon2) type: int default: 4
+    -argon2MCost (Memory cost of Argon2 in bytes) type: int default: 1 << 17
+    -argon2Parallelism (Number of threads to use in parallel for Argon2) type: int default: 1
+    -argon2Mode (Argon2 mode to use: 1=argon2i;2,else=argon2id) type: int default: 2
+    
+  HUB -
+
   Flags from hub/db/db.cc:
     -db (Database name) type: string default: "hub"
     -dbDebug (Enable debug mode for database connection) type: bool
@@ -50,19 +62,26 @@ You can build a docker image for `RPCHub` via `bazel build -c opt //docker:hub`
     -authMode (credentials to use. can be {none}) type: string default: "none"
     -depth (Value for getTransacationToApprove depth parameter) type: uint32
       default: 9
-    -listenAddress (address to listen on) type: string default: "0.0.0.0:50051"
     -minWeightMagnitude (Minimum weight magnitude for POW) type: uint32
       default: 9
     -monitorInterval (Address monitor check interval [ms]) type: uint32
       default: 60000
-    -salt (Salt for local seed provider) type: string default: ""
     -sweepInterval (Sweep interval [ms]) type: uint32 default: 600000
+    -hmacKeyPath (path to key used for HMAC encyption) type: string default: "/dev/null"   
+    -authProvider (provider to use. can be {none, hmac}) type: string default: "none"
+    -signingMode (signing method to use {local,remote}) type: string default: "local"   
+    -signingProviderAddress (crypto provider address, should be provided if signingMode=remote) 
+    type: string default: "0.0.0.0:50052"
+    -signingServerSslCert (Path to SSL certificate (ca.cert)) type: string default: "/dev/null"   
+    -signingServerChainCert (Path to SSL certificate chain (server.crt)) type: string default: "/dev/null"   
+    -signingServerKeyCert (Path to SSL certificate key) type: string default: "/dev/null"   
 
   Flags from hub/service/sweep_service.cc:
     -sweep_max_deposit (Maximum number of user deposits to process per sweep.)
       type: uint32 default: 5
     -sweep_max_withdraw (Maximum number of withdraw requests to service per
       sweep.) type: uint32 default: 7
+      
 ```
 
 ## Useful things

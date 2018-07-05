@@ -3,12 +3,12 @@
 #include <gtest/gtest.h>
 #include <sqlpp11/functions.h>
 #include <sqlpp11/select.h>
-#include "proto/hub.pb.h"
-#include "schema/schema.h"
+#include "common/stats/session.h"
 #include "hub/commands/get_user_history.h"
 #include "hub/db/db.h"
-#include "hub/stats/session.h"
+#include "proto/hub.pb.h"
 #include "runner.h"
+#include "schema/schema.h"
 
 using namespace hub;
 using namespace sqlpp;

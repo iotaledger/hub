@@ -1,0 +1,65 @@
+/*
+ * Crypto Provider related messages.
+ */
+
+syntax = "proto3";
+
+option java_package = "org.iota.signing_server";
+
+package signing.rpc;
+
+enum ErrorCode {
+    // Unused.
+    EC_UNKNOWN = 0;
+}
+
+/*
+ * The generic Error that will be used to return an error code on, e.g. Status::CANCELLED.
+ *
+ * The error will be serialised and stored in the Status' detail field.
+ */
+message Error {
+  ErrorCode code = 1;
+}
+
+/*
+ * Request for getting address
+ */
+message GetAddressForUUIDRequest {
+    string uuid = 1;
+}
+
+/*
+ * Reply for getting address
+ */
+message GetAddressForUUIDReply {
+    string address = 1;
+}
+
+/*
+ * Request for getting signature
+ */
+message GetSignatureForUUIDRequest {
+    string uuid = 1;
+    string bundleHash = 2;
+}
+
+/*
+ * Reply for getting signature
+ */
+message GetSignatureForUUIDReply {
+    string signature = 1;
+}
+
+/*
+ * Request for getting security level
+ */
+message GetSecurityLevelRequest {
+    string uuid = 1;
+}
+/*
+ * Reply for getting security level
+ */
+message GetSecurityLevelReply {
+    uint32 securityLevel = 1;
+}

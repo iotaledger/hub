@@ -5,7 +5,6 @@
  * Refer to the LICENSE file for licensing information
  */
 
-
 #include "hub/commands/helper.h"
 
 #include <sstream>

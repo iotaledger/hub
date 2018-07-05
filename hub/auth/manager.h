@@ -5,7 +5,6 @@
  * Refer to the LICENSE file for licensing information
  */
 
-
 #ifndef HUB_AUTH_MANAGER_H_
 #define HUB_AUTH_MANAGER_H_
 

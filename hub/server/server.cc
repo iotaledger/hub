@@ -8,28 +8,27 @@
 #include "hub/server/server.h"
 
 #include <chrono>
-#include <fstream>
-#include <iostream>
-#include <sstream>
 
 #include <gflags/gflags.h>
 #include <glog/logging.h>
 #include <grpc++/grpc++.h>
+#include "common/common.h"
+#include "common/crypto/argon2_provider.h"
+#include "common/crypto/manager.h"
+#include "common/flags.h"
+#include "cppclient/beast.h"
 #include "hub/auth/dummy_provider.h"
 #include "hub/auth/hmac_provider.h"
 #include "hub/auth/manager.h"
-#include "hub/crypto/argon2_provider.h"
-#include "hub/crypto/manager.h"
+#include "hub/crypto/local_provider.h"
+#include "hub/crypto/remote_signing_provider.h"
 #include "hub/db/db.h"
 #include "hub/db/helper.h"
-#include "cppclient/beast.h"
 #include "hub/iota/pow.h"
 #include "hub/iota/remote_pow.h"
 #include "hub/service/sweep_service.h"
 #include "hub/service/user_address_monitor.h"
 
-DEFINE_string(salt, "", "Salt for argon2 seed provider");
-DEFINE_string(listenAddress, "0.0.0.0:50051", "address to listen on");
 DEFINE_string(apiAddress, "127.0.0.1:14265",
               "IRI node api to listen on. Format [host:port]");
 
@@ -42,69 +41,58 @@ DEFINE_uint32(sweepInterval, 600000, "Sweep interval [ms]");
 DEFINE_uint32(minWeightMagnitude, 9, "Minimum weight magnitude for POW");
 DEFINE_uint32(depth, 3, "Value for getTransacationToApprove depth parameter");
 
-DEFINE_string(authMode, "none", "credentials to use. can be {none, ssl}");
-DEFINE_string(sslCert, "/dev/null", "Path to SSL certificate");
-DEFINE_string(sslKey, "/dev/null", "Path to SSL certificate key");
-DEFINE_string(sslCA, "/dev/null", "Path to CA root");
 DEFINE_string(hmacKeyPath, "/dev/null", "path to key used for HMAC encyption");
 DEFINE_string(authProvider, "none", "provider to use. can be {none, hmac}");
+
+// remote crypto provider settings
+DEFINE_string(signingMode, "local", "crypto method to use {local,remote}");
+DEFINE_string(
+    signingProviderAddress, "0.0.0.0:50052",
+    "crypto provider address, should be provided if signingMode=remote");
+// The following credentials components has to match those of the SigningServer
+DEFINE_string(signingServerSslCert, "/dev/null",
+              "Path to SSL certificate (ca.cert)");
+DEFINE_string(signingServerChainCert, "/dev/null",
+              "Path to SSL certificate chain (server.crt)");
+DEFINE_string(signingServerKeyCert, "/dev/null",
+              "Path to SSL certificate key (server.key)");
 
 using grpc::Server;
 using grpc::ServerBuilder;
 
-namespace {
-std::string readFile(const std::string& fileName) {
-  std::ifstream ifs(fileName.c_str());
-
-  if (!ifs.good()) {
-    LOG(FATAL) << "File: " << fileName << " does not exist.";
-  }
-
-  std::stringstream buffer;
-
-  buffer << ifs.rdbuf();
-  return buffer.str();
-}
-
-}  // namespace
-
 namespace hub {
 HubServer::HubServer() {}
 
-std::shared_ptr<grpc::ServerCredentials> HubServer::makeCredentials() {
-  LOG(INFO) << "Using auth mode: " << FLAGS_authMode;
-  if (FLAGS_authMode == "none") {
-    return grpc::InsecureServerCredentials();
-  } else if (FLAGS_authMode == "ssl") {
-    grpc::SslServerCredentialsOptions options;
-
-    grpc::SslServerCredentialsOptions::PemKeyCertPair keycert = {
-        readFile(FLAGS_sslKey), readFile(FLAGS_sslCert)};
-
-    options.pem_key_cert_pairs.push_back(keycert);
-    options.pem_root_certs = readFile(FLAGS_sslCA);
-    options.client_certificate_request =
-        GRPC_SSL_REQUEST_AND_REQUIRE_CLIENT_CERTIFICATE_AND_VERIFY;
-    return grpc::SslServerCredentials(options);
-  }
-
-  LOG(FATAL) << "Unknown auth mode: " << FLAGS_authMode;
-}
-
 void HubServer::initialise() {
-  if (FLAGS_salt.size() <= 20) {
-    LOG(FATAL) << "Salt must be more than 20 characters long.";
+  if (FLAGS_signingMode == "remote") {
+    common::crypto::CryptoManager::get().setProvider(
+        std::make_unique<crypto::RemoteSigningProvider>(
+            FLAGS_signingProviderAddress, FLAGS_signingServerSslCert,
+            FLAGS_signingServerChainCert, FLAGS_signingServerKeyCert));
+  } else if (FLAGS_signingMode == "local") {
+    if (common::flags::FLAGS_salt.size() <= 20) {
+      LOG(FATAL) << "Salt must be more than 20 characters long.";
+    }
+    common::crypto::CryptoManager::get().setProvider(
+        std::make_unique<hub::crypto::LocalSigningProvider>(
+            common::flags::FLAGS_salt));
+  } else {
+    LOG(FATAL) << "Signing mode: \"" << FLAGS_signingMode
+               << "\" not recognized";
   }
-  crypto::CryptoManager::get().setProvider(
-      std::make_unique<crypto::Argon2Provider>(FLAGS_salt));
 
   initialiseAuthProvider();
 
   db::DBManager::get().loadConnectionConfigFromArgs();
 
   if (!authenticateSalt()) {
-    LOG(FATAL) << "The provided salt or provider parameters are not valid for "
-                  "this database. Did you mistype?";
+    if (FLAGS_signingMode == "remote") {
+      LOG(FATAL) << "The remote crypto server could not be authenticated";
+    } else {
+      LOG(FATAL)
+          << "The provided salt or provider parameters are not valid for "
+             "this database. Did you mistype?";
+    }
   }
 
   {
@@ -128,7 +116,11 @@ void HubServer::initialise() {
 
   ServerBuilder builder;
 
-  builder.AddListeningPort(FLAGS_listenAddress, makeCredentials());
+  builder.AddListeningPort(
+      common::flags::FLAGS_listenAddress,
+      makeCredentials(common::flags::FLAGS_authMode,
+                      common::flags::FLAGS_sslCert, common::flags::FLAGS_sslKey,
+                      common::flags::FLAGS_sslCA));
   builder.RegisterService(&_service);
 
   _server = builder.BuildAndStart();
@@ -136,10 +128,8 @@ void HubServer::initialise() {
   _attachmentService->start();
   _sweepService->start();
 
-  LOG(INFO) << "Server listening on " << FLAGS_listenAddress;
+  LOG(INFO) << "Server listening on " << common::flags::FLAGS_listenAddress;
 }
-
-void HubServer::runAndWait() { _server->Wait(); }
 
 bool HubServer::authenticateSalt() const {
   auto& connection = db::DBManager::get().connection();
@@ -147,9 +137,15 @@ bool HubServer::authenticateSalt() const {
 
   if (!addAndUuidRes.has_value()) return true;
 
-  const auto& provider = crypto::CryptoManager::get().provider();
+  const auto& provider = common::crypto::CryptoManager::get().provider();
   const auto& [existantAddress, uuid] = addAndUuidRes.value();
-  auto address = provider.getAddressForUUID(crypto::UUID(uuid));
+
+  auto maybeAddress = provider.getAddressForUUID(common::crypto::UUID(uuid));
+  if (!maybeAddress.has_value()) {
+    LOG(ERROR) << "Could not get address from provider.";
+    return false;
+  }
+  auto address = maybeAddress.value();
 
   return address.str_view() == existantAddress;
 }
@@ -159,8 +155,8 @@ void HubServer::initialiseAuthProvider() const {
     auth::AuthManager::get().setProvider(
         std::make_unique<auth::DummyProvider>());
   } else if (FLAGS_authProvider == "hmac") {
-    auth::AuthManager::get().setProvider(
-        std::make_unique<auth::HMACProvider>(readFile(FLAGS_hmacKeyPath)));
+    auth::AuthManager::get().setProvider(std::make_unique<auth::HMACProvider>(
+        common::readFile(FLAGS_hmacKeyPath)));
   } else {
     LOG(FATAL) << "Unknown auth provider: " << FLAGS_authProvider;
   }

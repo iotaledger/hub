@@ -9,9 +9,9 @@
 
 #include <cstdint>
 
+#include "common/stats/session.h"
 #include "hub/db/db.h"
 #include "hub/db/helper.h"
-#include "hub/stats/session.h"
 #include "proto/hub.pb.h"
 #include "schema/schema.h"
 

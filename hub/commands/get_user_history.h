@@ -10,7 +10,7 @@
 
 #include <string>
 
-#include "hub/commands/command.h"
+#include "common/command.h"
 
 namespace hub {
 namespace rpc {
@@ -23,8 +23,9 @@ namespace cmd {
 /// Gets the history of transactions for a user.
 /// @param[in] hub::rpc::GetUserHistoryRequest
 /// @param[in] hub::rpc::GetUserHistoryReply
-class GetUserHistory : public Command<hub::rpc::GetUserHistoryRequest,
-                                      hub::rpc::GetUserHistoryReply> {
+class GetUserHistory
+    : public common::Command<hub::rpc::GetUserHistoryRequest,
+                                  hub::rpc::GetUserHistoryReply> {
  public:
   using Command<hub::rpc::GetUserHistoryRequest,
                 hub::rpc::GetUserHistoryReply>::Command;

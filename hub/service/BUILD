@@ -34,7 +34,7 @@ cc_library(
     visibility = ["//visibility:public"],
     deps = [
         ":scheduled_service",
-        "//hub/crypto",
+        "//common/crypto",
         "//hub/db",
         "@boost//:range",
         "@boost//:uuid",

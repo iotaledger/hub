@@ -5,12 +5,12 @@
 #include <sqlpp11/functions.h>
 #include <sqlpp11/select.h>
 
+#include "common/stats/session.h"
+#include "common/crypto/types.h"
 #include "hub/commands/get_address_info.h"
 #include "hub/commands/get_deposit_address.h"
-#include "hub/crypto/types.h"
 #include "hub/db/db.h"
 #include "hub/db/helper.h"
-#include "hub/stats/session.h"
 #include "proto/hub.pb.h"
 #include "schema/schema.h"
 
@@ -42,7 +42,8 @@ TEST_F(GetAddressInfoTest, AddressCountInDatabaseShouldChange) {
 
   ASSERT_TRUE(depCommand.process(&depReq, &depRes).ok());
 
-  req.set_address(depRes.address().substr(0, hub::crypto::Address::length()));
+  req.set_address(
+      depRes.address().substr(0, common::crypto::Address::length()));
   ASSERT_TRUE(command.process(&req, &res).ok());
   ASSERT_EQ(res.userid(), username);
 }

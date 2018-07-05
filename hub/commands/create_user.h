@@ -10,7 +10,7 @@
 
 #include <string>
 
-#include "hub/commands/command.h"
+#include "common/command.h"
 
 namespace hub {
 namespace rpc {
@@ -23,8 +23,8 @@ namespace cmd {
 /// Creates a new user with a specific id.
 /// @param[in] hub::rpc::CreateUserRequest
 /// @param[in] hub::rpc::CreateUserReply
-class CreateUser
-    : public Command<hub::rpc::CreateUserRequest, hub::rpc::CreateUserReply> {
+class CreateUser : public common::Command<hub::rpc::CreateUserRequest,
+                                               hub::rpc::CreateUserReply> {
  public:
   using Command<hub::rpc::CreateUserRequest,
                 hub::rpc::CreateUserReply>::Command;

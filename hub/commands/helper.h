@@ -5,7 +5,6 @@
  * Refer to the LICENSE file for licensing information
  */
 
-
 #ifndef HUB_COMMANDS_HELPER_H_
 #define HUB_COMMANDS_HELPER_H_
 

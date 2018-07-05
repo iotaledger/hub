@@ -11,7 +11,7 @@
 #include <map>
 #include <string>
 
-#include "hub/commands/command.h"
+#include "common/command.h"
 
 namespace hub {
 namespace rpc {
@@ -25,8 +25,8 @@ namespace cmd {
 /// @param[in] hub::rpc::ProcessTransferBatchRequest
 /// @param[in] hub::rpc::ProcessTransferBatchReply
 class ProcessTransferBatch
-    : public Command<hub::rpc::ProcessTransferBatchRequest,
-                     hub::rpc::ProcessTransferBatchReply> {
+    : public common::Command<hub::rpc::ProcessTransferBatchRequest,
+                                  hub::rpc::ProcessTransferBatchReply> {
  public:
   using Command<hub::rpc::ProcessTransferBatchRequest,
                 hub::rpc::ProcessTransferBatchReply>::Command;

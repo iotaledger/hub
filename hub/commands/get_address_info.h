@@ -10,7 +10,7 @@
 
 #include <string>
 
-#include "hub/commands/command.h"
+#include "common/command.h"
 
 namespace hub {
 namespace rpc {
@@ -23,8 +23,9 @@ namespace cmd {
 /// Gets information on an address
 /// @param[in] hub::rpc::GetAddressInfoRequest
 /// @param[in] hub::rpc::GetAddressInfoReply
-class GetAddressInfo : public Command<hub::rpc::GetAddressInfoRequest,
-                                         hub::rpc::GetAddressInfoReply> {
+class GetAddressInfo
+    : public common::Command<hub::rpc::GetAddressInfoRequest,
+                                  hub::rpc::GetAddressInfoReply> {
  public:
   using Command<hub::rpc::GetAddressInfoRequest,
                 hub::rpc::GetAddressInfoReply>::Command;

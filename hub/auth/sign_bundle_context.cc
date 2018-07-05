@@ -10,8 +10,8 @@
 namespace hub {
 namespace auth {
 
-SignBundleContext::SignBundleContext(const hub::crypto::Hash& bundleHash,
-                                     const hub::crypto::Address& address) {
+SignBundleContext::SignBundleContext(const common::crypto::Hash& bundleHash,
+                                     const common::crypto::Address& address) {
   _message = bundleHash.str() + address.str();
 }
 const std::string& SignBundleContext::message() const noexcept {

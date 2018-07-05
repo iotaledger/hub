@@ -5,8 +5,8 @@
 #include <chrono>
 #include <thread>
 
+#include "common/stats/session.h"
 #include "hub/commands/balance_subscription.h"
-#include "hub/stats/session.h"
 #include "proto/hub.grpc.pb.h"
 #include "runner.h"
 
@@ -44,7 +44,7 @@ class MockServerWriter : public grpc::ServerWriterInterface<rpc::BalanceEvent> {
 };
 
 TEST_F(BalanceSubscriptionTest, BalanceSubscriptionWriteAllEvents) {
-  auto clientSession = std::make_shared<ClientSession>();
+  auto clientSession = std::make_shared<common::ClientSession>();
   MockBalanceSubscription mockCmd(clientSession);
   MockServerWriter mockSW;
 
@@ -81,7 +81,7 @@ TEST_F(BalanceSubscriptionTest, BalanceSubscriptionWriteAllEvents) {
 }
 
 TEST_F(BalanceSubscriptionTest, BalanceSubscriptionExitsOnBrokenStream) {
-  auto clientSession = std::make_shared<ClientSession>();
+  auto clientSession = std::make_shared<common::ClientSession>();
   MockBalanceSubscription mockCmd(clientSession);
   MockServerWriter mockSW;
 

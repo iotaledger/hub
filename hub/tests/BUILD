@@ -4,9 +4,9 @@ cc_library(
     hdrs = ["runner.h"],
     visibility = ["//visibility:public"],
     deps = [
-        "//hub/crypto:argon2_provider",
+        "//common/crypto:argon2_provider",
+        "//common/stats",
         "//hub/db",
-        "//hub/stats",
         "@com_github_google_glog//:glog",
         "@com_google_googletest//:gtest",
     ],

@@ -12,12 +12,12 @@
 
 #include <sqlpp11/exception.h>
 
+#include "common/stats/session.h"
+#include "common/crypto/types.h"
 #include "hub/commands/helper.h"
-#include "hub/crypto/manager.h"
-#include "hub/crypto/types.h"
+#include "common/crypto/manager.h"
 #include "hub/db/db.h"
 #include "hub/db/helper.h"
-#include "hub/stats/session.h"
 #include "proto/hub.pb.h"
 #include "schema/schema.h"
 
@@ -30,7 +30,7 @@ grpc::Status GetAddressInfo::doProcess(
   auto& connection = db::DBManager::get().connection();
 
   try {
-    hub::crypto::Address address(request->address());
+    common::crypto::Address address(request->address());
 
     auto addressInfo = connection.getAddressInfo(address);
 

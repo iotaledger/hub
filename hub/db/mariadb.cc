@@ -5,7 +5,6 @@
  * Refer to the LICENSE file for licensing information
  */
 
-
 #include <sqlpp11/mysql/connection.h>
 
 #include <memory>

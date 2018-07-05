@@ -10,12 +10,12 @@
 #include <sqlpp11/exception.h>
 #include <cstdint>
 
+#include "common/crypto/manager.h"
+#include "common/stats/session.h"
+#include "common/crypto/types.h"
 #include "hub/commands/helper.h"
-#include "hub/crypto/manager.h"
-#include "hub/crypto/types.h"
 #include "hub/db/db.h"
 #include "hub/db/helper.h"
-#include "hub/stats/session.h"
 #include "proto/hub.pb.h"
 #include "schema/schema.h"
 
@@ -41,12 +41,18 @@ grpc::Status GetDepositAddress::doProcess(
     userId = maybeUserId.value();
   }
 
-  hub::crypto::UUID uuid;
-  auto address =
-      hub::crypto::CryptoManager::get().provider().getAddressForUUID(uuid);
-
+  common::crypto::UUID uuid;
+  auto maybeAddress =
+      common::crypto::CryptoManager::get().provider().getAddressForUUID(uuid);
+  if (!maybeAddress.has_value()) {
+    LOG(ERROR) << session() << " Failed in getAddressForUUID from provider.";
+    return grpc::Status(
+        grpc::StatusCode::UNAVAILABLE, "",
+        errorToString(hub::rpc::ErrorCode::GET_ADDRESS_FAILED));
+  }
+  auto address = maybeAddress.value();
   if (request->includechecksum()) {
-    response->set_address(address.str() + hub::crypto::CryptoManager::get()
+    response->set_address(address.str() + common::crypto::CryptoManager::get()
                                               .provider()
                                               .calcChecksum(address.str())
                                               .str());

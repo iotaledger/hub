@@ -14,7 +14,7 @@
 #include <tuple>
 #include <vector>
 
-#include "hub/crypto/types.h"
+#include "common/crypto/types.h"
 
 namespace hub {
 namespace db {
@@ -94,8 +94,8 @@ struct TransferInput {
  public:
   int64_t addressId;
   int64_t userId;
-  hub::crypto::Address address;
-  hub::crypto::UUID uuid;
+  common::crypto::Address address;
+  common::crypto::UUID uuid;
   uint64_t amount;
 };
 
@@ -103,14 +103,14 @@ struct TransferOutput {
  public:
   int64_t id;
   uint64_t amount;
-  nonstd::optional<hub::crypto::Tag> tag;
-  hub::crypto::Address payoutAddress;
+  nonstd::optional<common::crypto::Tag> tag;
+  common::crypto::Address payoutAddress;
 };
 
 struct AddressInfo {
  public:
   std::string userId;
-  hub::crypto::UUID uuid;
+  common::crypto::UUID uuid;
   bool usedForSweep;
 };
 

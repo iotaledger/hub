@@ -5,12 +5,10 @@
  * Refer to the LICENSE file for licensing information
  */
 
-
 #include "hub/iota/pow.h"
 
 namespace hub {
 namespace iota {
-
 
 POWManager& POWManager::get() {
   static POWManager instance;

@@ -24,9 +24,9 @@
 #include <iota/models/bundle.hpp>
 #include <iota/models/transaction.hpp>
 
-#include "hub/crypto/manager.h"
-#include "hub/crypto/provider.h"
-#include "hub/crypto/types.h"
+#include "common/crypto/manager.h"
+#include "common/crypto/provider_base.h"
+#include "common/crypto/types.h"
 #include "hub/db/db.h"
 #include "hub/db/helper.h"
 
@@ -48,24 +48,24 @@ namespace service {
 
 db::TransferOutput SweepService::getHubOutput(uint64_t remainder) {
   auto& dbConnection = db::DBManager::get().connection();
-  auto& cryptoProvider = crypto::CryptoManager::get().provider();
+  auto& cryptoProvider = common::crypto::CryptoManager::get().provider();
 
-  hub::crypto::UUID hubOutputUUID;
-  auto hubOutputAddress = cryptoProvider.getAddressForUUID(hubOutputUUID);
+  common::crypto::UUID hubOutputUUID;
+  auto address = cryptoProvider.getAddressForUUID(hubOutputUUID).value();
 
-  return {dbConnection.createHubAddress(hubOutputUUID, hubOutputAddress),
+  return {dbConnection.createHubAddress(hubOutputUUID, address),
           remainder,
           {},
-          std::move(hubOutputAddress)};
+          std::move(address)};
 }
 
-std::tuple<hub::crypto::Hash, std::string> SweepService::createBundle(
+std::tuple<common::crypto::Hash, std::string> SweepService::createBundle(
     const std::vector<db::TransferInput>& deposits,
     const std::vector<db::TransferInput>& hubInputs,
     const std::vector<db::TransferOutput>& withdrawals,
     const db::TransferOutput& hubOutput) {
   auto& dbConnection = db::DBManager::get().connection();
-  auto& cryptoProvider = crypto::CryptoManager::get().provider();
+  auto& cryptoProvider = common::crypto::CryptoManager::get().provider();
 
   // 5.1. Generate bundle hash & transactions
   IOTA::Models::Bundle bundle;
@@ -82,7 +82,8 @@ std::tuple<hub::crypto::Hash, std::string> SweepService::createBundle(
       tx.setTimestamp(timestamp);
       tx.setValue((-1uLL) * deposit.amount);
 
-      bundle.addTransaction(tx, cryptoProvider.securityLevel());
+      bundle.addTransaction(tx,
+                            cryptoProvider.securityLevel(deposit.uuid).value());
     }
     // inputs: hubInputs
     for (const auto& input : hubInputs) {
@@ -91,7 +92,8 @@ std::tuple<hub::crypto::Hash, std::string> SweepService::createBundle(
       tx.setTimestamp(timestamp);
       tx.setValue((-1uLL) * input.amount);
 
-      bundle.addTransaction(tx, cryptoProvider.securityLevel());
+      bundle.addTransaction(tx,
+                            cryptoProvider.securityLevel(input.uuid).value());
     }
     // outputs: withdrawals
     for (const auto& wd : withdrawals) {
@@ -118,17 +120,18 @@ std::tuple<hub::crypto::Hash, std::string> SweepService::createBundle(
 
   bundle.finalize();
 
-  hub::crypto::Hash bundleHash(bundle.getHash());
+  common::crypto::Hash bundleHash(bundle.getHash());
 
   // 5.2 Generate signatures
-  std::unordered_map<hub::crypto::Address, std::string> signaturesForAddress;
+  std::unordered_map<common::crypto::Address, std::string> signaturesForAddress;
+
   for (const auto& in : deposits) {
     signaturesForAddress[in.address] =
-        cryptoProvider.getSignatureForUUID(dbConnection, in.uuid, bundleHash);
+        cryptoProvider.getSignatureForUUID(in.uuid, bundleHash).value();
   }
   for (const auto& in : hubInputs) {
     signaturesForAddress[in.address] =
-        cryptoProvider.getSignatureForUUID(dbConnection, in.uuid, bundleHash);
+        cryptoProvider.getSignatureForUUID(in.uuid, bundleHash).value();
   }
 
   auto it = bundle.getTransactions().begin();
@@ -151,7 +154,7 @@ std::tuple<hub::crypto::Hash, std::string> SweepService::createBundle(
     }
 
     std::string_view signature = signaturesForAddress.at(
-        hub::crypto::Address(tx.getAddress().toTrytes()));
+        common::crypto::Address(tx.getAddress().toTrytes()));
 
     while (!signature.empty()) {
       (*it).setSignatureFragments(
@@ -175,7 +178,7 @@ std::tuple<hub::crypto::Hash, std::string> SweepService::createBundle(
 }
 
 void SweepService::persistToDatabase(
-    std::tuple<hub::crypto::Hash, std::string> bundle,
+    std::tuple<common::crypto::Hash, std::string> bundle,
     const std::vector<db::TransferInput>& deposits,
     const std::vector<db::TransferInput>& hubInputs,
     const std::vector<db::TransferOutput>& withdrawals,

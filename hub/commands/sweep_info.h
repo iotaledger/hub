@@ -10,7 +10,7 @@
 
 #include <string>
 
-#include "hub/commands/command.h"
+#include "common/command.h"
 
 namespace hub {
 namespace rpc {
@@ -23,17 +23,15 @@ namespace cmd {
 /// Gets the history of transactions for a user.
 /// @param[in] hub::rpc::SweepInfoRequest
 /// @param[in] hub::rpc::SweepEvent
-class SweepInfo : public Command<hub::rpc::SweepInfoRequest,
-                                      hub::rpc::SweepEvent> {
+class SweepInfo : public common::Command<hub::rpc::SweepInfoRequest,
+                                              hub::rpc::SweepEvent> {
  public:
-  using Command<hub::rpc::SweepInfoRequest,
-                hub::rpc::SweepEvent>::Command;
+  using Command<hub::rpc::SweepInfoRequest, hub::rpc::SweepEvent>::Command;
 
   const std::string name() override { return "SweepInfo"; }
 
-  grpc::Status doProcess(
-      const hub::rpc::SweepInfoRequest* request,
-      hub::rpc::SweepEvent* response) noexcept override;
+  grpc::Status doProcess(const hub::rpc::SweepInfoRequest* request,
+                         hub::rpc::SweepEvent* response) noexcept override;
 };
 }  // namespace cmd
 }  // namespace hub

@@ -14,11 +14,26 @@ filegroup(
     srcs = ["messages.proto"],
 )
 
+filegroup(
+    name = "signing_server_protos",
+    srcs = ["signing_server_messages.proto"],
+)
+
 cc_proto_library(
-    name = "cpp",
+    name = "hub_cpp",
     protos = [
         "hub.proto",
         ":protos",
+    ],
+    verbose = 0,
+    with_grpc = True,
+)
+
+cc_proto_library(
+    name = "signing_server_cpp",
+    protos = [
+        "signing_server.proto",
+        ":signing_server_protos",
     ],
     verbose = 0,
     with_grpc = True,

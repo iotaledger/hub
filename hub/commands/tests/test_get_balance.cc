@@ -7,9 +7,9 @@
 #include "proto/hub.pb.h"
 #include "schema/schema.h"
 
+#include "common/stats/session.h"
 #include "hub/commands/get_balance.h"
 #include "hub/db/db.h"
-#include "hub/stats/session.h"
 
 #include "runner.h"
 

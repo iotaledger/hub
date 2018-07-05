@@ -10,7 +10,7 @@
 
 #include <string>
 
-#include "hub/commands/command.h"
+#include "common/command.h"
 
 namespace hub {
 namespace rpc {
@@ -23,8 +23,8 @@ namespace cmd {
 /// Gets the current balance for a user with a specific id.
 /// @param[in] hub::rpc::GetBalanceRequest
 /// @param[in] hub::rpc::GetBalanceReply
-class GetBalance
-    : public Command<hub::rpc::GetBalanceRequest, hub::rpc::GetBalanceReply> {
+class GetBalance : public common::Command<hub::rpc::GetBalanceRequest,
+                                               hub::rpc::GetBalanceReply> {
  public:
   using Command<hub::rpc::GetBalanceRequest,
                 hub::rpc::GetBalanceReply>::Command;

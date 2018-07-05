@@ -134,7 +134,7 @@ void AttachmentService::reattachSweep(db::Connection& dbConnection,
 void AttachmentService::promoteSweep(db::Connection& connection,
                                      const iota::POWProvider& powProvider,
                                      const db::Sweep& sweep,
-                                     const hub::crypto::Hash& tailHash) {
+                                     const common::crypto::Hash& tailHash) {
   auto toApprove = _api->getTransactionsToApprove(0, {tailHash.str()});
   auto timestamp = std::chrono::duration_cast<std::chrono::seconds>(
                        std::chrono::system_clock::now().time_since_epoch())
@@ -178,14 +178,13 @@ bool AttachmentService::doTick() {
 
   auto tickStart = std::chrono::system_clock::now();
 
-  auto milestone = _api->getNodeInfo().latestMilestone;
-
   // 1. Get Unconfirmed sweeps from database.
   auto unconfirmedSweeps = connection.getUnconfirmedSweeps(tickStart);
   LOG(INFO) << "Found " << unconfirmedSweeps.size() << " unconfirmed sweeps.";
 
   for (const auto& sweep : unconfirmedSweeps) {
     auto transaction = connection.transaction();
+    auto milestone = _api->getNodeInfo().value().latestMilestone;
 
     try {
       // 2. Get (tails, timestamp) for these sweeps
@@ -233,7 +232,7 @@ bool AttachmentService::doTick() {
             // In this case, we just catch and reattach.
             try {
               promoteSweep(connection, powProvider, sweep,
-                           hub::crypto::Hash((*toPromote).hash));
+                           common::crypto::Hash((*toPromote).hash));
             } catch (const std::exception& ex) {
               LOG(INFO) << "Promotion failed. Reattaching.";
               reattachSweep(connection, powProvider, sweep);

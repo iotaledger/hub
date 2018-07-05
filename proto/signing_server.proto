@@ -1,0 +1,15 @@
+syntax = "proto3";
+
+option java_package = "org.iota.signing_server";
+
+package signing.rpc;
+import "proto/signing_server_messages.proto";
+
+service SigningServer {
+    // Gets the address for the UUID
+    rpc GetAddressForUUID (GetAddressForUUIDRequest) returns (GetAddressForUUIDReply);
+    // Gets the signature for the UUID
+    rpc GetSignatureForUUID (GetSignatureForUUIDRequest) returns (GetSignatureForUUIDReply);
+    // Gets the security level of the provider
+    rpc GetSecurityLevel (GetSecurityLevelRequest) returns (GetSecurityLevelReply);
+}

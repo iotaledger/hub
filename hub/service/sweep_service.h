@@ -13,7 +13,7 @@
 #include <tuple>
 #include <vector>
 
-#include "hub/crypto/types.h"
+#include "common/crypto/types.h"
 #include "hub/db/types.h"
 #include "hub/service/scheduled_service.h"
 
@@ -57,7 +57,7 @@ class SweepService : public ScheduledService {
   /// @return a std::tuple containing
   /// - the bundle hash
   /// - the serialized bundle
-  std::tuple<hub::crypto::Hash, std::string> createBundle(
+  std::tuple<common::crypto::Hash, std::string> createBundle(
       const std::vector<db::TransferInput>& deposits,
       const std::vector<db::TransferInput>& hubInputs,
       const std::vector<db::TransferOutput>& withdrawals,
@@ -71,7 +71,7 @@ class SweepService : public ScheduledService {
   /// @param[in] withdrawals - a list of withdrawal transactions
   /// @param[in] hubOutput - the hub address into which the remainder is
   /// deposited
-  void persistToDatabase(std::tuple<hub::crypto::Hash, std::string> bundle,
+  void persistToDatabase(std::tuple<common::crypto::Hash, std::string> bundle,
                          const std::vector<db::TransferInput>& deposits,
                          const std::vector<db::TransferInput>& hubInputs,
                          const std::vector<db::TransferOutput>& withdrawals,

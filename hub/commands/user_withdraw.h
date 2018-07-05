@@ -5,13 +5,12 @@
  * Refer to the LICENSE file for licensing information
  */
 
-
 #ifndef HUB_COMMANDS_USER_WITHDRAW_H_
 #define HUB_COMMANDS_USER_WITHDRAW_H_
 
 #include <string>
 
-#include "hub/commands/command.h"
+#include "common/command.h"
 
 namespace hub {
 namespace rpc {
@@ -24,8 +23,8 @@ namespace cmd {
 /// Process a withdrawal command for a user.
 /// @param[in] hub::rpc::UserWithdrawRequest
 /// @param[in] hub::rpc::UserWithdrawReply
-class UserWithdraw : public Command<hub::rpc::UserWithdrawRequest,
-                                    hub::rpc::UserWithdrawReply> {
+class UserWithdraw : public common::Command<hub::rpc::UserWithdrawRequest,
+                                                 hub::rpc::UserWithdrawReply> {
  public:
   using Command<hub::rpc::UserWithdrawRequest,
                 hub::rpc::UserWithdrawReply>::Command;
