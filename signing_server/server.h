@@ -1,6 +1,6 @@
 /*
  * Copyright (c) 2018 IOTA Stiftung
- * https://gitcommon.com/iotaledger/rpccommon
+ * https://github.com/iotaledger/rpchub
  *
  * Refer to the LICENSE file for licensing information
  */
@@ -38,6 +38,6 @@ class SigningServer : public common::ServerBase {
 };
 }  // namespace crypto
 
-}  // namespace signing
+}  // namespace crypto
 
 #endif  // SIGNING_SERVER_SERVER_H_

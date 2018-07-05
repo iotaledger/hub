@@ -26,9 +26,9 @@
 
 - ./bazel-bin/hub/hub --salt yoursaltcharachters --apiAddress your_iri_node_uri --db db_name --dbUser your_user --dbPassword user_password --monitorInterval xxx --attachmentInterval yyy --sweepInterval zzz
 - For detailed explanation about program arguments, see README
-- For runing the hub with remote salt provider (--signingMode=remote) run the signing_provider first
+- For running the hub with remote salt provider (--signingMode=remote) run the signing_provider first
 
-## Runing the signing_server
+## Running the signing_server
 - ./bazel-bin/signing_server/signing_server --salt abcdefghijklmnopqrstuvwxyz --authMode=ssl  -sslKey docs/ssl/server.key -sslCert docs/ssl/server.crt -sslCA docs/ssl/ca.crt --listenAddress=localhost:50052
 
 ### Run via Docker

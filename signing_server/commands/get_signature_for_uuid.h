@@ -1,6 +1,6 @@
 /*
  * Copyright (c) 2018 IOTA Stiftung
- * https://gitcommon.com/iotaledger/rpccommon
+ * https://github.com/iotaledger/rpchub
  *
  * Refer to the LICENSE file for licensing information
  */
@@ -24,10 +24,10 @@ namespace cmd {
 /// @param[in] common::rpc::GetSignatureForUUIDRequest
 /// @param[in] common::rpc::GetSignatureForUUIDReply
 class GetSignatureForUUID
-    : public common::cmd::Command<signing::rpc::GetSignatureForUUIDRequest,
+    : public common::Command<signing::rpc::GetSignatureForUUIDRequest,
                                   signing::rpc::GetSignatureForUUIDReply> {
  public:
-  using common::cmd::Command<signing::rpc::GetSignatureForUUIDRequest,
+  using common::Command<signing::rpc::GetSignatureForUUIDRequest,
                              signing::rpc::GetSignatureForUUIDReply>::Command;
 
   const std::string name() override { return "GetSignatureForUUID"; }
@@ -37,6 +37,6 @@ class GetSignatureForUUID
       signing::rpc::GetSignatureForUUIDReply* response) noexcept override;
 };
 }  // namespace cmd
-}  // namespace signing
+}  // namespace crypto
 
 #endif  // SIGNING_SERVER_COMMANDS_GET_SIGNATURE_FOR_UUID_H_

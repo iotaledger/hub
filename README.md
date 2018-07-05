@@ -32,16 +32,10 @@
   
     -salt (Salt for local seed provider) type: string default: "" 
     -listenAddress (address to listen on) type: string default: "0.0.0.0:50051"
-    
-     SSL server configuration - read more in docs/secure_server 
-     
     -authMode ("credentials to use. can be {none, ssl}") type: string default: "none"
     -sslKey docs/ssl/server.key (path to SSL certificate key) type: string default: "/dev/null"
     -sslCert docs/ssl/server.crt (path to SSL certificate) type: string default: "/dev/null"
     -sslCA docs/ssl/ca.crt (Path to CA root) type: string default: "/dev/null"
-    
-    Argon2 Parameters for address/hash/signatures generation
-    
     -maxConcurrentArgon2Hash (Max number of concurrent Argon2 Hash processes) type: int default: 4
     -argon2TCost (Time cost of Argon2) type: int default: 4
     -argon2MCost (Memory cost of Argon2 in bytes) type: int default: 1 << 17
@@ -73,22 +67,15 @@
     -monitorInterval (Address monitor check interval [ms]) type: uint32
       default: 60000
     -sweepInterval (Sweep interval [ms]) type: uint32 default: 600000
-    
-    HMAC authentication for "SignBundle" call
     -hmacKeyPath (path to key used for HMAC encyption) type: string default: "/dev/null"   
     -authProvider (provider to use. can be {none, hmac}) type: string default: "none"
-    
-    Remote/Local signing provider
-    
     -signingMode (signing method to use {local,remote}) type: string default: "local"   
     -signingProviderAddress (crypto provider address, should be provided if signingMode=remote) 
     type: string default: "0.0.0.0:50052"
-    
-    Credentials for signing_server if signingMode=remote
     -signingAuthMode (credentials to use. can be {none, ssl}) type: string default: "none"   
-    -providerSslCert (Path to SSL certificate (ca.cert)) type: string default: "/dev/null"   
-    -providerChainCert (Path to SSL certificate chain (server.crt)) type: string default: "/dev/null"   
-    -providerKeyCert (Path to SSL certificate key) type: string default: "/dev/null"   
+    -signingServerSslCert (Path to SSL certificate (ca.cert)) type: string default: "/dev/null"   
+    -signingServerChainCert (Path to SSL certificate chain (server.crt)) type: string default: "/dev/null"   
+    -signingServerKeyCert (Path to SSL certificate key) type: string default: "/dev/null"   
 
   Flags from hub/service/sweep_service.cc:
     -sweep_max_deposit (Maximum number of user deposits to process per sweep.)

@@ -23,7 +23,7 @@ namespace cmd {
 /// Process a withdrawal command for a user.
 /// @param[in] hub::rpc::UserWithdrawRequest
 /// @param[in] hub::rpc::UserWithdrawReply
-class UserWithdraw : public common::cmd::Command<hub::rpc::UserWithdrawRequest,
+class UserWithdraw : public common::Command<hub::rpc::UserWithdrawRequest,
                                                  hub::rpc::UserWithdrawReply> {
  public:
   using Command<hub::rpc::UserWithdrawRequest,

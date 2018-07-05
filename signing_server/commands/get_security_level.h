@@ -1,6 +1,6 @@
 /*
  * Copyright (c) 2018 IOTA Stiftung
- * https://gitcommon.com/iotaledger/rpccommon
+ * https://github.com/iotaledger/rpchub
  *
  * Refer to the LICENSE file for licensing information
  */
@@ -24,10 +24,10 @@ namespace cmd {
 /// @param[in] common::rpc::GetSignatureForUUIDRequest
 /// @param[in] common::rpc::GetSignatureForUUIDReply
 class GetSecurityLevel
-    : public common::cmd::Command<signing::rpc::GetSecurityLevelRequest,
+    : public common::Command<signing::rpc::GetSecurityLevelRequest,
                                   signing::rpc::GetSecurityLevelReply> {
  public:
-  using common::cmd::Command<signing::rpc::GetSecurityLevelRequest,
+  using common::Command<signing::rpc::GetSecurityLevelRequest,
                              signing::rpc::GetSecurityLevelReply>::Command;
 
   const std::string name() override { return "GetSecurityLevel"; }
@@ -37,6 +37,6 @@ class GetSecurityLevel
       signing::rpc::GetSecurityLevelReply* response) noexcept override;
 };
 }  // namespace cmd
-}  // namespace signing
+}  // namespace crypto
 
 #endif  // SIGNING_SERVER_COMMANDS_GET_SECURITY_LEVEL_H_

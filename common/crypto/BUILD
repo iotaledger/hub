@@ -10,11 +10,20 @@ cc_library(
     ],
     visibility = ["//visibility:public"],
     deps = [
-        "//common/types",
+        ":types",
         "//proto:signing_server_cpp",
         "@optional_lite",
         "@org_iota_entangled//common/helpers:checksum",
     ],
+)
+
+cc_library(
+    name = "types",
+    srcs = ["types.cc"],
+    hdrs = [
+        "types.h",
+    ],
+    visibility = ["//visibility:public"],
 )
 
 cc_library(

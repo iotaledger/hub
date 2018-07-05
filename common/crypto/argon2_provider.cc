@@ -1,6 +1,6 @@
 /*
  * Copyright (c) 2018 IOTA Stiftung
- * https://gitcommon.com/iotaledger/rpccommon
+ * https://gitcommon.com/iotaledger/rpchub
  *
  * Refer to the LICENSE file for licensing information
  */
@@ -30,7 +30,7 @@
 #include "common/sign/v1/iss_kerl.h"
 #include "common/trinary/trits.h"
 #include "common/trinary/tryte.h"
-#include "common/types/types.h"
+#include "common/crypto/types.h"
 
 // FIXME (th0br0) fix up entangled
 extern "C" {

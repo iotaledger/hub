@@ -26,7 +26,7 @@
 
 #include "common/crypto/manager.h"
 #include "common/crypto/provider_base.h"
-#include "common/types/types.h"
+#include "common/crypto/types.h"
 #include "hub/db/db.h"
 #include "hub/db/helper.h"
 

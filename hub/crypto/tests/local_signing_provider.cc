@@ -6,7 +6,7 @@
 #include <string>
 
 #include "common/crypto/argon2_provider.h"
-#include "common/types/types.h"
+#include "common/crypto/types.h"
 #include "hub/crypto/local_provider.h"
 #include "hub/tests/runner.h"
 

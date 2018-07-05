@@ -23,7 +23,7 @@ namespace cmd {
 /// Gets information on an address
 /// @param[in] hub::rpc::SignBundleRequest
 /// @param[in] hub::rpc::SignBundleReply
-class SignBundle : public common::cmd::Command<hub::rpc::SignBundleRequest,
+class SignBundle : public common::Command<hub::rpc::SignBundleRequest,
                                                hub::rpc::SignBundleReply> {
  public:
   using Command<hub::rpc::SignBundleRequest,

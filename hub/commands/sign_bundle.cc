@@ -14,7 +14,7 @@
 
 #include "common/crypto/manager.h"
 #include "common/stats/session.h"
-#include "common/types/types.h"
+#include "common/crypto/types.h"
 #include "hub/auth/hmac_provider.h"
 #include "hub/auth/manager.h"
 #include "hub/commands/helper.h"
@@ -78,7 +78,7 @@ grpc::Status SignBundle::doProcess(
         maybeAddressInfo->uuid, bundleHash);
     if (!maybeSig.has_value()) {
       return grpc::Status(
-          grpc::StatusCode::UNAVAILABLE, "",
+          grpc::StatusCode::UNKNOWN, "",
           errorToString(hub::rpc::ErrorCode::RPC_CALL_SIGNING_SERVER_FAILED));
     }
     response->set_signature(maybeSig.value());

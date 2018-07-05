@@ -25,7 +25,7 @@ namespace cmd {
 /// @param[in] hub::rpc::ProcessTransferBatchRequest
 /// @param[in] hub::rpc::ProcessTransferBatchReply
 class ProcessTransferBatch
-    : public common::cmd::Command<hub::rpc::ProcessTransferBatchRequest,
+    : public common::Command<hub::rpc::ProcessTransferBatchRequest,
                                   hub::rpc::ProcessTransferBatchReply> {
  public:
   using Command<hub::rpc::ProcessTransferBatchRequest,

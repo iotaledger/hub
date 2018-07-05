@@ -20,7 +20,7 @@
 #include <utility>
 #include <vector>
 
-#include "common/types/types.h"
+#include "common/crypto/types.h"
 #include "hub/db/db.h"
 #include "hub/db/helper.h"
 #include "hub/db/types.h"

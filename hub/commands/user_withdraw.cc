@@ -22,7 +22,7 @@
 #include "schema/schema.h"
 
 #include "common/crypto/manager.h"
-#include "common/types/types.h"
+#include "common/crypto/types.h"
 #include "hub/commands/helper.h"
 
 namespace hub {

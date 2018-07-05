@@ -23,7 +23,7 @@ namespace cmd {
 /// Creates a new user with a specific id.
 /// @param[in] hub::rpc::CreateUserRequest
 /// @param[in] hub::rpc::CreateUserReply
-class CreateUser : public common::cmd::Command<hub::rpc::CreateUserRequest,
+class CreateUser : public common::Command<hub::rpc::CreateUserRequest,
                                                hub::rpc::CreateUserReply> {
  public:
   using Command<hub::rpc::CreateUserRequest,

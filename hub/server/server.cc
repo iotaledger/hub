@@ -20,14 +20,14 @@
 #include "hub/auth/dummy_provider.h"
 #include "hub/auth/hmac_provider.h"
 #include "hub/auth/manager.h"
-#include "hub/crypto/remote_signing_provider.h"
-#include "hub/crypto/local_provider.h"
 #include "hub/db/db.h"
 #include "hub/db/helper.h"
 #include "hub/iota/pow.h"
 #include "hub/iota/remote_pow.h"
 #include "hub/service/sweep_service.h"
 #include "hub/service/user_address_monitor.h"
+#include "hub/crypto/local_provider.h"
+#include "hub/crypto/remote_signing_provider.h"
 
 DEFINE_string(apiAddress, "127.0.0.1:14265",
               "IRI node api to listen on. Format [host:port]");
@@ -45,7 +45,7 @@ DEFINE_string(hmacKeyPath, "/dev/null", "path to key used for HMAC encyption");
 DEFINE_string(authProvider, "none", "provider to use. can be {none, hmac}");
 
 // remote crypto provider settings
-DEFINE_string(signingMode, "local", "signing method to use {local,remote}");
+DEFINE_string(signingMode, "local", "crypto method to use {local,remote}");
 DEFINE_string(
     signingProviderAddress, "0.0.0.0:50052",
     "crypto provider address, should be provided if signingMode=remote");
@@ -53,11 +53,11 @@ DEFINE_string(
 DEFINE_string(signingAuthMode, "none",
               "credentials to use. can be {none, ssl}");
 // The following credentials components has to match those of the SigningServer
-DEFINE_string(providerSslCert, "/dev/null",
+DEFINE_string(signingServerSslCert, "/dev/null",
               "Path to SSL certificate (ca.cert)");
-DEFINE_string(providerChainCert, "/dev/null",
+DEFINE_string(signingServerChainCert, "/dev/null",
               "Path to SSL certificate chain (server.crt)");
-DEFINE_string(providerKeyCert, "/dev/null",
+DEFINE_string(signingServerKeyCert, "/dev/null",
               "Path to SSL certificate key (server.key)");
 
 using grpc::Server;
@@ -71,8 +71,8 @@ void HubServer::initialise() {
     common::crypto::CryptoManager::get().setProvider(
         std::make_unique<crypto::RemoteSigningProvider>(
             FLAGS_signingProviderAddress, FLAGS_signingAuthMode,
-            FLAGS_providerSslCert, FLAGS_providerChainCert,
-            FLAGS_providerKeyCert));
+            FLAGS_signingServerSslCert, FLAGS_signingServerChainCert,
+            FLAGS_signingServerKeyCert));
   } else if (FLAGS_signingMode == "local") {
     if (common::flags::FLAGS_salt.size() <= 20) {
       LOG(FATAL) << "Salt must be more than 20 characters long.";
@@ -90,8 +90,13 @@ void HubServer::initialise() {
   db::DBManager::get().loadConnectionConfigFromArgs();
 
   if (!authenticateSalt()) {
-    LOG(FATAL) << "The provided salt or provider parameters are not valid for "
-                  "this database. Did you mistype?";
+    if (FLAGS_signingMode == "remote") {
+      LOG(FATAL) << "The remote crypto server could not be authenticated";
+    } else {
+      LOG(FATAL)
+          << "The provided salt or provider parameters are not valid for "
+             "this database. Did you mistype?";
+    }
   }
 
   {

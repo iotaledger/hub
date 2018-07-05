@@ -6,7 +6,7 @@
 #include <sqlpp11/select.h>
 
 #include "common/stats/session.h"
-#include "common/types/types.h"
+#include "common/crypto/types.h"
 #include "hub/commands/get_address_info.h"
 #include "hub/commands/get_deposit_address.h"
 #include "hub/db/db.h"

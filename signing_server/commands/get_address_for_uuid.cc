@@ -4,7 +4,7 @@
 #include "proto/signing_server.pb.h"
 #include "proto/signing_server_messages.pb.h"
 
-#include "common/types/types.h"
+#include "common/crypto/types.h"
 #include "proto/messages.pb.h"
 #include "signing_server/commands/helper.h"
 
@@ -35,4 +35,4 @@ grpc::Status GetAddressForUUID::doProcess(
 
 }  // namespace cmd
 
-}  // namespace signing
+}  // namespace crypto

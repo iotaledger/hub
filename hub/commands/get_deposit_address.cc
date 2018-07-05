@@ -12,7 +12,7 @@
 
 #include "common/crypto/manager.h"
 #include "common/stats/session.h"
-#include "common/types/types.h"
+#include "common/crypto/types.h"
 #include "hub/commands/helper.h"
 #include "hub/db/db.h"
 #include "hub/db/helper.h"

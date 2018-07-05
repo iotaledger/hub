@@ -1,6 +1,6 @@
 /*
  * Copyright (c) 2018 IOTA Stiftung
- * https://gitcommon.com/iotaledger/rpccommon
+ * https://gitcommon.com/iotaledger/rpchub
  *
  * Refer to the LICENSE file for licensing information
  */
@@ -14,7 +14,7 @@
 
 #include <glog/logging.h>
 
-#include "common/types/types.h"
+#include "common/crypto/types.h"
 
 namespace common {
 class ClientSession {

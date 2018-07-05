@@ -5,7 +5,7 @@
 #include <stdexcept>
 #include <string>
 
-#include "common/types/types.h"
+#include "common/crypto/types.h"
 
 namespace {
 

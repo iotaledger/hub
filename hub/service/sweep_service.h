@@ -13,7 +13,7 @@
 #include <tuple>
 #include <vector>
 
-#include "common/types/types.h"
+#include "common/crypto/types.h"
 #include "hub/db/types.h"
 #include "hub/service/scheduled_service.h"
 

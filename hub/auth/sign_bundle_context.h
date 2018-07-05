@@ -10,7 +10,7 @@
 
 #include <string>
 
-#include "common/types/types.h"
+#include "common/crypto/types.h"
 #include "hub/auth/provider.h"
 
 namespace hub {

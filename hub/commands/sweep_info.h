@@ -23,7 +23,7 @@ namespace cmd {
 /// Gets the history of transactions for a user.
 /// @param[in] hub::rpc::SweepInfoRequest
 /// @param[in] hub::rpc::SweepEvent
-class SweepInfo : public common::cmd::Command<hub::rpc::SweepInfoRequest,
+class SweepInfo : public common::Command<hub::rpc::SweepInfoRequest,
                                               hub::rpc::SweepEvent> {
  public:
   using Command<hub::rpc::SweepInfoRequest, hub::rpc::SweepEvent>::Command;

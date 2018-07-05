@@ -4,7 +4,7 @@
 #include "proto/signing_server.pb.h"
 #include "proto/signing_server_messages.pb.h"
 
-#include "common/types/types.h"
+#include "common/crypto/types.h"
 
 namespace signing {
 namespace cmd {
@@ -31,4 +31,4 @@ grpc::Status GetSecurityLevel::doProcess(
 
 }  // namespace cmd
 
-}  // namespace signing
+}  // namespace crypto

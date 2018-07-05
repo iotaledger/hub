@@ -13,6 +13,8 @@
 #include <nonstd/optional.hpp>
 #include "common/crypto/provider_base.h"
 
+#include "hub/db/db.h"
+
 #include "proto/signing_server.grpc.pb.h"
 #include "proto/signing_server.pb.h"
 
@@ -41,7 +43,12 @@ class RemoteSigningProvider : public common::crypto::CryptoProviderBase {
 
   nonstd::optional<std::string> getSignatureForUUID(
       const common::crypto::UUID& uuid,
-      const common::crypto::Hash& bundleHash) const override;
+      const common::crypto::Hash& bundleHash) const override {
+    auto& connection = hub::db::DBManager::get().connection();
+    connection.markUUIDAsSigned(uuid);
+
+    return doGetSignatureForUUID(uuid, bundleHash);
+  }
 
  protected:
   /// Calculate the signature for a UUID and a bundle hash

@@ -29,7 +29,7 @@ namespace cmd {
 /// Collects records about balance actions to and from user addresses
 /// and hub's addresses as well (Depsoits/Withdrawals/Hub address actions)
 class BalanceSubscription
-    : public common::cmd::Command<
+    : public common::Command<
           hub::rpc::BalanceSubscriptionRequest,
           grpc::ServerWriterInterface<hub::rpc::BalanceEvent>> {
  public:

@@ -14,7 +14,7 @@
 #include <tuple>
 #include <vector>
 
-#include "common/types/types.h"
+#include "common/crypto/types.h"
 
 namespace hub {
 namespace db {

@@ -12,7 +12,7 @@
 #include <utility>
 
 #include "common/stats/session.h"
-#include "common/types/types.h"
+#include "common/crypto/types.h"
 #include "hub/commands/helper.h"
 #include "hub/db/connection.h"
 #include "hub/db/types.h"

@@ -40,4 +40,4 @@ void SigningServer::initialise() {
 }
 
 }  // namespace crypto
-}  // namespace signing
+}  // namespace crypto

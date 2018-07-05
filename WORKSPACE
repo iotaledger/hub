@@ -75,11 +75,11 @@ git_repository(
     remote = "https://github.com/iotaledger/rules_iota.git",
 )
 
-git_repository(
+http_archive(
     name = "org_iota_entangled",
-    commit = "4163335ed2fe3a43bfa996b90cd86ce6550cf760",
-    remote =
-        "https://github.com/iotaledger/entangled.git",
+    strip_prefix = "entangled-develop",
+    url =
+        "https://github.com/iotaledger/entangled/archive/develop.zip",
 )
 
 new_git_repository(

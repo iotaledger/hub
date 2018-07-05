@@ -20,7 +20,7 @@ class SweepEvent;
 namespace cmd {
 
 class SweepSubscription
-    : public common::cmd::Command<
+    : public common::Command<
           hub::rpc::SweepSubscriptionRequest,
           grpc::ServerWriterInterface<hub::rpc::SweepEvent>> {
  public:

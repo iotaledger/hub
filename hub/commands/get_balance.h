@@ -23,7 +23,7 @@ namespace cmd {
 /// Gets the current balance for a user with a specific id.
 /// @param[in] hub::rpc::GetBalanceRequest
 /// @param[in] hub::rpc::GetBalanceReply
-class GetBalance : public common::cmd::Command<hub::rpc::GetBalanceRequest,
+class GetBalance : public common::Command<hub::rpc::GetBalanceRequest,
                                                hub::rpc::GetBalanceReply> {
  public:
   using Command<hub::rpc::GetBalanceRequest,

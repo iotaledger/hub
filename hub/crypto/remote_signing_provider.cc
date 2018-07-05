@@ -17,7 +17,6 @@
 #include <grpcpp/security/credentials.h>
 
 #include "common/common.h"
-#include "hub/db/db.h"
 
 using grpc::Channel;
 using grpc::ClientContext;
@@ -65,7 +64,7 @@ RemoteSigningProvider::getAddressForUUID(
 
   Status status = _stub->GetAddressForUUID(&context, request, &response);
   if (!status.ok()) {
-    std::cout << "getAddressForUUID rpc failed:" << status.error_message();
+    std::cout << "GetAddressForUUID rpc failed:" << status.error_message();
     return {};
   }
   return {common::crypto::Address(response.address())};
@@ -86,15 +85,6 @@ nonstd::optional<size_t> RemoteSigningProvider::securityLevel(
     return {};
   }
   return {response.securitylevel()};
-}
-
-nonstd::optional<std::string> RemoteSigningProvider::getSignatureForUUID(
-    const common::crypto::UUID& uuid,
-    const common::crypto::Hash& bundleHash) const {
-  auto& connection = hub::db::DBManager::get().connection();
-  connection.markUUIDAsSigned(uuid);
-
-  return doGetSignatureForUUID(uuid, bundleHash);
 }
 
 /// Calculate the signature for a UUID and a bundle hash

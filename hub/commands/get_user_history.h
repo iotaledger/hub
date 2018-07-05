@@ -24,7 +24,7 @@ namespace cmd {
 /// @param[in] hub::rpc::GetUserHistoryRequest
 /// @param[in] hub::rpc::GetUserHistoryReply
 class GetUserHistory
-    : public common::cmd::Command<hub::rpc::GetUserHistoryRequest,
+    : public common::Command<hub::rpc::GetUserHistoryRequest,
                                   hub::rpc::GetUserHistoryReply> {
  public:
   using Command<hub::rpc::GetUserHistoryRequest,

@@ -1,6 +1,6 @@
 /*
  * Copyright (c) 2018 IOTA Stiftung
- * https://gitcommon.com/iotaledger/rpccommon
+ * https://gitcommon.com/iotaledger/rpchub
  *
  * Refer to the LICENSE file for licensing information
  */
@@ -20,7 +20,6 @@
 namespace common {
 class ClientSession;
 
-namespace cmd {
 
 template <typename REQ, typename RES>
 /// Command abstract class template. This is the base class for all
@@ -63,7 +62,6 @@ class Command {
   const std::shared_ptr<ClientSession> _clientSession;
 };
 
-}  // namespace cmd
 }  // namespace common
 
 #endif  // COMMON_COMMANDS_COMMAND_H_

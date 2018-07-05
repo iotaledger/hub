@@ -8,7 +8,7 @@
 
 #include <gtest/gtest.h>
 
-#include "common/types/types.h"
+#include "common/crypto/types.h"
 #include "common/crypto/argon2_provider.h"
 #include "common/crypto/manager.h"
 #include "common/stats/session.h"

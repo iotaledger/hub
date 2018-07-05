@@ -1,6 +1,6 @@
 /*
  * Copyright (c) 2018 IOTA Stiftung
- * https://gitcommon.com/iotaledger/rpccommon
+ * https://github.com/iotaledger/rpchub
  *
  * Refer to the LICENSE file for licensing information
  */
@@ -24,10 +24,10 @@ namespace cmd {
 /// @param[in] common::rpc::GetAddressForUUIDRequest
 /// @param[in] common::rpc::GetAddressForUUIDReply
 class GetAddressForUUID
-    : public common::cmd::Command<signing::rpc::GetAddressForUUIDRequest,
+    : public common::Command<signing::rpc::GetAddressForUUIDRequest,
                                   signing::rpc::GetAddressForUUIDReply> {
  public:
-  using common::cmd::Command<signing::rpc::GetAddressForUUIDRequest,
+  using common::Command<signing::rpc::GetAddressForUUIDRequest,
                              signing::rpc::GetAddressForUUIDReply>::Command;
 
   const std::string name() override { return "GetAddressForUUID"; }
@@ -37,6 +37,6 @@ class GetAddressForUUID
       signing::rpc::GetAddressForUUIDReply* response) noexcept override;
 };
 }  // namespace cmd
-}  // namespace signing
+}  // namespace crypto
 
 #endif  // SIGNING_SERVER_COMMANDS_GET_ADDRESS_FOR_UUID_H_

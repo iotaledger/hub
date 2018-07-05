@@ -6,8 +6,8 @@ cc_library(
     ]),
     visibility = ["//visibility:public"],
     deps = [
+        "//common/crypto:types",
         "//common/stats",
-        "//common/types",
         "//proto:hub_cpp",
         "@com_github_gflags_gflags//:gflags",
         "@com_github_google_glog//:glog",
