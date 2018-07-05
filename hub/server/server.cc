@@ -49,9 +49,6 @@ DEFINE_string(signingMode, "local", "crypto method to use {local,remote}");
 DEFINE_string(
     signingProviderAddress, "0.0.0.0:50052",
     "crypto provider address, should be provided if signingMode=remote");
-// remote signing_server credentials
-DEFINE_string(signingAuthMode, "none",
-              "credentials to use. can be {none, ssl}");
 // The following credentials components has to match those of the SigningServer
 DEFINE_string(signingServerSslCert, "/dev/null",
               "Path to SSL certificate (ca.cert)");
@@ -70,7 +67,7 @@ void HubServer::initialise() {
   if (FLAGS_signingMode == "remote") {
     common::crypto::CryptoManager::get().setProvider(
         std::make_unique<crypto::RemoteSigningProvider>(
-            FLAGS_signingProviderAddress, FLAGS_signingAuthMode,
+            FLAGS_signingProviderAddress,
             FLAGS_signingServerSslCert, FLAGS_signingServerChainCert,
             FLAGS_signingServerKeyCert));
   } else if (FLAGS_signingMode == "local") {

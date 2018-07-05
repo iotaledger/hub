@@ -29,6 +29,10 @@ void SigningServer::initialise() {
 
   ServerBuilder builder;
 
+  if (common::flags::FLAGS_authMode != "ssl"){
+    LOG(FATAL)<<"Remote signing_server should run only with credentials.";
+  }
+
   builder.AddListeningPort(common::flags::FLAGS_listenAddress,
                            makeCredentials(common::flags::FLAGS_authMode, common::flags::FLAGS_sslCert,
                                            common::flags::FLAGS_sslKey, common::flags::FLAGS_sslCA));

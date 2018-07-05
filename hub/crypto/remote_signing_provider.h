@@ -26,7 +26,6 @@ class RemoteSigningProvider : public common::crypto::CryptoProviderBase {
   /// Constructor
   /// param[in] url - the url for the grpc service
   explicit RemoteSigningProvider(const std::string& url,
-                                 const std::string& authMode,
                                  const std::string& certPath,
                                  const std::string& chainPath,
                                  const std::string& keyPath);

@@ -26,15 +26,9 @@ namespace hub {
 namespace crypto {
 
 RemoteSigningProvider::RemoteSigningProvider(const std::string& url,
-                                             const std::string& authMode,
                                              const std::string& certPath,
                                              const std::string& chainPath,
                                              const std::string& keyPath) {
-  if (authMode == "none") {
-    auto channelSharedPtr =
-        grpc::CreateChannel(url, std::move(grpc::InsecureChannelCredentials()));
-    _stub = signing::rpc::SigningServer::NewStub(std::move(channelSharedPtr));
-  } else if (authMode == "ssl") {
     std::string cert = common::readFile(certPath);
     std::string chain = common::readFile(chainPath);
     std::string key = common::readFile(keyPath);
@@ -47,9 +41,6 @@ RemoteSigningProvider::RemoteSigningProvider(const std::string& url,
 
     auto channelSharedPtr = grpc::CreateChannel(url, credentials);
     _stub = signing::rpc::SigningServer::NewStub(channelSharedPtr);
-  } else {
-    LOG(FATAL) << "Unknown auth mode: " << authMode;
-  }
 }
 
 /// Get a new address for a given UUID and the salt

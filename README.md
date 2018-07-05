@@ -72,7 +72,6 @@
     -signingMode (signing method to use {local,remote}) type: string default: "local"   
     -signingProviderAddress (crypto provider address, should be provided if signingMode=remote) 
     type: string default: "0.0.0.0:50052"
-    -signingAuthMode (credentials to use. can be {none, ssl}) type: string default: "none"   
     -signingServerSslCert (Path to SSL certificate (ca.cert)) type: string default: "/dev/null"   
     -signingServerChainCert (Path to SSL certificate chain (server.crt)) type: string default: "/dev/null"   
     -signingServerKeyCert (Path to SSL certificate key) type: string default: "/dev/null"   
