@@ -8,9 +8,15 @@
 
 - In case user sent tokens to a deposit address that has been swept, we offer a mechanism to recover the funds (see docs/hip/001-get_address_secret.md)
 
-## Building
+## Building the hub
 
-- see README file
+- bazel run -c opt //hub:hub -- <parameters>
+- bazel build //hub:hub
+
+## Building signing_server (for remote signing_server)
+
+- bazel run -c opt //signing_server:signing_server -- <parameters>
+- bazel build //signing_server:signing_server
 
 ## Setup the database (this example is using MariaDB)
 

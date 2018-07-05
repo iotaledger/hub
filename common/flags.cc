@@ -2,12 +2,9 @@
 
 namespace common {
 namespace flags {
-DEFINE_string(salt, "",
-              "Salt for argon2 seed provider, should be provider here only if "
-              "remoteCryptoProvider = false");
 
+DEFINE_string(salt, "", "Salt for local seed provider");
 DEFINE_string(listenAddress, "0.0.0.0:50051", "address to listen on");
-
 // Server side credentials
 DEFINE_string(sslCert, "/dev/null", "Path to SSL certificate");
 DEFINE_string(sslKey, "/dev/null", "Path to SSL certificate key");
