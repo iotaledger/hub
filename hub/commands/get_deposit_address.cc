@@ -48,7 +48,7 @@ grpc::Status GetDepositAddress::doProcess(
     LOG(ERROR) << session() << " Failed in getAddressForUUID from provider.";
     return grpc::Status(
         grpc::StatusCode::UNAVAILABLE, "",
-        errorToString(hub::rpc::ErrorCode::RPC_CALL_SIGNING_SERVER_FAILED));
+        errorToString(hub::rpc::ErrorCode::GET_ADDRESS_FAILED));
   }
   auto address = maybeAddress.value();
   if (request->includechecksum()) {

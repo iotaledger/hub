@@ -20,14 +20,14 @@
 #include "hub/auth/dummy_provider.h"
 #include "hub/auth/hmac_provider.h"
 #include "hub/auth/manager.h"
+#include "hub/crypto/local_provider.h"
+#include "hub/crypto/remote_signing_provider.h"
 #include "hub/db/db.h"
 #include "hub/db/helper.h"
 #include "hub/iota/pow.h"
 #include "hub/iota/remote_pow.h"
 #include "hub/service/sweep_service.h"
 #include "hub/service/user_address_monitor.h"
-#include "hub/crypto/local_provider.h"
-#include "hub/crypto/remote_signing_provider.h"
 
 DEFINE_string(apiAddress, "127.0.0.1:14265",
               "IRI node api to listen on. Format [host:port]");
@@ -67,9 +67,8 @@ void HubServer::initialise() {
   if (FLAGS_signingMode == "remote") {
     common::crypto::CryptoManager::get().setProvider(
         std::make_unique<crypto::RemoteSigningProvider>(
-            FLAGS_signingProviderAddress,
-            FLAGS_signingServerSslCert, FLAGS_signingServerChainCert,
-            FLAGS_signingServerKeyCert));
+            FLAGS_signingProviderAddress, FLAGS_signingServerSslCert,
+            FLAGS_signingServerChainCert, FLAGS_signingServerKeyCert));
   } else if (FLAGS_signingMode == "local") {
     if (common::flags::FLAGS_salt.size() <= 20) {
       LOG(FATAL) << "Salt must be more than 20 characters long.";

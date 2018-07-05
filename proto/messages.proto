@@ -36,8 +36,12 @@ enum ErrorCode {
   INVALID_AUTHENTICATION = 10;
   //Provided address contained invalid checksum
   CHECKSUM_INVALID = 11;
-  //Call to rpc signing_server failed
-  RPC_CALL_SIGNING_SERVER_FAILED = 12;
+  //Call to rpc signing_server failed (GetSignatureForUUID)
+  SIGNING_FAILED = 12;
+  //Call to rpc signing_server failed (GetAddressForUUID)
+  GET_ADDRESS_FAILED = 13;
+  //Call to rpc signing_server failed (GetSecurityLevel)
+  GET_SECURITY_LEVEL_FAILED = 14;
 }
 
 /*

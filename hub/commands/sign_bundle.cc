@@ -78,8 +78,8 @@ grpc::Status SignBundle::doProcess(
         maybeAddressInfo->uuid, bundleHash);
     if (!maybeSig.has_value()) {
       return grpc::Status(
-          grpc::StatusCode::UNKNOWN, "",
-          errorToString(hub::rpc::ErrorCode::RPC_CALL_SIGNING_SERVER_FAILED));
+          grpc::StatusCode::UNAVAILABLE, "",
+          errorToString(hub::rpc::ErrorCode::SIGNING_FAILED));
     }
     response->set_signature(maybeSig.value());
   } catch (const std::exception& ex) {
