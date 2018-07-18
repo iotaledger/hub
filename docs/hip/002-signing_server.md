@@ -1,48 +1,46 @@
 # HIP-002: Signing server
 
 ## Problem description 
-By knowing a uuid and the salt anyone can generate a seed and derive an address/signature easily.
-If hub uses a **local** signature provider, than there is a single point of failure, since all uuids
+By knowing a UUID and the salt anyone can generate a seed and derive an address/signature easily.
+If hub uses a **local** signature provider, then there is a single point of failure, since all UUIDs
 and the salt are in the same place, making it easy to generate signatures and steal all funds associated
 with hub's non-empty deposit addresses
 
 ## Proposed solution
-Creating a separate remote signature provider (*signing_server*) that will expose end points 
+Creating a separate remote signature provider (*signing_server*) that will expose endpoints 
 for generating addresses/signatures and will be the only one to hold the salt, the new server will expose its 
-endpoints to a client app (hub) only when certified via ssl
+endpoints to a client app (hub) only when certified via SSL
 
 ## Motivation
 ### Separation of responsibilities
-If hub is being hijacked, there's now no way to spend any of the funds in any of the addresses, 
-the hijacker will need to be serviced by the *signing_server* and that will require him/her to have the ssl
+If the Hub is compromised, there's now no way to spend any of the funds in any of the addresses, 
+the hijacker will need to be serviced by the *signing_server* and that will require him/her to have the SSL
 certificate components that *signing_server* is using, if by any chance the hijacker is able to
 control hub, then as soon that has been noticed, *signing_server* should be stopped and hub user
 should start a recovery process.
-If Salt is being hijacked, there's no way to spend funds, since hijacker needs to know the uuids that
+If Salt is being hijacked, there's no way to spend funds, since hijacker needs to know the UUIDs that
 were used to generate an address in order to generate a seed and then a signature,
-nevertheless, user should probably stop generating new addresses with the old salt, move all funds to safe 
-address/addresses and start the *signing_server* with new salt and a new ssl certificate 
+Nevertheless, the user should probably stop generating new addresses with the old salt, move all funds to safe 
+address/addresses and start the *signing_server* with new salt and a new SSL certificate 
 
 ## Questions
-1. How should a recovery process should be defined after hub is compromised
-2. How should a recovery process should be defined after signing_server is compromised
+1. How should a recovery process be defined after hub is compromised
+2. How should a recovery process be defined after signing_server is compromised
 
-
-```proto
 Service:
-
+```proto
 service SigningServer {
     // Gets the address for the UUID
-    rpc GetAddressForUUID (GetAddressForUUIDRequest) returns (GetAddressForUUIDReply);
+    RPC GetAddressForUUID (GetAddressForUUIDRequest) returns (GetAddressForUUIDReply);
     // Gets the signature for the UUID
-    rpc GetSignatureForUUID (GetSignatureForUUIDRequest) returns (GetSignatureForUUIDReply);
+    RPC GetSignatureForUUID (GetSignatureForUUIDRequest) returns (GetSignatureForUUIDReply);
     // Gets the security level of the provider
-    rpc GetSecurityLevel (GetSecurityLevelRequest) returns (GetSecurityLevelReply);
+    RPC GetSecurityLevel (GetSecurityLevelRequest) returns (GetSecurityLevelReply);
 }
-
+```
 
 Messages:
-
+```
 enum ErrorCode {
     // Unused.
     EC_UNKNOWN = 0;
@@ -61,7 +59,7 @@ message Error {
  * Request for getting address
  */
 message GetAddressForUUIDRequest {
-    string uuid = 1;
+    string UUID = 1;
 }
 
 /*
@@ -75,7 +73,7 @@ message GetAddressForUUIDReply {
  * Request for getting signature
  */
 message GetSignatureForUUIDRequest {
-    string uuid = 1;
+    string UUID = 1;
     string bundleHash = 2;
 }
 
@@ -90,7 +88,7 @@ message GetSignatureForUUIDReply {
  * Request for getting security level
  */
 message GetSecurityLevelRequest {
-    string uuid = 1;
+    string UUID = 1;
 }
 /*
  * Reply for getting security level
@@ -106,7 +104,7 @@ class RemoteSigningProvider : public common::crypto::CryptoProviderBase {...}
 ```
 
 The above class will implement base methods to generate addresses/signatures
-and will internally issue rpc calls to the *signing_server*
+and will internally issue RPC calls to the *signing_server*
 
 **signing_server**
 ```c++
@@ -118,15 +116,15 @@ class SigningServerImpl final : public SigningServer::Service {
     ~SigningServerImpl() override {}
   
     // Gets the address for the UUID
-    grpc::Status GetAddressForUUID(::grpc::ServerContext* context,
+    gRPC::Status GetAddressForUUID(::gRPC::ServerContext* context,
                                    const GetAddressForUUIDRequest* request,
                                    GetAddressForUUIDReply* response) override;
     // Gets the signature for the UUID
-    grpc::Status GetSignatureForUUID(::grpc::ServerContext* context,
+    gRPC::Status GetSignatureForUUID(::gRPC::ServerContext* context,
                                      const GetSignatureForUUIDRequest* request,
                                      GetSignatureForUUIDReply* response) override;
     // Gets the security level of the provider
-    grpc::Status GetSecurityLevel(::grpc::ServerContext* context,
+    gRPC::Status GetSecurityLevel(::gRPC::ServerContext* context,
                                   const GetSecurityLevelRequest* request,
                                   GetSecurityLevelReply* response) override;
   };
