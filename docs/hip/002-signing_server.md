@@ -14,13 +14,13 @@ endpoints to a client app (hub) only when certified via SSL
 ## Motivation
 ### Separation of responsibilities
 If the Hub is compromised, there's now no way to spend any of the funds in any of the addresses, 
-the hijacker will need to be serviced by the *signing_server* and that will require him/her to have the SSL
-certificate components that *signing_server* is using, if by any chance the hijacker is able to
+the attacker will need to be serviced by the *signing_server* and that will require him/her to have the SSL
+certificate components that *signing_server* is using, if by any chance the attacker is able to
 control hub, then as soon that has been noticed, *signing_server* should be stopped and hub user
 should start a recovery process.
-If Salt is being hijacked, there's no way to spend funds, since hijacker needs to know the UUIDs that
+If Salt is being compromised, there's no way to spend funds, since attackers needs to know the UUIDs that
 were used to generate an address in order to generate a seed and then a signature,
-Nevertheless, the user should probably stop generating new addresses with the old salt, move all funds to safe 
+Nevertheless, the user should stop generating new addresses with the old salt, move all funds to safe 
 address/addresses and start the *signing_server* with new salt and a new SSL certificate 
 
 ## Questions
