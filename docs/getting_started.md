@@ -8,6 +8,8 @@
 
 - In case user sent tokens to a deposit address that has been swept, we offer a mechanism to recover the funds (see docs/hip/001-get_address_secret.md)
 
+- To facilitate toolchain / build environment setup we have provided toolchain configurations to build the Hub against. To use these, see the [toolchains repository](https://github.com/iotaledger/toolchains) for more details. As an example, to use the provided `x86-64-core-i7` toolchain, you'd build the signing server like this: `bazel build -c opt --crosstool_top='@iota_toolchains//tools/x86-64-core-i7--glibc--bleeding-edge-2018.07-1:toolchain' --cpu=x86_64 --host_crosstool_top=@bazel_tools//tools/cpp:toolchain //signing_server/...`
+
 ## Building the hub
 
 - bazel run -c opt //hub:hub -- <parameters>
@@ -43,5 +45,4 @@ You can build a docker image for `RPCHub` via `bazel build -c opt //docker:hub`
 ## Calling client commands
 
 - The Hub is a GRPC server (https://grpc.io/docs/tutorials/)
-
 - Methods and arguments are available under proto/hub.proto (methods) and proto/messages.proto (request/response types)
