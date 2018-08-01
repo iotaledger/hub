@@ -225,6 +225,13 @@ bool SweepService::doTick() {
   auto transaction = dbConnection.transaction();
 
   try {
+    if (!_api->isNodeSolid()) {
+      LOG(INFO) << "Node is not solid. Aborting sweep.";
+
+      transaction->rollback();
+      return true;
+    }
+
     // 1. Get up to X withdrawal requests
     auto withdrawals = dbConnection.getWithdrawalsForSweep(
         FLAGS_sweep_max_withdraw, sweepStart);
