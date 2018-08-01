@@ -112,7 +112,7 @@ void HubServer::initialise() {
   _attachmentService = std::make_unique<service::AttachmentService>(
       _api, std::chrono::milliseconds(FLAGS_attachmentInterval));
   _sweepService = std::make_unique<service::SweepService>(
-      std::chrono::milliseconds(FLAGS_sweepInterval));
+      _api, std::chrono::milliseconds(FLAGS_sweepInterval));
 
   ServerBuilder builder;
 

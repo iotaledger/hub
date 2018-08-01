@@ -9,11 +9,14 @@
 #define HUB_SERVICE_SWEEP_SERVICE_H_
 
 #include <cstdint>
+#include <memory>
 #include <string>
 #include <tuple>
+#include <utility>
 #include <vector>
 
 #include "common/crypto/types.h"
+#include "cppclient/api.h"
 #include "hub/db/types.h"
 #include "hub/service/scheduled_service.h"
 
@@ -26,8 +29,12 @@ namespace service {
 class SweepService : public ScheduledService {
  public:
   /// constructor
+  /// @param[in] api - an cppclient::IotaAPI compliant API provider
   /// @param[in] interval - the tick interval in milliseconds
-  using ScheduledService::ScheduledService;
+  explicit SweepService(std::shared_ptr<cppclient::IotaAPI> api,
+                        std::chrono::milliseconds interval)
+      : ScheduledService(interval), _api(std::move(api)) {}
+
   /// Destructor
   virtual ~SweepService() {}
 
@@ -76,6 +83,9 @@ class SweepService : public ScheduledService {
                          const std::vector<db::TransferInput>& hubInputs,
                          const std::vector<db::TransferOutput>& withdrawals,
                          const db::TransferOutput& hubOutput);
+
+  /// an cppclient::IotaAPI compliant API provider
+  const std::shared_ptr<cppclient::IotaAPI> _api;
 };
 
 }  // namespace service
