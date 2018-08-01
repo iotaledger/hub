@@ -57,24 +57,30 @@
   Flags from hub/server/server.cc:
     -apiAddress (IRI node api to listen on. Format [host:port]) type: string
       default: "127.0.0.1:14265"
-    -attachmentInterval (Attachment service check interval [ms]) type: uint32
-      default: 240000
-    -authMode (credentials to use. can be {none}) type: string default: "none"
+    -attachmentInterval (Attachment service check interval (0=disabled) [ms])
+      type: uint32 default: 240000
+    -authProvider (provider to use. can be {none, hmac}) type: string
+      default: "none"
     -depth (Value for getTransacationToApprove depth parameter) type: uint32
-      default: 9
+      default: 3
+    -hmacKeyPath (path to key used for HMAC encyption) type: string
+      default: "/dev/null"
     -minWeightMagnitude (Minimum weight magnitude for POW) type: uint32
       default: 9
-    -monitorInterval (Address monitor check interval [ms]) type: uint32
-      default: 60000
-    -sweepInterval (Sweep interval [ms]) type: uint32 default: 600000
-    -hmacKeyPath (path to key used for HMAC encyption) type: string default: "/dev/null"   
-    -authProvider (provider to use. can be {none, hmac}) type: string default: "none"
-    -signingMode (signing method to use {local,remote}) type: string default: "local"   
-    -signingProviderAddress (crypto provider address, should be provided if signingMode=remote) 
-    type: string default: "0.0.0.0:50052"
-    -signingServerSslCert (Path to SSL certificate (ca.cert)) type: string default: "/dev/null"   
-    -signingServerChainCert (Path to SSL certificate chain (server.crt)) type: string default: "/dev/null"   
-    -signingServerKeyCert (Path to SSL certificate key) type: string default: "/dev/null"   
+    -monitorInterval (Address monitor check interval (0=disabled) [ms])
+      type: uint32 default: 60000
+    -signingMode (crypto method to use {local,remote}) type: string
+      default: "local"
+    -signingProviderAddress (crypto provider address, should be provided if
+      signingMode=remote) type: string default: "0.0.0.0:50052"
+    -signingServerChainCert (Path to SSL certificate chain (server.crt))
+      type: string default: "/dev/null"
+    -signingServerKeyCert (Path to SSL certificate key (server.key))
+      type: string default: "/dev/null"
+    -signingServerSslCert (Path to SSL certificate (ca.cert)) type: string
+      default: "/dev/null"
+    -sweepInterval (Sweep interval (0=disabled) [ms]) type: uint32
+      default: 600000
 
   Flags from hub/service/sweep_service.cc:
     -sweep_max_deposit (Maximum number of user deposits to process per sweep.)
