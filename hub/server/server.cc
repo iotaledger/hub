@@ -32,12 +32,12 @@
 DEFINE_string(apiAddress, "127.0.0.1:14265",
               "IRI node api to listen on. Format [host:port]");
 
-DEFINE_uint32(monitorInterval, 60000, "Address monitor check interval [ms]");
+DEFINE_uint32(monitorInterval, 60000,
+              "Address monitor check interval (0=disabled) [ms]");
 DEFINE_uint32(attachmentInterval, 240000,
-              "Attachment service check interval [ms]");
-DEFINE_uint32(sweepInterval, 600000, "Sweep interval [ms]");
+              "Attachment service check interval (0=disabled) [ms]");
+DEFINE_uint32(sweepInterval, 600000, "Sweep interval (0=disabled) [ms]");
 
-// TODO(th0br0): move to hub/iota/pow
 DEFINE_uint32(minWeightMagnitude, 9, "Minimum weight magnitude for POW");
 DEFINE_uint32(depth, 3, "Value for getTransacationToApprove depth parameter");
 
