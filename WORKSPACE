@@ -7,6 +7,12 @@ git_repository(
     remote = "https://github.com/pubref/rules_protobuf",
 )
 
+git_repository(
+    name = "iota_toolchains",
+    commit = "6b501df8e7f3bc3b143c894737fbb1d82e914762",
+    remote = "https://github.com/iotaledger/toolchains.git",
+)
+
 http_archive(
     name = "io_bazel_rules_go",
     sha256 = "f70c35a8c779bb92f7521ecb5a1c6604e9c3edd431e50b6376d7497abc8ad3c1",
@@ -118,6 +124,9 @@ load(
     "@org_pubref_rules_protobuf//grpc_gateway:rules.bzl",
     "grpc_gateway_proto_repositories",
 )
+load("@iota_toolchains//:toolchains.bzl", "setup_toolchains")
+
+setup_toolchains()
 
 iota_deps()
 
