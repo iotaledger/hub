@@ -160,8 +160,8 @@ bool UserAddressMonitor::validateBalanceIsConsistent(const std::string& address,
     return false;
   }
 
-  auto observedBalance = iriBalances.begin()->second;
-  auto expectedBalance = dbBalances.begin()->second;
+  uint64_t observedBalance = iriBalances.begin()->second;
+  uint64_t expectedBalance = dbBalances.begin()->second;
   if (observedBalance < expectedBalance) {
     LOG(ERROR) << "Observed sum is less than expected. Expected (db): "
                << expectedBalance

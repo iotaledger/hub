@@ -19,6 +19,11 @@ namespace hub {
 namespace service {
 
 void ScheduledService::start() {
+  if (_interval == std::chrono::milliseconds::zero()) {
+    LOG(INFO) << " Not starting " << name() << " because it's disabled.";
+    return;
+  }
+
   Service::start();
 
   _timer = std::make_unique<Timer>(_service);
@@ -39,6 +44,11 @@ void ScheduledService::tick() {
 }
 
 void ScheduledService::stop() {
+  if (_interval == std::chrono::milliseconds::zero()) {
+    LOG(INFO) << " Not stopping " << name() << " because it's disabled.";
+    return;
+  }
+
   _timer = nullptr;
   Service::stop();
 }
