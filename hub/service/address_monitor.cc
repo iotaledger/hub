@@ -52,7 +52,11 @@ AddressMonitor::calculateBalanceChanges() {
   //              list. Therefore, nothing will happen.
   auto balances = _api->getBalances(std::move(addresses));
 
-  for (auto& pair : balances) {
+  if (!balances) {
+    return {};
+  }
+
+  for (auto& pair : *balances) {
     auto id = addressToIDs[pair.first];
 
     // This will create current (= 0) if the element does not exist.

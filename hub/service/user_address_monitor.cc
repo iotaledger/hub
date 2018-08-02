@@ -155,12 +155,17 @@ bool UserAddressMonitor::validateBalanceIsConsistent(const std::string& address,
   const auto& iriBalances = _api->getBalances({address});
   const auto& dbBalances = connection.getTotalAmountForAddresses({addressId});
 
-  if (iriBalances.size() != 1 || dbBalances.size() != 1) {
+  if (!iriBalances) {
+    LOG(ERROR) << "IRI getBalances call failed.";
+    return false;
+  }
+
+  if (iriBalances->size() != 1 || dbBalances.size() != 1) {
     LOG(ERROR) << "Could not get balance for address: \n" + address;
     return false;
   }
 
-  uint64_t observedBalance = iriBalances.begin()->second;
+  uint64_t observedBalance = iriBalances->begin()->second;
   uint64_t expectedBalance = dbBalances.begin()->second;
   if (observedBalance < expectedBalance) {
     LOG(ERROR) << "Observed sum is less than expected. Expected (db): "
