@@ -1,25 +1,24 @@
 # IOTA Hub
 [![Build status](https://badge.buildkite.com/9c05b4a87f2242c78d62709136ca54a6d63fd48aa9b764f3e1.svg)](https://buildkite.com/iota-foundation/rpchub)
 
+See [Getting Started](docs/getting_started.md) for information on how to use the Hub!
+
 ## Dependencies
-- Modern GCC or Clang
+- Modern GCC or Clang (or use a provided toolchain from `@iota_toolchains`)
 - [bazel](https://github.com/bazelbuild/bazel/releases)
-- sqlite3
-- system-wide installation of mariadb-connector-c 
-- pyparsing (pip install pyparsing)
-- buildifier: (`go get -u github.com/bazelbuild/buildtools/buildifier`)
+- pyparsing (`pip install pyparsing`)
 
 ## Supported database systems
-- MariaDB. Note that we *strongly discourage* the use of *MySQL* because it does not support CHECK constraints for data integrity. We only test against MariaDB.
-  Please ensure that your MariaDB version is *>= 10.2.1* as this is the first version supporting [CHECK constraints](https://mariadb.com/kb/en/library/constraint/#check-constraints)
+- MariaDB. **DO NOT USE MySQL**. MySQL does not support CHECK constraints for data integrity. *We only test against MariaDB.*
+  Please ensure that your MariaDB version is **>= 10.2.1** as this is the first version supporting [CHECK constraints](https://mariadb.com/kb/en/library/constraint/#check-constraints)
 
 ## Developing RPCHub
+- Make sure that `buildifier` and `clang-format` are available on your `PATH`: (`go get -u github.com/bazelbuild/buildtools/buildifier`)
 - Be sure to run `./hooks/autohook.sh install` after checkout!
 - Pass `-c dbg` for building with debug symbols.
 
 ## How to build and run 
-
-- see docs/getting_started.md
+- see `docs/getting_started.md`
 
 ## Configuration
 - If running on mainnet, set `-minWeightMagnitude` to at least 14
@@ -91,7 +90,6 @@
 ```
 
 ## Useful things
-- Use `clang-format`
-- Use `protofmt` from `go get -u -v github.com/emicklei/proto-contrib/cmd/protofmt` to format
+- Use `protofmt` from `go get -u -v github.com/emicklei/proto-contrib/cmd/protofmt` to format protobuf files
 - Use `grpcc` to test: `grpcc -i -a localhost:50051 -p proto/hub.proto`
 - Use `https://github.com/pseudomuto/protoc-gen-doc` to generate protobuf documentation
