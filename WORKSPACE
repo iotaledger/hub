@@ -67,17 +67,9 @@ new_git_repository(
     remote = "https://github.com/rbock/sqlpp11-connector-mysql.git",
 )
 
-new_http_archive(
-    name = "sqlite3",
-    build_file = "third-party/sqlite3/BUILD.bzl",
-    sha256 = "4239a1f69e5721d07d9a374eb84d594225229e54be4ee628da2995f4315d8dfc",
-    strip_prefix = "sqlite-amalgamation-3230100",
-    url = "https://www.sqlite.org/2018/sqlite-amalgamation-3230100.zip",
-)
-
 git_repository(
     name = "rules_iota",
-    commit = "aa09cfc6e6613a25a7b48dcf4ddccbe86b5654c1",
+    commit = "0d0681a6dc4069a1bd2c7576e6430b2b04f937ad",
     remote = "https://github.com/iotaledger/rules_iota.git",
 )
 
