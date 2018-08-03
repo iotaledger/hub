@@ -115,9 +115,9 @@ bool UserAddressMonitor::onBalancesChanged(
       }
 
       if (aggregateSum != change.delta) {
-        LOG(ERROR)
-            << "On-Tangle sum did not match expected. Expected (getBalances): "
-            << change.delta << " observed: " << aggregateSum;
+        LOG(ERROR) << "On-Tangle sum for address: " << change.address
+                   << " did not match expected. Expected (getBalances): "
+                   << change.delta << " observed: " << aggregateSum;
         goto cleanup;
       }
 
