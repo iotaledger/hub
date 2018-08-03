@@ -49,7 +49,7 @@ new_git_repository(
 new_git_repository(
     name = "sqlpp11",
     build_file = "third-party/sqlpp11/BUILD.bzl",
-    commit = "9d64a5c7411f84cad1da71b23118634b5a62a063",
+    commit = "ba05135d47e8674f429ba1e03a0259a48f05a4c4",
     remote = "https://github.com/rbock/sqlpp11.git",
 )
 
@@ -75,9 +75,9 @@ git_repository(
 
 http_archive(
     name = "org_iota_entangled",
-    strip_prefix = "entangled-develop",
-    url =
-        "https://github.com/iotaledger/entangled/archive/develop.zip",
+    sha256 = "ce09df7c06fd61d83ff43bf826a4d70796006f9383ce0c9713c0dfbd221128dd",
+    strip_prefix = "entangled-9d6a6b0fab11ada9d48e9df220fb45f88dae5102",
+    url = "https://github.com/iotaledger/entangled/archive/9d6a6b0fab11ada9d48e9df220fb45f88dae5102.zip",
 )
 
 new_git_repository(
