@@ -75,6 +75,7 @@ git_repository(
 
 http_archive(
     name = "org_iota_entangled",
+    sha256 = "300fb5adaeec08791d7804aaf03018ef297026fa065ca7210630e458d9f6e221",
     strip_prefix = "entangled-develop",
     url =
         "https://github.com/iotaledger/entangled/archive/develop.zip",
