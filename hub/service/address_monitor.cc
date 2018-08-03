@@ -15,10 +15,15 @@
 #include <unordered_map>
 #include <utility>
 
+#include <gflags/gflags.h>
+
 #include <boost/asio/io_service.hpp>
 #include <boost/bind.hpp>
 #include <boost/range/adaptors.hpp>
 #include <boost/range/algorithm/copy.hpp>
+
+DEFINE_uint32(balanceChangeBatchSize, 100,
+              "Maximum number of addresses to process at once");
 
 namespace hub {
 namespace service {
@@ -94,6 +99,11 @@ bool AddressMonitor::doTick() {
   auto changes = calculateBalanceChanges();
 
   if (!changes.empty()) {
+    uint32_t currNumChanges = 0;
+    while (currNumChanges < changes.size()) {
+      auto currChanges =
+          nextBatch(changes, currNumChanges, FLAGS_balanceChangeBatchSize);
+    }
     if (onBalancesChanged(changes)) {
       persistBalanceChanges(std::move(changes));
     }
@@ -120,6 +130,21 @@ void AddressMonitor::removeUnmonitoredAddresses(
   for (auto id : unmonitoredBalances) {
     _balances.erase(id);
   }
+}
+
+template <typename T>
+std::vector<T> AddressMonitor::nextBatch(const std::vector<T>& vec,
+                                         uint32_t& numBatchedEntries,
+                                         uint32_t batchSize) {
+  auto numToQuery = (vec.size() - numBatchedEntries) > batchSize
+                        ? batchSize
+                        : (vec.size() - numBatchedEntries);
+  auto startEntry = vec.begin() + numBatchedEntries;
+  auto currVec = std::vector<T>(startEntry, startEntry + numToQuery);
+
+  numBatchedEntries += currVec.size();
+
+  return currVec;
 }
 
 }  // namespace service

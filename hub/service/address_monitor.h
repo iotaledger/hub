@@ -90,6 +90,10 @@ class AddressMonitor : public ScheduledService {
   const std::shared_ptr<cppclient::IotaAPI> _api;
 
  private:
+  template <typename T>
+  static std::vector<T> nextBatch(const std::vector<T>& vec,
+                                  uint32_t& numBatchedEntries,
+                                  uint32_t batchSize);
   /// A list of persisted balances ebtween calls
   std::unordered_map<uint64_t, uint64_t> _balances;
 };
