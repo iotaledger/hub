@@ -2,7 +2,7 @@
 
 CREATE TABLE IF NOT EXISTS user_account (
   id INTEGER PRIMARY KEY /*!40101 AUTO_INCREMENT */,
-  balance INTEGER DEFAULT 0 NOT NULL,
+  balance BIGINT DEFAULT 0 NOT NULL,
   identifier VARCHAR(64) NOT NULL UNIQUE
 );
 
@@ -15,7 +15,7 @@ CREATE TABLE IF NOT EXISTS user_address (
   user_id INTEGER NOT NULL,
   seed_uuid CHAR(64) NOT NULL,
   created_at DATETIME DEFAULT CURRENT_TIMESTAMP NOT NULL,
-  balance INTEGER DEFAULT 0 NOT NULL,
+  balance BIGINT DEFAULT 0 NOT NULL,
   FOREIGN KEY (user_id) REFERENCES user_account(id)
 );
 
@@ -27,7 +27,7 @@ CREATE TABLE IF NOT EXISTS hub_address (
   address CHAR(81) NOT NULL,
   seed_uuid CHAR(64) NOT NULL,
   is_cold_storage INTEGER DEFAULT 0 NOT NULL,
-  balance INTEGER DEFAULT 0 NOT NULL,
+  balance BIGINT DEFAULT 0 NOT NULL,
   created_at DATETIME DEFAULT CURRENT_TIMESTAMP NOT NULL
 );
 
@@ -49,7 +49,7 @@ CREATE TABLE IF NOT EXISTS sweep (
 CREATE TABLE IF NOT EXISTS hub_address_balance (
   id INTEGER PRIMARY KEY /*!40101 AUTO_INCREMENT */,
   hub_address INTEGER NOT NULL,
-  amount INTEGER NOT NULL,
+  amount BIGINT NOT NULL,
   reason INTEGER NOT NULL,
   sweep INTEGER NOT NULL,
   occured_at DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
@@ -68,7 +68,7 @@ CREATE INDEX idx_hub_address_balance_reason ON hub_address_balance(hub_address, 
 CREATE TABLE IF NOT EXISTS user_address_balance (
   id INTEGER PRIMARY KEY /*!40101 AUTO_INCREMENT */,
   user_address INTEGER NOT NULL,
-  amount INTEGER NOT NULL,
+  amount BIGINT NOT NULL,
   reason INTEGER NOT NULL,
   -- confirmed tail's hash
   tail_hash CHAR(81) DEFAULT NULL,
@@ -88,7 +88,7 @@ CREATE TABLE IF NOT EXISTS withdrawal (
   id INTEGER PRIMARY KEY /*!40101 AUTO_INCREMENT */,
   uuid CHAR(36) UNIQUE NOT NULL,
   user_id INTEGER NOT NULL,
-  amount INTEGER NOT NULL,
+  amount BIGINT NOT NULL,
   -- payout address
   payout_address CHAR(81) NOT NULL,
   tag CHAR(27) DEFAULT NULL,
@@ -108,7 +108,7 @@ CREATE INDEX idx_withdrawal_by_request_ts ON withdrawal(requested_at ASC);
 -- reason: 0 SWEEP 1 BUY 2 WITHDRAW_CANCEL 3 WITHDRAW 4 SELL
 CREATE TABLE IF NOT EXISTS user_account_balance (
   user_id INTEGER NOT NULL,
-  amount INTEGER NOT NULL,
+  amount BIGINT NOT NULL,
   reason INTEGER NOT NULL,
   sweep INTEGER,
   withdrawal INTEGER,
