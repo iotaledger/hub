@@ -33,6 +33,8 @@ service Hub {
   // Provides information on the sweep for the given withdrawal or bundle hash
   rpc SweepInfo (SweepInfoRequest) returns (SweepEvent);
   // Provides a signature for a bundle hash
-  rpc SignBundle(SignBundleRequest) returns (SignBundleReply);  
+  rpc SignBundle(SignBundleRequest) returns (SignBundleReply);
+  // Provides detailed information on the sweep for the bundle hash
+  rpc SweepDetail (SweepDetailRequest) returns (SweepDetailReply);
 }
 

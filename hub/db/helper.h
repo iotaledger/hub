@@ -99,6 +99,8 @@ struct helper {
       C& connection, const std::string& uuid);
   static nonstd::optional<SweepEvent> getSweepByBundleHash(
       C& connection, const common::crypto::Hash& bundleHash);
+  static nonstd::optional<SweepDetail> getSweepDetailByBundleHash(
+      C& connection, const common::crypto::Hash& bundleHash);
 
   static int64_t createHubAddress(C& connection,
                                   const common::crypto::UUID& uuid,

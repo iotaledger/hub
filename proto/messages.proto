@@ -297,3 +297,17 @@ message SignBundleReply {
   // The resulting signature
   string signature = 1;
 }
+
+message SweepDetailRequest {
+   // Sweep's bundle hash
+   string bundleHash = 1;
+}
+
+message SweepDetailReply {
+  //Sweep's  confirmation status
+  bool confirmed = 1;
+  //Sweep's transactions trytes
+  repeated string trytes = 2;
+  //Sweep's tails hashes (multiple reattachment for each bundle)
+  repeated string tailHash = 3;
+}

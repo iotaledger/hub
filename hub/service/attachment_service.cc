@@ -107,7 +107,7 @@ bool AttachmentService::checkForUserReattachment(
 
     if (consistentTails.size() != 0) {
       for (const auto& tail : consistentTails) {
-        LOG(INFO) << "Inserting UNconfirmed user-attached tail: " << tail;
+        LOG(INFO) << "Inserting Unconfirmed user-attached tail: " << tail;
         connection.createTail(sweep.id, tail);
       }
     }

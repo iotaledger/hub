@@ -23,6 +23,7 @@
 #include "hub/commands/get_user_history.h"
 #include "hub/commands/process_transfer_batch.h"
 #include "hub/commands/sign_bundle.h"
+#include "hub/commands/sweep_detail.h"
 #include "hub/commands/sweep_info.h"
 #include "hub/commands/sweep_subscription.h"
 #include "hub/commands/user_withdraw.h"
@@ -137,6 +138,14 @@ grpc::Status HubImpl::SignBundle(grpc::ServerContext* context,
   }
 
   cmd::SignBundle cmd(clientSession);
+  return cmd.process(request, response);
+}
+
+grpc::Status HubImpl::SweepDetail(grpc::ServerContext* context,
+                                  const hub::rpc::SweepDetailRequest* request,
+                                  hub::rpc::SweepDetailReply* response) {
+  auto clientSession = std::make_shared<common::ClientSession>();
+  cmd::SweepDetail cmd(clientSession);
   return cmd.process(request, response);
 }
 
