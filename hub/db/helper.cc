@@ -824,10 +824,10 @@ nonstd::optional<hub::db::SweepDetail> helper<C>::getSweepDetailByBundleHash(
 
   hub::db::SweepDetail sweepsDetails;
 
-  auto result = connection(
-      select(swp.bundleHash, swp.id, swp.trytes, swp.confirmed, tls.hash)
-          .from(swp.left_outer_join(tls).on(tls.sweep == swp.id))
-          .where(swp.bundleHash == bundleHash.str()));
+  auto result =
+      connection(select(swp.bundleHash, swp.id, swp.trytes, swp.confirmed)
+                     .from(swp)
+                     .where(swp.bundleHash == bundleHash.str()));
 
   constexpr size_t trytesPerTX = 2673;
 
@@ -840,8 +840,10 @@ nonstd::optional<hub::db::SweepDetail> helper<C>::getSweepDetailByBundleHash(
   }
 
   sweepsDetails.confirmed = result.front().confirmed.value();
-  for (const auto& tail : result) {
-    sweepsDetails.tails.emplace_back(std::move(tail.hash.value()));
+
+  auto tails = getTailsForSweep(connection, result.front().id.value());
+  for (const auto& tail : tails) {
+    sweepsDetails.tails.emplace_back(tail.hash);
   }
 
   return sweepsDetails;
