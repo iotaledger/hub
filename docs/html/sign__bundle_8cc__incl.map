@@ -1,0 +1,12 @@
+<map id="sign_bundle.cc" name="sign_bundle.cc">
+<area shape="rect" id="node2" href="$sign__bundle_8h.html" title="hub/commands/sign_bundle.h" alt="" coords="5,80,221,107"/>
+<area shape="rect" id="node11" href="$hmac__provider_8h.html" title="hub/auth/hmac_provider.h" alt="" coords="685,155,875,181"/>
+<area shape="rect" id="node15" href="$manager_8h.html" title="hub/auth/manager.h" alt="" coords="1029,155,1181,181"/>
+<area shape="rect" id="node17" href="$commands_2helper_8h.html" title="hub/commands/helper.h" alt="" coords="245,80,424,107"/>
+<area shape="rect" id="node19" href="$db_8h.html" title="hub/db/db.h" alt="" coords="1405,80,1504,107"/>
+<area shape="rect" id="node30" href="$db_2helper_8h.html" title="hub/db/helper.h" alt="" coords="1892,237,2015,263"/>
+<area shape="rect" id="node13" href="$provider_8h.html" title="hub/auth/provider.h" alt="" coords="766,319,914,345"/>
+<area shape="rect" id="node14" href="$sign__bundle__context_8h.html" title="hub/auth/sign_bundle\l_context.h" alt="" coords="519,229,681,271"/>
+<area shape="rect" id="node22" href="$connection_8h.html" title="hub/db/connection.h" alt="" coords="1649,155,1802,181"/>
+<area shape="rect" id="node31" href="$types_8h.html" title="hub/db/types.h" alt="" coords="2130,319,2249,345"/>
+</map>

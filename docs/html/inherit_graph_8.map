@@ -1,0 +1,8 @@
+<map id="Graphical Class Hierarchy" name="Graphical Class Hierarchy">
+<area shape="rect" id="node1" href="$classhub_1_1db_1_1Connection.html" title="Connection abstract class. " alt="" coords="5,122,156,149"/>
+<area shape="rect" id="node2" href="$classhub_1_1db_1_1ConnectionImpl.html" title="hub::db::ConnectionImpl\l\&lt; sqlpp::mysql::connection,\l sqlpp::mysql::connection\l_config \&gt;" alt="" coords="206,5,409,76"/>
+<area shape="rect" id="node4" href="$classhub_1_1db_1_1ConnectionImpl.html" title="hub::db::ConnectionImpl\l\&lt; sqlpp::sqlite3::connection,\l sqlpp::sqlite3::connection\l_config \&gt;" alt="" coords="204,100,411,171"/>
+<area shape="rect" id="node6" href="$classhub_1_1db_1_1ConnectionImpl.html" title="hub::db::ConnectionImpl\l\&lt; Conn, Conf \&gt;" alt="" coords="217,195,397,236"/>
+<area shape="rect" id="node3" href="$classhub_1_1db_1_1MariaDBConnection.html" title="hub::db::MariaDBConnection" alt="" coords="459,27,665,54"/>
+<area shape="rect" id="node5" href="$classhub_1_1db_1_1SQLite3Connection.html" title="hub::db::SQLite3Connection" alt="" coords="461,122,663,149"/>
+</map>

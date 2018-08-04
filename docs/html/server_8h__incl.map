@@ -1,0 +1,14 @@
+<map id="server.h" name="server.h">
+<area shape="rect" id="node7" href="$grpc_8h.html" title="hub/server/grpc.h" alt="" coords="263,87,398,114"/>
+<area shape="rect" id="node10" href="$attachment__service_8h.html" title="hub/service/attachment\l_service.h" alt="" coords="1540,80,1716,121"/>
+<area shape="rect" id="node35" href="$sweep__service_8h.html" title="hub/service/sweep_service.h" alt="" coords="2041,341,2250,367"/>
+<area shape="rect" id="node36" href="$user__address__monitor_8h.html" title="hub/service/user_address\l_monitor.h" alt="" coords="2687,244,2873,285"/>
+<area shape="rect" id="node14" href="$db_8h.html" title="hub/db/db.h" alt="" coords="1249,169,1348,196"/>
+<area shape="rect" id="node28" href="$pow_8h.html" title="hub/iota/pow.h" alt="" coords="1691,341,1808,367"/>
+<area shape="rect" id="node29" href="$scheduled__service_8h.html" title="hub/service/scheduled\l_service.h" alt="" coords="2502,423,2669,464"/>
+<area shape="rect" id="node17" href="$connection_8h.html" title="hub/db/connection.h" alt="" coords="1019,251,1173,278"/>
+<area shape="rect" id="node26" href="$types_8h.html" title="hub/db/types.h" alt="" coords="1171,430,1290,457"/>
+<area shape="rect" id="node25" href="$db_2helper_8h.html" title="hub/db/helper.h" alt="" coords="1248,341,1371,367"/>
+<area shape="rect" id="node31" href="$service_8h.html" title="hub/service/service.h" alt="" coords="3240,519,3400,546"/>
+<area shape="rect" id="node37" href="$address__monitor_8h.html" title="hub/service/address\l_monitor.h" alt="" coords="2275,333,2427,375"/>
+</map>

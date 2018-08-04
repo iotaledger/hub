@@ -1,0 +1,21 @@
+<map id="server.cc" name="server.cc">
+<area shape="rect" id="node2" href="$server_8h.html" title="hub/server/server.h" alt="" coords="1430,80,1577,107"/>
+<area shape="rect" id="node15" href="$db_8h.html" title="hub/db/db.h" alt="" coords="2346,251,2445,278"/>
+<area shape="rect" id="node26" href="$db_2helper_8h.html" title="hub/db/helper.h" alt="" coords="2859,415,2982,442"/>
+<area shape="rect" id="node29" href="$pow_8h.html" title="hub/iota/pow.h" alt="" coords="146,415,263,442"/>
+<area shape="rect" id="node31" href="$sweep__service_8h.html" title="hub/service/sweep_service.h" alt="" coords="931,333,1140,360"/>
+<area shape="rect" id="node32" href="$user__address__monitor_8h.html" title="hub/service/user_address\l_monitor.h" alt="" coords="642,408,829,449"/>
+<area shape="rect" id="node39" href="$dummy__provider_8h.html" title="hub/auth/dummy_provider.h" alt="" coords="3411,415,3617,442"/>
+<area shape="rect" id="node41" href="$hmac__provider_8h.html" title="hub/auth/hmac_provider.h" alt="" coords="3728,333,3919,360"/>
+<area shape="rect" id="node44" href="$manager_8h.html" title="hub/auth/manager.h" alt="" coords="1754,415,1906,442"/>
+<area shape="rect" id="node45" href="$local__provider_8h.html" title="hub/crypto/local_provider.h" alt="" coords="3283,162,3481,189"/>
+<area shape="rect" id="node46" href="$remote__signing__provider_8h.html" title="hub/crypto/remote_signing\l_provider.h" alt="" coords="2532,155,2728,196"/>
+<area shape="rect" id="node50" href="$remote__pow_8h.html" title="hub/iota/remote_pow.h" alt="" coords="229,333,399,360"/>
+<area shape="rect" id="node8" href="$grpc_8h.html" title="hub/server/grpc.h" alt="" coords="1652,162,1787,189"/>
+<area shape="rect" id="node11" href="$attachment__service_8h.html" title="hub/service/attachment\l_service.h" alt="" coords="1090,155,1266,196"/>
+<area shape="rect" id="node30" href="$scheduled__service_8h.html" title="hub/service/scheduled\l_service.h" alt="" coords="1157,408,1324,449"/>
+<area shape="rect" id="node18" href="$connection_8h.html" title="hub/db/connection.h" alt="" coords="2437,333,2591,360"/>
+<area shape="rect" id="node27" href="$types_8h.html" title="hub/db/types.h" alt="" coords="2180,497,2299,524"/>
+<area shape="rect" id="node40" href="$provider_8h.html" title="hub/auth/provider.h" alt="" coords="3580,497,3728,524"/>
+<area shape="rect" id="node43" href="$sign__bundle__context_8h.html" title="hub/auth/sign_bundle\l_context.h" alt="" coords="3743,408,3904,449"/>
+</map>

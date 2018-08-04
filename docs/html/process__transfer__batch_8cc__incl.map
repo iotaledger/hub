@@ -1,0 +1,9 @@
+<map id="process_transfer_batch.cc" name="process_transfer_batch.cc">
+<area shape="rect" id="node2" href="$process__transfer__batch_8h.html" title="hub/commands/process\l_transfer_batch.h" alt="" coords="293,244,469,285"/>
+<area shape="rect" id="node17" href="$db_8h.html" title="hub/db/db.h" alt="" coords="1075,87,1173,114"/>
+<area shape="rect" id="node27" href="$db_2helper_8h.html" title="hub/db/helper.h" alt="" coords="1219,251,1341,278"/>
+<area shape="rect" id="node31" href="$commands_2helper_8h.html" title="hub/commands/helper.h" alt="" coords="5,87,184,114"/>
+<area shape="rect" id="node32" href="$proto__sql__converter_8h.html" title="hub/commands/proto\l_sql_converter.h" alt="" coords="259,80,419,121"/>
+<area shape="rect" id="node22" href="$connection_8h.html" title="hub/db/connection.h" alt="" coords="990,169,1143,196"/>
+<area shape="rect" id="node28" href="$types_8h.html" title="hub/db/types.h" alt="" coords="771,333,890,360"/>
+</map>

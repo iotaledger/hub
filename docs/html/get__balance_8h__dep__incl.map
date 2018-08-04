@@ -1,0 +1,8 @@
+<map id="get_balance.h" name="get_balance.h">
+<area shape="rect" id="node2" href="$get__balance_8cc.html" title="get_balance.cc" alt="" coords="5,87,124,114"/>
+<area shape="rect" id="node3" href="$test__get__balance_8cc.html" title="test_get_balance.cc" alt="" coords="148,87,299,114"/>
+<area shape="rect" id="node4" href="$test__process__transfer__batch_8cc.html" title="test_process_transfer\l_batch.cc" alt="" coords="323,80,486,121"/>
+<area shape="rect" id="node5" href="$test__user__withdraw_8cc.html" title="test_user_withdraw.cc" alt="" coords="511,87,677,114"/>
+<area shape="rect" id="node6" href="$test__user__withdraw__cancel_8cc.html" title="test_user_withdraw\l_cancel.cc" alt="" coords="702,80,851,121"/>
+<area shape="rect" id="node7" href="$grpc_8cc.html" title="grpc.cc" alt="" coords="876,87,944,114"/>
+</map>

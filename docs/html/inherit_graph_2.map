@@ -1,0 +1,5 @@
+<map id="Graphical Class Hierarchy" name="Graphical Class Hierarchy">
+<area shape="rect" id="node1" href="$classhub_1_1auth_1_1AuthProvider.html" title="AuthProvider abstract class. " alt="" coords="5,31,180,57"/>
+<area shape="rect" id="node2" href="$classhub_1_1auth_1_1DummyProvider.html" title="DummyProvider class. " alt="" coords="228,5,425,32"/>
+<area shape="rect" id="node3" href="$classhub_1_1auth_1_1HMACProvider.html" title="DummyProvider class. " alt="" coords="235,56,419,83"/>
+</map>

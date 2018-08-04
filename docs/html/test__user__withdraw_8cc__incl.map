@@ -1,0 +1,12 @@
+<map id="test_user_withdraw.cc" name="test_user_withdraw.cc">
+<area shape="rect" id="node5" href="$get__balance_8h.html" title="hub/commands/get_balance.h" alt="" coords="1556,177,1773,203"/>
+<area shape="rect" id="node8" href="$commands_2tests_2helper_8h.html" title="hub/commands/tests\l/helper.h" alt="" coords="661,80,820,121"/>
+<area shape="rect" id="node16" href="$db_8h.html" title="hub/db/db.h" alt="" coords="1015,266,1114,293"/>
+<area shape="rect" id="node30" href="$user__withdraw_8h.html" title="hub/commands/user_withdraw.h" alt="" coords="1798,177,2030,203"/>
+<area shape="rect" id="node31" href="$commands_2tests_2runner_8h.html" title="runner.h" alt="" coords="1102,87,1177,114"/>
+<area shape="rect" id="node10" href="$tests_2runner_8h.html" title="hub/tests/runner.h" alt="" coords="889,177,1027,203"/>
+<area shape="rect" id="node20" href="$connection_8h.html" title="hub/db/connection.h" alt="" coords="823,348,976,375"/>
+<area shape="rect" id="node29" href="$types_8h.html" title="hub/db/types.h" alt="" coords="525,497,644,524"/>
+<area shape="rect" id="node28" href="$db_2helper_8h.html" title="hub/db/helper.h" alt="" coords="838,423,961,449"/>
+<area shape="rect" id="node32" href="$create__user_8h.html" title="hub/commands/create\l_user.h" alt="" coords="1365,169,1532,211"/>
+</map>

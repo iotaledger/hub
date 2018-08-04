@@ -1,0 +1,4 @@
+<map id="hub::db::SQLite3Connection" name="hub::db::SQLite3Connection">
+<area shape="rect" id="node2" href="$classhub_1_1db_1_1ConnectionImpl.html" title="hub::db::ConnectionImpl\l\&lt; sqlpp::sqlite3::connection,\l sqlpp::sqlite3::connection\l_config \&gt;" alt="" coords="204,5,411,76"/>
+<area shape="rect" id="node3" href="$classhub_1_1db_1_1Connection.html" title="Connection abstract class. " alt="" coords="5,27,156,54"/>
+</map>

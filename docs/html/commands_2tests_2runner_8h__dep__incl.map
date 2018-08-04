@@ -1,0 +1,11 @@
+<map id="runner.h" name="runner.h">
+<area shape="rect" id="node2" href="$test__balance__subscription_8cc.html" title="test_balance_subscription.cc" alt="" coords="5,87,215,114"/>
+<area shape="rect" id="node3" href="$test__create__user_8cc.html" title="test_create_user.cc" alt="" coords="239,87,386,114"/>
+<area shape="rect" id="node4" href="$test__get__address__info_8cc.html" title="test_get_address_info.cc" alt="" coords="411,87,593,114"/>
+<area shape="rect" id="node5" href="$test__get__balance_8cc.html" title="test_get_balance.cc" alt="" coords="617,87,768,114"/>
+<area shape="rect" id="node6" href="$test__get__deposit__address_8cc.html" title="test_get_deposit_address.cc" alt="" coords="792,87,999,114"/>
+<area shape="rect" id="node7" href="$test__get__user__history_8cc.html" title="test_get_user_history.cc" alt="" coords="1023,87,1202,114"/>
+<area shape="rect" id="node8" href="$test__process__transfer__batch_8cc.html" title="test_process_transfer\l_batch.cc" alt="" coords="1226,80,1389,121"/>
+<area shape="rect" id="node9" href="$test__user__withdraw_8cc.html" title="test_user_withdraw.cc" alt="" coords="1413,87,1580,114"/>
+<area shape="rect" id="node10" href="$test__user__withdraw__cancel_8cc.html" title="test_user_withdraw\l_cancel.cc" alt="" coords="1605,80,1754,121"/>
+</map>

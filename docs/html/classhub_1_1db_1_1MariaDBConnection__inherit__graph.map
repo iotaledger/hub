@@ -1,0 +1,4 @@
+<map id="hub::db::MariaDBConnection" name="hub::db::MariaDBConnection">
+<area shape="rect" id="node2" href="$classhub_1_1db_1_1ConnectionImpl.html" title="hub::db::ConnectionImpl\l\&lt; sqlpp::mysql::connection,\l sqlpp::mysql::connection\l_config \&gt;" alt="" coords="204,5,407,76"/>
+<area shape="rect" id="node3" href="$classhub_1_1db_1_1Connection.html" title="Connection abstract class. " alt="" coords="5,27,156,54"/>
+</map>
