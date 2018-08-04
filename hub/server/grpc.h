@@ -127,6 +127,10 @@ class HubImpl final : public hub::rpc::Hub::Service {
   grpc::Status SignBundle(grpc::ServerContext* context,
                           const hub::rpc::SignBundleRequest* request,
                           hub::rpc::SignBundleReply* response) override;
+
+  grpc::Status SweepDetail(grpc::ServerContext* context,
+                           const hub::rpc::SweepDetailRequest* request,
+                           hub::rpc::SweepDetailReply* response) override;
 };
 
 }  // namespace hub

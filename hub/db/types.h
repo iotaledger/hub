@@ -67,6 +67,12 @@ struct SweepEvent {
   std::vector<std::string> withdrawalUUIDs;
 };
 
+struct SweepDetail {
+  bool confirmed;
+  std::vector<std::string> trytes;
+  std::vector<common::crypto::Hash> tails;
+};
+
 struct Sweep {
   uint64_t id;
   std::string bundleHash;

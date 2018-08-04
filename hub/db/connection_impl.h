@@ -259,6 +259,11 @@ class ConnectionImpl : public Connection {
     return db::helper<Conn>::getSweepByWithdrawalUUID(*_conn, uuid);
   }
 
+  nonstd::optional<SweepDetail> getSweepDetailByBundleHash(
+      const common::crypto::Hash& bundleHash) override {
+    return db::helper<Conn>::getSweepDetailByBundleHash(*_conn, bundleHash);
+  }
+
   void execute(const std::string& what) override { _conn->execute(what); }
 
  private:

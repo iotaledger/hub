@@ -816,6 +816,37 @@ nonstd::optional<SweepEvent> helper<C>::getSweepByBundleHash(
   return evt;
 }
 
+template <typename C>
+nonstd::optional<hub::db::SweepDetail> helper<C>::getSweepDetailByBundleHash(
+    C& connection, const common::crypto::Hash& bundleHash) {
+  db::sql::Sweep swp;
+  db::sql::SweepTails tls;
+
+  hub::db::SweepDetail sweepsDetails;
+
+  auto result = connection(
+      select(swp.bundleHash, swp.id, swp.trytes, swp.confirmed, tls.hash)
+          .from(swp.left_outer_join(tls).on(tls.sweep == swp.id))
+          .where(swp.bundleHash == bundleHash.str()));
+
+  constexpr size_t trytesPerTX = 2673;
+
+  // Need to chunk this up.
+  auto combinedTrytes = std::move(result.front().trytes.value());
+  auto txCount = combinedTrytes.size() / trytesPerTX;
+  for (size_t i = 0; i < txCount; i++) {
+    sweepsDetails.trytes.push_back(
+        combinedTrytes.substr(i * trytesPerTX, trytesPerTX));
+  }
+
+  sweepsDetails.confirmed = result.front().confirmed.value();
+  for (const auto& tail : result) {
+    sweepsDetails.tails.emplace_back(std::move(tail.hash.value()));
+  }
+
+  return sweepsDetails;
+}
+
 template struct helper<sqlpp::mysql::connection>;
 template struct helper<sqlpp::sqlite3::connection>;
 

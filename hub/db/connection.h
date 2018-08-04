@@ -294,6 +294,12 @@ class Connection {
   virtual nonstd::optional<SweepEvent> getSweepByBundleHash(
       const common::crypto::Hash& bundleHash) = 0;
 
+  /// Looks up a sweep by bundle hash
+  /// @param[in] bundleHash - the bundle hash to use for the lookup.
+  /// @return nonstd::optional<SweepDetail> - the sweep details  if found
+  virtual nonstd::optional<SweepDetail> getSweepDetailByBundleHash(
+      const common::crypto::Hash& bundleHash) = 0;
+
  private:
   friend class DBManager;
 
