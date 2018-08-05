@@ -313,8 +313,8 @@ bool SweepService::doTick() {
             [](const auto& a, const auto& b) { return a.amount < b.amount; });
 
         // if poorest hub address was not used
-        if (!hubInputs.empty() &&
-            hubInputs.front().amount < minimalVecOfInputs.front().amount) {
+        if (!hubInputs.empty() && hubInputs.front().addressId !=
+                                      minimalVecOfInputs.front().addressId) {
           optionalOutputInput = hubInputs.front();
         }
 
