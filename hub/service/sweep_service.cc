@@ -271,7 +271,7 @@ bool SweepService::doTick() {
 
       LOG(INFO) << "Need to fill " << missing << " via Hub addresses.";
 
-      hubInputs = dbConnection.getHubInputsForSweep(missing, sweepStart);
+      hubInputs = dbConnection.getHubInputsForSweep(sweepStart);
 
       hubInputTotal = std::accumulate(
           hubInputs.cbegin(), hubInputs.cend(), 0uLL,
