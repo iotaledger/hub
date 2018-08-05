@@ -47,10 +47,16 @@ DEFINE_uint32(sweep_max_deposit, 5,
 namespace hub {
 namespace service {
 
-db::TransferOutput SweepService::getHubOutput(uint64_t remainder) {
+db::TransferOutput SweepService::getHubOutput(
+    uint64_t remainder, nonstd::optional<db::TransferInput> optionalHubOutput) {
+  if (optionalHubOutput.has_value()) {
+    return {optionalHubOutput.value().addressId,
+            remainder,
+            {},
+            std::move(optionalHubOutput.value().address)};
+  }
   auto& dbConnection = db::DBManager::get().connection();
   auto& cryptoProvider = common::crypto::CryptoManager::get().provider();
-
   common::crypto::UUID hubOutputUUID;
   auto address = cryptoProvider.getAddressForUUID(hubOutputUUID).value();
 
@@ -266,6 +272,8 @@ bool SweepService::doTick() {
     std::vector<db::TransferInput> hubInputs;
     uint64_t hubInputTotal = 0;
 
+    nonstd::optional<db::TransferInput> optionalOutputInput;
+
     if (depositsTotal < requiredOutput) {
       auto missing = requiredOutput - depositsTotal;
 
@@ -291,6 +299,25 @@ bool SweepService::doTick() {
         std::vector<db::TransferInput> minimalVecOfInputs;
         getVecOfMinSizeWithSumNotLessThan(missing, hubInputs,
                                           minimalVecOfInputs);
+
+        // Last element in vec is the smallest, but it's good to sort
+        // in case someone ever changes that behavior
+        std::sort(
+            minimalVecOfInputs.begin(), minimalVecOfInputs.end(),
+            [](const auto& a, const auto& b) { return a.amount < b.amount; });
+
+        // First element in vec is the smallest, but it's good to sort
+        // in case someone ever changes db query that gets that vec
+        std::sort(
+            hubInputs.begin(), hubInputs.end(),
+            [](const auto& a, const auto& b) { return a.amount < b.amount; });
+
+        // if poorest hub address was not used
+        if (!hubInputs.empty() &&
+            hubInputs.front().amount < minimalVecOfInputs.front().amount) {
+          optionalOutputInput = hubInputs.front();
+        }
+
         hubInputs.swap(minimalVecOfInputs);
         hubInputTotal = std::accumulate(
             hubInputs.cbegin(), hubInputs.cend(), 0uLL,
@@ -311,7 +338,7 @@ bool SweepService::doTick() {
 
     // 4. Determine Hub output address
     auto remainder = (hubInputTotal + depositsTotal) - requiredOutput;
-    auto hubOutput = getHubOutput(remainder);
+    auto hubOutput = getHubOutput(remainder, optionalOutputInput);
 
     LOG(INFO) << "Will move " << remainder
               << " into new Hub address: " << hubOutput.payoutAddress.str();

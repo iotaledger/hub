@@ -57,7 +57,10 @@ class SweepService : public ScheduledService {
   /// - the new hub address
   /// - the id of the new hub address
   /// - the remainder
-  db::TransferOutput getHubOutput(uint64_t remainder);
+  /// - an optional hub input that will use as change address
+  db::TransferOutput getHubOutput(
+      uint64_t remainder,
+      nonstd::optional<db::TransferInput> optionalHubOutput);
 
   /// Compute and serialize a bundle made up of all the deposits and withdrawals
   /// identified during the sweep.
