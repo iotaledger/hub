@@ -7,6 +7,7 @@
 
 #include "hub/service/sweep_service.h"
 
+#include <algorithm>
 #include <chrono>
 #include <numeric>
 #include <sstream>
@@ -286,6 +287,11 @@ bool SweepService::doTick() {
         hubInputs.clear();
         requiredOutput = 0;
         withdrawals.clear();
+      } else {
+        std::vector<db::TransferInput> minimalVecOfInputs;
+        getVecOfMinSizeWithSumNotLessThan(missing, hubInputs,
+                                          minimalVecOfInputs);
+        hubInputs.swap(minimalVecOfInputs);
       }
     }
 
@@ -327,6 +333,28 @@ bool SweepService::doTick() {
   // PoW is handled by attachment service
 
   return true;
+}
+
+void SweepService::getVecOfMinSizeWithSumNotLessThan(
+    uint64_t amount, const std::vector<db::TransferInput>& hubInputs,
+    std::vector<db::TransferInput>& minVecHubInputs) {
+  auto inputs = hubInputs;
+  // Sort lowest to highest - input should already be sorted, but just in case
+  std::sort(inputs.begin(), inputs.end(),
+            [](const auto& a, const auto& b) { return a.amount < b.amount; });
+  uint64_t missing = amount;
+
+  while (missing && !inputs.empty()) {
+    auto low = std::lower_bound(
+        inputs.begin(), inputs.end(), missing,
+        [](const auto& inp, uint64_t missing) { return inp.amount < missing; });
+    if (low == inputs.end()) {
+      --low;
+    }
+    minVecHubInputs.push_back(*low);
+    inputs.erase(low);
+    missing = low->amount > missing ? 0 : missing - low->amount;
+  }
 }
 }  // namespace service
 }  // namespace hub
