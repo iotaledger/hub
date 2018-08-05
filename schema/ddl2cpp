@@ -261,6 +261,7 @@ types = {
     'char': 'char_',
     'varchar': 'varchar',
     'text': 'text',
+    'longtext': 'text',
     'clob': 'text',
     'tinyblob': 'blob',
     'blob': 'blob',
