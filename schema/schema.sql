@@ -38,7 +38,7 @@ CREATE INDEX idx_hub_address_balance ON hub_address(balance);
 CREATE TABLE IF NOT EXISTS sweep (
   id INTEGER PRIMARY KEY /*!40101 AUTO_INCREMENT */,
   bundle_hash CHAR(81) NOT NULL UNIQUE,
-  trytes TEXT NOT NULL,
+  trytes LONGTEXT NOT NULL,
   into_hub_address INTEGER NOT NULL,
   confirmed INTEGER DEFAULT 0 NOT NULL,
   created_at DATETIME DEFAULT CURRENT_TIMESTAMP NOT NULL,
