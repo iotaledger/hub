@@ -125,7 +125,7 @@ struct helper {
       C& connection, size_t max,
       const std::chrono::system_clock::time_point& olderThan);
 
-  static std::vector<TransferInput> getHubInputsForSweep(
+  static std::vector<TransferInput> availableHubInputs(
       C& connection, const std::chrono::system_clock::time_point& olderThan);
 
   static nonstd::optional<AddressInfo> getAddressInfo(

@@ -271,7 +271,7 @@ bool SweepService::doTick() {
 
       LOG(INFO) << "Need to fill " << missing << " via Hub addresses.";
 
-      hubInputs = dbConnection.getHubInputsForSweep(sweepStart);
+      hubInputs = dbConnection.availableHubInputs(sweepStart);
 
       hubInputTotal = std::accumulate(
           hubInputs.cbegin(), hubInputs.cend(), 0uLL,
@@ -292,6 +292,9 @@ bool SweepService::doTick() {
         getVecOfMinSizeWithSumNotLessThan(missing, hubInputs,
                                           minimalVecOfInputs);
         hubInputs.swap(minimalVecOfInputs);
+        hubInputTotal = std::accumulate(
+            hubInputs.cbegin(), hubInputs.cend(), 0uLL,
+            [](uint64_t a, const auto& b) { return a + b.amount; });
       }
     }
 

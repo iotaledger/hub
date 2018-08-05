@@ -233,9 +233,9 @@ class ConnectionImpl : public Connection {
     return db::helper<Conn>::getDepositsForSweep(*_conn, max, olderThan);
   };
 
-  std::vector<TransferInput> getHubInputsForSweep(
+  std::vector<TransferInput> availableHubInputs(
       const std::chrono::system_clock::time_point& olderThan) override {
-    return db::helper<Conn>::getHubInputsForSweep(*_conn, olderThan);
+    return db::helper<Conn>::availableHubInputs(*_conn, olderThan);
   }
 
   bool isSweepConfirmed(uint64_t sweepId) override {

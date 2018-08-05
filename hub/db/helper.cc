@@ -657,7 +657,7 @@ std::vector<TransferInput> helper<C>::getDepositsForSweep(
 }
 
 template <typename C>
-std::vector<TransferInput> helper<C>::getHubInputsForSweep(
+std::vector<TransferInput> helper<C>::availableHubInputs(
     C& connection, const std::chrono::system_clock::time_point& olderThan) {
   db::sql::HubAddress add;
   db::sql::HubAddressBalance bal;

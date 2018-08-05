@@ -268,7 +268,7 @@ class Connection {
   /// @param[in] requiredAmount - the required total amount to obtain
   /// @param[in] olderThan - the cutoff point in time
   /// @return std::vector - a list of TransferInput
-  virtual std::vector<TransferInput> getHubInputsForSweep(
+  virtual std::vector<TransferInput> availableHubInputs(
       const std::chrono::system_clock::time_point& olderThan) = 0;
 
   /// @param[in] sweepId - the sweepId if the creation results from a sweep
