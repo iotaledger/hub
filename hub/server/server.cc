@@ -24,6 +24,7 @@
 #include "hub/crypto/remote_signing_provider.h"
 #include "hub/db/db.h"
 #include "hub/db/helper.h"
+#include "hub/iota/local_pow.h"
 #include "hub/iota/pow.h"
 #include "hub/iota/remote_pow.h"
 #include "hub/service/sweep_service.h"
@@ -56,6 +57,9 @@ DEFINE_string(signingServerChainCert, "/dev/null",
               "Path to SSL certificate chain (server.crt)");
 DEFINE_string(signingServerKeyCert, "/dev/null",
               "Path to SSL certificate key (server.key)");
+
+// remote/local pow settings
+DEFINE_string(powMode, "remote", "pow method to use {remote,local}");
 
 using grpc::Server;
 using grpc::ServerBuilder;
@@ -103,8 +107,15 @@ void HubServer::initialise() {
     _api = std::make_shared<cppclient::BeastIotaAPI>(host, port);
   }
 
-  iota::POWManager::get().setProvider(std::make_unique<iota::RemotePOW>(
-      _api, FLAGS_depth, FLAGS_minWeightMagnitude));
+  if (FLAGS_powMode == "remote") {
+    iota::POWManager::get().setProvider(std::make_unique<iota::RemotePOW>(
+        _api, FLAGS_depth, FLAGS_minWeightMagnitude));
+  } else if (FLAGS_powMode == "local") {
+    iota::POWManager::get().setProvider(std::make_unique<iota::LocalPOW>(
+        FLAGS_depth, FLAGS_minWeightMagnitude));
+  } else {
+    LOG(FATAL) << "POW mode: \"" << FLAGS_powMode << "\" not recognized";
+  }
 
   _userAddressMonitor = std::make_unique<service::UserAddressMonitor>(
       _api, std::chrono::milliseconds(FLAGS_monitorInterval));

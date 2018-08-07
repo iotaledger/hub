@@ -1,0 +1,70 @@
+/*
+ * Copyright (c) 2018 IOTA Stiftung
+ * https://github.com/iotaledger/rpchub
+ *
+ * Refer to the LICENSE file for licensing information
+ */
+
+#include "hub/iota/local_pow.h"
+
+#include "common/helpers/digest.h"
+#include "common/helpers/pow.h"
+#include "common/trinary/tryte_long.h"
+
+#include <algorithm>
+#include <chrono>
+
+#include <glog/logging.h>
+
+namespace hub {
+namespace iota {
+
+LocalPOW::LocalPOW(size_t depth, size_t mwm)
+    : POWProvider(nullptr, depth, mwm) {}
+
+std::vector<std::string> LocalPOW::doPOW(const std::vector<std::string>& trytes,
+                                         const std::string& trunk,
+                                         const std::string& branch) const {
+  auto timestampSeconds =
+      std::chrono::duration_cast<std::chrono::seconds>(
+          std::chrono::system_clock::now().time_since_epoch())
+          .count();
+
+  std::vector<std::string> powedTxs;
+  tryte_t trytesTime[10] = "999999999";
+  long_to_trytes(timestampSeconds, trytesTime);
+  std::string prevTx;
+
+  std::chrono::system_clock::time_point start =
+      std::chrono::system_clock::now();
+  for (auto txTrytes : trytes) {
+    txTrytes.replace(TRUNK_OFFSET, 81, prevTx.empty() ? trunk : prevTx);
+    txTrytes.replace(BRANCH_OFFSET, 81, prevTx.empty() ? branch : trunk);
+    txTrytes.replace(TIMESTAMP_OFFSET, 9, reinterpret_cast<char*>(trytesTime));
+    auto tag = txTrytes.substr(TAG_OFFSET, 27);
+    if (std::all_of(tag.cbegin(), tag.cend(),
+                    [&](char c) { return c == '9'; })) {
+      txTrytes.replace(TAG_OFFSET, 27,
+                       txTrytes.substr(OBSOLETE_TAG_OFFSET, 27));
+    }
+    char* foundNonce = iota_pow(txTrytes.data(), mwm());
+    txTrytes.replace(NONCE_OFFSET, 27, foundNonce);
+
+    char* digest = iota_digest(txTrytes.data());
+    prevTx = digest;
+    free(digest);
+    free(foundNonce);
+    powedTxs.push_back(std::move(txTrytes));
+  }
+
+  std::chrono::system_clock::time_point end = std::chrono::system_clock::now();
+  auto duration =
+      std::chrono::duration_cast<std::chrono::milliseconds>(end - start)
+          .count();
+
+  LOG(INFO) << __FUNCTION__ << " POW took " << duration << " milliseconds";
+
+  return powedTxs;
+}
+}  // namespace iota
+}  // namespace hub
