@@ -59,7 +59,7 @@ DEFINE_string(signingServerKeyCert, "/dev/null",
               "Path to SSL certificate key (server.key)");
 
 // remote/local pow settings
-DEFINE_string(powMode, "remote", "pow method to use {remote,local}");
+DEFINE_string(powMode, "remote", "PoW method to use {remote,local}");
 
 using grpc::Server;
 using grpc::ServerBuilder;
@@ -114,7 +114,7 @@ void HubServer::initialise() {
     iota::POWManager::get().setProvider(std::make_unique<iota::LocalPOW>(
         FLAGS_depth, FLAGS_minWeightMagnitude));
   } else {
-    LOG(FATAL) << "POW mode: \"" << FLAGS_powMode << "\" not recognized";
+    LOG(FATAL) << "PoW mode: \"" << FLAGS_powMode << "\" not recognized";
   }
 
   _userAddressMonitor = std::make_unique<service::UserAddressMonitor>(

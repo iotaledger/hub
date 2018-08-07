@@ -13,6 +13,7 @@
 #include <vector>
 
 #include "common/crypto/types.h"
+#include "common/helpers/digest.h"
 #include "hub/iota/local_pow.h"
 #include "hub/tests/runner.h"
 
@@ -96,4 +97,20 @@ TEST_F(LocalPOWTests, CorrectDigest) {
   EXPECT_TRUE(
       std::all_of(powedTxs.begin(), powedTxs.end(),
                   [](const auto& powedTx) { return powedTx.size() == 2673; }));
+
+  EXPECT_EQ(powedTxs[0].substr(hub::iota::LocalPOW::BRANCH_OFFSET, 81),
+            resp.branchTransaction);
+  EXPECT_EQ(powedTxs[0].substr(hub::iota::LocalPOW::TRUNK_OFFSET, 81),
+            resp.trunkTransaction);
+  char* digest = iota_digest(powedTxs[0].c_str());
+  std::string prev = digest;
+  for (auto i = 1; i < powedTxs.size(); ++i) {
+    free(digest);
+    EXPECT_EQ(powedTxs[i].substr(hub::iota::LocalPOW::BRANCH_OFFSET, 81),
+              resp.trunkTransaction);
+    EXPECT_EQ(powedTxs[i].substr(hub::iota::LocalPOW::TRUNK_OFFSET, 81), prev);
+    digest = iota_digest(powedTxs[i].c_str());
+    prev = digest;
+  }
+  free(digest);
 }
