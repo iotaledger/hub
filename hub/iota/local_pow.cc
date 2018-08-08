@@ -31,7 +31,7 @@ std::vector<std::string> LocalPOW::doPOW(const std::vector<std::string>& trytes,
           .count();
 
   std::vector<std::string> powedTxs;
-  tryte_t trytesTime[10] = "999999999";
+  tryte_t trytesTime[9] = {'9', '9', '9', '9', '9', '9', '9', '9', '9'};
   long_to_trytes(timestampSeconds, trytesTime);
   std::string prevTxHash;
 
@@ -40,7 +40,8 @@ std::vector<std::string> LocalPOW::doPOW(const std::vector<std::string>& trytes,
   for (auto txTrytes : trytes) {
     txTrytes.replace(TRUNK_OFFSET, 81, prevTxHash.empty() ? trunk : prevTxHash);
     txTrytes.replace(BRANCH_OFFSET, 81, prevTxHash.empty() ? branch : trunk);
-    txTrytes.replace(TIMESTAMP_OFFSET, 9, reinterpret_cast<char*>(trytesTime));
+    txTrytes.replace(TIMESTAMP_OFFSET, 9, reinterpret_cast<char*>(trytesTime),
+                     9);
     auto tag = txTrytes.substr(TAG_OFFSET, 27);
     if (std::all_of(tag.cbegin(), tag.cend(),
                     [&](char c) { return c == '9'; })) {
