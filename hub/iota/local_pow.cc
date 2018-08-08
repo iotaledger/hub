@@ -33,13 +33,13 @@ std::vector<std::string> LocalPOW::doPOW(const std::vector<std::string>& trytes,
   std::vector<std::string> powedTxs;
   tryte_t trytesTime[10] = "999999999";
   long_to_trytes(timestampSeconds, trytesTime);
-  std::string prevTx;
+  std::string prevTxHash;
 
   std::chrono::system_clock::time_point start =
       std::chrono::system_clock::now();
   for (auto txTrytes : trytes) {
-    txTrytes.replace(TRUNK_OFFSET, 81, prevTx.empty() ? trunk : prevTx);
-    txTrytes.replace(BRANCH_OFFSET, 81, prevTx.empty() ? branch : trunk);
+    txTrytes.replace(TRUNK_OFFSET, 81, prevTxHash.empty() ? trunk : prevTxHash);
+    txTrytes.replace(BRANCH_OFFSET, 81, prevTxHash.empty() ? branch : trunk);
     txTrytes.replace(TIMESTAMP_OFFSET, 9, reinterpret_cast<char*>(trytesTime));
     auto tag = txTrytes.substr(TAG_OFFSET, 27);
     if (std::all_of(tag.cbegin(), tag.cend(),
@@ -51,7 +51,7 @@ std::vector<std::string> LocalPOW::doPOW(const std::vector<std::string>& trytes,
     txTrytes.replace(NONCE_OFFSET, 27, foundNonce);
 
     char* digest = iota_digest(txTrytes.data());
-    prevTx = digest;
+    prevTxHash = digest;
     free(digest);
     free(foundNonce);
     powedTxs.push_back(std::move(txTrytes));
