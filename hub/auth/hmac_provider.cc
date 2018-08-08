@@ -15,7 +15,10 @@ namespace hub {
 namespace auth {
 
 HMACProvider::HMACProvider(const std::string& key) : _key(key) {
-  if (_key.size() != KEY_SIZE) {
+  if (_key.size() > KEY_SIZE) {
+    _key.resize(KEY_SIZE);
+  }
+  if (_key.size() < KEY_SIZE) {
     throw std::runtime_error(
         __FUNCTION__ +
         std::string("Provided HMAC key has wrong size (expected size: ") +
