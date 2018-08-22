@@ -13,6 +13,7 @@ cc_library(
         "//hub/commands",
         "//hub/crypto:signing",
         "//hub/db",
+        "//hub/iota:local_pow",
         "//hub/iota:pow",
         "//hub/iota:remote_pow",
         "//hub/service:attachment_service",

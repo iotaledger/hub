@@ -33,7 +33,7 @@ class POWProvider {
   size_t depth() const { return _depth; }
 
   virtual cppclient::GetTransactionsToApproveResponse getAttachmentPoint(
-      const nonstd::optional<std::string>& reference = {}) const;
+      const nonstd::optional<std::string>& reference) const;
 
   virtual std::vector<std::string> performPOW(
       const std::vector<std::string>& trytes) const {

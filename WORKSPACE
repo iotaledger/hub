@@ -69,7 +69,7 @@ new_git_repository(
 
 git_repository(
     name = "rules_iota",
-    commit = "0d0681a6dc4069a1bd2c7576e6430b2b04f937ad",
+    commit = "68cd6e9f4de5d6d6bb0c698cff3cf5213b6fabf2",
     remote = "https://github.com/iotaledger/rules_iota.git",
 )
 
