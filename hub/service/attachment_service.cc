@@ -119,12 +119,29 @@ void AttachmentService::reattachSweep(db::Connection& dbConnection,
                                       const iota::POWProvider& powProvider,
                                       const db::Sweep& sweep) {
   auto attachedTrytes = powProvider.performPOW(sweep.trytes);
+  if (attachedTrytes.empty()) {
+    LOG(ERROR) << "Failed in POW for sweep with bundle's hash: "
+               << sweep.bundleHash;
+    return;
+  }
   // Get tail hash of first tx:
   auto tailHash = iota_digest(attachedTrytes[0].c_str());
   LOG(INFO) << "Reattached sweep " << sweep.id << " as: " << tailHash;
 
-  _api->storeTransactions(attachedTrytes);
-  _api->broadcastTransactions(attachedTrytes);
+  if (!_api->storeTransactions(attachedTrytes)) {
+    std::free(tailHash);
+    LOG(ERROR)
+        << "Failed in \"storeTransactions\" for sweep with bundle's hash: "
+        << sweep.bundleHash;
+    return;
+  }
+  if (!_api->broadcastTransactions(attachedTrytes)) {
+    std::free(tailHash);
+    LOG(ERROR)
+        << "Failed in \"broadcastTransactions\" for sweep with bundle's hash: "
+        << sweep.bundleHash;
+    return;
+  }
 
   dbConnection.createTail(sweep.id, tailHash);
 
