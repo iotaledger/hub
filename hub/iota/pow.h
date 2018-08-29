@@ -8,6 +8,7 @@
 #ifndef HUB_IOTA_POW_H_
 #define HUB_IOTA_POW_H_
 
+#include <glog/logging.h>
 #include <memory>
 #include <nonstd/optional.hpp>
 #include <string>
@@ -32,12 +33,17 @@ class POWProvider {
   size_t mwm() const { return _mwm; }
   size_t depth() const { return _depth; }
 
-  virtual cppclient::GetTransactionsToApproveResponse getAttachmentPoint(
-      const nonstd::optional<std::string>& reference) const;
+  virtual nonstd::optional<cppclient::GetTransactionsToApproveResponse>
+  getAttachmentPoint(const nonstd::optional<std::string>& reference) const;
 
   virtual std::vector<std::string> performPOW(
       const std::vector<std::string>& trytes) const {
-    auto location = getAttachmentPoint({});
+    auto maybeLocation = getAttachmentPoint({});
+    if (!maybeLocation) {
+      LOG(ERROR) << "Failed to get attachment point";
+      return {};
+    }
+    auto location = maybeLocation.value();
     return doPOW(trytes, location.trunkTransaction, location.branchTransaction);
   }
 

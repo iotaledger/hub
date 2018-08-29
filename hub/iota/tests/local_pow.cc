@@ -71,9 +71,10 @@ class MockPowProvider : public hub::iota::LocalPOW {
   MockPowProvider(std::shared_ptr<cppclient::IotaAPI> api, size_t depth,
                   size_t mwm)
       : hub::iota::LocalPOW(api, depth, mwm){};
-  MOCK_CONST_METHOD1(getAttachmentPoint,
-                     cppclient::GetTransactionsToApproveResponse(
-                         const nonstd::optional<std::string>& reference));
+  MOCK_CONST_METHOD1(
+      getAttachmentPoint,
+      nonstd::optional<cppclient::GetTransactionsToApproveResponse>(
+          const nonstd::optional<std::string>& reference));
 };
 
 class LocalPOWTests : public hub::Test {};
