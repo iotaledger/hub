@@ -156,7 +156,12 @@ void AttachmentService::promoteSweep(db::Connection& connection,
                                      const db::Sweep& sweep,
                                      const common::crypto::Hash& tailHash) {
   VLOG(3) << __FUNCTION__;
-  auto toApprove = _api->getTransactionsToApprove(0, {tailHash.str()});
+  auto maybeToApprove = _api->getTransactionsToApprove(0, {tailHash.str()});
+  if (!maybeToApprove.has_value()) {
+    LOG(ERROR) << "Failed to get  transactions to approve";
+    return;
+  }
+  auto toApprove = maybeToApprove.value();
   auto timestamp = std::chrono::duration_cast<std::chrono::seconds>(
                        std::chrono::system_clock::now().time_since_epoch())
                        .count();

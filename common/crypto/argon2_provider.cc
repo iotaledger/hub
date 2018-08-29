@@ -23,6 +23,7 @@
 #include <iota/types/trinary.hpp>
 #include "boost/interprocess/sync/interprocess_semaphore.hpp"
 
+#include "common/crypto/types.h"
 #include "common/flags.h"
 #include "common/helpers/sign.h"
 #include "common/kerl/converter.h"
@@ -30,13 +31,6 @@
 #include "common/sign/v1/iss_kerl.h"
 #include "common/trinary/trits.h"
 #include "common/trinary/tryte.h"
-#include "common/crypto/types.h"
-
-// FIXME (th0br0) fix up entangled
-extern "C" {
-void trits_to_trytes(trit_t*, tryte_t*, size_t);
-void trytes_to_trits(tryte_t*, trit_t*, size_t);
-}
 
 namespace {
 static constexpr size_t BYTE_LEN = 48;
@@ -84,7 +78,7 @@ TryteSeedPtr seedFromUUID(const common::crypto::UUID& uuid,
   }
   argon_semaphore.post();
 
-  bytes_to_trits(byteSeed.data(), seed.data());
+  convert_bytes_to_trits(byteSeed.data(), seed.data());
   byteSeed.fill(0);
 
   tryteSeed->fill(0);

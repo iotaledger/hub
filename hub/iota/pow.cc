@@ -15,7 +15,8 @@ POWManager& POWManager::get() {
   return instance;
 }
 
-cppclient::GetTransactionsToApproveResponse POWProvider::getAttachmentPoint(
+nonstd::optional<cppclient::GetTransactionsToApproveResponse>
+POWProvider::getAttachmentPoint(
     const nonstd::optional<std::string>& reference) const {
   return _api->getTransactionsToApprove(_depth, reference);
 }
