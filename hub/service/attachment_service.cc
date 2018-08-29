@@ -37,6 +37,7 @@ namespace service {
 bool AttachmentService::checkSweepTailsForConfirmation(
     db::Connection& connection, const db::Sweep& sweep,
     const std::vector<std::string>& tails) {
+  VLOG(3) << __FUNCTION__;
   auto confirmedTails = _api->filterConfirmedTails(tails, {});
 
   LOG(INFO) << "Sweep: " << sweep.id << " (" << sweep.bundleHash
@@ -57,6 +58,7 @@ bool AttachmentService::checkSweepTailsForConfirmation(
 bool AttachmentService::checkForUserReattachment(
     db::Connection& connection, const db::Sweep& sweep,
     const std::vector<std::string>& knownTails) {
+  VLOG(3) << __FUNCTION__;
   auto bundleTransactionHashes = _api->findTransactions(
       {}, std::vector<std::string>{sweep.bundleHash}, {});
   auto bundleTransactions = _api->getTransactions(bundleTransactionHashes);
@@ -118,6 +120,7 @@ bool AttachmentService::checkForUserReattachment(
 void AttachmentService::reattachSweep(db::Connection& dbConnection,
                                       const iota::POWProvider& powProvider,
                                       const db::Sweep& sweep) {
+  VLOG(3) << __FUNCTION__;
   auto attachedTrytes = powProvider.performPOW(sweep.trytes);
   if (attachedTrytes.empty()) {
     LOG(ERROR) << "Failed in POW for sweep with bundle's hash: "
@@ -152,6 +155,7 @@ void AttachmentService::promoteSweep(db::Connection& connection,
                                      const iota::POWProvider& powProvider,
                                      const db::Sweep& sweep,
                                      const common::crypto::Hash& tailHash) {
+  VLOG(3) << __FUNCTION__;
   auto toApprove = _api->getTransactionsToApprove(0, {tailHash.str()});
   auto timestamp = std::chrono::duration_cast<std::chrono::seconds>(
                        std::chrono::system_clock::now().time_since_epoch())
@@ -189,6 +193,7 @@ bool AttachmentService::doTick() {
   // This means, that we can't really batch API requests across sweeps.
   // Shouldn't matter though as we simply assume that the IOTA node is only used
   // by Hub.
+  VLOG(3) << __FUNCTION__;
 
   auto& connection = db::DBManager::get().connection();
   auto& powProvider = iota::POWManager::get().provider();
