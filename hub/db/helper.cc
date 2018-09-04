@@ -158,10 +158,13 @@ uint64_t helper<C>::createWithdrawal(
     const common::crypto::Tag& tag,
     const common::crypto::Address& payoutAddress) {
   db::sql::Withdrawal tbl;
+  auto now = ::sqlpp::chrono::floor<::std::chrono::milliseconds>(
+      std::chrono::system_clock::now());
 
   return connection(insert_into(tbl).set(
       tbl.uuid = uuid, tbl.userId = userId, tbl.amount = amount,
-      tbl.payoutAddress = payoutAddress.str(), tbl.tag = tag.str()));
+      tbl.payoutAddress = payoutAddress.str(), tbl.tag = tag.str(),
+      tbl.requestedAt = now));
 }
 
 template <typename C>
@@ -599,7 +602,8 @@ std::vector<TransferOutput> helper<C>::getWithdrawalsForSweep(
   auto result =
       connection(select(tbl.id, tbl.amount, tbl.tag, tbl.payoutAddress)
                      .from(tbl)
-                     .where(tbl.requestedAt <= olderThan && tbl.sweep.is_null())
+                     .where(tbl.requestedAt <= olderThan &&
+                            tbl.sweep.is_null() && tbl.cancelledAt.is_null())
                      .order_by(tbl.requestedAt.asc())
                      .limit(max));
 
