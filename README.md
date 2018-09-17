@@ -40,6 +40,7 @@ See [Getting Started](docs/getting_started.md) for information on how to use the
     -argon2MCost (Memory cost of Argon2 in bytes) type: int default: 1 << 17
     -argon2Parallelism (Number of threads to use in parallel for Argon2) type: int default: 1
     -argon2Mode (Argon2 mode to use: 1=argon2i;2,else=argon2id) type: int default: 2
+    -keySecLevel (security level to use for IOTA signatures) type:int default: 2
     
   HUB -
 

@@ -18,5 +18,6 @@ DEFINE_uint32(argon2MCost, 1 << 17, "Memory cost of Argon2 in bytes");
 DEFINE_uint32(argon2Parallelism, 1,
               "Number of threads to use in parallel for Argon2");
 DEFINE_uint32(argon2Mode, 2, "Argon2 mode to use: 1=argon2i;2,else=argon2id");
+DEFINE_uint32(keySecLevel, 2, "Security level for IOTA signature");
 }  // namespace flags
 }  // namespace common
