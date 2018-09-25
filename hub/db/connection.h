@@ -135,6 +135,7 @@ class Connection {
 
   /// Get a list of account balances for a user
   /// @param[in] userId - the user id in the database
+  /// @param[in] newerThan - the start point in time
   /// @return std::vector - a list of UserAccountBalanceEvent for this user
   virtual std::vector<UserAccountBalanceEvent> getUserAccountBalances(
       uint64_t userId, std::chrono::system_clock::time_point newerThan) = 0;
