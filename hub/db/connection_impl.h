@@ -148,8 +148,9 @@ class ConnectionImpl : public Connection {
   }
 
   std::vector<UserAccountBalanceEvent> getUserAccountBalances(
-      uint64_t userId) override {
-    return db::helper<Conn>::getUserAccountBalances(*_conn, userId);
+      uint64_t userId,
+      std::chrono::system_clock::time_point newerThan) override {
+    return db::helper<Conn>::getUserAccountBalances(*_conn, userId, newerThan);
   }
 
   std::vector<UserAddressBalanceEvent>

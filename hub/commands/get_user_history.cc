@@ -40,7 +40,9 @@ grpc::Status GetUserHistory::doProcess(
   }
 
   {
-    auto balances = connection.getUserAccountBalances(userId);
+    std::chrono::milliseconds dur(request->newerthan());
+    std::chrono::time_point<std::chrono::system_clock> newerThan(dur);
+    auto balances = connection.getUserAccountBalances(userId, newerThan);
 
     for (const auto& b : balances) {
       auto* event = response->add_events();

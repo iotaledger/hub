@@ -137,7 +137,7 @@ class Connection {
   /// @param[in] userId - the user id in the database
   /// @return std::vector - a list of UserAccountBalanceEvent for this user
   virtual std::vector<UserAccountBalanceEvent> getUserAccountBalances(
-      uint64_t userId) = 0;
+      uint64_t userId, std::chrono::system_clock::time_point newerThan) = 0;
 
   /// Get a list of unconfirmed sweeps
   /// @param[in] olderThan - the cutoff point in time

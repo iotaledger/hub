@@ -61,7 +61,8 @@ struct helper {
       C& connection);
   static void markUUIDAsSigned(C& connection, const common::crypto::UUID& uuid);
   static std::vector<UserAccountBalanceEvent> getUserAccountBalances(
-      C& connection, uint64_t userId);
+      C& connection, uint64_t userId,
+      std::chrono::system_clock::time_point newerThan);
 
   static std::vector<UserAddressBalanceEvent>
   getAllUserAddressesBalancesSinceTimePoint(
