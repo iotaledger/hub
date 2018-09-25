@@ -294,15 +294,16 @@ void helper<C>::markTailAsConfirmed(C& connection, const std::string& hash) {
 
 template <typename C>
 std::vector<UserAccountBalanceEvent> helper<C>::getUserAccountBalances(
-    C& connection, uint64_t userId) {
+    C& connection, uint64_t userId,
+    std::chrono::system_clock::time_point newerThan) {
   db::sql::UserAccountBalance bal;
   db::sql::UserAccount acc;
 
   // Might wanna add sweep's bundle hash or withdrawal uuid in the future.
-  auto result =
-      connection(select(acc.identifier, bal.amount, bal.reason, bal.occuredAt)
-                     .from(bal.join(acc).on(bal.userId == acc.id))
-                     .where(bal.userId == userId));
+  auto result = connection(
+      select(acc.identifier, bal.amount, bal.reason, bal.occuredAt)
+          .from(bal.join(acc).on(bal.userId == acc.id))
+          .where(bal.userId == userId && bal.occuredAt >= newerThan));
 
   std::vector<UserAccountBalanceEvent> balances;
 
