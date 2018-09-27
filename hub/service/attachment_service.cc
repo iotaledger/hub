@@ -47,16 +47,15 @@ bool AttachmentService::checkSweepTailsForConfirmation(
     return false;
   }
 
-  const auto& tail = *confirmedTails.cbegin();
-  LOG(INFO) << "Marking tail as confirmed: " << tail;
-  connection.markTailAsConfirmed(tail);
+  auto tailIt = confirmedTails.cbegin();
+  LOG(INFO) << "Marking tail as confirmed: " << *tailIt;
+  connection.markTailAsConfirmed(*tailIt);
   if (confirmedTails.size() > 1) {
     LOG(ERROR) << "More than one confirmed tail for sweep: " << sweep.id
                << " bundle hash: " << sweep.bundleHash;
-    auto ignoredTailIt = (++confirmedTails.begin());
     LOG(INFO) << "Ignored tails:";
-    while (ignoredTailIt != confirmedTails.end()) {
-      LOG(INFO) << *ignoredTailIt++;
+    while (++tailIt != confirmedTails.cend()) {
+      LOG(INFO) << *tailIt;
     }
   }
 
