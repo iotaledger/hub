@@ -53,6 +53,11 @@ bool AttachmentService::checkSweepTailsForConfirmation(
   if (confirmedTails.size() > 1) {
     LOG(ERROR) << "More than one confirmed tail for sweep: " << sweep.id
                << " bundle hash: " << sweep.bundleHash;
+    auto ignoredTailIt = (++confirmedTails.begin());
+    LOG(INFO) << "Ignored tails:";
+    while (ignoredTailIt != confirmedTails.end()) {
+      LOG(INFO) << *ignoredTailIt++;
+    }
   }
 
   return true;
