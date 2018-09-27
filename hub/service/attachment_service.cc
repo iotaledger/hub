@@ -43,16 +43,19 @@ bool AttachmentService::checkSweepTailsForConfirmation(
   LOG(INFO) << "Sweep: " << sweep.id << " (" << sweep.bundleHash
             << ") has: " << confirmedTails.size() << " confirmed tails.";
 
-  if (confirmedTails.size() == 1) {
-    const auto& tail = *confirmedTails.cbegin();
-    LOG(INFO) << "Marking tail as confirmed: " << tail;
-    connection.markTailAsConfirmed(tail);
-    return true;
-  } else if (confirmedTails.size() > 1) {
-    LOG(FATAL) << "More than one confirmed tail!!!";
+  if (confirmedTails.empty()) {
+    return false;
   }
 
-  return false;
+  const auto& tail = *confirmedTails.cbegin();
+  LOG(INFO) << "Marking tail as confirmed: " << tail;
+  connection.markTailAsConfirmed(tail);
+  if (confirmedTails.size() > 1) {
+    LOG(ERROR) << "More than one confirmed tail for sweep: " << sweep.id
+               << " bundle hash: " << sweep.bundleHash;
+  }
+
+  return true;
 }
 
 bool AttachmentService::checkForUserReattachment(
