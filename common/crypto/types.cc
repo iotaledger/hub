@@ -7,6 +7,7 @@
 
 #include "common/crypto/types.h"
 
+#include <glog/logging.h>
 #include <cstring>
 #include <random>
 #include <utility>
@@ -32,7 +33,13 @@ std::array<uint8_t, UUID::UUID_SIZE> UUID::fromStringView(
   return res;
 }
 
-UUID::UUID() : _data(UUID::generate()) {}
+UUID::UUID() {
+  try {
+    _data = std::move(UUID::generate());
+  } catch (const std::exception& ex) {
+    LOG(FATAL) << " Failed in generating UUID: " << ex.what();
+  }
+}
 
 UUID::UUID(const std::string_view& sv) : _data(fromStringView(sv)) {}
 
