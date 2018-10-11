@@ -104,10 +104,13 @@ uint64_t helper<C>::createUserAddress(C& connection,
                                       const common::crypto::UUID& uuid) {
   db::sql::UserAddress userAddress;
 
-  return connection(insert_into(userAddress)
-                        .set(userAddress.address = address.str(),
-                             userAddress.userId = userId,
-                             userAddress.seedUuid = uuid.str()));
+  auto now = ::sqlpp::chrono::floor<::std::chrono::milliseconds>(
+      std::chrono::system_clock::now());
+
+  return connection(
+      insert_into(userAddress)
+          .set(userAddress.address = address.str(), userAddress.userId = userId,
+               userAddress.seedUuid = uuid.str(), userAddress.createdAt = now));
 }
 
 template <typename C>
@@ -118,15 +121,19 @@ void helper<C>::createUserAddressBalanceEntry(
     nonstd::optional<uint64_t> sweepId) {
   db::sql::UserAddressBalance bal;
 
+  auto now = ::sqlpp::chrono::floor<::std::chrono::milliseconds>(
+      std::chrono::system_clock::now());
+
   if (reason == UserAddressBalanceReason::DEPOSIT) {
+    connection(insert_into(bal).set(
+        bal.userAddress = addressId, bal.amount = amount,
+        bal.reason = static_cast<int>(reason),
+        bal.tailHash = std::move(tailHash.value()), bal.occuredAt = now));
+  } else {
     connection(
         insert_into(bal).set(bal.userAddress = addressId, bal.amount = amount,
                              bal.reason = static_cast<int>(reason),
-                             bal.tailHash = std::move(tailHash.value())));
-  } else {
-    connection(insert_into(bal).set(
-        bal.userAddress = addressId, bal.amount = amount,
-        bal.reason = static_cast<int>(reason), bal.sweep = sweepId.value()));
+                             bal.sweep = sweepId.value(), bal.occuredAt = now));
   }
 }
 
@@ -137,18 +144,24 @@ void helper<C>::createUserAccountBalanceEntry(
     const nonstd::optional<uint64_t> fkey) {
   db::sql::UserAccountBalance bal;
 
+  auto now = ::sqlpp::chrono::floor<::std::chrono::milliseconds>(
+      std::chrono::system_clock::now());
+
   if (reason == UserAccountBalanceReason::SWEEP) {
     connection(insert_into(bal).set(bal.userId = userId, bal.amount = amount,
                                     bal.reason = static_cast<int>(reason),
-                                    bal.sweep = fkey.value()));
+                                    bal.sweep = fkey.value(),
+                                    bal.occuredAt = now));
   } else if (reason == UserAccountBalanceReason::WITHDRAWAL ||
              reason == UserAccountBalanceReason::WITHDRAWAL_CANCEL) {
     connection(insert_into(bal).set(bal.userId = userId, bal.amount = amount,
                                     bal.reason = static_cast<int>(reason),
-                                    bal.withdrawal = fkey.value()));
+                                    bal.withdrawal = fkey.value(),
+                                    bal.occuredAt = now));
   } else {
     connection(insert_into(bal).set(bal.userId = userId, bal.amount = amount,
-                                    bal.reason = static_cast<int>(reason)));
+                                    bal.reason = static_cast<int>(reason),
+                                    bal.occuredAt = now));
   }
 }
 
@@ -158,10 +171,13 @@ uint64_t helper<C>::createWithdrawal(
     const common::crypto::Tag& tag,
     const common::crypto::Address& payoutAddress) {
   db::sql::Withdrawal tbl;
+  auto now = ::sqlpp::chrono::floor<::std::chrono::milliseconds>(
+      std::chrono::system_clock::now());
 
   return connection(insert_into(tbl).set(
       tbl.uuid = uuid, tbl.userId = userId, tbl.amount = amount,
-      tbl.payoutAddress = payoutAddress.str(), tbl.tag = tag.str()));
+      tbl.payoutAddress = payoutAddress.str(), tbl.tag = tag.str(),
+      tbl.requestedAt = now));
 }
 
 template <typename C>
@@ -242,7 +258,11 @@ void helper<C>::createTail(C& connection, uint64_t sweepId,
                            const std::string& hash) {
   db::sql::SweepTails tls;
 
-  connection(insert_into(tls).set(tls.sweep = sweepId, tls.hash = hash));
+  auto now = ::sqlpp::chrono::floor<::std::chrono::milliseconds>(
+      std::chrono::system_clock::now());
+
+  connection(insert_into(tls).set(tls.sweep = sweepId, tls.hash = hash,
+                                  tls.createdAt = now));
 }
 
 template <typename C>
@@ -274,15 +294,16 @@ void helper<C>::markTailAsConfirmed(C& connection, const std::string& hash) {
 
 template <typename C>
 std::vector<UserAccountBalanceEvent> helper<C>::getUserAccountBalances(
-    C& connection, uint64_t userId) {
+    C& connection, uint64_t userId,
+    std::chrono::system_clock::time_point newerThan) {
   db::sql::UserAccountBalance bal;
   db::sql::UserAccount acc;
 
   // Might wanna add sweep's bundle hash or withdrawal uuid in the future.
-  auto result =
-      connection(select(acc.identifier, bal.amount, bal.reason, bal.occuredAt)
-                     .from(bal.join(acc).on(bal.userId == acc.id))
-                     .where(bal.userId == userId));
+  auto result = connection(
+      select(acc.identifier, bal.amount, bal.reason, bal.occuredAt)
+          .from(bal.join(acc).on(bal.userId == acc.id))
+          .where(bal.userId == userId && bal.occuredAt >= newerThan));
 
   std::vector<UserAccountBalanceEvent> balances;
 
@@ -465,6 +486,9 @@ void helper<C>::insertUserTransfers(
   if (transfers.empty()) {
     return;
   }
+  auto now = ::sqlpp::chrono::floor<::std::chrono::milliseconds>(
+      std::chrono::system_clock::now());
+
   auto multi_insert =
       insert_into(bal).columns(bal.userId, bal.amount, bal.reason);
 
@@ -544,8 +568,12 @@ int64_t helper<C>::createHubAddress(C& connection,
                                     const common::crypto::Address& address) {
   db::sql::HubAddress tbl;
 
+  auto now = ::sqlpp::chrono::floor<::std::chrono::milliseconds>(
+      std::chrono::system_clock::now());
+
   return connection(insert_into(tbl).set(tbl.seedUuid = uuid.str(),
-                                         tbl.address = address.str()));
+                                         tbl.address = address.str(),
+                                         tbl.createdAt = now));
 }
 
 template <typename C>
@@ -554,9 +582,13 @@ void helper<C>::createHubAddressBalanceEntry(
     const HubAddressBalanceReason reason, uint64_t sweepId) {
   db::sql::HubAddressBalance bal;
 
-  connection(insert_into(bal).set(
-      bal.hubAddress = hubAddress, bal.amount = amount,
-      bal.reason = static_cast<int>(reason), bal.sweep = sweepId));
+  auto now = ::sqlpp::chrono::floor<::std::chrono::milliseconds>(
+      std::chrono::system_clock::now());
+
+  connection(insert_into(bal).set(bal.hubAddress = hubAddress,
+                                  bal.amount = amount,
+                                  bal.reason = static_cast<int>(reason),
+                                  bal.sweep = sweepId, bal.occuredAt = now));
 }
 
 template <typename C>
@@ -583,9 +615,12 @@ int64_t helper<C>::createSweep(C& connection,
                                uint64_t intoHubAddress) {
   db::sql::Sweep tbl;
 
-  return connection(insert_into(tbl).set(tbl.bundleHash = bundleHash.str(),
-                                         tbl.trytes = bundleTrytes,
-                                         tbl.intoHubAddress = intoHubAddress));
+  auto now = ::sqlpp::chrono::floor<::std::chrono::milliseconds>(
+      std::chrono::system_clock::now());
+
+  return connection(insert_into(tbl).set(
+      tbl.bundleHash = bundleHash.str(), tbl.trytes = bundleTrytes,
+      tbl.intoHubAddress = intoHubAddress, tbl.createdAt = now));
 }
 
 template <typename C>
@@ -599,7 +634,8 @@ std::vector<TransferOutput> helper<C>::getWithdrawalsForSweep(
   auto result =
       connection(select(tbl.id, tbl.amount, tbl.tag, tbl.payoutAddress)
                      .from(tbl)
-                     .where(tbl.requestedAt <= olderThan && tbl.sweep.is_null())
+                     .where(tbl.requestedAt <= olderThan &&
+                            tbl.sweep.is_null() && tbl.cancelledAt.is_null())
                      .order_by(tbl.requestedAt.asc())
                      .limit(max));
 

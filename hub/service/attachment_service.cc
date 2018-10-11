@@ -37,26 +37,35 @@ namespace service {
 bool AttachmentService::checkSweepTailsForConfirmation(
     db::Connection& connection, const db::Sweep& sweep,
     const std::vector<std::string>& tails) {
+  VLOG(3) << __FUNCTION__;
   auto confirmedTails = _api->filterConfirmedTails(tails, {});
 
   LOG(INFO) << "Sweep: " << sweep.id << " (" << sweep.bundleHash
             << ") has: " << confirmedTails.size() << " confirmed tails.";
 
-  if (confirmedTails.size() == 1) {
-    const auto& tail = *confirmedTails.cbegin();
-    LOG(INFO) << "Marking tail as confirmed: " << tail;
-    connection.markTailAsConfirmed(tail);
-    return true;
-  } else if (confirmedTails.size() > 1) {
-    LOG(FATAL) << "More than one confirmed tail!!!";
+  if (confirmedTails.empty()) {
+    return false;
   }
 
-  return false;
+  auto tailIt = confirmedTails.cbegin();
+  LOG(INFO) << "Marking tail as confirmed: " << *tailIt;
+  connection.markTailAsConfirmed(*tailIt);
+  if (confirmedTails.size() > 1) {
+    LOG(ERROR) << "More than one confirmed tail for sweep: " << sweep.id
+               << " bundle hash: " << sweep.bundleHash;
+    LOG(INFO) << "Ignored tails:";
+    while (++tailIt != confirmedTails.cend()) {
+      LOG(INFO) << *tailIt;
+    }
+  }
+
+  return true;
 }
 
 bool AttachmentService::checkForUserReattachment(
     db::Connection& connection, const db::Sweep& sweep,
     const std::vector<std::string>& knownTails) {
+  VLOG(3) << __FUNCTION__;
   auto bundleTransactionHashes = _api->findTransactions(
       {}, std::vector<std::string>{sweep.bundleHash}, {});
   auto bundleTransactions = _api->getTransactions(bundleTransactionHashes);
@@ -118,13 +127,31 @@ bool AttachmentService::checkForUserReattachment(
 void AttachmentService::reattachSweep(db::Connection& dbConnection,
                                       const iota::POWProvider& powProvider,
                                       const db::Sweep& sweep) {
+  VLOG(3) << __FUNCTION__;
   auto attachedTrytes = powProvider.performPOW(sweep.trytes);
+  if (attachedTrytes.empty()) {
+    LOG(ERROR) << "Failed in POW for sweep with bundle's hash: "
+               << sweep.bundleHash;
+    return;
+  }
   // Get tail hash of first tx:
   auto tailHash = iota_digest(attachedTrytes[0].c_str());
   LOG(INFO) << "Reattached sweep " << sweep.id << " as: " << tailHash;
 
-  _api->storeTransactions(attachedTrytes);
-  _api->broadcastTransactions(attachedTrytes);
+  if (!_api->storeTransactions(attachedTrytes)) {
+    std::free(tailHash);
+    LOG(ERROR)
+        << "Failed in \"storeTransactions\" for sweep with bundle's hash: "
+        << sweep.bundleHash;
+    return;
+  }
+  if (!_api->broadcastTransactions(attachedTrytes)) {
+    std::free(tailHash);
+    LOG(ERROR)
+        << "Failed in \"broadcastTransactions\" for sweep with bundle's hash: "
+        << sweep.bundleHash;
+    return;
+  }
 
   dbConnection.createTail(sweep.id, tailHash);
 
@@ -135,7 +162,13 @@ void AttachmentService::promoteSweep(db::Connection& connection,
                                      const iota::POWProvider& powProvider,
                                      const db::Sweep& sweep,
                                      const common::crypto::Hash& tailHash) {
-  auto toApprove = _api->getTransactionsToApprove(0, {tailHash.str()});
+  VLOG(3) << __FUNCTION__;
+  auto maybeToApprove = _api->getTransactionsToApprove(0, {tailHash.str()});
+  if (!maybeToApprove.has_value()) {
+    LOG(ERROR) << "Failed to get  transactions to approve";
+    return;
+  }
+  auto toApprove = maybeToApprove.value();
   auto timestamp = std::chrono::duration_cast<std::chrono::seconds>(
                        std::chrono::system_clock::now().time_since_epoch())
                        .count();
@@ -172,6 +205,7 @@ bool AttachmentService::doTick() {
   // This means, that we can't really batch API requests across sweeps.
   // Shouldn't matter though as we simply assume that the IOTA node is only used
   // by Hub.
+  VLOG(3) << __FUNCTION__;
 
   auto& connection = db::DBManager::get().connection();
   auto& powProvider = iota::POWManager::get().provider();

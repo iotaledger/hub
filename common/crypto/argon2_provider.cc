@@ -23,6 +23,7 @@
 #include <iota/types/trinary.hpp>
 #include "boost/interprocess/sync/interprocess_semaphore.hpp"
 
+#include "common/crypto/types.h"
 #include "common/flags.h"
 #include "common/helpers/sign.h"
 #include "common/kerl/converter.h"
@@ -30,13 +31,6 @@
 #include "common/sign/v1/iss_kerl.h"
 #include "common/trinary/trits.h"
 #include "common/trinary/tryte.h"
-#include "common/crypto/types.h"
-
-// FIXME (th0br0) fix up entangled
-extern "C" {
-void trits_to_trytes(trit_t*, tryte_t*, size_t);
-void trytes_to_trits(tryte_t*, trit_t*, size_t);
-}
 
 namespace {
 static constexpr size_t BYTE_LEN = 48;
@@ -44,7 +38,6 @@ static constexpr size_t TRIT_LEN = 243;
 static constexpr size_t TRYTE_LEN = 81;
 
 static constexpr size_t KEY_IDX = 0;
-static constexpr size_t KEY_SEC = 2;
 
 using TryteSeed = std::array<tryte_t, TRYTE_LEN + 1>;
 using TryteSeedPtr =
@@ -84,7 +77,7 @@ TryteSeedPtr seedFromUUID(const common::crypto::UUID& uuid,
   }
   argon_semaphore.post();
 
-  bytes_to_trits(byteSeed.data(), seed.data());
+  convert_bytes_to_trits(byteSeed.data(), seed.data());
   byteSeed.fill(0);
 
   tryteSeed->fill(0);
@@ -116,7 +109,12 @@ nonstd::optional<common::crypto::Address> Argon2Provider::getAddressForUUID(
   LOG(INFO) << "Generating address for: " << uuid.str().substr(0, 16);
 
   auto seed = seedFromUUID(uuid, _salt);
-  auto add = iota_sign_address_gen((const char*)seed->data(), KEY_IDX, KEY_SEC);
+  if (!securityLevel(uuid).has_value()) {
+    LOG(INFO) << "Failed in getting the security level.";
+    return {};
+  }
+  auto add = iota_sign_address_gen((const char*)seed->data(), KEY_IDX,
+                                   securityLevel(uuid).value());
   common::crypto::Address ret(add);
   std::free(add);
   return {ret};
@@ -124,7 +122,7 @@ nonstd::optional<common::crypto::Address> Argon2Provider::getAddressForUUID(
 
 nonstd::optional<size_t> Argon2Provider::securityLevel(
     const common::crypto::UUID& uuid) const {
-  return KEY_SEC;
+  return common::flags::FLAGS_keySecLevel;
 }
 
 nonstd::optional<std::string> Argon2Provider::doGetSignatureForUUID(
@@ -138,7 +136,12 @@ nonstd::optional<std::string> Argon2Provider::doGetSignatureForUUID(
   IOTA::Models::Bundle bundle;
   auto normalized = bundle.normalizedBundle(bundleHash.str());
 
-  const size_t kKeyLength = ISS_KEY_LENGTH * KEY_SEC;
+  if (!securityLevel(uuid).has_value()) {
+    LOG(INFO) << "Failed in getting the security level.";
+    return {};
+  }
+
+  const size_t kKeyLength = ISS_KEY_LENGTH * securityLevel(uuid).value();
   Kerl kerl;
   init_kerl(&kerl);
 
@@ -152,7 +155,7 @@ nonstd::optional<std::string> Argon2Provider::doGetSignatureForUUID(
   std::vector<int8_t> keyTrits(key, key + kKeyLength);
   std::ostringstream oss;
 
-  for (size_t i = 0; i < KEY_SEC; i++) {
+  for (size_t i = 0; i < common::flags::FLAGS_keySecLevel; i++) {
     std::vector<int8_t> bundleFrag(normalized.begin() + i * 27,
                                    normalized.begin() + (i + 1) * 27);
     std::vector<int8_t> keyFrag(keyTrits.begin() + i * ISS_KEY_LENGTH,

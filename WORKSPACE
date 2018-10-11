@@ -75,9 +75,9 @@ git_repository(
 
 http_archive(
     name = "org_iota_entangled",
-    sha256 = "f35728f50c1e44abbdfe3cb3fa3567dbe078e9fdd19c022b6e442589dd511b68",
-    strip_prefix = "entangled-fb14f6d710195bb33caf8d72d3c686d47133fb71",
-    url = "https://github.com/iotaledger/entangled/archive/fb14f6d710195bb33caf8d72d3c686d47133fb71.zip",
+    sha256 = "a827941569b34a4c8764bfa9047ad2b8e4e464212db9fb52489a6b720ec62ed7",
+    strip_prefix = "entangled-9fbd6c08ca87c33b28ed720b8442d22c5e423842",
+    url = "https://github.com/iotaledger/entangled/archive/9fbd6c08ca87c33b28ed720b8442d22c5e423842.zip",
 )
 
 new_git_repository(

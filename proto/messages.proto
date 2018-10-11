@@ -157,6 +157,8 @@ message StatsReply {
 message GetUserHistoryRequest {
   // UserId
   string userId = 1;
+  // Records newer than this time (MS since epoch) will be retrievd
+  uint64 newerThan = 2;
 }
 
 enum UserAccountBalanceEventType {

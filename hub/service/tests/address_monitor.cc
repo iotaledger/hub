@@ -71,7 +71,7 @@ class MockAPI : public cppclient::IotaAPI {
                                           const std::vector<std::string>&));
 
   MOCK_METHOD2(getTransactionsToApprove,
-               cppclient::GetTransactionsToApproveResponse(
+               nonstd::optional<cppclient::GetTransactionsToApproveResponse>(
                    size_t, const nonstd::optional<std::string>&));
 
   MOCK_METHOD4(attachToTangle,

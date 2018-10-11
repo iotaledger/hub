@@ -99,6 +99,13 @@ void HubServer::initialise() {
     }
   }
 
+  if (common::flags::FLAGS_keySecLevel > 3 ||
+      common::flags::FLAGS_keySecLevel < 1) {
+    LOG(FATAL)
+        << "Key security level must be in the range [1,3], provided value: "
+        << common::flags::FLAGS_keySecLevel;
+  }
+
   {
     size_t portIdx = FLAGS_apiAddress.find(':');
     auto host = FLAGS_apiAddress.substr(0, portIdx);
