@@ -38,7 +38,13 @@ grpc::Status UserWithdraw::doProcess(
   uint64_t userId;
   uint64_t withdrawalId;
 
-  auto withdrawalUUID = boost::uuids::random_generator()();
+  nonstd::optional<boost::uuids::uuid> withdrawalUUIDOptional;
+  try {
+    withdrawalUUIDOptional = boost::uuids::random_generator()();
+  } catch (const std::exception& ex) {
+    LOG(FATAL) << " Failed in generating boost UUID: " << ex.what();
+  }
+  auto withdrawalUUID = *withdrawalUUIDOptional;
 
   if (request->amount() <= 0) {
     return grpc::Status(grpc::StatusCode::FAILED_PRECONDITION, "",
