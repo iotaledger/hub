@@ -26,17 +26,11 @@ git_repository(
     tag = "0.4.0",
 )
 
-git_repository(
-    name = "build_bazel_rules_apple",
-    remote = "https://github.com/bazelbuild/rules_apple.git",
-    tag = "0.5.0",
-)
-
 # DEPENDENCIES
 git_repository(
     name = "io_bazel_rules_docker",
     remote = "https://github.com/bazelbuild/rules_docker.git",
-    tag = "v0.4.0",
+    tag = "v0.5.1",
 )
 
 new_git_repository(
