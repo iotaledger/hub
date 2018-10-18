@@ -29,9 +29,9 @@ git_repository(
 # DEPENDENCIES
 http_archive(
     name = "io_bazel_rules_docker",
-    url = "https://github.com/bazelbuild/rules_docker/archive/6d9fdf2ca948ba4cfe3da778bb5afae71a3cf8dd.zip",
+    sha256 = "31cd410896375740c1ff537dc8de409b23a28bf00c9f4b07a85d9fd14d577f88",
     strip_prefix = "rules_docker-6d9fdf2ca948ba4cfe3da778bb5afae71a3cf8dd",
-    sha256 = "31cd410896375740c1ff537dc8de409b23a28bf00c9f4b07a85d9fd14d577f88"
+    url = "https://github.com/bazelbuild/rules_docker/archive/6d9fdf2ca948ba4cfe3da778bb5afae71a3cf8dd.zip",
 )
 
 new_git_repository(

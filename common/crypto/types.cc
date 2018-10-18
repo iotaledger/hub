@@ -8,8 +8,9 @@
 #include "common/crypto/types.h"
 
 #include <glog/logging.h>
+#include <boost/random.hpp>
+#include <boost/random/random_device.hpp>
 #include <cstring>
-#include <random>
 #include <utility>
 
 namespace common {
@@ -17,9 +18,8 @@ namespace crypto {
 
 std::array<uint8_t, UUID::UUID_SIZE> UUID::generate() {
   std::array<uint8_t, UUID_SIZE> res;
-  std::random_device rd;
-  std::uniform_int_distribution<> index_dist(0, UUID_SIZE - 1);
-
+  boost::random::random_device rd;
+  boost::random::uniform_int_distribution<> index_dist(0, UUID_SIZE - 1);
   for (uint32_t i = 0; i < UUID_SIZE; ++i) {
     res[i] = BASE64_CHARS[index_dist(rd)];
   }
