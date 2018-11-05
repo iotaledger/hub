@@ -61,28 +61,33 @@ grpc::Status UserWithdraw::doProcess(
                           errorToString(hub::rpc::ErrorCode::CHECKSUM_INVALID));
     }
   } else {
-    address = {common::crypto::Address(request->payoutaddress())};
+    try {
+      address = {common::crypto::Address(request->payoutaddress())};
+    } catch (const std::exception& ex) {
+      LOG(ERROR) << session()
+                 << " Withdrawal to invalid address: " << ex.what();
+
+      return grpc::Status(grpc::StatusCode::FAILED_PRECONDITION, "",
+                          errorToString(hub::rpc::ErrorCode::EC_UNKNOWN));
+    }
   }
 
-  if (address.has_value()) {
-    // Currently, all IOTA addresses' last trit must be 0.
-    // This means 9ABCDWXYZ'
-
-    switch (address->str_view()[80]) {
-      case '9':
-      case 'A':
-      case 'B':
-      case 'C':
-      case 'D':
-      case 'W':
-      case 'X':
-      case 'Y':
-      case 'Z':
-        break;
-      default:
-        return grpc::Status(grpc::StatusCode::FAILED_PRECONDITION, "",
-                            errorToString(hub::rpc::ErrorCode::EC_UNKNOWN));
-    }
+  // Currently, all IOTA addresses' last trit must be 0.
+  // This means 9ABCDWXYZ'
+  switch (address->str_view()[80]) {
+    case '9':
+    case 'A':
+    case 'B':
+    case 'C':
+    case 'D':
+    case 'W':
+    case 'X':
+    case 'Y':
+    case 'Z':
+      break;
+    default:
+      return grpc::Status(grpc::StatusCode::FAILED_PRECONDITION, "",
+                          errorToString(hub::rpc::ErrorCode::EC_UNKNOWN));
   }
 
   auto transaction = connection.transaction();
