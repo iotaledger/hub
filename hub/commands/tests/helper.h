@@ -21,6 +21,8 @@ std::map<uint64_t, int64_t> createZigZagTransfer(
     std::vector<std::string>& users, rpc::ProcessTransferBatchRequest& req,
     int64_t absAmount);
 
+hub::rpc::ErrorCode errorCodeFromDetails(const std::string& errorStr);
+
 }  // namespace tests
 
 }  // namespace hub
