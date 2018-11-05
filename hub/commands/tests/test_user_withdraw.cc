@@ -104,8 +104,10 @@ TEST_F(UserWithdrawTest, ErrorOnInvalidAddress) {
       "9OQFRVDEF");
 
   auto status = command.doProcess(&req, &res);
-
   ASSERT_FALSE(status.ok());
+
+  ASSERT_EQ(hub::rpc::ErrorCode::INELIGIBLE_ADDRESS,
+            errorCodeFromDetails(status.error_details()));
 }
 
 TEST_F(UserWithdrawTest, ErrorOnInvalidChecksumForPayoutAddress) {

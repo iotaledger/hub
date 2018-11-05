@@ -86,8 +86,9 @@ grpc::Status UserWithdraw::doProcess(
     case 'Z':
       break;
     default:
-      return grpc::Status(grpc::StatusCode::FAILED_PRECONDITION, "",
-                          errorToString(hub::rpc::ErrorCode::EC_UNKNOWN));
+      return grpc::Status(
+          grpc::StatusCode::FAILED_PRECONDITION, "",
+          errorToString(hub::rpc::ErrorCode::INELIGIBLE_ADDRESS));
   }
 
   auto transaction = connection.transaction();

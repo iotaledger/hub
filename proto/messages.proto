@@ -12,7 +12,7 @@ package hub.rpc;
   Error codes that can be returned by the hub.
  */
 enum ErrorCode {
-  // Unused.
+  // Generic error drop-in.
   EC_UNKNOWN = 0;
   // UserId already exists.
   USER_EXISTS = 1;
