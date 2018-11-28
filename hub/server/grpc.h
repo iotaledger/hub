@@ -131,6 +131,10 @@ class HubImpl final : public hub::rpc::Hub::Service {
   grpc::Status SweepDetail(grpc::ServerContext* context,
                            const hub::rpc::SweepDetailRequest* request,
                            hub::rpc::SweepDetailReply* response) override;
+
+  grpc::Status GetStats(grpc::ServerContext* context,
+                        const hub::rpc::GetStatsRequest* request,
+                        hub::rpc::GetStatsReply* response) override;
 };
 
 }  // namespace hub

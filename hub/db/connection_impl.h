@@ -265,6 +265,10 @@ class ConnectionImpl : public Connection {
     return db::helper<Conn>::getSweepDetailByBundleHash(*_conn, bundleHash);
   }
 
+  uint64_t getTotalBalance() override {
+    return db::helper<Conn>::getTotalBalance(*_conn);
+  }
+
   void execute(const std::string& what) override { _conn->execute(what); }
 
  private:

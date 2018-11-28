@@ -301,6 +301,10 @@ class Connection {
   virtual nonstd::optional<SweepDetail> getSweepDetailByBundleHash(
       const common::crypto::Hash& bundleHash) = 0;
 
+  /// Provides the total amount of user funds currently managed by the Hub
+  /// @return uint64_t - the total user account balance
+  virtual uint64_t getTotalBalance() = 0;
+
  private:
   friend class DBManager;
 

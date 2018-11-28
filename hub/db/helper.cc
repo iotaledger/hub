@@ -885,6 +885,14 @@ nonstd::optional<hub::db::SweepDetail> helper<C>::getSweepDetailByBundleHash(
   return sweepsDetails;
 }
 
+template <typename C>
+uint64_t helper<C>::getTotalBalance(C& connection) {
+  db::sql::UserAccount acc;
+  return connection(select(sum(acc.balance)).unconditionally().from(acc))
+      .front()
+      .sum;
+}
+
 template struct helper<sqlpp::mysql::connection>;
 template struct helper<sqlpp::sqlite3::connection>;
 
