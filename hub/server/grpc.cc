@@ -21,6 +21,7 @@
 #include "hub/commands/get_balance.h"
 #include "hub/commands/get_deposit_address.h"
 #include "hub/commands/get_user_history.h"
+#include "hub/commands/get_stats.h"
 #include "hub/commands/process_transfer_batch.h"
 #include "hub/commands/sign_bundle.h"
 #include "hub/commands/sweep_detail.h"
@@ -146,6 +147,14 @@ grpc::Status HubImpl::SweepDetail(grpc::ServerContext* context,
                                   hub::rpc::SweepDetailReply* response) {
   auto clientSession = std::make_shared<common::ClientSession>();
   cmd::SweepDetail cmd(clientSession);
+  return cmd.process(request, response);
+}
+
+grpc::Status HubImpl::GetStats(grpc::ServerContext* context,
+                               const hub::rpc::GetStatsRequest* request,
+                               hub::rpc::GetStatsReply* response) {
+  auto clientSession = std::make_shared<common::ClientSession>();
+  cmd::GetStats cmd(clientSession);
   return cmd.process(request, response);
 }
 

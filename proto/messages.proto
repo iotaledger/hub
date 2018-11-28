@@ -147,10 +147,10 @@ message UserWithdrawCancelReply {
   bool success = 1;
 }
 
-message StatsRequest {}
+message GetStatsRequest {}
 
-message StatsReply {
-  // Total balance currently managed by the hub.
+message GetStatsReply {
+  // Total user account balance currently managed by the hub.
   uint64 totalBalance = 1;
 }
 

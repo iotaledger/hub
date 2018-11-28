@@ -39,6 +39,7 @@ cc_library(
 
 cc_test(
     name = "tests",
+    timeout = "long",
     srcs = glob([
         "tests/**/*.cc",
         "tests/**/*.h",

@@ -134,6 +134,8 @@ struct helper {
       C& connection, const common::crypto::Address& address);
 
   static bool isSweepConfirmed(C& connection, uint64_t sweepId);
+
+  static uint64_t getTotalBalance(C& connection);
 };
 
 }  // namespace db

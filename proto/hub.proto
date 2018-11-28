@@ -25,7 +25,7 @@ service Hub {
   // Produces a stream of all balance changes as they appear since the provided timestamp
   rpc BalanceSubscription (BalanceSubscriptionRequest) returns (stream BalanceEvent);
   // Provides statistics about the Hub
-  rpc GetStats (StatsRequest) returns (StatsReply);
+  rpc GetStats (GetStatsRequest) returns (GetStatsReply);
   // Produces a stream of all sweeps since the provided timestamp
   rpc SweepSubscription (SweepSubscriptionRequest) returns (stream SweepEvent);
   // Provides information on an address if it's owned by the Hub
