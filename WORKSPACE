@@ -1,5 +1,8 @@
 workspace(name = "org_iota_hub")
 
+load("@bazel_tools//tools/build_defs/repo:git.bzl", "git_repository", "new_git_repository")
+load("@bazel_tools//tools/build_defs/repo:http.bzl", "http_archive")
+
 # EXTERNAL RULES
 git_repository(
     name = "org_pubref_rules_protobuf",
@@ -8,8 +11,14 @@ git_repository(
 )
 
 git_repository(
+    name = "rules_iota",
+    commit = "e81ce3c6384cc1404858e53c2abebf9a18031a93",
+    remote = "https://github.com/iotaledger/rules_iota.git",
+)
+
+git_repository(
     name = "iota_toolchains",
-    commit = "6b501df8e7f3bc3b143c894737fbb1d82e914762",
+    commit = "aeef0cf0a5194da308db582551feae222af61003",
     remote = "https://github.com/iotaledger/toolchains.git",
 )
 
@@ -36,36 +45,30 @@ http_archive(
 
 new_git_repository(
     name = "hinnant_date",
-    build_file = "third-party/date/BUILD.bzl",
+    build_file = "//:third-party/date/BUILD.bzl",
     commit = "e5c69d84ab5db3e06170b8eedec1d87841c7fb22",
     remote = "https://github.com/HowardHinnant/date.git",
 )
 
 new_git_repository(
     name = "sqlpp11",
-    build_file = "third-party/sqlpp11/BUILD.bzl",
+    build_file = "//:third-party/sqlpp11/BUILD.bzl",
     commit = "ba05135d47e8674f429ba1e03a0259a48f05a4c4",
     remote = "https://github.com/rbock/sqlpp11.git",
 )
 
 new_git_repository(
     name = "sqlpp11sqlite",
-    build_file = "third-party/sqlpp11sqlite/BUILD.bzl",
+    build_file = "//:third-party/sqlpp11sqlite/BUILD.bzl",
     commit = "cf37829fc9828a36afa050f960d09abcaf6aeb6a",
     remote = "https://github.com/rbock/sqlpp11-connector-sqlite3.git",
 )
 
 new_git_repository(
     name = "sqlpp11mysql",
-    build_file = "third-party/sqlpp11mysql/BUILD.bzl",
+    build_file = "//:third-party/sqlpp11mysql/BUILD.bzl",
     commit = "8a48bc2d6157fc445cda5b9beac9b7901fff625c",
     remote = "https://github.com/rbock/sqlpp11-connector-mysql.git",
-)
-
-git_repository(
-    name = "rules_iota",
-    commit = "68cd6e9f4de5d6d6bb0c698cff3cf5213b6fabf2",
-    remote = "https://github.com/iotaledger/rules_iota.git",
 )
 
 http_archive(
@@ -77,14 +80,14 @@ http_archive(
 
 new_git_repository(
     name = "iota_lib_cpp",
-    build_file = "third-party/iota_lib_cpp/BUILD.bzl",
+    build_file = "//:third-party/iota_lib_cpp/BUILD.bzl",
     commit = "9971c832e6a38972803a4d1506a78c36451c3df3",
     remote = "https://github.com/th0br0/iota.lib.cpp.git",
 )
 
 new_git_repository(
     name = "mariadb_connector",
-    build_file = "third-party/mariadb_connector/BUILD.bzl",
+    build_file = "//:third-party/mariadb_connector/BUILD.bzl",
     commit = "184a16d2f1d0bb24bea6bcf23e1604093fef8f93",
     remote = "https://github.com/MariaDB/mariadb-connector-c.git",
 )
