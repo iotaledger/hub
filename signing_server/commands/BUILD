@@ -15,6 +15,6 @@ cc_library(
     deps = [
         "//common",
         "//common/crypto:argon2_provider",
-        "//proto:signing_server_cpp",
+        "//proto:signing_server_grpc_cc",
     ],
 )

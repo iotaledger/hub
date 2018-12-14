@@ -11,7 +11,7 @@ cc_library(
     visibility = ["//visibility:public"],
     deps = [
         "//common/stats",
-        "//proto:hub_cpp",
+        "//proto:hub_grpc_cc",
     ],
 )
 
@@ -31,7 +31,7 @@ cc_library(
         "//common/stats",
         "//hub/auth:hmac_provider",
         "//hub/db",
-        "//proto:hub_cpp",
+        "//proto:hub_grpc_cc",
         "@boost//:range",
         "@com_github_google_glog//:glog",
     ],

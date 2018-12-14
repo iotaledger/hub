@@ -11,7 +11,7 @@ cc_library(
     visibility = ["//visibility:public"],
     deps = [
         ":types",
-        "//proto:signing_server_cpp",
+        "//proto:signing_server_grpc_cc",
         "@optional_lite",
         "@org_iota_entangled//common/helpers:checksum",
     ],
