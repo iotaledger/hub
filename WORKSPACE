@@ -4,10 +4,12 @@ load("@bazel_tools//tools/build_defs/repo:git.bzl", "git_repository", "new_git_r
 load("@bazel_tools//tools/build_defs/repo:http.bzl", "http_archive")
 
 # EXTERNAL RULES
-git_repository(
-    name = "org_pubref_rules_protobuf",
-    commit = "0c59d9145c0d3bfba2a61a04392a950b088a9b83",
-    remote = "https://github.com/pubref/rules_protobuf",
+http_archive(
+    name = "com_github_grpc_grpc",
+    urls = [
+        "https://github.com/grpc/grpc/archive/d2c7d4dea492b9a86a53555aabdbfa90c2b01730.tar.gz",
+    ],
+    strip_prefix = "grpc-d2c7d4dea492b9a86a53555aabdbfa90c2b01730",
 )
 
 git_repository(
@@ -102,32 +104,15 @@ load(
     "@io_bazel_rules_docker//cc:image.bzl",
     _cc_image_repos = "repositories",
 )
-load("@org_pubref_rules_protobuf//cpp:rules.bzl", "cpp_proto_repositories")
-load(
-    "@io_bazel_rules_go//go:def.bzl",
-    "go_prefix",
-    "go_register_toolchains",
-    "go_rules_dependencies",
-)
-load("@org_pubref_rules_protobuf//go:rules.bzl", "go_proto_repositories")
-load(
-    "@org_pubref_rules_protobuf//grpc_gateway:rules.bzl",
-    "grpc_gateway_proto_repositories",
-)
+
+load("@com_github_grpc_grpc//bazel:grpc_deps.bzl", "grpc_deps")
+
 load("@iota_toolchains//:toolchains.bzl", "setup_toolchains")
+
+grpc_deps()
 
 setup_toolchains()
 
 iota_deps()
 
 _cc_image_repos()
-
-cpp_proto_repositories()
-
-go_rules_dependencies()
-
-go_register_toolchains()
-
-go_proto_repositories()
-
-grpc_gateway_proto_repositories()
