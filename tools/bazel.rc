@@ -1,5 +1,5 @@
 # temporary until https://github.com/grpc/grpc/issues/17506 is resolved
---incompatible_remove_native_http_archive=false 
+build --incompatible_remove_native_http_archive=false 
 
 build --cxxopt='-std=c++17'
 test --copt='-ggdb3' 
