@@ -13,6 +13,12 @@ http_archive(
 )
 
 git_repository(
+    name = "io_bazel_rules_python",
+    remote = "https://github.com/bazelbuild/rules_python.git",
+    commit = "f3a6a8d00a51a1f0e6d61bc7065c19fea2b3dd7a",
+)
+
+git_repository(
     name = "rules_iota",
     commit = "b15744b9ea520717752c866d5afc769c3b6b68f3",
     remote = "https://github.com/iotaledger/rules_iota.git",
@@ -22,6 +28,12 @@ git_repository(
     name = "iota_toolchains",
     commit = "9a6c200013d971524f8427b6a404bab0a67a9328",
     remote = "https://github.com/iotaledger/toolchains.git",
+)
+
+git_repository(
+    name = "bazel_toolchains",
+    remote = "https://github.com/th0br0/bazel-toolchains.git",
+    commit = "b6875a7bb09b4fa1db8ea347852c0dc9ccae74ab",
 )
 
 http_archive(
@@ -105,9 +117,14 @@ load(
     _cc_image_repos = "repositories",
 )
 
+
+load("@io_bazel_rules_python//python:pip.bzl", "pip_repositories", "pip_import")
+
 load("@com_github_grpc_grpc//bazel:grpc_deps.bzl", "grpc_deps")
 
 load("@iota_toolchains//:toolchains.bzl", "setup_toolchains")
+
+pip_repositories()
 
 grpc_deps()
 
@@ -116,3 +133,12 @@ setup_toolchains()
 iota_deps()
 
 _cc_image_repos()
+
+pip_import(
+   name = "py_deps",
+   requirements = "//:requirements.txt",
+)
+
+load("@py_deps//:requirements.bzl", "pip_install")
+pip_install()
+
