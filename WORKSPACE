@@ -6,16 +6,16 @@ load("@bazel_tools//tools/build_defs/repo:http.bzl", "http_archive")
 # EXTERNAL RULES
 http_archive(
     name = "com_github_grpc_grpc",
+    strip_prefix = "grpc-1.17.2",
     urls = [
-        "https://github.com/grpc/grpc/archive/d2c7d4dea492b9a86a53555aabdbfa90c2b01730.tar.gz",
+        "https://github.com/grpc/grpc/archive/v1.17.2.tar.gz",
     ],
-    strip_prefix = "grpc-d2c7d4dea492b9a86a53555aabdbfa90c2b01730",
 )
 
 git_repository(
     name = "io_bazel_rules_python",
-    remote = "https://github.com/bazelbuild/rules_python.git",
     commit = "f3a6a8d00a51a1f0e6d61bc7065c19fea2b3dd7a",
+    remote = "https://github.com/bazelbuild/rules_python.git",
 )
 
 git_repository(
@@ -32,8 +32,8 @@ git_repository(
 
 git_repository(
     name = "bazel_toolchains",
-    remote = "https://github.com/th0br0/bazel-toolchains.git",
     commit = "b6875a7bb09b4fa1db8ea347852c0dc9ccae74ab",
+    remote = "https://github.com/th0br0/bazel-toolchains.git",
 )
 
 http_archive(
@@ -50,6 +50,12 @@ git_repository(
 )
 
 # DEPENDENCIES
+http_archive(
+    name = "com_google_protobuf",
+    strip_prefix = "protobuf-66dc42d891a4fc8e9190c524fd67961688a37bbe",
+    url = "https://github.com/google/protobuf/archive/66dc42d891a4fc8e9190c524fd67961688a37bbe.tar.gz",
+)
+
 http_archive(
     name = "io_bazel_rules_docker",
     sha256 = "31cd410896375740c1ff537dc8de409b23a28bf00c9f4b07a85d9fd14d577f88",
@@ -116,12 +122,8 @@ load(
     "@io_bazel_rules_docker//cc:image.bzl",
     _cc_image_repos = "repositories",
 )
-
-
-load("@io_bazel_rules_python//python:pip.bzl", "pip_repositories", "pip_import")
-
+load("@io_bazel_rules_python//python:pip.bzl", "pip_import", "pip_repositories")
 load("@com_github_grpc_grpc//bazel:grpc_deps.bzl", "grpc_deps")
-
 load("@iota_toolchains//:toolchains.bzl", "setup_toolchains")
 
 pip_repositories()
@@ -135,10 +137,10 @@ iota_deps()
 _cc_image_repos()
 
 pip_import(
-   name = "py_deps",
-   requirements = "//:requirements.txt",
+    name = "py_deps",
+    requirements = "//:requirements.txt",
 )
 
 load("@py_deps//:requirements.bzl", "pip_install")
-pip_install()
 
+pip_install()
