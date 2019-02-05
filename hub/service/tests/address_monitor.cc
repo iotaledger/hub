@@ -38,7 +38,8 @@ class MockAPI : public cppclient::IotaAPI {
  public:
   virtual ~MockAPI() {}
 
-  MOCK_METHOD0(isNodeSolid, bool());
+  virtual bool isNodeSolid() { return true; }
+  //MOCK_METHOD0(isNodeSolid, bool());
 
   MOCK_METHOD1(getBalances,
                nonstd::optional<std::unordered_map<std::string, uint64_t>>(
