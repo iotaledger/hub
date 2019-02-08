@@ -109,12 +109,13 @@ nonstd::optional<common::crypto::Address> Argon2Provider::getAddressForUUID(
   LOG(INFO) << "Generating address for: " << uuid.str().substr(0, 16);
 
   auto seed = seedFromUUID(uuid, _salt);
-  if (!securityLevel(uuid).has_value()) {
+  auto maybeSecurityLevel = std::move(securityLevel(uuid));
+  if (!maybeSecurityLevel.has_value()) {
     LOG(INFO) << "Failed in getting the security level.";
     return {};
   }
   auto add = iota_sign_address_gen((const char*)seed->data(), KEY_IDX,
-                                   securityLevel(uuid).value());
+                                   maybeSecurityLevel.value());
   common::crypto::Address ret(add);
   std::free(add);
   return {ret};
@@ -135,13 +136,14 @@ nonstd::optional<std::string> Argon2Provider::doGetSignatureForUUID(
 
   IOTA::Models::Bundle bundle;
   auto normalized = bundle.normalizedBundle(bundleHash.str());
+  auto maybeSecurityLevel = std::move(securityLevel(uuid));
 
-  if (!securityLevel(uuid).has_value()) {
+  if (!maybeSecurityLevel.has_value()) {
     LOG(INFO) << "Failed in getting the security level.";
     return {};
   }
 
-  const size_t kKeyLength = ISS_KEY_LENGTH * securityLevel(uuid).value();
+  const size_t kKeyLength = ISS_KEY_LENGTH * maybeSecurityLevel.value();
   Kerl kerl;
   init_kerl(&kerl);
 
