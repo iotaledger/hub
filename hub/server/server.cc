@@ -112,6 +112,7 @@ void HubServer::initialise() {
     auto port = std::stoi(FLAGS_apiAddress.substr(portIdx + 1));
 
     _api = std::make_shared<cppclient::BeastIotaAPI>(host, port);
+    _service.setApi(_api);
   }
 
   if (FLAGS_powMode == "remote") {

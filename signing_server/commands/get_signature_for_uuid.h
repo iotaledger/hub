@@ -25,10 +25,10 @@ namespace cmd {
 /// @param[in] common::rpc::GetSignatureForUUIDReply
 class GetSignatureForUUID
     : public common::Command<signing::rpc::GetSignatureForUUIDRequest,
-                                  signing::rpc::GetSignatureForUUIDReply> {
+                             signing::rpc::GetSignatureForUUIDReply> {
  public:
   using common::Command<signing::rpc::GetSignatureForUUIDRequest,
-                             signing::rpc::GetSignatureForUUIDReply>::Command;
+                        signing::rpc::GetSignatureForUUIDReply>::Command;
 
   const std::string name() override { return "GetSignatureForUUID"; }
 
@@ -37,6 +37,6 @@ class GetSignatureForUUID
       signing::rpc::GetSignatureForUUIDReply* response) noexcept override;
 };
 }  // namespace cmd
-}  // namespace crypto
+}  // namespace signing
 
 #endif  // SIGNING_SERVER_COMMANDS_GET_SIGNATURE_FOR_UUID_H_

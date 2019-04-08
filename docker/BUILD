@@ -9,7 +9,7 @@ cc_image(
 
 cc_image(
     name = "signing_server",
-    repository = "iota/hub/docker",
     binary = "//signing_server:signing_server",
+    repository = "iota/hub/docker",
     visibility = ["//visibility:public"],
 )

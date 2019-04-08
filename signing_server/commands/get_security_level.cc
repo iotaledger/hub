@@ -13,7 +13,7 @@ grpc::Status GetSecurityLevel::doProcess(
     const signing::rpc::GetSecurityLevelRequest* request,
     signing::rpc::GetSecurityLevelReply* response) noexcept {
   try {
-    LOG(INFO) << session() << " GetSecurityLevel for uuid: "<<request->uuid();
+    LOG(INFO) << session() << " GetSecurityLevel for uuid: " << request->uuid();
 
     auto security = common::crypto::CryptoManager::get()
                         .provider()
@@ -31,4 +31,4 @@ grpc::Status GetSecurityLevel::doProcess(
 
 }  // namespace cmd
 
-}  // namespace crypto
+}  // namespace signing

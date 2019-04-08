@@ -17,6 +17,6 @@ namespace signing {
 namespace cmd {
 std::string errorToString(const signing::rpc::ErrorCode& e);
 }
-}  // namespace crypto
+}  // namespace signing
 
 #endif  // SIGNING_SERVER_COMMANDS_HELPER_H_

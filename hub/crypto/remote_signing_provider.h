@@ -8,9 +8,9 @@
 #ifndef HUB_CRYPTO_REMOTE_SIGNING_PROVIDER_H_
 #define HUB_CRYPTO_REMOTE_SIGNING_PROVIDER_H_
 
-#include <string>
 #include <memory>
 #include <nonstd/optional.hpp>
+#include <string>
 #include "common/crypto/provider_base.h"
 
 #include "hub/db/db.h"

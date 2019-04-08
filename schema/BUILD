@@ -1,24 +1,22 @@
 load(
-  "@io_bazel_rules_python//python:python.bzl",
-  "py_binary"
+    "@io_bazel_rules_python//python:python.bzl",
+    "py_binary",
 )
-
 load(
-  "@py_deps//:requirements.bzl", "requirement"
+    "@py_deps//:requirements.bzl",
+    "requirement",
 )
 
 py_binary(
-  name="ddl2cpp",
-  srcs=["ddl2cpp.py"],
-  deps =[
-    requirement("pyparsing")
-  ]
+    name = "ddl2cpp",
+    srcs = ["ddl2cpp.py"],
+    deps = [
+        requirement("pyparsing"),
+    ],
 )
-
 
 genrule(
     name = "headers",
-    tools = [":ddl2cpp"],
     srcs = [
         "schema.sql",
     ],
@@ -27,6 +25,7 @@ genrule(
       $(location //schema:ddl2cpp) $(location schema.sql) schema hub::db::sql
       cp schema.h $@
         """,
+    tools = [":ddl2cpp"],
 )
 
 cc_library(

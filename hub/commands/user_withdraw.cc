@@ -9,7 +9,6 @@
 
 #include <cstdint>
 #include <exception>
-#include <utility>
 
 #include <boost/uuid/random_generator.hpp>
 #include <boost/uuid/uuid.hpp>
@@ -116,6 +115,18 @@ grpc::Status UserWithdraw::doProcess(
 
       if (balance < request->amount()) {
         errorCode = hub::rpc::ErrorCode::INSUFFICIENT_BALANCE;
+        goto cleanup;
+      }
+    }
+
+    // Verify address wasn't spent before
+    if (_api) {
+      auto res = _api->wereAddressesSpentFrom({address.value().str()});
+      if (res.states.empty()) {
+        errorCode = hub::rpc::ErrorCode::IRI_CLIENT_UNAVAILABLE;
+        goto cleanup;
+      } else if (res.states.front()) {
+        errorCode = hub::rpc::ErrorCode::ADDRESS_WAS_ALREADY_SPENT;
         goto cleanup;
       }
     }

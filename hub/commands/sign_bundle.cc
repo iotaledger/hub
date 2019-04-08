@@ -13,8 +13,8 @@
 #include <sqlpp11/exception.h>
 
 #include "common/crypto/manager.h"
-#include "common/stats/session.h"
 #include "common/crypto/types.h"
+#include "common/stats/session.h"
 #include "hub/auth/hmac_provider.h"
 #include "hub/auth/manager.h"
 #include "hub/commands/helper.h"
@@ -77,9 +77,8 @@ grpc::Status SignBundle::doProcess(
     auto maybeSig = cryptoProvider.forceGetSignatureForUUID(
         maybeAddressInfo->uuid, bundleHash);
     if (!maybeSig.has_value()) {
-      return grpc::Status(
-          grpc::StatusCode::UNAVAILABLE, "",
-          errorToString(hub::rpc::ErrorCode::SIGNING_FAILED));
+      return grpc::Status(grpc::StatusCode::UNAVAILABLE, "",
+                          errorToString(hub::rpc::ErrorCode::SIGNING_FAILED));
     }
     response->set_signature(maybeSig.value());
   } catch (const std::exception& ex) {

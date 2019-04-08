@@ -25,7 +25,7 @@ namespace cmd {
 /// @param[in] hub::rpc::GetDepositAddressReply
 class GetDepositAddress
     : public common::Command<hub::rpc::GetDepositAddressRequest,
-                                  hub::rpc::GetDepositAddressReply> {
+                             hub::rpc::GetDepositAddressReply> {
  public:
   using Command<hub::rpc::GetDepositAddressRequest,
                 hub::rpc::GetDepositAddressReply>::Command;

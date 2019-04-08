@@ -22,7 +22,7 @@ class UserWithdrawTest : public CommandTest {};
 TEST_F(UserWithdrawTest, ErrorOnInvalidPayoutAddress) {
   rpc::UserWithdrawRequest req;
   rpc::UserWithdrawReply res;
-  cmd::UserWithdraw command(session());
+  cmd::UserWithdraw command(session(), nullptr);
 
   createUser(session(), "a");
 
@@ -36,7 +36,7 @@ TEST_F(UserWithdrawTest, ErrorOnInvalidPayoutAddress) {
 TEST_F(UserWithdrawTest, ErrorOnZeroAmount) {
   rpc::UserWithdrawRequest req;
   rpc::UserWithdrawReply res;
-  cmd::UserWithdraw command(session());
+  cmd::UserWithdraw command(session(), nullptr);
 
   createUser(session(), "a");
 
@@ -54,7 +54,7 @@ TEST_F(UserWithdrawTest, ErrorOnZeroAmount) {
 TEST_F(UserWithdrawTest, WithdrawalUpdatesUserBalance) {
   rpc::UserWithdrawRequest req;
   rpc::UserWithdrawReply res;
-  cmd::UserWithdraw command(session());
+  cmd::UserWithdraw command(session(), nullptr);
 
   constexpr auto username = "User1";
 
@@ -87,7 +87,7 @@ TEST_F(UserWithdrawTest, WithdrawalUpdatesUserBalance) {
 TEST_F(UserWithdrawTest, ErrorOnInvalidAddress) {
   rpc::UserWithdrawRequest req;
   rpc::UserWithdrawReply res;
-  cmd::UserWithdraw command(session());
+  cmd::UserWithdraw command(session(), nullptr);
 
   constexpr auto username = "User1";
 
@@ -113,7 +113,7 @@ TEST_F(UserWithdrawTest, ErrorOnInvalidAddress) {
 TEST_F(UserWithdrawTest, ErrorOnInvalidChecksumForPayoutAddress) {
   rpc::UserWithdrawRequest req;
   rpc::UserWithdrawReply res;
-  cmd::UserWithdraw command(session());
+  cmd::UserWithdraw command(session(), nullptr);
 
   constexpr auto username = "User1";
 

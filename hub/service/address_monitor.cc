@@ -97,7 +97,7 @@ void AddressMonitor::persistBalanceChanges(
 }
 
 bool AddressMonitor::doTick() {
-  if(!_api->isNodeSolid()) {
+  if (!_api->isNodeSolid()) {
     LOG(INFO) << "Node is not solid. Skipping address monitoring.";
     return true;
   }

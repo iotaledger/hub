@@ -41,6 +41,6 @@ class SigningServerImpl final : public SigningServer::Service {
 };
 
 }  // namespace rpc
-}  // namespace crypto
+}  // namespace signing
 
 #endif  // SIGNING_SERVER_GRPC_H_

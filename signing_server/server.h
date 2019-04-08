@@ -38,6 +38,6 @@ class SigningServer : public common::ServerBase {
 };
 }  // namespace crypto
 
-}  // namespace crypto
+}  // namespace signing
 
 #endif  // SIGNING_SERVER_SERVER_H_

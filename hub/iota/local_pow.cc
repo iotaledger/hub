@@ -48,7 +48,7 @@ std::vector<std::string> LocalPOW::doPOW(const std::vector<std::string>& trytes,
       txTrytes.replace(TAG_OFFSET, 27,
                        txTrytes.substr(OBSOLETE_TAG_OFFSET, 27));
     }
-    char* foundNonce = iota_pow(txTrytes.data(), mwm());
+    char* foundNonce = iota_pow_trytes(txTrytes.data(), mwm());
     txTrytes.replace(NONCE_OFFSET, 27, foundNonce);
 
     char* digest = iota_digest(txTrytes.data());

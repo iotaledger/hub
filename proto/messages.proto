@@ -42,6 +42,10 @@ enum ErrorCode {
   GET_ADDRESS_FAILED = 13;
   //Call to rpc signing_server failed (GetSecurityLevel)
   GET_SECURITY_LEVEL_FAILED = 14;
+  //Call node's api failed
+  IRI_CLIENT_UNAVAILABLE = 15;
+  //Provided address was already spent
+  ADDRESS_WAS_ALREADY_SPENT = 16;
 }
 
 /*

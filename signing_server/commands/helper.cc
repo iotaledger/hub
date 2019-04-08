@@ -24,4 +24,4 @@ std::string errorToString(const signing::rpc::ErrorCode& e) {
   return ss.str();
 }
 }  // namespace cmd
-}  // namespace crypto
+}  // namespace signing

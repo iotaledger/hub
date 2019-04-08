@@ -29,7 +29,7 @@ class UserWithdrawCancelTest : public CommandTest {};
 TEST_F(UserWithdrawCancelTest, WithdrawalCancelUpdatesUserBalance) {
   rpc::UserWithdrawRequest withdrawRequest;
   rpc::UserWithdrawReply withdrawReply;
-  cmd::UserWithdraw withdrawCmd(session());
+  cmd::UserWithdraw withdrawCmd(session(), nullptr);
 
   constexpr auto username = "User1";
   constexpr auto toWithdraw = USER_BALANCE - 1;
@@ -75,7 +75,7 @@ TEST_F(UserWithdrawCancelTest, WithdrawalCancelUpdatesUserBalance) {
 TEST_F(UserWithdrawCancelTest, WithdrawalCancelOnlyOnce) {
   rpc::UserWithdrawRequest withdrawRequest;
   rpc::UserWithdrawReply withdrawReply;
-  cmd::UserWithdraw withdrawCmd(session());
+  cmd::UserWithdraw withdrawCmd(session(), nullptr);
 
   constexpr auto username = "User1";
   constexpr auto toWithdraw = USER_BALANCE - 1;

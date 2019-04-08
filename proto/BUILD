@@ -9,17 +9,18 @@ proto_library(
 
 cc_grpc_library(
     name = "messages_proto_cc",
-    srcs= ["messages.proto"],
-    deps=[], well_known_protos=False,
-    proto_only =  True,
+    srcs = ["messages.proto"],
+    proto_only = True,
+    well_known_protos = False,
+    deps = [],
 )
 
 cc_grpc_library(
     name = "hub_grpc_cc",
     srcs = ["hub.proto"],
-    proto_only=False,
-    well_known_protos=False,
     generate_mocks = True,
+    proto_only = False,
+    well_known_protos = False,
     deps = [":messages_proto_cc"],
 )
 
@@ -31,14 +32,15 @@ proto_library(
 cc_grpc_library(
     name = "signing_server_messages_proto_cc",
     srcs = ["signing_server_messages.proto"],
-    deps=[], well_known_protos=False,
-    proto_only =  True,
+    proto_only = True,
+    well_known_protos = False,
+    deps = [],
 )
 
 cc_grpc_library(
     name = "signing_server_grpc_cc",
-    proto_only=False,
-    well_known_protos=False,
     srcs = ["signing_server.proto"],
+    proto_only = False,
+    well_known_protos = False,
     deps = [":signing_server_messages_proto_cc"],
 )
