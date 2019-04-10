@@ -42,9 +42,9 @@ cc_library(
         "@boost//:interprocess",
         "@com_github_google_glog//:glog",
         "@iota_lib_cpp",
+        "@org_iota_entangled//common/crypto/iss/v1:iss_kerl",
+        "@org_iota_entangled//common/crypto/kerl:converter",
         "@org_iota_entangled//common/helpers:sign",
-        "@org_iota_entangled//common/kerl:converter",
-        "@org_iota_entangled//common/sign/v1:iss_kerl",
         "@org_iota_entangled//common/trinary:trit_tryte",
     ],
 )

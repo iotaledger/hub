@@ -11,8 +11,8 @@
 #include <cstdint>
 
 #include "common/crypto/manager.h"
-#include "common/stats/session.h"
 #include "common/crypto/types.h"
+#include "common/stats/session.h"
 #include "hub/commands/helper.h"
 #include "hub/db/db.h"
 #include "hub/db/helper.h"
@@ -46,9 +46,8 @@ grpc::Status GetDepositAddress::doProcess(
       common::crypto::CryptoManager::get().provider().getAddressForUUID(uuid);
   if (!maybeAddress.has_value()) {
     LOG(ERROR) << session() << " Failed in getAddressForUUID from provider.";
-    return grpc::Status(
-        grpc::StatusCode::UNAVAILABLE, "",
-        errorToString(hub::rpc::ErrorCode::GET_ADDRESS_FAILED));
+    return grpc::Status(grpc::StatusCode::UNAVAILABLE, "",
+                        errorToString(hub::rpc::ErrorCode::GET_ADDRESS_FAILED));
   }
   auto address = maybeAddress.value();
   if (request->includechecksum()) {

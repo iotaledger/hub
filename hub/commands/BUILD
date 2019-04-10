@@ -34,6 +34,7 @@ cc_library(
         "//proto:hub_grpc_cc",
         "@boost//:range",
         "@com_github_google_glog//:glog",
+        "@org_iota_entangled//cppclient:beast",
     ],
 )
 

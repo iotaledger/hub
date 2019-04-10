@@ -39,7 +39,7 @@ class MockAPI : public cppclient::IotaAPI {
   virtual ~MockAPI() {}
 
   virtual bool isNodeSolid() { return true; }
-  //MOCK_METHOD0(isNodeSolid, bool());
+  // MOCK_METHOD0(isNodeSolid, bool());
 
   MOCK_METHOD1(getBalances,
                nonstd::optional<std::unordered_map<std::string, uint64_t>>(
@@ -86,6 +86,9 @@ class MockAPI : public cppclient::IotaAPI {
   MOCK_METHOD2(getInclusionStates, cppclient::GetInclusionStatesResponse(
                                        const std::vector<std::string>&,
                                        const std::vector<std::string>&));
+
+  MOCK_METHOD1(wereAddressesSpentFrom,
+               WereAddressesSpentFromResponse(const std::vector<std::string>&));
 };
 
 TEST_F(AddressMonitorTest, OnStartShouldInitialise) {

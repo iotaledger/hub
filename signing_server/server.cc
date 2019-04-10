@@ -8,9 +8,9 @@
 #include <grpc++/grpc++.h>
 
 #include "common/common.h"
-#include "common/flags.h"
 #include "common/crypto/argon2_provider.h"
 #include "common/crypto/manager.h"
+#include "common/flags.h"
 
 using grpc::Server;
 using grpc::ServerBuilder;
@@ -25,17 +25,20 @@ void SigningServer::initialise() {
     LOG(FATAL) << "Salt must be more than 20 characters long.";
   }
   common::crypto::CryptoManager::get().setProvider(
-      std::make_unique<common::crypto::Argon2Provider>(common::flags::FLAGS_salt));
+      std::make_unique<common::crypto::Argon2Provider>(
+          common::flags::FLAGS_salt));
 
   ServerBuilder builder;
 
-  if (common::flags::FLAGS_authMode != "ssl"){
-    LOG(FATAL)<<"Remote signing_server should run only with credentials.";
+  if (common::flags::FLAGS_authMode != "ssl") {
+    LOG(FATAL) << "Remote signing_server should run only with credentials.";
   }
 
-  builder.AddListeningPort(common::flags::FLAGS_listenAddress,
-                           makeCredentials(common::flags::FLAGS_authMode, common::flags::FLAGS_sslCert,
-                                           common::flags::FLAGS_sslKey, common::flags::FLAGS_sslCA));
+  builder.AddListeningPort(
+      common::flags::FLAGS_listenAddress,
+      makeCredentials(common::flags::FLAGS_authMode,
+                      common::flags::FLAGS_sslCert, common::flags::FLAGS_sslKey,
+                      common::flags::FLAGS_sslCA));
   builder.RegisterService(&_service);
 
   _server = builder.BuildAndStart();
@@ -44,4 +47,4 @@ void SigningServer::initialise() {
 }
 
 }  // namespace crypto
-}  // namespace crypto
+}  // namespace signing

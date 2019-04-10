@@ -6,8 +6,8 @@
  */
 
 #include "signing_server/grpc.h"
-#include "common/stats/session.h"
 #include "common/crypto/provider_base.h"
+#include "common/stats/session.h"
 #include "signing_server/commands/get_address_for_uuid.h"
 #include "signing_server/commands/get_security_level.h"
 #include "signing_server/commands/get_signature_for_uuid.h"
@@ -44,4 +44,4 @@ grpc::Status SigningServerImpl::GetSecurityLevel(
 }
 
 }  // namespace rpc
-}  // namespace crypto
+}  // namespace signing

@@ -25,7 +25,7 @@ namespace cmd {
 /// @param[in] hub::rpc::UserWithdrawCancelReply
 class UserWithdrawCancel
     : public common::Command<hub::rpc::UserWithdrawCancelRequest,
-                                  hub::rpc::UserWithdrawCancelReply> {
+                             hub::rpc::UserWithdrawCancelReply> {
  public:
   using Command<hub::rpc::UserWithdrawCancelRequest,
                 hub::rpc::UserWithdrawCancelReply>::Command;

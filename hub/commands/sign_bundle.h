@@ -24,7 +24,7 @@ namespace cmd {
 /// @param[in] hub::rpc::SignBundleRequest
 /// @param[in] hub::rpc::SignBundleReply
 class SignBundle : public common::Command<hub::rpc::SignBundleRequest,
-                                               hub::rpc::SignBundleReply> {
+                                          hub::rpc::SignBundleReply> {
  public:
   using Command<hub::rpc::SignBundleRequest,
                 hub::rpc::SignBundleReply>::Command;

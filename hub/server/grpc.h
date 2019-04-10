@@ -12,6 +12,7 @@
 
 #include <grpc++/grpc++.h>
 
+#include "cppclient/api.h"
 #include "proto/hub.grpc.pb.h"
 #include "proto/hub.pb.h"
 
@@ -34,6 +35,8 @@ class HubImpl final : public hub::rpc::Hub::Service {
   HubImpl() {}
   /// Destructor
   ~HubImpl() override {}
+
+  void setApi(std::shared_ptr<cppclient::IotaAPI> api);
 
   /// Creates a new user
   /// @param[in] context - server context
@@ -135,6 +138,9 @@ class HubImpl final : public hub::rpc::Hub::Service {
   grpc::Status GetStats(grpc::ServerContext* context,
                         const hub::rpc::GetStatsRequest* request,
                         hub::rpc::GetStatsReply* response) override;
+
+ private:
+  std::shared_ptr<cppclient::IotaAPI> _api;
 };
 
 }  // namespace hub

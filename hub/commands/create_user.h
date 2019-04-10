@@ -24,7 +24,7 @@ namespace cmd {
 /// @param[in] hub::rpc::CreateUserRequest
 /// @param[in] hub::rpc::CreateUserReply
 class CreateUser : public common::Command<hub::rpc::CreateUserRequest,
-                                               hub::rpc::CreateUserReply> {
+                                          hub::rpc::CreateUserReply> {
  public:
   using Command<hub::rpc::CreateUserRequest,
                 hub::rpc::CreateUserReply>::Command;

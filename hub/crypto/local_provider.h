@@ -34,7 +34,7 @@ class LocalSigningProvider : public common::crypto::Argon2Provider {
       const common::crypto::Hash& bundleHash) const override;
 
   explicit LocalSigningProvider(const std::string& salt)
-      : Argon2Provider(salt){}
+      : Argon2Provider(salt) {}
 };
 
 }  // namespace crypto
