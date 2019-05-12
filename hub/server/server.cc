@@ -61,6 +61,11 @@ DEFINE_string(signingServerKeyCert, "/dev/null",
 // remote/local pow settings
 DEFINE_string(powMode, "remote", "PoW method to use {remote,local}");
 
+// Extended
+DEFINE_bool(fetchTransactionMessages, false,
+            "Whether or not should hub fetch messages from transactions that "
+            "are funding user addresses");
+
 using grpc::Server;
 using grpc::ServerBuilder;
 
@@ -126,7 +131,8 @@ void HubServer::initialise() {
   }
 
   _userAddressMonitor = std::make_unique<service::UserAddressMonitor>(
-      _api, std::chrono::milliseconds(FLAGS_monitorInterval));
+      _api, std::chrono::milliseconds(FLAGS_monitorInterval),
+      FLAGS_fetchTransactionMessages);
 
   _attachmentService = std::make_unique<service::AttachmentService>(
       _api, std::chrono::milliseconds(FLAGS_attachmentInterval));

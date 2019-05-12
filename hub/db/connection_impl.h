@@ -85,12 +85,14 @@ class ConnectionImpl : public Connection {
   }
 
   void createUserAddressBalanceEntry(
-      uint64_t addressId, int64_t amount, const UserAddressBalanceReason reason,
+      uint64_t addressId, int64_t amount,
+      nonstd::optional<common::crypto::Message> message,
+      const UserAddressBalanceReason reason,
       nonstd::optional<std::string> tailHash,
       nonstd::optional<uint64_t> sweepId) override {
-    db::helper<Conn>::createUserAddressBalanceEntry(*_conn, addressId, amount,
-                                                    reason, std::move(tailHash),
-                                                    std::move(sweepId));
+    db::helper<Conn>::createUserAddressBalanceEntry(
+        *_conn, addressId, amount, message, reason, std::move(tailHash),
+        std::move(sweepId));
   }
 
   void createUserAccountBalanceEntry(

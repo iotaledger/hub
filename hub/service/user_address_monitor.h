@@ -9,9 +9,11 @@
 #define HUB_SERVICE_USER_ADDRESS_MONITOR_H_
 
 #include <cstdint>
+#include <memory>
 #include <string>
 #include <tuple>
 #include <unordered_map>
+#include <utility>
 #include <vector>
 
 #include "cppclient/api.h"
@@ -26,6 +28,17 @@ namespace service {
 class UserAddressMonitor : public AddressMonitor {
  public:
   using AddressMonitor::AddressMonitor;
+
+  /// constructor
+  /// @param[in] api - an cppclient::IotaAPI compliant API provider
+  /// @param[in] interval - the tick interval, in milliseconds,
+  /// @param[in] fetchTransactionMessage - Should service fetch transaction's
+  /// message
+  explicit UserAddressMonitor(std::shared_ptr<cppclient::IotaAPI> api,
+                              std::chrono::milliseconds interval,
+                              bool fetchTransactionMessage)
+      : AddressMonitor(std::move(api), interval),
+        _fetchTransactionMessage(fetchTransactionMessage) {}
 
   std::vector<std::tuple<uint64_t, std::string>> monitoredAddresses() override;
   /// Process addresses that have changes
@@ -48,6 +61,9 @@ class UserAddressMonitor : public AddressMonitor {
   /// @return bool - true if balance valid for this address
   bool validateBalanceIsConsistent(const std::string& address,
                                    uint64_t addressId);
+
+ private:
+  bool _fetchTransactionMessage;
 };
 
 }  // namespace service

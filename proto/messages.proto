@@ -214,6 +214,7 @@ message UserAddressBalanceEvent {
   // Bundle hash of sweep (if reason == SWEEP)
   string hash      = 5;
   uint64 timestamp = 6;
+  string message = 7;
 }
 
 message HubAddressBalanceEvent {

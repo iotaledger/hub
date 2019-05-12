@@ -68,7 +68,8 @@ bool AttachmentService::checkForUserReattachment(
   VLOG(3) << __FUNCTION__;
   auto bundleTransactionHashes = _api->findTransactions(
       {}, std::vector<std::string>{sweep.bundleHash}, {});
-  auto bundleTransactions = _api->getTransactions(bundleTransactionHashes);
+  auto bundleTransactions =
+      _api->getTransactions(bundleTransactionHashes, false);
 
   // Remove non-tails or tails that we know of
   bundleTransactions.erase(

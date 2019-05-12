@@ -74,6 +74,7 @@ CREATE TABLE IF NOT EXISTS user_address_balance (
   tail_hash CHAR(81) DEFAULT NULL,
   -- nullable if not swept yet
   sweep INTEGER DEFAULT NULL,
+  message TEXT(2187) DEFAULT NULL,
   occured_at DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
   CONSTRAINT uab_reason_amount CHECK ((reason = 0 and tail_hash is not null and amount > 0) or (reason = 1 and sweep is not null and amount < 0)),
   CONSTRAINT uab_reason_range CHECK ((reason = 0 or reason = 1)),

@@ -51,6 +51,7 @@ struct UserAddressBalanceEvent {
   // Bundle hash of sweep (if reason == SWEEP)
   std::string hash;
   std::chrono::system_clock::time_point timestamp;
+  std::string message;
 };
 
 struct HubAddressBalanceEvent {
