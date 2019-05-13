@@ -11,6 +11,8 @@ See [Getting Started](docs/getting_started.md) for information on how to use the
 ## Supported database systems
 - MariaDB. **DO NOT USE MySQL**. MySQL does not support CHECK constraints for data integrity. *We only test against MariaDB.*
   Please ensure that your MariaDB version is **>= 10.2.1** as this is the first version supporting [CHECK constraints](https://mariadb.com/kb/en/library/constraint/#check-constraints)
+  
+- Source the _delta.xxx.sql_ file if you are updating Hub's version to get all schema changes
 
 ## Developing RPCHub
 - Make sure that `buildifier` and `clang-format` are available on your `PATH`: (`go get -u github.com/bazelbuild/buildtools/buildifier`)
