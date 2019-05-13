@@ -208,8 +208,8 @@ void SweepService::persistToDatabase(
   // 6.4. Change User address balances
   for (const auto& input : deposits) {
     dbConnection.createUserAddressBalanceEntry(
-        input.addressId, -input.amount, db::UserAddressBalanceReason::SWEEP, {},
-        sweepId);
+        input.addressId, -input.amount, nonstd::nullopt,
+        db::UserAddressBalanceReason::SWEEP, {}, sweepId);
 
     dbConnection.createUserAccountBalanceEntry(
         input.userId, input.amount, db::UserAccountBalanceReason::SWEEP,

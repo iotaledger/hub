@@ -45,9 +45,9 @@ class MockAPI : public cppclient::IotaAPI {
                nonstd::optional<std::unordered_map<std::string, uint64_t>>(
                    const std::vector<std::string>& addresses));
 
-  MOCK_METHOD1(getConfirmedBundlesForAddresses,
+  MOCK_METHOD2(getConfirmedBundlesForAddresses,
                std::unordered_multimap<std::string, Bundle>(
-                   const std::vector<std::string>& addresses));
+                   const std::vector<std::string>& addresses, bool));
 
   MOCK_METHOD2(filterConfirmedTails,
                std::unordered_set<std::string>(
@@ -62,8 +62,8 @@ class MockAPI : public cppclient::IotaAPI {
 
   MOCK_METHOD0(getNodeInfo, nonstd::optional<NodeInfo>());
 
-  MOCK_METHOD1(getTransactions,
-               std::vector<Transaction>(const std::vector<std::string>&));
+  MOCK_METHOD2(getTransactions,
+               std::vector<Transaction>(const std::vector<std::string>&, bool));
 
   MOCK_METHOD1(getTrytes,
                std::vector<std::string>(const std::vector<std::string>&));

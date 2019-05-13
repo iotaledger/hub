@@ -123,6 +123,11 @@ class TryteArray {
 
   static constexpr std::size_t length() { return N; }
 
+  bool isNull() {
+    return std::all_of(_data.begin(), _data.end(),
+                       [](char c) { return (c == NULL_TRYTE); });
+  }
+
  private:
   /// Internal representation of the trytes
   std::array<uint8_t, N> _data;
@@ -143,11 +148,13 @@ struct HashTag {};
 struct AddressTag {};
 struct TagTag {};
 struct ChecksumTag {};
+struct MessageTag {};
 
 using Checksum = TryteArray<9, ChecksumTag>;
 using Hash = TryteArray<81, HashTag>;
 using Address = TryteArray<81, AddressTag>;
 using Tag = TryteArray<27, TagTag>;
+using Message = TryteArray<2187, MessageTag>;
 
 };  // namespace crypto
 }  // namespace common

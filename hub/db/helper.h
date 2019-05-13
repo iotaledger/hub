@@ -42,6 +42,7 @@ struct helper {
                                     const common::crypto::UUID& uuid);
   static void createUserAddressBalanceEntry(
       C& connection, uint64_t addressId, int64_t amount,
+      nonstd::optional<common::crypto::Message> message,
       const UserAddressBalanceReason reason,
       nonstd::optional<std::string> tailHash,
       nonstd::optional<uint64_t> sweepId);

@@ -116,6 +116,7 @@ uint64_t helper<C>::createUserAddress(C& connection,
 template <typename C>
 void helper<C>::createUserAddressBalanceEntry(
     C& connection, uint64_t addressId, int64_t amount,
+    nonstd::optional<common::crypto::Message> message,
     const UserAddressBalanceReason reason,
     nonstd::optional<std::string> tailHash,
     nonstd::optional<uint64_t> sweepId) {
@@ -125,10 +126,14 @@ void helper<C>::createUserAddressBalanceEntry(
       std::chrono::system_clock::now());
 
   if (reason == UserAddressBalanceReason::DEPOSIT) {
-    connection(insert_into(bal).set(
-        bal.userAddress = addressId, bal.amount = amount,
-        bal.reason = static_cast<int>(reason),
-        bal.tailHash = std::move(tailHash.value()), bal.occuredAt = now));
+    auto messageValue = message.has_value() && !message.value().isNull()
+                            ? message.value().str()
+                            : "";
+    connection(
+        insert_into(bal).set(bal.userAddress = addressId, bal.amount = amount,
+                             bal.reason = static_cast<int>(reason),
+                             bal.tailHash = std::move(tailHash.value()),
+                             bal.occuredAt = now, bal.message = messageValue));
   } else {
     connection(
         insert_into(bal).set(bal.userAddress = addressId, bal.amount = amount,
@@ -376,8 +381,8 @@ helper<C>::getAllUserAddressesBalancesSinceTimePoint(
   db::sql::Sweep swp;
 
   auto result =
-      connection(select(acc.identifier, add.address, bal.amount, bal.reason,
-                        bal.tailHash, bal.occuredAt, swp.bundleHash)
+      connection(select(acc.identifier, add.address, bal.amount, bal.message,
+                        bal.reason, bal.tailHash, bal.occuredAt, swp.bundleHash)
                      .from(bal.join(add)
                                .on(bal.userAddress == add.id)
                                .join(acc)
@@ -403,7 +408,8 @@ helper<C>::getAllUserAddressesBalancesSinceTimePoint(
         row.amount,
         static_cast<UserAddressBalanceReason>(row.reason.value()),
         std::move(hash),
-        ts};
+        ts,
+        sqlpp::is_null(row.message) ? "" : row.message.value()};
 
     balances.emplace_back(std::move(e));
   }
