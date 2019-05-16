@@ -6,9 +6,9 @@ load("@bazel_tools//tools/build_defs/repo:http.bzl", "http_archive")
 # EXTERNAL RULES
 http_archive(
     name = "com_github_grpc_grpc",
-    strip_prefix = "grpc-1.17.2",
+    strip_prefix = "grpc-1.20.1",
     urls = [
-        "https://github.com/grpc/grpc/archive/v1.17.2.tar.gz",
+        "https://github.com/grpc/grpc/archive/v1.20.1.tar.gz",
     ],
 )
 
@@ -20,7 +20,7 @@ git_repository(
 
 git_repository(
     name = "rules_iota",
-    commit = "b15744b9ea520717752c866d5afc769c3b6b68f3",
+    commit = "7c2446c6cf94486071f6ad1067385b393fbe3dd4",
     remote = "https://github.com/iotaledger/rules_iota.git",
 )
 
@@ -46,7 +46,7 @@ http_archive(
 git_repository(
     name = "bazel_skylib",
     remote = "https://github.com/bazelbuild/bazel-skylib.git",
-    tag = "0.4.0",
+    tag = "0.8.0",
 )
 
 # DEPENDENCIES
@@ -58,9 +58,9 @@ http_archive(
 
 http_archive(
     name = "io_bazel_rules_docker",
-    sha256 = "31cd410896375740c1ff537dc8de409b23a28bf00c9f4b07a85d9fd14d577f88",
-    strip_prefix = "rules_docker-6d9fdf2ca948ba4cfe3da778bb5afae71a3cf8dd",
-    url = "https://github.com/bazelbuild/rules_docker/archive/6d9fdf2ca948ba4cfe3da778bb5afae71a3cf8dd.zip",
+    sha256 = "aed1c249d4ec8f703edddf35cbe9dfaca0b5f5ea6e4cd9e83e99f3b0d1136c3d",
+    strip_prefix = "rules_docker-0.7.0",
+    urls = ["https://github.com/bazelbuild/rules_docker/archive/v0.7.0.tar.gz"],
 )
 
 new_git_repository(
@@ -114,9 +114,14 @@ new_git_repository(
 
 load("@rules_iota//:defs.bzl", "iota_deps")
 load(
+    "@io_bazel_rules_docker//repositories:repositories.bzl",
+    container_repositories = "repositories",
+)
+container_repositories()
+
+load(
     "@io_bazel_rules_docker//container:container.bzl",
     "container_pull",
-    container_repositories = "repositories",
 )
 load(
     "@io_bazel_rules_docker//cc:image.bzl",
