@@ -14,7 +14,7 @@ http_archive(
 
 git_repository(
     name = "io_bazel_rules_python",
-    commit = "f3a6a8d00a51a1f0e6d61bc7065c19fea2b3dd7a",
+    commit = "fdbb17a4118a1728d19e638a5291b4c4266ea5b8",
     remote = "https://github.com/bazelbuild/rules_python.git",
 )
 
@@ -38,9 +38,9 @@ git_repository(
 
 http_archive(
     name = "io_bazel_rules_go",
-    sha256 = "f70c35a8c779bb92f7521ecb5a1c6604e9c3edd431e50b6376d7497abc8ad3c1",
+    sha256 = "a82a352bffae6bee4e95f68a8d80a70e87f42c4741e6a448bec11998fcc82329",
     url =
-        "https://github.com/bazelbuild/rules_go/releases/download/0.11.0/rules_go-0.11.0.tar.gz",
+        "https://github.com/bazelbuild/rules_go/releases/download/0.18.5/rules_go-0.18.5.tar.gz",
 )
 
 git_repository(
@@ -117,6 +117,7 @@ load(
     "@io_bazel_rules_docker//repositories:repositories.bzl",
     container_repositories = "repositories",
 )
+
 container_repositories()
 
 load(
