@@ -52,8 +52,8 @@ git_repository(
 # DEPENDENCIES
 http_archive(
     name = "com_google_protobuf",
-    strip_prefix = "protobuf-66dc42d891a4fc8e9190c524fd67961688a37bbe",
-    url = "https://github.com/google/protobuf/archive/66dc42d891a4fc8e9190c524fd67961688a37bbe.tar.gz",
+    strip_prefix = "protobuf-b4f193788c9f0f05d7e0879ea96cd738630e5d51",
+    url = "https://github.com/google/protobuf/archive/b4f193788c9f0f05d7e0879ea96cd738630e5d51.tar.gz",
 )
 
 http_archive(
@@ -93,9 +93,9 @@ new_git_repository(
 
 http_archive(
     name = "org_iota_entangled",
-    sha256 = "140f10b8a8b9e6f2bb1864a177cd0f30244fd565ea905e4af90fef169e3b7a00",
-    strip_prefix = "entangled-1790f55de316772f55a27b8156904c1958bbe4e1",
-    url = "https://github.com/iotaledger/entangled/archive/1790f55de316772f55a27b8156904c1958bbe4e1.zip",
+    sha256 = "001264f930dfb9082f8936a38b3c2ecb472d567bf1053bea13e04bef529d50ab",
+    strip_prefix = "entangled-b95d477dabd52e8e37c71df747a42153f9e55485",
+    url = "https://github.com/iotaledger/entangled/archive/b95d477dabd52e8e37c71df747a42153f9e55485.zip",
 )
 
 new_git_repository(
@@ -113,6 +113,9 @@ new_git_repository(
 )
 
 load("@rules_iota//:defs.bzl", "iota_deps")
+
+iota_deps()
+
 load(
     "@io_bazel_rules_docker//repositories:repositories.bzl",
     container_repositories = "repositories",
@@ -128,17 +131,21 @@ load(
     "@io_bazel_rules_docker//cc:image.bzl",
     _cc_image_repos = "repositories",
 )
+load("@com_google_protobuf//:protobuf_deps.bzl", "protobuf_deps")
+
+protobuf_deps()
+
 load("@io_bazel_rules_python//python:pip.bzl", "pip_import", "pip_repositories")
-load("@com_github_grpc_grpc//bazel:grpc_deps.bzl", "grpc_deps")
-load("@iota_toolchains//:toolchains.bzl", "setup_toolchains")
 
 pip_repositories()
 
+load("@com_github_grpc_grpc//bazel:grpc_deps.bzl", "grpc_deps")
+
 grpc_deps()
 
-setup_toolchains()
+load("@iota_toolchains//:toolchains.bzl", "setup_toolchains")
 
-iota_deps()
+setup_toolchains()
 
 _cc_image_repos()
 
@@ -150,3 +157,9 @@ pip_import(
 load("@py_deps//:requirements.bzl", "pip_install")
 
 pip_install()
+
+load("@io_bazel_rules_go//go:deps.bzl", "go_register_toolchains", "go_rules_dependencies")
+
+go_rules_dependencies()
+
+go_register_toolchains()
