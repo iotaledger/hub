@@ -22,12 +22,6 @@
 #include "proto/hub.grpc.pb.h"
 #include "proto/hub.pb.h"
 
-namespace grpc {
-class Server;
-class ServerBuilder;
-class ServerCredentials;
-}  // namespace grpc
-
 namespace hub {
 
 /// HubServer class.
