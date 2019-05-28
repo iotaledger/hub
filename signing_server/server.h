@@ -15,12 +15,6 @@
 #include "common/server_base.h"
 #include "signing_server/grpc.h"
 
-namespace grpc {
-class Server;
-class ServerBuilder;
-class ServerCredentials;
-}  // namespace grpc
-
 namespace signing {
 
 namespace crypto {
