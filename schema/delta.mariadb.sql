@@ -1,0 +1,1 @@
+ALTER TABLE user_address_balance ADD COLUMN IF NOT EXISTS message TEXT(2187) DEFAULT NULL;
