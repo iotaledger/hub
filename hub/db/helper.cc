@@ -303,11 +303,19 @@ std::vector<UserAccountBalanceEvent> helper<C>::getUserAccountBalances(
     std::chrono::system_clock::time_point newerThan) {
   db::sql::UserAccountBalance bal;
   db::sql::UserAccount acc;
+  db::sql::Withdrawal withdrawal;
+  db::sql::Sweep swp;
 
   // Might wanna add sweep's bundle hash or withdrawal uuid in the future.
   auto result = connection(
-      select(acc.identifier, bal.amount, bal.reason, bal.occuredAt)
-          .from(bal.join(acc).on(bal.userId == acc.id))
+      select(acc.identifier, bal.amount, bal.reason, bal.occuredAt,
+             withdrawal.uuid, swp.bundleHash)
+          .from(bal.join(acc)
+                    .on(bal.userId == acc.id)
+                    .left_outer_join(swp)
+                    .on(bal.sweep == swp.id)
+                    .left_outer_join(withdrawal)
+                    .on(bal.withdrawal == withdrawal.id))
           .where(bal.userId == userId && bal.occuredAt >= newerThan));
 
   std::vector<UserAccountBalanceEvent> balances;
