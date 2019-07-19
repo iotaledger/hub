@@ -46,12 +46,15 @@ grpc::Status GetUserHistory::doProcess(
 
     for (const auto& b : balances) {
       auto* event = response->add_events();
+      event->set_userid(b.userIdentifier);
       event->set_timestamp(
           std::chrono::duration_cast<std::chrono::milliseconds>(
               b.timestamp.time_since_epoch())
               .count());
       event->set_amount(b.amount);
       event->set_type(userAccountBalanceEventTypeFromSql(b.type));
+      event->set_withdrawaluuid(b.withdrawalUUID);
+      event->set_sweepbundlehash(b.sweepBundleHash);
     }
   }
 
