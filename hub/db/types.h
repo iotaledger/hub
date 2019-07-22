@@ -95,6 +95,7 @@ struct WithdrawalInfo {
   uint64_t id;
   uint64_t userId;
   int64_t amount;
+  bool wasCancelled;
 };
 
 struct TransferInput {
