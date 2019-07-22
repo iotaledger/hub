@@ -323,10 +323,24 @@ std::vector<UserAccountBalanceEvent> helper<C>::getUserAccountBalances(
   for (auto& row : result) {
     std::chrono::time_point<std::chrono::system_clock> ts =
         row.occuredAt.value();
-    UserAccountBalanceEvent event = {
-        std::move(row.identifier), ts, row.amount,
-        static_cast<UserAccountBalanceReason>((row.reason.value()))};
-    balances.emplace_back(std::move(event));
+    if (row.reason == static_cast<int>(UserAccountBalanceReason::SWEEP)) {
+      balances.emplace_back(UserAccountBalanceEvent{
+          std::move(row.identifier), ts, row.amount,
+          static_cast<UserAccountBalanceReason>((row.reason.value())),
+          row.bundleHash});
+    } else if (row.reason ==
+                   static_cast<int>(UserAccountBalanceReason::WITHDRAWAL) ||
+               row.reason == static_cast<int>(
+                                 UserAccountBalanceReason::WITHDRAWAL_CANCEL)) {
+      balances.emplace_back(UserAccountBalanceEvent{
+          std::move(row.identifier), ts, row.amount,
+          static_cast<UserAccountBalanceReason>((row.reason.value())),
+          row.uuid});
+    } else {
+      balances.emplace_back(UserAccountBalanceEvent{
+          std::move(row.identifier), ts, row.amount,
+          static_cast<UserAccountBalanceReason>((row.reason.value()))});
+    }
   }
   return balances;
 }
