@@ -36,5 +36,7 @@ service Hub {
   rpc SignBundle(SignBundleRequest) returns (SignBundleReply);
   // Provides detailed information on the sweep for the bundle hash
   rpc SweepDetail (SweepDetailRequest) returns (SweepDetailReply);
+  // Returns whether withdrawal was cancelled or not
+  rpc WasWithdrawalCancelled (WasWithdrawalCancelledRequest) returns (WasWithdrawalCancelledReply);
 }
 

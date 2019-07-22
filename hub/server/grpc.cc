@@ -30,6 +30,7 @@
 #include "hub/commands/sweep_subscription.h"
 #include "hub/commands/user_withdraw.h"
 #include "hub/commands/user_withdraw_cancel.h"
+#include "hub/commands/was_withdrawal_cancelled.h"
 
 DEFINE_bool(SignBundle_enabled, false,
             "Whether the SignBundle API call should be available");
@@ -160,6 +161,15 @@ grpc::Status HubImpl::GetStats(grpc::ServerContext* context,
                                hub::rpc::GetStatsReply* response) {
   auto clientSession = std::make_shared<common::ClientSession>();
   cmd::GetStats cmd(clientSession);
+  return cmd.process(request, response);
+}
+
+grpc::Status HubImpl::WasWithdrawalCancelled(
+    grpc::ServerContext* context,
+    const hub::rpc::WasWithdrawalCancelledRequest* request,
+    hub::rpc::WasWithdrawalCancelledReply* response) {
+  auto clientSession = std::make_shared<common::ClientSession>();
+  cmd::WasWithdrawalCancelled cmd(clientSession);
   return cmd.process(request, response);
 }
 

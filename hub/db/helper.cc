@@ -569,11 +569,14 @@ WithdrawalInfo helper<C>::getWithdrawalInfoFromUUID(C& connection,
                                                     const std::string& uuid) {
   db::sql::Withdrawal tbl;
 
-  auto result = connection(
-      select(tbl.id, tbl.userId, tbl.amount).from(tbl).where(tbl.uuid == uuid));
+  auto result =
+      connection(select(tbl.id, tbl.userId, tbl.amount, tbl.cancelledAt)
+                     .from(tbl)
+                     .where(tbl.uuid == uuid));
 
   return {static_cast<uint64_t>(result.front().id),
-          static_cast<uint64_t>(result.front().userId), result.front().amount};
+          static_cast<uint64_t>(result.front().userId), result.front().amount,
+          result.front().cancelledAt.is_null() ? false : true};
 }
 
 template <typename C>

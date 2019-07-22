@@ -46,6 +46,8 @@ enum ErrorCode {
   IRI_CLIENT_UNAVAILABLE = 15;
   //Provided address was already spent
   ADDRESS_WAS_ALREADY_SPENT = 16;
+  //Provided uuid is invalid
+  INVALID_UUID = 17;
 }
 
 /*
@@ -317,4 +319,14 @@ message SweepDetailReply {
   repeated string trytes = 2;
   //Sweep's tails hashes (multiple reattachment for each bundle)
   repeated string tailHash = 3;
+}
+
+message WasWithdrawalCancelledRequest{
+    //Withdrawal's uuid
+    string uuid = 1;
+}
+
+message WasWithdrawalCancelledReply{
+    //True if withdrawal was cancelled
+    bool wasCancelled = 1;
 }

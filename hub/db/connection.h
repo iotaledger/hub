@@ -307,6 +307,7 @@ class Connection {
   /// @return uint64_t - the total user account balance
   virtual uint64_t getTotalBalance() = 0;
 
+
  private:
   friend class DBManager;
 

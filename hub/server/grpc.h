@@ -139,7 +139,20 @@ class HubImpl final : public hub::rpc::Hub::Service {
                         const hub::rpc::GetStatsRequest* request,
                         hub::rpc::GetStatsReply* response) override;
 
- private:
+
+    /// Returns true if withdrawal was cancelled
+    /// @param[in] context - server context
+    /// @param[in] request - a rpc::WasWithdrawalCancelledRequest request
+    /// @param[in] response - a rpc::WasWithdrawalCancelledResponse response
+    /// @return grpc::Status
+
+    grpc::Status WasWithdrawalCancelled(
+            grpc::ServerContext* context,
+            const hub::rpc::WasWithdrawalCancelledRequest* request,
+            hub::rpc::WasWithdrawalCancelledReply* response) override;
+
+
+private:
   std::shared_ptr<cppclient::IotaAPI> _api;
 };
 
