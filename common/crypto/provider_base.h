@@ -57,8 +57,8 @@ class CryptoProviderBase {
   /// @return string - the signature
   virtual nonstd::optional<std::string> getSignatureForUUID(
       const common::crypto::UUID& uuid,
-      const common::crypto::Hash& bundleHash) const{
-      return doGetSignatureForUUID(uuid, bundleHash);
+      const common::crypto::Hash& bundleHash) const {
+    return doGetSignatureForUUID(uuid, bundleHash);
   }
 
  protected:

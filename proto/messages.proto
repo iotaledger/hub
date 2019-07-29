@@ -12,7 +12,7 @@ package hub.rpc;
   Error codes that can be returned by the hub.
  */
 enum ErrorCode {
-  // Unused.
+  // Generic error drop-in.
   EC_UNKNOWN = 0;
   // UserId already exists.
   USER_EXISTS = 1;
@@ -42,6 +42,12 @@ enum ErrorCode {
   GET_ADDRESS_FAILED = 13;
   //Call to rpc signing_server failed (GetSecurityLevel)
   GET_SECURITY_LEVEL_FAILED = 14;
+  //Call node's api failed
+  IRI_CLIENT_UNAVAILABLE = 15;
+  //Provided address was already spent
+  ADDRESS_WAS_ALREADY_SPENT = 16;
+  //Provided uuid is invalid
+  INVALID_UUID = 17;
 }
 
 /*
@@ -147,10 +153,10 @@ message UserWithdrawCancelReply {
   bool success = 1;
 }
 
-message StatsRequest {}
+message GetStatsRequest {}
 
-message StatsReply {
-  // Total balance currently managed by the hub.
+message GetStatsReply {
+  // Total user account balance currently managed by the hub.
   uint64 totalBalance = 1;
 }
 
@@ -210,6 +216,7 @@ message UserAddressBalanceEvent {
   // Bundle hash of sweep (if reason == SWEEP)
   string hash      = 5;
   uint64 timestamp = 6;
+  string message = 7;
 }
 
 message HubAddressBalanceEvent {
@@ -312,4 +319,14 @@ message SweepDetailReply {
   repeated string trytes = 2;
   //Sweep's tails hashes (multiple reattachment for each bundle)
   repeated string tailHash = 3;
+}
+
+message WasWithdrawalCancelledRequest{
+    //Withdrawal's uuid
+    string uuid = 1;
+}
+
+message WasWithdrawalCancelledReply{
+    //True if withdrawal was cancelled
+    bool wasCancelled = 1;
 }

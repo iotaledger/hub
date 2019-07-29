@@ -11,8 +11,8 @@
 #include <nonstd/optional.hpp>
 #include <utility>
 
-#include "common/stats/session.h"
 #include "common/crypto/types.h"
+#include "common/stats/session.h"
 #include "hub/commands/helper.h"
 #include "hub/db/connection.h"
 #include "hub/db/types.h"

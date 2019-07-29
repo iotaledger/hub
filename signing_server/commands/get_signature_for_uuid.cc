@@ -13,7 +13,8 @@ grpc::Status GetSignatureForUUID::doProcess(
     const signing::rpc::GetSignatureForUUIDRequest* request,
     signing::rpc::GetSignatureForUUIDReply* response) noexcept {
   try {
-    LOG(INFO) << session() << " GetSignatureForUUID - uuid: " << request->uuid()<<" bundle hash: "<<request->bundlehash();
+    LOG(INFO) << session() << " GetSignatureForUUID - uuid: " << request->uuid()
+              << " bundle hash: " << request->bundlehash();
 
     common::crypto::UUID uuid(request->uuid());
     common::crypto::Hash bundleHash(request->bundlehash());
@@ -33,7 +34,7 @@ grpc::Status GetSignatureForUUID::doProcess(
 
 }  // namespace cmd
 
-}  // namespace crypto
+}  // namespace signing
 
 //
 // Created by tsvi on 6/27/18.

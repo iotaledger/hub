@@ -69,6 +69,7 @@ grpc::Status BalanceSubscription::doProcess(
     userAddressEvent->set_reason(userAddressBalanceEventTypeFromSql(b.reason));
     userAddressEvent->set_hash(std::move(b.hash));
     userAddressEvent->set_useraddress(std::move(b.userAddress));
+    userAddressEvent->set_message(std::move(b.message));
 
     event.set_allocated_useraddressevent(userAddressEvent);
     if (!writer->Write(event)) {

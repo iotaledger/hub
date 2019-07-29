@@ -23,12 +23,12 @@
 #include <iota/types/trinary.hpp>
 #include "boost/interprocess/sync/interprocess_semaphore.hpp"
 
+#include "common/crypto/iss/v1/iss_kerl.h"
+#include "common/crypto/kerl/converter.h"
+#include "common/crypto/kerl/kerl.h"
 #include "common/crypto/types.h"
 #include "common/flags.h"
 #include "common/helpers/sign.h"
-#include "common/kerl/converter.h"
-#include "common/kerl/kerl.h"
-#include "common/sign/v1/iss_kerl.h"
 #include "common/trinary/trits.h"
 #include "common/trinary/tryte.h"
 
@@ -113,8 +113,8 @@ nonstd::optional<common::crypto::Address> Argon2Provider::getAddressForUUID(
     LOG(INFO) << "Failed in getting the security level.";
     return {};
   }
-  auto add = iota_sign_address_gen((const char*)seed->data(), KEY_IDX,
-                                   securityLevel(uuid).value());
+  auto add = iota_sign_address_gen_trytes((const char*)seed->data(), KEY_IDX,
+                                          securityLevel(uuid).value());
   common::crypto::Address ret(add);
   std::free(add);
   return {ret};
@@ -143,7 +143,7 @@ nonstd::optional<std::string> Argon2Provider::doGetSignatureForUUID(
 
   const size_t kKeyLength = ISS_KEY_LENGTH * securityLevel(uuid).value();
   Kerl kerl;
-  init_kerl(&kerl);
+  kerl_init(&kerl);
 
   trit_t key[kKeyLength];
   std::array<trit_t, TRIT_LEN> tritSeed;

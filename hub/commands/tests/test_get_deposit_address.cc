@@ -5,8 +5,8 @@
 #include <sqlpp11/functions.h>
 #include <sqlpp11/select.h>
 
-#include "common/stats/session.h"
 #include "common/crypto/types.h"
+#include "common/stats/session.h"
 #include "hub/commands/get_deposit_address.h"
 #include "hub/db/db.h"
 #include "hub/db/helper.h"

@@ -12,6 +12,7 @@
 
 #include <grpc++/grpc++.h>
 
+#include "cppclient/api.h"
 #include "proto/hub.grpc.pb.h"
 #include "proto/hub.pb.h"
 
@@ -34,6 +35,8 @@ class HubImpl final : public hub::rpc::Hub::Service {
   HubImpl() {}
   /// Destructor
   ~HubImpl() override {}
+
+  void setApi(std::shared_ptr<cppclient::IotaAPI> api);
 
   /// Creates a new user
   /// @param[in] context - server context
@@ -131,6 +134,26 @@ class HubImpl final : public hub::rpc::Hub::Service {
   grpc::Status SweepDetail(grpc::ServerContext* context,
                            const hub::rpc::SweepDetailRequest* request,
                            hub::rpc::SweepDetailReply* response) override;
+
+  grpc::Status GetStats(grpc::ServerContext* context,
+                        const hub::rpc::GetStatsRequest* request,
+                        hub::rpc::GetStatsReply* response) override;
+
+
+    /// Returns true if withdrawal was cancelled
+    /// @param[in] context - server context
+    /// @param[in] request - a rpc::WasWithdrawalCancelledRequest request
+    /// @param[in] response - a rpc::WasWithdrawalCancelledResponse response
+    /// @return grpc::Status
+
+    grpc::Status WasWithdrawalCancelled(
+            grpc::ServerContext* context,
+            const hub::rpc::WasWithdrawalCancelledRequest* request,
+            hub::rpc::WasWithdrawalCancelledReply* response) override;
+
+
+private:
+  std::shared_ptr<cppclient::IotaAPI> _api;
 };
 
 }  // namespace hub

@@ -10,7 +10,6 @@
 #include <algorithm>
 #include <iterator>
 #include <set>
-#include <utility>
 #include <vector>
 
 #include <glog/logging.h>
@@ -67,7 +66,8 @@ bool UserAddressMonitor::onBalancesChanged(
                    std::back_inserter(ids),
                    [](const auto& change) { return change.addressId; });
 
-    auto confirmedBundlesMap = _api->getConfirmedBundlesForAddresses(addresses);
+    auto confirmedBundlesMap = _api->getConfirmedBundlesForAddresses(
+        addresses, _fetchTransactionMessage);
 
     auto tailsToAddresses = connection.tailsForUserAddresses(ids);
 
@@ -108,6 +108,10 @@ bool UserAddressMonitor::onBalancesChanged(
 
               connection.createUserAddressBalanceEntry(
                   change.addressId, tx.value,
+                  tx.message.has_value()
+                      ? nonstd::optional<common::crypto::Message>(
+                            tx.message.value())
+                      : nonstd::nullopt,
                   db::UserAddressBalanceReason::DEPOSIT, tail, {});
             }
           }

@@ -11,7 +11,7 @@
 #include <memory>
 #include <string>
 
-#include <grpc++/grpc++.h>
+#include "grpc++/grpc++.h"
 
 namespace common {
 

@@ -25,10 +25,10 @@ namespace cmd {
 /// @param[in] common::rpc::GetSignatureForUUIDReply
 class GetSecurityLevel
     : public common::Command<signing::rpc::GetSecurityLevelRequest,
-                                  signing::rpc::GetSecurityLevelReply> {
+                             signing::rpc::GetSecurityLevelReply> {
  public:
   using common::Command<signing::rpc::GetSecurityLevelRequest,
-                             signing::rpc::GetSecurityLevelReply>::Command;
+                        signing::rpc::GetSecurityLevelReply>::Command;
 
   const std::string name() override { return "GetSecurityLevel"; }
 
@@ -37,6 +37,6 @@ class GetSecurityLevel
       signing::rpc::GetSecurityLevelReply* response) noexcept override;
 };
 }  // namespace cmd
-}  // namespace crypto
+}  // namespace signing
 
 #endif  // SIGNING_SERVER_COMMANDS_GET_SECURITY_LEVEL_H_

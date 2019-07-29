@@ -24,7 +24,7 @@ namespace cmd {
 /// @param[in] hub::rpc::GetBalanceRequest
 /// @param[in] hub::rpc::GetBalanceReply
 class GetBalance : public common::Command<hub::rpc::GetBalanceRequest,
-                                               hub::rpc::GetBalanceReply> {
+                                          hub::rpc::GetBalanceReply> {
  public:
   using Command<hub::rpc::GetBalanceRequest,
                 hub::rpc::GetBalanceReply>::Command;

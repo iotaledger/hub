@@ -9,6 +9,7 @@
 
 #include <memory>
 #include <string>
+#include <utility>
 
 #include <gflags/gflags.h>
 #include <glog/logging.h>
@@ -20,6 +21,7 @@
 #include "hub/commands/get_address_info.h"
 #include "hub/commands/get_balance.h"
 #include "hub/commands/get_deposit_address.h"
+#include "hub/commands/get_stats.h"
 #include "hub/commands/get_user_history.h"
 #include "hub/commands/process_transfer_batch.h"
 #include "hub/commands/sign_bundle.h"
@@ -28,11 +30,16 @@
 #include "hub/commands/sweep_subscription.h"
 #include "hub/commands/user_withdraw.h"
 #include "hub/commands/user_withdraw_cancel.h"
+#include "hub/commands/was_withdrawal_cancelled.h"
 
 DEFINE_bool(SignBundle_enabled, false,
             "Whether the SignBundle API call should be available");
 
 namespace hub {
+
+void HubImpl::setApi(std::shared_ptr<cppclient::IotaAPI> api) {
+  _api = std::move(api);
+}
 
 grpc::Status HubImpl::CreateUser(grpc::ServerContext* context,
                                  const rpc::CreateUserRequest* request,
@@ -62,7 +69,7 @@ grpc::Status HubImpl::UserWithdraw(grpc::ServerContext* context,
                                    const hub::rpc::UserWithdrawRequest* request,
                                    hub::rpc::UserWithdrawReply* response) {
   auto clientSession = std::make_shared<common::ClientSession>();
-  cmd::UserWithdraw cmd(clientSession);
+  cmd::UserWithdraw cmd(clientSession, _api);
   return cmd.process(request, response);
 }
 
@@ -146,6 +153,23 @@ grpc::Status HubImpl::SweepDetail(grpc::ServerContext* context,
                                   hub::rpc::SweepDetailReply* response) {
   auto clientSession = std::make_shared<common::ClientSession>();
   cmd::SweepDetail cmd(clientSession);
+  return cmd.process(request, response);
+}
+
+grpc::Status HubImpl::GetStats(grpc::ServerContext* context,
+                               const hub::rpc::GetStatsRequest* request,
+                               hub::rpc::GetStatsReply* response) {
+  auto clientSession = std::make_shared<common::ClientSession>();
+  cmd::GetStats cmd(clientSession);
+  return cmd.process(request, response);
+}
+
+grpc::Status HubImpl::WasWithdrawalCancelled(
+    grpc::ServerContext* context,
+    const hub::rpc::WasWithdrawalCancelledRequest* request,
+    hub::rpc::WasWithdrawalCancelledReply* response) {
+  auto clientSession = std::make_shared<common::ClientSession>();
+  cmd::WasWithdrawalCancelled cmd(clientSession);
   return cmd.process(request, response);
 }
 

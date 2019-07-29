@@ -1,47 +1,46 @@
 package(default_visibility = ["//visibility:public"])
 
-load("@org_pubref_rules_protobuf//protobuf:rules.bzl", "proto_language")
-load("@org_pubref_rules_protobuf//cpp:rules.bzl", "cc_proto_library")
-load("@org_pubref_rules_protobuf//go:rules.bzl", "go_proto_library")
-load(
-    "@org_pubref_rules_protobuf//grpc_gateway:rules.bzl",
-    "GRPC_GATEWAY_DEPS",
-    "grpc_gateway_proto_library",
-)
+load("@com_github_grpc_grpc//bazel:cc_grpc_library.bzl", "cc_grpc_library")
 
-filegroup(
-    name = "protos",
+proto_library(
+    name = "messages_proto",
     srcs = ["messages.proto"],
 )
 
-filegroup(
-    name = "signing_server_protos",
+cc_grpc_library(
+    name = "messages_proto_cc",
+    srcs = ["messages.proto"],
+    proto_only = True,
+    well_known_protos = False,
+    deps = [],
+)
+
+cc_grpc_library(
+    name = "hub_grpc_cc",
+    srcs = ["hub.proto"],
+    generate_mocks = True,
+    proto_only = False,
+    well_known_protos = False,
+    deps = [":messages_proto_cc"],
+)
+
+proto_library(
+    name = "signing_server_messages_proto",
     srcs = ["signing_server_messages.proto"],
 )
 
-cc_proto_library(
-    name = "hub_cpp",
-    protos = [
-        "hub.proto",
-        ":protos",
-    ],
-    verbose = 0,
-    with_grpc = True,
+cc_grpc_library(
+    name = "signing_server_messages_proto_cc",
+    srcs = ["signing_server_messages.proto"],
+    proto_only = True,
+    well_known_protos = False,
+    deps = [],
 )
 
-cc_proto_library(
-    name = "signing_server_cpp",
-    protos = [
-        "signing_server.proto",
-        ":signing_server_protos",
-    ],
-    verbose = 0,
-    with_grpc = True,
+cc_grpc_library(
+    name = "signing_server_grpc_cc",
+    srcs = ["signing_server.proto"],
+    proto_only = False,
+    well_known_protos = False,
+    deps = [":signing_server_messages_proto_cc"],
 )
-
-# Currently broken in rules_protobuf.
-#grpc_gateway_proto_library(
-#    name="gateway",
-#    verbose=1,
-#    protos=["gateway.proto", ":protos"],
-#    visibility=["//visibility:public"], )

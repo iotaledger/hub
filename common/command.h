@@ -20,7 +20,6 @@
 namespace common {
 class ClientSession;
 
-
 template <typename REQ, typename RES>
 /// Command abstract class template. This is the base class for all
 /// command subclasses. Each concrete subclass is responsible for implementing

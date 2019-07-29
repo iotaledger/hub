@@ -35,4 +35,4 @@ grpc::Status GetAddressForUUID::doProcess(
 
 }  // namespace cmd
 
-}  // namespace crypto
+}  // namespace signing

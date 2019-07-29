@@ -23,7 +23,7 @@ cc_library(
         "//common",
         "//common/crypto",
         "//hub/db",
-        "//proto:signing_server_cpp",
+        "//proto:signing_server_grpc_cc",
         "@optional_lite",
     ],
 )

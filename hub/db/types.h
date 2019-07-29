@@ -51,6 +51,7 @@ struct UserAddressBalanceEvent {
   // Bundle hash of sweep (if reason == SWEEP)
   std::string hash;
   std::chrono::system_clock::time_point timestamp;
+  std::string message;
 };
 
 struct HubAddressBalanceEvent {
@@ -94,6 +95,7 @@ struct WithdrawalInfo {
   uint64_t id;
   uint64_t userId;
   int64_t amount;
+  bool wasCancelled;
 };
 
 struct TransferInput {

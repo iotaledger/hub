@@ -34,5 +34,11 @@ std::map<uint64_t, int64_t> createBalanceForUsers(std::vector<uint64_t> ids,
   return idsToBalances;
 }
 
+hub::rpc::ErrorCode errorCodeFromDetails(const std::string& errorStr) {
+  hub::rpc::Error error;
+  error.ParseFromString(errorStr);
+  return error.code();
+}
+
 }  // namespace tests
 }  // namespace hub

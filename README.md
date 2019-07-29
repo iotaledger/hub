@@ -11,6 +11,8 @@ See [Getting Started](docs/getting_started.md) for information on how to use the
 ## Supported database systems
 - MariaDB. **DO NOT USE MySQL**. MySQL does not support CHECK constraints for data integrity. *We only test against MariaDB.*
   Please ensure that your MariaDB version is **>= 10.2.1** as this is the first version supporting [CHECK constraints](https://mariadb.com/kb/en/library/constraint/#check-constraints)
+  
+- Source the _delta.xxx.sql_ file if you are updating Hub's version to get all schema changes
 
 ## Developing RPCHub
 - Make sure that `buildifier` and `clang-format` are available on your `PATH`: (`go get -u github.com/bazelbuild/buildtools/buildifier`)
@@ -82,6 +84,8 @@ See [Getting Started](docs/getting_started.md) for information on how to use the
     -sweepInterval (Sweep interval (0=disabled) [ms]) type: uint32
       default: 600000
     -powMode (Proof of work mode, local or remote)
+    -fetchTransactionMessages (Determines if Should store deposit transaction's message) 
+      type: bool (--fetchTransactionMessages or --nofetchTransactionMessages)
 
   Flags from hub/service/sweep_service.cc:
     -sweep_max_deposit (Maximum number of user deposits to process per sweep.)

@@ -80,7 +80,9 @@ class Connection {
   /// @param[in] tailHash - tailHash of the correpsonding transaction
   /// @param[in] sweepId - if the new balance is the result of a sweep
   virtual void createUserAddressBalanceEntry(
-      uint64_t addressId, int64_t amount, const UserAddressBalanceReason reason,
+      uint64_t addressId, int64_t amount,
+      nonstd::optional<common::crypto::Message> message,
+      const UserAddressBalanceReason reason,
       nonstd::optional<std::string> tailHash,
       nonstd::optional<uint64_t> sweepId) = 0;
 
@@ -300,6 +302,11 @@ class Connection {
   /// @return nonstd::optional<SweepDetail> - the sweep details  if found
   virtual nonstd::optional<SweepDetail> getSweepDetailByBundleHash(
       const common::crypto::Hash& bundleHash) = 0;
+
+  /// Provides the total amount of user funds currently managed by the Hub
+  /// @return uint64_t - the total user account balance
+  virtual uint64_t getTotalBalance() = 0;
+
 
  private:
   friend class DBManager;

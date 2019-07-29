@@ -22,7 +22,7 @@ class UserWithdrawTest : public CommandTest {};
 TEST_F(UserWithdrawTest, ErrorOnInvalidPayoutAddress) {
   rpc::UserWithdrawRequest req;
   rpc::UserWithdrawReply res;
-  cmd::UserWithdraw command(session());
+  cmd::UserWithdraw command(session(), nullptr);
 
   createUser(session(), "a");
 
@@ -36,7 +36,7 @@ TEST_F(UserWithdrawTest, ErrorOnInvalidPayoutAddress) {
 TEST_F(UserWithdrawTest, ErrorOnZeroAmount) {
   rpc::UserWithdrawRequest req;
   rpc::UserWithdrawReply res;
-  cmd::UserWithdraw command(session());
+  cmd::UserWithdraw command(session(), nullptr);
 
   createUser(session(), "a");
 
@@ -54,7 +54,7 @@ TEST_F(UserWithdrawTest, ErrorOnZeroAmount) {
 TEST_F(UserWithdrawTest, WithdrawalUpdatesUserBalance) {
   rpc::UserWithdrawRequest req;
   rpc::UserWithdrawReply res;
-  cmd::UserWithdraw command(session());
+  cmd::UserWithdraw command(session(), nullptr);
 
   constexpr auto username = "User1";
 
@@ -84,10 +84,10 @@ TEST_F(UserWithdrawTest, WithdrawalUpdatesUserBalance) {
   ASSERT_EQ(50, balRes.available());
 }
 
-TEST_F(UserWithdrawTest, ErrorOnInvalidChecksumForPayoutAddress) {
+TEST_F(UserWithdrawTest, ErrorOnInvalidAddress) {
   rpc::UserWithdrawRequest req;
   rpc::UserWithdrawReply res;
-  cmd::UserWithdraw command(session());
+  cmd::UserWithdraw command(session(), nullptr);
 
   constexpr auto username = "User1";
 
@@ -96,6 +96,33 @@ TEST_F(UserWithdrawTest, ErrorOnInvalidChecksumForPayoutAddress) {
   req.set_userid(username);
   createBalanceForUsers({1}, 100);
   req.set_amount(50);
+  req.set_validatechecksum(false);
+
+  // Last letter is F => [0,-1, *1*]
+  req.set_payoutaddress(
+      "WLVZXWARPSYCWJMBZJGXHUOVYBVCEKMNQDMXHCAEJZFLFLMHFYYQQSSLVYWAZWESKXZOROLU"
+      "9OQFRVDEF");
+
+  auto status = command.doProcess(&req, &res);
+  ASSERT_FALSE(status.ok());
+
+  ASSERT_EQ(hub::rpc::ErrorCode::INELIGIBLE_ADDRESS,
+            errorCodeFromDetails(status.error_details()));
+}
+
+TEST_F(UserWithdrawTest, ErrorOnInvalidChecksumForPayoutAddress) {
+  rpc::UserWithdrawRequest req;
+  rpc::UserWithdrawReply res;
+  cmd::UserWithdraw command(session(), nullptr);
+
+  constexpr auto username = "User1";
+
+  createUser(session(), username);
+
+  req.set_userid(username);
+  createBalanceForUsers({1}, 100);
+  req.set_amount(50);
+  req.set_validatechecksum(true);
 
   // checksum last letter: Y -> Z
   req.set_payoutaddress(

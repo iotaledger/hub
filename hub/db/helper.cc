@@ -116,6 +116,7 @@ uint64_t helper<C>::createUserAddress(C& connection,
 template <typename C>
 void helper<C>::createUserAddressBalanceEntry(
     C& connection, uint64_t addressId, int64_t amount,
+    nonstd::optional<common::crypto::Message> message,
     const UserAddressBalanceReason reason,
     nonstd::optional<std::string> tailHash,
     nonstd::optional<uint64_t> sweepId) {
@@ -125,10 +126,14 @@ void helper<C>::createUserAddressBalanceEntry(
       std::chrono::system_clock::now());
 
   if (reason == UserAddressBalanceReason::DEPOSIT) {
-    connection(insert_into(bal).set(
-        bal.userAddress = addressId, bal.amount = amount,
-        bal.reason = static_cast<int>(reason),
-        bal.tailHash = std::move(tailHash.value()), bal.occuredAt = now));
+    auto messageValue = message.has_value() && !message.value().isNull()
+                            ? message.value().str()
+                            : "";
+    connection(
+        insert_into(bal).set(bal.userAddress = addressId, bal.amount = amount,
+                             bal.reason = static_cast<int>(reason),
+                             bal.tailHash = std::move(tailHash.value()),
+                             bal.occuredAt = now, bal.message = messageValue));
   } else {
     connection(
         insert_into(bal).set(bal.userAddress = addressId, bal.amount = amount,
@@ -298,11 +303,19 @@ std::vector<UserAccountBalanceEvent> helper<C>::getUserAccountBalances(
     std::chrono::system_clock::time_point newerThan) {
   db::sql::UserAccountBalance bal;
   db::sql::UserAccount acc;
+  db::sql::Withdrawal withdrawal;
+  db::sql::Sweep swp;
 
   // Might wanna add sweep's bundle hash or withdrawal uuid in the future.
   auto result = connection(
-      select(acc.identifier, bal.amount, bal.reason, bal.occuredAt)
-          .from(bal.join(acc).on(bal.userId == acc.id))
+      select(acc.identifier, bal.amount, bal.reason, bal.occuredAt,
+             withdrawal.uuid, swp.bundleHash)
+          .from(bal.join(acc)
+                    .on(bal.userId == acc.id)
+                    .left_outer_join(swp)
+                    .on(bal.sweep == swp.id)
+                    .left_outer_join(withdrawal)
+                    .on(bal.withdrawal == withdrawal.id))
           .where(bal.userId == userId && bal.occuredAt >= newerThan));
 
   std::vector<UserAccountBalanceEvent> balances;
@@ -310,10 +323,24 @@ std::vector<UserAccountBalanceEvent> helper<C>::getUserAccountBalances(
   for (auto& row : result) {
     std::chrono::time_point<std::chrono::system_clock> ts =
         row.occuredAt.value();
-    UserAccountBalanceEvent event = {
-        std::move(row.identifier), ts, row.amount,
-        static_cast<UserAccountBalanceReason>((row.reason.value()))};
-    balances.emplace_back(std::move(event));
+    if (row.reason == static_cast<int>(UserAccountBalanceReason::SWEEP)) {
+      balances.emplace_back(UserAccountBalanceEvent{
+          std::move(row.identifier), ts, row.amount,
+          static_cast<UserAccountBalanceReason>((row.reason.value())),
+          row.bundleHash});
+    } else if (row.reason ==
+                   static_cast<int>(UserAccountBalanceReason::WITHDRAWAL) ||
+               row.reason == static_cast<int>(
+                                 UserAccountBalanceReason::WITHDRAWAL_CANCEL)) {
+      balances.emplace_back(UserAccountBalanceEvent{
+          std::move(row.identifier), ts, row.amount,
+          static_cast<UserAccountBalanceReason>((row.reason.value())),
+          row.uuid});
+    } else {
+      balances.emplace_back(UserAccountBalanceEvent{
+          std::move(row.identifier), ts, row.amount,
+          static_cast<UserAccountBalanceReason>((row.reason.value()))});
+    }
   }
   return balances;
 }
@@ -376,8 +403,8 @@ helper<C>::getAllUserAddressesBalancesSinceTimePoint(
   db::sql::Sweep swp;
 
   auto result =
-      connection(select(acc.identifier, add.address, bal.amount, bal.reason,
-                        bal.tailHash, bal.occuredAt, swp.bundleHash)
+      connection(select(acc.identifier, add.address, bal.amount, bal.message,
+                        bal.reason, bal.tailHash, bal.occuredAt, swp.bundleHash)
                      .from(bal.join(add)
                                .on(bal.userAddress == add.id)
                                .join(acc)
@@ -403,7 +430,8 @@ helper<C>::getAllUserAddressesBalancesSinceTimePoint(
         row.amount,
         static_cast<UserAddressBalanceReason>(row.reason.value()),
         std::move(hash),
-        ts};
+        ts,
+        sqlpp::is_null(row.message) ? "" : row.message.value()};
 
     balances.emplace_back(std::move(e));
   }
@@ -555,11 +583,14 @@ WithdrawalInfo helper<C>::getWithdrawalInfoFromUUID(C& connection,
                                                     const std::string& uuid) {
   db::sql::Withdrawal tbl;
 
-  auto result = connection(
-      select(tbl.id, tbl.userId, tbl.amount).from(tbl).where(tbl.uuid == uuid));
+  auto result =
+      connection(select(tbl.id, tbl.userId, tbl.amount, tbl.cancelledAt)
+                     .from(tbl)
+                     .where(tbl.uuid == uuid));
 
   return {static_cast<uint64_t>(result.front().id),
-          static_cast<uint64_t>(result.front().userId), result.front().amount};
+          static_cast<uint64_t>(result.front().userId), result.front().amount,
+          result.front().cancelledAt.is_null() ? false : true};
 }
 
 template <typename C>
@@ -883,6 +914,14 @@ nonstd::optional<hub::db::SweepDetail> helper<C>::getSweepDetailByBundleHash(
   }
 
   return sweepsDetails;
+}
+
+template <typename C>
+uint64_t helper<C>::getTotalBalance(C& connection) {
+  db::sql::UserAccount acc;
+  return connection(select(sum(acc.balance)).unconditionally().from(acc))
+      .front()
+      .sum;
 }
 
 template struct helper<sqlpp::mysql::connection>;

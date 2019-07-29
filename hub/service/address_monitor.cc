@@ -16,6 +16,7 @@
 #include <utility>
 
 #include <gflags/gflags.h>
+#include <glog/logging.h>
 
 #include <boost/asio/io_service.hpp>
 #include <boost/bind.hpp>
@@ -96,6 +97,11 @@ void AddressMonitor::persistBalanceChanges(
 }
 
 bool AddressMonitor::doTick() {
+  if (!_api->isNodeSolid()) {
+    LOG(INFO) << "Node is not solid. Skipping address monitoring.";
+    return true;
+  }
+
   auto changes = calculateBalanceChanges();
 
   if (!changes.empty()) {
