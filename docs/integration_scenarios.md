@@ -32,8 +32,6 @@ _Note that this means that the RPCHub does not track individual per-user balance
 #### Cold wallet topup
 1. Exchange issues withdrawal from `HOT` to cold wallet address that wasn't spent from. (`UserWithdraw`)
 
-  *Be aware that the Hub does _not_ check whether a payout address was already spent from! This has to happen on the exchange side.*
-
 #### Hot wallet topup
 1. Exchange requests deposit address for `HOT` user (`GetDepositAddress`)
 
