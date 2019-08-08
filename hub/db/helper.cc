@@ -724,9 +724,8 @@ std::vector<TransferInput> helper<C>::getDepositsForSweep(
 }
 
 template <typename C>
-std::vector<TransferInput> helper<C>::getHubInputsForSweep(
-    C& connection, uint64_t requiredAmount,
-    const std::chrono::system_clock::time_point& olderThan) {
+std::vector<TransferInput> helper<C>::availableHubInputs(
+    C& connection, const std::chrono::system_clock::time_point& olderThan) {
   db::sql::HubAddress add;
   db::sql::HubAddressBalance bal;
   db::sql::Sweep swp;
@@ -781,17 +780,7 @@ std::vector<TransferInput> helper<C>::getHubInputsForSweep(
   std::sort(availableInputs.begin(), availableInputs.end(),
             [](const auto& a, const auto& b) { return a.amount < b.amount; });
 
-  std::vector<TransferInput> selectedInputs;
-  auto it = availableInputs.begin();
-
-  uint64_t total = 0;
-  while (it != std::end(availableInputs) && total < requiredAmount) {
-    total += it->amount;
-    selectedInputs.emplace_back(std::move(*it));
-    it++;
-  }
-
-  return selectedInputs;
+  return availableInputs;
 }
 
 template <typename C>

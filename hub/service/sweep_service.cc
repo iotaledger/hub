@@ -7,6 +7,7 @@
 
 #include "hub/service/sweep_service.h"
 
+#include <algorithm>
 #include <chrono>
 #include <numeric>
 #include <sstream>
@@ -46,10 +47,16 @@ DEFINE_uint32(sweep_max_deposit, 5,
 namespace hub {
 namespace service {
 
-db::TransferOutput SweepService::getHubOutput(uint64_t remainder) {
+db::TransferOutput SweepService::getHubOutput(
+    uint64_t remainder, nonstd::optional<db::TransferInput> optionalHubOutput) {
+  if (optionalHubOutput.has_value()) {
+    return {optionalHubOutput.value().addressId,
+            remainder,
+            {},
+            std::move(optionalHubOutput.value().address)};
+  }
   auto& dbConnection = db::DBManager::get().connection();
   auto& cryptoProvider = common::crypto::CryptoManager::get().provider();
-
   common::crypto::UUID hubOutputUUID;
   auto address = cryptoProvider.getAddressForUUID(hubOutputUUID).value();
 
@@ -265,12 +272,14 @@ bool SweepService::doTick() {
     std::vector<db::TransferInput> hubInputs;
     uint64_t hubInputTotal = 0;
 
+    nonstd::optional<db::TransferInput> optionalOutputInput;
+
     if (depositsTotal < requiredOutput) {
       auto missing = requiredOutput - depositsTotal;
 
       LOG(INFO) << "Need to fill " << missing << " via Hub addresses.";
 
-      hubInputs = dbConnection.getHubInputsForSweep(missing, sweepStart);
+      hubInputs = dbConnection.availableHubInputs(sweepStart);
 
       hubInputTotal = std::accumulate(
           hubInputs.cbegin(), hubInputs.cend(), 0uLL,
@@ -286,6 +295,33 @@ bool SweepService::doTick() {
         hubInputs.clear();
         requiredOutput = 0;
         withdrawals.clear();
+      } else {
+        std::vector<db::TransferInput> minimalVecOfInputs;
+        getVecOfMinSizeWithSumNotLessThan(missing, hubInputs,
+                                          minimalVecOfInputs);
+
+        // Last element in vec is the smallest, but it's good to sort
+        // in case someone ever changes that behavior
+        std::sort(
+            minimalVecOfInputs.begin(), minimalVecOfInputs.end(),
+            [](const auto& a, const auto& b) { return a.amount < b.amount; });
+
+        // First element in vec is the smallest, but it's good to sort
+        // in case someone ever changes db query that gets that vec
+        std::sort(
+            hubInputs.begin(), hubInputs.end(),
+            [](const auto& a, const auto& b) { return a.amount < b.amount; });
+
+        // if poorest hub address was not used
+        if (!hubInputs.empty() && hubInputs.front().addressId !=
+                                      minimalVecOfInputs.front().addressId) {
+          optionalOutputInput = hubInputs.front();
+        }
+
+        hubInputs.swap(minimalVecOfInputs);
+        hubInputTotal = std::accumulate(
+            hubInputs.cbegin(), hubInputs.cend(), 0uLL,
+            [](uint64_t a, const auto& b) { return a + b.amount; });
       }
     }
 
@@ -302,7 +338,7 @@ bool SweepService::doTick() {
 
     // 4. Determine Hub output address
     auto remainder = (hubInputTotal + depositsTotal) - requiredOutput;
-    auto hubOutput = getHubOutput(remainder);
+    auto hubOutput = getHubOutput(remainder, optionalOutputInput);
 
     LOG(INFO) << "Will move " << remainder
               << " into new Hub address: " << hubOutput.payoutAddress.str();
@@ -327,6 +363,28 @@ bool SweepService::doTick() {
   // PoW is handled by attachment service
 
   return true;
+}
+
+void SweepService::getVecOfMinSizeWithSumNotLessThan(
+    uint64_t amount, const std::vector<db::TransferInput>& hubInputs,
+    std::vector<db::TransferInput>& minVecHubInputs) {
+  auto inputs = hubInputs;
+  // Sort lowest to highest - input should already be sorted, but just in case
+  std::sort(inputs.begin(), inputs.end(),
+            [](const auto& a, const auto& b) { return a.amount < b.amount; });
+  uint64_t missing = amount;
+
+  while (missing && !inputs.empty()) {
+    auto low = std::lower_bound(
+        inputs.begin(), inputs.end(), missing,
+        [](const auto& inp, uint64_t missing) { return inp.amount < missing; });
+    if (low == inputs.end()) {
+      --low;
+    }
+    minVecHubInputs.push_back(*low);
+    inputs.erase(low);
+    missing = low->amount > missing ? 0 : missing - low->amount;
+  }
 }
 }  // namespace service
 }  // namespace hub

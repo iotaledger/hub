@@ -41,6 +41,10 @@ class SweepService : public ScheduledService {
   /// @return string - the descriptive name of the service
   const std::string name() const override { return "SweepService"; }
 
+  static void getVecOfMinSizeWithSumNotLessThan(
+      uint64_t amount, const std::vector<db::TransferInput>& hubInputs,
+      std::vector<db::TransferInput>& minVecHubInputs);
+
  protected:
   /// Called by tick() by default. Override in subclasses
   /// @return false if it wants to stop.
@@ -53,7 +57,10 @@ class SweepService : public ScheduledService {
   /// - the new hub address
   /// - the id of the new hub address
   /// - the remainder
-  db::TransferOutput getHubOutput(uint64_t remainder);
+  /// - an optional hub input that will use as change address
+  db::TransferOutput getHubOutput(
+      uint64_t remainder,
+      nonstd::optional<db::TransferInput> optionalHubOutput);
 
   /// Compute and serialize a bundle made up of all the deposits and withdrawals
   /// identified during the sweep.
