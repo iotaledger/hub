@@ -20,7 +20,7 @@ git_repository(
 
 git_repository(
     name = "rules_iota",
-    commit = "7c2446c6cf94486071f6ad1067385b393fbe3dd4",
+    commit = "b23c24b696d4945c4de9e51a6fc0620c737f7157",
     remote = "https://github.com/iotaledger/rules_iota.git",
 )
 
@@ -93,9 +93,9 @@ new_git_repository(
 
 http_archive(
     name = "org_iota_entangled",
-    sha256 = "001264f930dfb9082f8936a38b3c2ecb472d567bf1053bea13e04bef529d50ab",
-    strip_prefix = "entangled-b95d477dabd52e8e37c71df747a42153f9e55485",
-    url = "https://github.com/iotaledger/entangled/archive/b95d477dabd52e8e37c71df747a42153f9e55485.zip",
+    sha256 = "44acf23ebe05da0a748ba211ddaa4208db36e758e09a283fad05e457b32ee0a0",
+    strip_prefix = "entangled-22059fa56d353bd9bc5af4614737fd820dc08eac",
+    url = "https://github.com/iotaledger/entangled/archive/22059fa56d353bd9bc5af4614737fd820dc08eac.zip",
 )
 
 new_git_repository(
