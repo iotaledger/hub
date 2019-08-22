@@ -86,6 +86,8 @@ See [Getting Started](docs/getting_started.md) for information on how to use the
     -powMode (Proof of work mode, local or remote)
     -fetchTransactionMessages (Determines if Should store deposit transaction's message) 
       type: bool (--fetchTransactionMessages or --nofetchTransactionMessages)
+    -useHttpsIRI (Determines if the connection with IRI should be over HTTPS (make sure `apiAddress` supports https)) 
+     type: bool (--useHttpsIRI or --nouseHttpsIRI)
 
   Flags from hub/service/sweep_service.cc:
     -sweep_max_deposit (Maximum number of user deposits to process per sweep.)
