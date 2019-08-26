@@ -38,5 +38,7 @@ service Hub {
   rpc SweepDetail (SweepDetailRequest) returns (SweepDetailReply);
   // Returns whether withdrawal was cancelled or not
   rpc WasWithdrawalCancelled (WasWithdrawalCancelledRequest) returns (WasWithdrawalCancelledReply);
+  // Returns whether an address was spent from
+  rpc WasAddressSpentFrom (WasAddressSpentFromRequest) returns (WasAddressSpentFromReply);
 }
 

@@ -151,6 +151,17 @@ class HubImpl final : public hub::rpc::Hub::Service {
             const hub::rpc::WasWithdrawalCancelledRequest* request,
             hub::rpc::WasWithdrawalCancelledReply* response) override;
 
+    /// Returns true if address was spent from
+    /// @param[in] context - server context
+    /// @param[in] request - a rpc::wasAddressSpentFromRequest request
+    /// @param[in] response - a rpc::wasAddressSpentFromReply response
+    /// @return grpc::Status
+
+    grpc::Status WasAddressSpentFrom(
+            grpc::ServerContext* context,
+            const hub::rpc::WasAddressSpentFromRequest* request,
+            hub::rpc::WasAddressSpentFromReply* response) override;
+
 
 private:
   std::shared_ptr<cppclient::IotaAPI> _api;

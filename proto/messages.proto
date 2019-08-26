@@ -330,3 +330,14 @@ message WasWithdrawalCancelledReply{
     //True if withdrawal was cancelled
     bool wasCancelled = 1;
 }
+
+message WasAddressSpentFromRequest{
+    //The address in question
+    string address = 1;
+}
+
+message WasAddressSpentFromReply{
+    //True if the address was spent from
+    bool wasAddressSpentFrom = 1;
+}
+

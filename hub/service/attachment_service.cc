@@ -220,8 +220,8 @@ bool AttachmentService::doTick() {
   for (const auto& sweep : unconfirmedSweeps) {
     auto transaction = connection.transaction();
 
-    if (!_api->getNodeInfo().has_value()){
-        return false;
+    if (!_api->getNodeInfo().has_value()) {
+      return false;
     }
 
     auto milestone = _api->getNodeInfo().value().latestMilestone;
