@@ -73,21 +73,21 @@ new_git_repository(
 new_git_repository(
     name = "sqlpp11",
     build_file = "//:third-party/sqlpp11/BUILD.bzl",
-    commit = "ba05135d47e8674f429ba1e03a0259a48f05a4c4",
+    commit = "4f9f001fbd692d3b1c045280f309b61d046e7783",
     remote = "https://github.com/rbock/sqlpp11.git",
 )
 
 new_git_repository(
     name = "sqlpp11sqlite",
     build_file = "//:third-party/sqlpp11sqlite/BUILD.bzl",
-    commit = "cf37829fc9828a36afa050f960d09abcaf6aeb6a",
+    commit = "192c593f8862ee6a63a60538fbf87794bfa9464e",
     remote = "https://github.com/rbock/sqlpp11-connector-sqlite3.git",
 )
 
 new_git_repository(
     name = "sqlpp11mysql",
     build_file = "//:third-party/sqlpp11mysql/BUILD.bzl",
-    commit = "8a48bc2d6157fc445cda5b9beac9b7901fff625c",
+    commit = "5e0913c843e0cf7ede439f05373033ceb2f39d11",
     remote = "https://github.com/rbock/sqlpp11-connector-mysql.git",
 )
 
