@@ -49,7 +49,7 @@ void processRandomTransfer(std::map<uint64_t, std::string>& idsToUsers,
               std::inserter(users, users.begin()));
   cmd::ProcessTransferBatch cmd(std::move(session));
 
-  for (auto i = 0; i < NUM_TRANSFERS; ++i) {
+  for (uint32_t i = 0; i < NUM_TRANSFERS; ++i) {
     rpc::ProcessTransferBatchRequest req;
     rpc::ProcessTransferBatchReply res;
 
@@ -143,7 +143,7 @@ TEST_F(ProcessTransferBatchTest, TransfersAreRecorded) {
   rpc::GetBalanceRequest getBalReq;
   rpc::GetBalanceReply getBalRep;
 
-  for (auto i = 0; i < users.size(); ++i) {
+  for (uint32_t i = 0; i < users.size(); ++i) {
     getBalReq.set_userid(users[i]);
     int64_t amount = (i % 2) ? absAmount : -absAmount;
     ASSERT_TRUE(balCmd.process(&getBalReq, &getBalRep).ok());
@@ -176,7 +176,7 @@ TEST_F(ProcessTransferBatchTest, TransfersAreRecordedGroupingUserBalances) {
   rpc::GetBalanceRequest getBalReq;
   rpc::GetBalanceReply getBalRep;
 
-  for (auto i = 0; i < users.size(); ++i) {
+  for (uint32_t i = 0; i < users.size(); ++i) {
     getBalReq.set_userid(users[i]);
     int64_t amount = (i % 2) ? absAmount : -absAmount;
     ASSERT_TRUE(balCmd.process(&getBalReq, &getBalRep).ok());
@@ -232,7 +232,7 @@ TEST_F(ProcessTransferBatchTest, SequentialTransfersAreConsistent) {
   std::map<uint64_t, std::string> idsToUsers;
   std::map<uint64_t, int64_t> idsToBalances;
 
-  for (auto i = 0; i < NUM_USERS; ++i) {
+  for (uint32_t i = 0; i < NUM_USERS; ++i) {
     idsToUsers[i + 1] = "User " + std::to_string(i + 1);
     auto status = createUser(session(), idsToUsers[i + 1]);
     ASSERT_TRUE(status.ok());
@@ -266,7 +266,7 @@ TEST_F(ProcessTransferBatchTest, ConcurrentTransfersAreConsistent) {
   std::map<uint64_t, std::string> idsToUsers;
   std::map<uint64_t, int64_t> idsToBalances;
 
-  for (auto i = 0; i < NUM_USERS; ++i) {
+  for (uint32_t i = 0; i < NUM_USERS; ++i) {
     idsToUsers[i + 1] = "User " + std::to_string(i + 1);
     auto status = createUser(session(), idsToUsers[i + 1]);
     ASSERT_TRUE(status.ok());
@@ -277,7 +277,7 @@ TEST_F(ProcessTransferBatchTest, ConcurrentTransfersAreConsistent) {
               std::inserter(userIds, userIds.begin()));
   idsToBalances = createBalanceForUsers(userIds, USER_BALANCE);
 
-  for (auto i = 0; i < NUM_THREADS; ++i) {
+  for (uint32_t i = 0; i < NUM_THREADS; ++i) {
     std::thread t(processRandomTransfer, std::ref(idsToUsers),
                   std::ref(idsToBalances), session(), true);
     threads[i] = std::move(t);

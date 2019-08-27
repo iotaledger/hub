@@ -147,7 +147,6 @@ grpc::Status UserWithdraw::doProcess(
     errorCode = hub::rpc::ErrorCode::EC_UNKNOWN;
   }
 
-done:
   if (errorCode) {
     return grpc::Status(grpc::StatusCode::FAILED_PRECONDITION, "",
                         errorToString(errorCode.value()));

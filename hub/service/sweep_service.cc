@@ -64,7 +64,6 @@ std::tuple<common::crypto::Hash, std::string> SweepService::createBundle(
     const std::vector<db::TransferInput>& hubInputs,
     const std::vector<db::TransferOutput>& withdrawals,
     const db::TransferOutput& hubOutput) {
-  auto& dbConnection = db::DBManager::get().connection();
   auto& cryptoProvider = common::crypto::CryptoManager::get().provider();
 
   // 5.1. Generate bundle hash & transactions
