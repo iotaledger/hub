@@ -30,6 +30,7 @@
 #include "hub/commands/sweep_subscription.h"
 #include "hub/commands/user_withdraw.h"
 #include "hub/commands/user_withdraw_cancel.h"
+#include "hub/commands/was_address_spent_from.h"
 #include "hub/commands/was_withdrawal_cancelled.h"
 
 DEFINE_bool(SignBundle_enabled, false,
@@ -170,6 +171,15 @@ grpc::Status HubImpl::WasWithdrawalCancelled(
     hub::rpc::WasWithdrawalCancelledReply* response) {
   auto clientSession = std::make_shared<common::ClientSession>();
   cmd::WasWithdrawalCancelled cmd(clientSession);
+  return cmd.process(request, response);
+}
+
+grpc::Status HubImpl::WasAddressSpentFrom(
+    grpc::ServerContext* context,
+    const hub::rpc::WasAddressSpentFromRequest* request,
+    hub::rpc::WasAddressSpentFromReply* response) {
+  auto clientSession = std::make_shared<common::ClientSession>();
+  cmd::WasAddressSpentFrom cmd(clientSession);
   return cmd.process(request, response);
 }
 

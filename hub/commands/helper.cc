@@ -23,5 +23,24 @@ std::string errorToString(const hub::rpc::ErrorCode& e) {
 
   return ss.str();
 }
+
+bool isAddressValid(std::string_view sv) {
+  bool is_valid = true;
+  switch (sv[80]) {
+    case '9':
+    case 'A':
+    case 'B':
+    case 'C':
+    case 'D':
+    case 'W':
+    case 'X':
+    case 'Y':
+    case 'Z':
+      break;
+    default:
+      is_valid = false;
+  }
+  return is_valid;
+}
 }  // namespace cmd
 }  // namespace hub

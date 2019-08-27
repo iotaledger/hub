@@ -71,23 +71,9 @@ grpc::Status UserWithdraw::doProcess(
     }
   }
 
-  // Currently, all IOTA addresses' last trit must be 0.
-  // This means 9ABCDWXYZ'
-  switch (address->str_view()[80]) {
-    case '9':
-    case 'A':
-    case 'B':
-    case 'C':
-    case 'D':
-    case 'W':
-    case 'X':
-    case 'Y':
-    case 'Z':
-      break;
-    default:
-      return grpc::Status(
-          grpc::StatusCode::FAILED_PRECONDITION, "",
-          errorToString(hub::rpc::ErrorCode::INELIGIBLE_ADDRESS));
+  if (!isAddressValid(address->str_view())) {
+    return grpc::Status(grpc::StatusCode::FAILED_PRECONDITION, "",
+                        errorToString(hub::rpc::ErrorCode::INELIGIBLE_ADDRESS));
   }
 
   auto transaction = connection.transaction();

@@ -43,8 +43,8 @@ grpc::Status WasWithdrawalCancelled::doProcess(
 
   } catch (const std::exception& ex) {
     LOG(ERROR) << session() << " Query failed: " << ex.what();
-      return grpc::Status(grpc::StatusCode::FAILED_PRECONDITION, "",
-                          errorToString(hub::rpc::ErrorCode::INVALID_UUID));
+    return grpc::Status(grpc::StatusCode::FAILED_PRECONDITION, "",
+                        errorToString(hub::rpc::ErrorCode::INVALID_UUID));
   }
 
   return grpc::Status::OK;
