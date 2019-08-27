@@ -53,7 +53,7 @@ TEST_F(DBTest, HubAddressTriggerWorks) {
   auto hubOutputAddress = cryptoProvider.getAddressForUUID(uuid).value();
 
   std::vector<uint64_t> hubAddressIds;
-  for (auto b : balances) {
+  for (uint32_t i = 0 ; i < balances.size(); ++i) {
     auto hubAddressId = connection.createHubAddress(uuid, hubOutputAddress);
     hubAddressIds.push_back(hubAddressId);
   }
@@ -66,7 +66,7 @@ TEST_F(DBTest, HubAddressTriggerWorks) {
 
   uint32_t step = 0;
   for (auto b : balances) {
-    for (auto i = 0; i < b / stepSize; ++i) {
+    for (uint64_t i = 0; i < b / stepSize; ++i) {
       connection.createHubAddressBalanceEntry(hubAddressIds[step], stepSize,
                                               HubAddressBalanceReason::INBOUND,
                                               sweepId);
@@ -111,7 +111,7 @@ TEST_F(DBTest, UserAddressTriggerWorks) {
     auto addId = connection.createUserAddress(userAddress, kv.second, uuid);
     usersToBalance[addId] = userBalances[userNum];
 
-    for (auto i = 0; i < userBalances[userNum] / stepSize; ++i) {
+    for (uint32_t i = 0; i < userBalances[userNum] / stepSize; ++i) {
       connection.createUserAddressBalanceEntry(
           addId, stepSize, nonstd::nullopt, UserAddressBalanceReason::DEPOSIT,
           {""}, 1);

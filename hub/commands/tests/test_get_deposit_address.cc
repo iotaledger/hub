@@ -41,7 +41,6 @@ TEST_F(GetDepositAddressTest, AddressCountInDatabaseShouldChange) {
   rpc::GetDepositAddressRequest req;
   rpc::GetDepositAddressReply res;
   rpc::Error err;
-  db::sql::UserAddress tbl;
 
   constexpr auto username = "User1";
   auto& conn = hub::db::DBManager::get().connection();
