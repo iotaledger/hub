@@ -334,6 +334,8 @@ message WasWithdrawalCancelledReply{
 message WasAddressSpentFromRequest{
     //The address in question
     string address = 1;
+    // should command validate address
+    bool validateChecksum = 2;
 }
 
 message WasAddressSpentFromReply{

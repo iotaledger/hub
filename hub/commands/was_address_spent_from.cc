@@ -33,7 +33,19 @@ grpc::Status WasAddressSpentFrom::doProcess(
   nonstd::optional<common::crypto::Address> address;
 
   try {
-    address = {common::crypto::Address(request->address())};
+    if (request->validatechecksum()) {
+      address = std::move(common::crypto::CryptoManager::get()
+                              .provider()
+                              .verifyAndStripChecksum(request->address()));
+
+      if (!address.has_value()) {
+        return grpc::Status(
+            grpc::StatusCode::FAILED_PRECONDITION, "",
+            errorToString(hub::rpc::ErrorCode::CHECKSUM_INVALID));
+      }
+    } else {
+      address = {common::crypto::Address(request->address())};
+    }
   }
 
   catch (const std::exception& ex) {
