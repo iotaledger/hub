@@ -95,6 +95,13 @@ See [Getting Started](docs/getting_started.md) for information on how to use the
     -sweep_max_withdraw (Maximum number of withdraw requests to service per
       sweep.) type: uint32 default: 7
       
+  Flags from hub/server/grpc.cc:
+    -SignBundle_enabled (Whether the SignBundle API call should be available) 
+      type: bool (--SignBundle_enabled or --noSignBundle_enabled)
+       
+    -RecoverFunds_enabled (Whether the RecoverFunds API call should be available) 
+      type: bool (--RecoverFunds_enabled or --noRecoverFunds_enabled)
+      
 ```
 
 ## Useful things

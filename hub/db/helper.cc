@@ -811,7 +811,7 @@ nonstd::optional<AddressInfo> helper<C>::getAddressInfo(
 
   auto result = connection(
       select(
-          acc.identifier, add.seedUuid,
+          add.id, acc.identifier, add.seedUuid,
           exists(select(bal.id).from(bal).where(
               bal.userAddress == add.id &&
               bal.reason == static_cast<int>(UserAddressBalanceReason::SWEEP))))
@@ -822,7 +822,7 @@ nonstd::optional<AddressInfo> helper<C>::getAddressInfo(
     return {};
   } else {
     auto& front = result.front();
-    return {AddressInfo{std::move(front.identifier.value()),
+    return {AddressInfo{front.id, std::move(front.identifier.value()),
                         common::crypto::UUID(front.seedUuid.value()),
                         front.exists}};
   }

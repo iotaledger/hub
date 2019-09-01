@@ -34,13 +34,9 @@ cc_library(
     visibility = ["//visibility:public"],
     deps = [
         ":scheduled_service",
-        "//common/crypto",
-        "//hub/db",
+        "//hub/bundle:bundle_utils",
         "@boost//:range",
         "@boost//:uuid",
-        "@com_github_gflags_gflags//:gflags",
-        "@com_github_google_glog//:glog",
-        "@iota_lib_cpp",
         "@org_iota_entangled//cppclient:beast",
     ],
 )

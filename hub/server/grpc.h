@@ -163,6 +163,18 @@ class HubImpl final : public hub::rpc::Hub::Service {
             hub::rpc::WasAddressSpentFromReply* response) override;
 
 
+    /// Recover funds from an already spent address
+    /// @param[in] context - server context
+    /// @param[in] request - a rpc::RecoverFundsRequest request
+    /// @param[in] response - a rpc::RecoverFundsReply response
+    /// @return grpc::Status
+
+    grpc::Status RecoverFunds(
+            grpc::ServerContext* context,
+            const hub::rpc::RecoverFundsRequest* request,
+            hub::rpc::RecoverFundsReply* response) override;
+
+
 private:
   std::shared_ptr<cppclient::IotaAPI> _api;
 };
