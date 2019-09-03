@@ -119,7 +119,7 @@ grpc::Status RecoverFunds::doProcess(
 
     hub::db::TransferInput ti = {maybeAddressInfo.value().id, userId,
                                  address.value(), maybeAddressInfo.value().uuid,
-                                 -amount};
+                                 amount};
     deposits.push_back(std::move(ti));
 
     auto hubOutput = hub::bundle_utils::getHubOutput(0);
