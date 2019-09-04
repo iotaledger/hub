@@ -88,17 +88,15 @@ grpc::Status RecoverFunds::doProcess(
     }
 
     // Verify payout address wasn't spent before
-    if (_api) {
-      auto res = _api->wereAddressesSpentFrom({payoutAddress.value().str()});
-      if (!res.has_value() || res.value().states.empty()) {
-        return grpc::Status(
-            grpc::StatusCode::FAILED_PRECONDITION, "",
-            errorToString(hub::rpc::ErrorCode::IRI_CLIENT_UNAVAILABLE));
-      } else if (res.value().states.front()) {
-        return grpc::Status(
-            grpc::StatusCode::FAILED_PRECONDITION, "",
-            errorToString(hub::rpc::ErrorCode::ADDRESS_WAS_ALREADY_SPENT));
-      }
+    auto res = _api->wereAddressesSpentFrom({payoutAddress.value().str()});
+    if (!res.has_value() || res.value().states.empty()) {
+      return grpc::Status(
+          grpc::StatusCode::FAILED_PRECONDITION, "",
+          errorToString(hub::rpc::ErrorCode::IRI_CLIENT_UNAVAILABLE));
+    } else if (res.value().states.front()) {
+      return grpc::Status(
+          grpc::StatusCode::FAILED_PRECONDITION, "",
+          errorToString(hub::rpc::ErrorCode::ADDRESS_WAS_ALREADY_SPENT));
     }
 
     const auto& iriBalances = _api->getBalances({request->address()});
@@ -130,11 +128,9 @@ grpc::Status RecoverFunds::doProcess(
     outputs.emplace_back(
         hub::db::TransferOutput{-1, amount, {}, payoutAddress.value()});
 
-    auto bundle =
-        hub::bundle_utils::createBundle(deposits, {}, outputs, hubOutput);
+    auto bundle = hub::bundle_utils::createBundle(deposits, {}, outputs, {});
 
-    connection.createSweep(std::get<0>(bundle), std::get<1>(bundle),
-                           hubOutput.id);
+    connection.createSweep(std::get<0>(bundle), std::get<1>(bundle), 0);
 
   } catch (const std::exception& ex) {
     return grpc::Status(grpc::StatusCode::FAILED_PRECONDITION, "",

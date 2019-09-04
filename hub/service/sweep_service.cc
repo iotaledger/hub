@@ -137,8 +137,8 @@ bool SweepService::doTick() {
     LOG(INFO) << "Will move " << remainder
               << " into new Hub address: " << hubOutput.payoutAddress.str();
     // 5. Generate bundle_utils
-    auto bundle =
-        bundle_utils::createBundle(deposits, hubInputs, withdrawals, hubOutput);
+    auto bundle = bundle_utils::createBundle(deposits, hubInputs, withdrawals,
+                                             {hubOutput});
 
     // 6. Commit to DB
     persistToDatabase(bundle, deposits, hubInputs, withdrawals, hubOutput);

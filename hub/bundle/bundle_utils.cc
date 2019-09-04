@@ -42,7 +42,7 @@ std::tuple<common::crypto::Hash, std::string> createBundle(
     const std::vector<db::TransferInput>& deposits,
     const std::vector<db::TransferInput>& hubInputs,
     const std::vector<db::TransferOutput>& withdrawals,
-    const db::TransferOutput& hubOutput) {
+    const nonstd::optional<db::TransferOutput> hubOutputOptional) {
   auto& cryptoProvider = common::crypto::CryptoManager::get().provider();
 
   // 5.1. Generate bundle_utils hash & transactions
@@ -88,12 +88,14 @@ std::tuple<common::crypto::Hash, std::string> createBundle(
     }
 
     // output: hubOutput
-    IOTA::Models::Transaction tx;
-    tx.setAddress(hubOutput.payoutAddress.str());
-    tx.setTimestamp(timestamp);
-    tx.setValue(hubOutput.amount);
+    if (hubOutputOptional) {
+      IOTA::Models::Transaction tx;
+      tx.setAddress(hubOutputOptional->payoutAddress.str());
+      tx.setTimestamp(timestamp);
+      tx.setValue(hubOutputOptional->amount);
 
-    bundle.addTransaction(tx, 1);
+      bundle.addTransaction(tx, 1);
+    }
   }
 
   bundle.finalize();

@@ -13,7 +13,10 @@ nonstd::optional<std::string> LocalSigningProvider::getSignatureForUUID(
     const common::crypto::UUID& uuid,
     const common::crypto::Hash& bundleHash) const {
   auto& connection = db::DBManager::get().connection();
-  connection.markUUIDAsSigned(uuid);
+
+  if (!connection.hasUUIDAlreadyBeenSigned(uuid)) {
+    connection.markUUIDAsSigned(uuid);
+  }
 
   return doGetSignatureForUUID(uuid, bundleHash);
 }

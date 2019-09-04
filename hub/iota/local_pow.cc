@@ -19,8 +19,9 @@
 namespace hub {
 namespace iota {
 
-LocalPOW::LocalPOW(size_t depth, size_t mwm)
-    : POWProvider(nullptr, depth, mwm) {}
+LocalPOW::LocalPOW(std::shared_ptr<cppclient::IotaAPI> api, size_t depth,
+                   size_t mwm)
+    : POWProvider(api, depth, mwm) {}
 
 std::vector<std::string> LocalPOW::doPOW(const std::vector<std::string>& trytes,
                                          const std::string& trunk,

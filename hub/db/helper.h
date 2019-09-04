@@ -61,6 +61,8 @@ struct helper {
   static nonstd::optional<AddressWithUUID> selectFirstUserAddress(
       C& connection);
   static void markUUIDAsSigned(C& connection, const common::crypto::UUID& uuid);
+  static bool hasUUIDAlreadyBeenSigned(C& connection,
+                                       const common::crypto::UUID& uuid);
   static std::vector<UserAccountBalanceEvent> getUserAccountBalances(
       C& connection, uint64_t userId,
       std::chrono::system_clock::time_point newerThan);

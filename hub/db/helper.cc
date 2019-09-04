@@ -224,6 +224,16 @@ void helper<C>::markUUIDAsSigned(C& connection,
 }
 
 template <typename C>
+bool helper<C>::hasUUIDAlreadyBeenSigned(C& connection,
+                                         const common::crypto::UUID& uuid) {
+  db::sql::SignedUuids tbl;
+
+  auto result =
+      connection(select(tbl.uuid).from(tbl).where(tbl.uuid <= uuid.str()));
+  return !result.empty();
+}
+
+template <typename C>
 std::vector<Sweep> helper<C>::getUnconfirmedSweeps(
     C& connection, const std::chrono::system_clock::time_point& olderThan) {
   db::sql::Sweep swp;

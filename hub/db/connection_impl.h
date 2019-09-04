@@ -149,6 +149,10 @@ class ConnectionImpl : public Connection {
     db::helper<Conn>::markTailAsConfirmed(*_conn, hash);
   }
 
+  bool hasUUIDAlreadyBeenSigned(const common::crypto::UUID& uuid) override {
+    return db::helper<Conn>::hasUUIDAlreadyBeenSigned(*_conn, uuid);
+  }
+
   std::vector<UserAccountBalanceEvent> getUserAccountBalances(
       uint64_t userId,
       std::chrono::system_clock::time_point newerThan) override {
