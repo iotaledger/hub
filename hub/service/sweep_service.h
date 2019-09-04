@@ -55,6 +55,15 @@ class SweepService : public ScheduledService {
                          const std::vector<db::TransferOutput>& withdrawals,
                          const db::TransferOutput& hubOutput);
 
+  /// Creates a new hub address to which funds that remain after a transfer
+  /// can be moved.
+  /// @param[in] remainder
+  /// @return a db::TransferOutput structure containing
+  /// - the new hub address
+  /// - the id of the new hub address
+  /// - the remainder
+  db::TransferOutput getHubOutput(uint64_t remainder);
+
  protected:
   /// Called by tick() by default. Override in subclasses
   /// @return false if it wants to stop.

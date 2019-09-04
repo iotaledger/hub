@@ -157,18 +157,5 @@ std::tuple<common::crypto::Hash, std::string> createBundle(
   return {std::move(bundleHash), bundleTrytesOS.str()};
 }
 
-db::TransferOutput getHubOutput(uint64_t remainder) {
-  auto& dbConnection = db::DBManager::get().connection();
-  auto& cryptoProvider = common::crypto::CryptoManager::get().provider();
-
-  common::crypto::UUID hubOutputUUID;
-  auto address = cryptoProvider.getAddressForUUID(hubOutputUUID).value();
-
-  return {dbConnection.createHubAddress(hubOutputUUID, address),
-          remainder,
-          {},
-          std::move(address)};
-}
-
 }  // namespace bundle_utils
 }  // namespace hub

@@ -120,8 +120,6 @@ grpc::Status RecoverFunds::doProcess(
                                  amount};
     deposits.push_back(std::move(ti));
 
-    auto hubOutput = hub::bundle_utils::getHubOutput(0);
-
     std::vector<hub::db::TransferOutput> outputs;
 
     // Create the "withdrawl"
