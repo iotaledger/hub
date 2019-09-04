@@ -229,7 +229,7 @@ bool helper<C>::hasUUIDAlreadyBeenSigned(C& connection,
   db::sql::SignedUuids tbl;
 
   auto result =
-      connection(select(tbl.uuid).from(tbl).where(tbl.uuid <= uuid.str()));
+      connection(select(tbl.uuid).from(tbl).where(tbl.uuid == (uuid.str())));
   return !result.empty();
 }
 
