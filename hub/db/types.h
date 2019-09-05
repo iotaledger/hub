@@ -117,7 +117,7 @@ struct TransferOutput {
 
 struct AddressInfo {
  public:
-  int64_t id;
+  uint64_t id;
   std::string userId;
   common::crypto::UUID uuid;
   bool usedForSweep;
