@@ -21,7 +21,7 @@ class RecoverFundsReply;
 
 namespace cmd {
 
-/// REcover funds from an already spent address into an output address
+/// Recover funds from an already spent address into an output address
 /// @param[in] hub::rpc::RecoverFundsRequest
 /// @param[in] hub::rpc::RecoverFundsReply
 class RecoverFunds : public common::Command<hub::rpc::RecoverFundsRequest,
