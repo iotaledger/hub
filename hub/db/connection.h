@@ -135,10 +135,6 @@ class Connection {
   /// @param[in] uuid - the common::crypto::UUID to mark as signed
   virtual void markUUIDAsSigned(const common::crypto::UUID& uuid) = 0;
 
-  /// Checks if uuid was already signed
-  /// @param[in] uuid - the common::crypto::UUID to mark as signed
-  virtual bool hasUUIDAlreadyBeenSigned(const common::crypto::UUID& uuid) = 0;
-
   /// Get a list of account balances for a user
   /// @param[in] userId - the user id in the database
   /// @param[in] newerThan - the start point in time

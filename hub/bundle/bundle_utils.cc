@@ -42,7 +42,8 @@ std::tuple<common::crypto::Hash, std::string> createBundle(
     const std::vector<db::TransferInput>& deposits,
     const std::vector<db::TransferInput>& hubInputs,
     const std::vector<db::TransferOutput>& withdrawals,
-    const nonstd::optional<db::TransferOutput> hubOutputOptional) {
+    const nonstd::optional<db::TransferOutput> hubOutputOptional,
+    bool recoverFunds) {
   auto& cryptoProvider = common::crypto::CryptoManager::get().provider();
 
   // 5.1. Generate bundle_utils hash & transactions
@@ -106,8 +107,12 @@ std::tuple<common::crypto::Hash, std::string> createBundle(
   std::unordered_map<common::crypto::Address, std::string> signaturesForAddress;
 
   for (const auto& in : deposits) {
-    signaturesForAddress[in.address] =
-        cryptoProvider.getSignatureForUUID(in.uuid, bundleHash).value();
+    if (recoverFunds){
+        signaturesForAddress[in.address] = cryptoProvider.forceGetSignatureForUUID(in.uuid, bundleHash).value();
+    }else{
+        signaturesForAddress[in.address] =
+                cryptoProvider.getSignatureForUUID(in.uuid, bundleHash).value();
+    }
   }
   for (const auto& in : hubInputs) {
     signaturesForAddress[in.address] =
