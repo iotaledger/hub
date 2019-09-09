@@ -20,7 +20,6 @@ cc_library(
         "//hub/service:sweep_service",
         "//hub/service:user_address_monitor",
         "//proto:hub_grpc_cc",
-        "@com_github_gflags_gflags//:gflags",
         "@com_github_google_glog//:glog",
         "@org_iota_entangled//cppclient:beast",
     ],

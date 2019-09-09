@@ -8,7 +8,7 @@
 #include <gflags/gflags.h>
 #include <glog/logging.h>
 
-#include "server/server.h"
+#include "hub/server/grpc_server.h"
 
 int main(int argc, char** argv) {
   google::InstallFailureSignalHandler();
@@ -19,8 +19,14 @@ int main(int argc, char** argv) {
 
   LOG(INFO) << "Hub starting up.";
 
-  hub::HubServer server;
+  std::shared_ptr<common::ServerBase> server;
 
-  server.initialise();
-  server.runAndWait();
+  if (FLAGS_serverType == "http") {
+    // TODO
+  } else {
+    server.reset(new hub::HubGrpcServer());
+  }
+
+  server->initialise();
+  server->runAndWait();
 }
