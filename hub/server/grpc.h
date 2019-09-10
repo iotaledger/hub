@@ -139,31 +139,39 @@ class HubImpl final : public hub::rpc::Hub::Service {
                         const hub::rpc::GetStatsRequest* request,
                         hub::rpc::GetStatsReply* response) override;
 
+  /// Returns true if withdrawal was cancelled
+  /// @param[in] context - server context
+  /// @param[in] request - a rpc::WasWithdrawalCancelledRequest request
+  /// @param[in] response - a rpc::WasWithdrawalCancelledResponse response
+  /// @return grpc::Status
 
-    /// Returns true if withdrawal was cancelled
-    /// @param[in] context - server context
-    /// @param[in] request - a rpc::WasWithdrawalCancelledRequest request
-    /// @param[in] response - a rpc::WasWithdrawalCancelledResponse response
-    /// @return grpc::Status
+  grpc::Status WasWithdrawalCancelled(
+      grpc::ServerContext* context,
+      const hub::rpc::WasWithdrawalCancelledRequest* request,
+      hub::rpc::WasWithdrawalCancelledReply* response) override;
 
-    grpc::Status WasWithdrawalCancelled(
-            grpc::ServerContext* context,
-            const hub::rpc::WasWithdrawalCancelledRequest* request,
-            hub::rpc::WasWithdrawalCancelledReply* response) override;
+  /// Returns true if address was spent from
+  /// @param[in] context - server context
+  /// @param[in] request - a rpc::wasAddressSpentFromRequest request
+  /// @param[in] response - a rpc::wasAddressSpentFromReply response
+  /// @return grpc::Status
 
-    /// Returns true if address was spent from
-    /// @param[in] context - server context
-    /// @param[in] request - a rpc::wasAddressSpentFromRequest request
-    /// @param[in] response - a rpc::wasAddressSpentFromReply response
-    /// @return grpc::Status
+  grpc::Status WasAddressSpentFrom(
+      grpc::ServerContext* context,
+      const hub::rpc::WasAddressSpentFromRequest* request,
+      hub::rpc::WasAddressSpentFromReply* response) override;
 
-    grpc::Status WasAddressSpentFrom(
-            grpc::ServerContext* context,
-            const hub::rpc::WasAddressSpentFromRequest* request,
-            hub::rpc::WasAddressSpentFromReply* response) override;
+  /// Recover funds from an already spent address
+  /// @param[in] context - server context
+  /// @param[in] request - a rpc::RecoverFundsRequest request
+  /// @param[in] response - a rpc::RecoverFundsReply response
+  /// @return grpc::Status
 
+  grpc::Status RecoverFunds(grpc::ServerContext* context,
+                            const hub::rpc::RecoverFundsRequest* request,
+                            hub::rpc::RecoverFundsReply* response) override;
 
-private:
+ private:
   std::shared_ptr<cppclient::IotaAPI> _api;
 };
 

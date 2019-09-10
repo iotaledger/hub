@@ -223,6 +223,7 @@ void helper<C>::markUUIDAsSigned(C& connection,
   connection(insert_into(tbl).set(tbl.uuid = uuid.str()));
 }
 
+
 template <typename C>
 std::vector<Sweep> helper<C>::getUnconfirmedSweeps(
     C& connection, const std::chrono::system_clock::time_point& olderThan) {
@@ -811,7 +812,7 @@ nonstd::optional<AddressInfo> helper<C>::getAddressInfo(
 
   auto result = connection(
       select(
-          acc.identifier, add.seedUuid,
+          add.id, acc.identifier, add.seedUuid,
           exists(select(bal.id).from(bal).where(
               bal.userAddress == add.id &&
               bal.reason == static_cast<int>(UserAddressBalanceReason::SWEEP))))
@@ -822,7 +823,7 @@ nonstd::optional<AddressInfo> helper<C>::getAddressInfo(
     return {};
   } else {
     auto& front = result.front();
-    return {AddressInfo{std::move(front.identifier.value()),
+    return {AddressInfo{front.id, std::move(front.identifier.value()),
                         common::crypto::UUID(front.seedUuid.value()),
                         front.exists}};
   }

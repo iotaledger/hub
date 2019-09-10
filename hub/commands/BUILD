@@ -31,6 +31,7 @@ cc_library(
         "//common/stats",
         "//hub/auth:hmac_provider",
         "//hub/db",
+        "//hub/bundle:bundle_utils",
         "//proto:hub_grpc_cc",
         "@boost//:range",
         "@com_github_google_glog//:glog",

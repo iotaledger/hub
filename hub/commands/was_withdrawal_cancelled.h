@@ -13,31 +13,30 @@
 #include "common/command.h"
 
 namespace hub {
-    namespace rpc {
-        class WasWithdrawalCancelledRequest;
-        class WasWithdrawalCancelledReply;
-    }  // namespace rpc
+namespace rpc {
+class WasWithdrawalCancelledRequest;
+class WasWithdrawalCancelledReply;
+}  // namespace rpc
 
-    namespace cmd {
+namespace cmd {
 
+/// Returns true if withdrawal was cancelled
+/// @param[in] request - a rpc::WasWithdrawalCancelledRequest request
+/// @param[in] response - a rpc::WasWithdrawalCancelledResponse response
+class WasWithdrawalCancelled
+    : public common::Command<hub::rpc::WasWithdrawalCancelledRequest,
+                             hub::rpc::WasWithdrawalCancelledReply> {
+ public:
+  using Command<hub::rpc::WasWithdrawalCancelledRequest,
+                hub::rpc::WasWithdrawalCancelledReply>::Command;
 
-        /// Returns true if withdrawal was cancelled
-        /// @param[in] request - a rpc::WasWithdrawalCancelledRequest request
-        /// @param[in] response - a rpc::WasWithdrawalCancelledResponse response
-        class WasWithdrawalCancelled
-                : public common::Command<hub::rpc::WasWithdrawalCancelledRequest,
-                        hub::rpc::WasWithdrawalCancelledReply> {
-        public:
-            using Command<hub::rpc::WasWithdrawalCancelledRequest,
-                    hub::rpc::WasWithdrawalCancelledReply>::Command;
+  const std::string name() override { return "WasWithdrawalCancelled"; }
 
-            const std::string name() override { return "WasWithdrawalCancelled"; }
-
-            grpc::Status doProcess(
-                    const hub::rpc::WasWithdrawalCancelledRequest* request,
-                    hub::rpc::WasWithdrawalCancelledReply* response) noexcept override;
-        };
-    }  // namespace cmd
+  grpc::Status doProcess(
+      const hub::rpc::WasWithdrawalCancelledRequest* request,
+      hub::rpc::WasWithdrawalCancelledReply* response) noexcept override;
+};
+}  // namespace cmd
 }  // namespace hub
 
 #endif  // HUB_COMMANDS_WAS_WITHDRAWAL_CANCELLED_H_

@@ -129,7 +129,7 @@ void HubServer::initialise() {
         _api, FLAGS_depth, FLAGS_minWeightMagnitude));
   } else if (FLAGS_powMode == "local") {
     iota::POWManager::get().setProvider(std::make_unique<iota::LocalPOW>(
-        FLAGS_depth, FLAGS_minWeightMagnitude));
+        _api, FLAGS_depth, FLAGS_minWeightMagnitude));
   } else {
     LOG(FATAL) << "PoW mode: \"" << FLAGS_powMode << "\" not recognized";
   }

@@ -23,7 +23,7 @@ class LocalPOW : public POWProvider {
  public:
   using POWProvider::POWProvider;
 
-  LocalPOW(size_t depth, size_t mwm);
+  LocalPOW(std::shared_ptr<cppclient::IotaAPI> api, size_t depth, size_t mwm);
 
   static constexpr uint16_t OBSOLETE_TAG_OFFSET = 2295;
   static constexpr uint16_t TIMESTAMP_OFFSET = 2322;
