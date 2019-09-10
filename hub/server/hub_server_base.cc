@@ -142,8 +142,6 @@ void HubServerBase::initialise_services() {
   _userAddressMonitor->start();
   _attachmentService->start();
   _sweepService->start();
-
-  LOG(INFO) << "Server listening on " << common::flags::FLAGS_listenAddress;
 }
 
 bool HubServerBase::authenticateSalt() const {

@@ -10,6 +10,24 @@
 
 #include <memory>
 #include <string>
+#include <boost/asio/bind_executor.hpp>
+#include <boost/asio/signal_set.hpp>
+#include <boost/asio/steady_timer.hpp>
+#include <boost/asio/strand.hpp>
+#include <boost/beast/core.hpp>
+#include <boost/beast/http.hpp>
+#include <boost/beast/ssl.hpp>
+#include <boost/beast/version.hpp>
+#include <boost/beast/websocket.hpp>
+#include <boost/asio/bind_executor.hpp>
+#include <boost/asio/signal_set.hpp>
+#include <boost/asio/steady_timer.hpp>
+#include <boost/asio/strand.hpp>
+#include <boost/beast/core.hpp>
+#include <boost/beast/http.hpp>
+#include <boost/beast/ssl.hpp>
+#include <boost/beast/version.hpp>
+#include <boost/beast/websocket.hpp>
 
 #include "server_base.h"
 
@@ -17,8 +35,13 @@ namespace common {
 
     class HttpServerBase : public ServerBase  {
     public:
+        typedef enum {
+            OK = 0,
+            COMMAND_NOT_FOUND,
+        }ErrorCode;
         /// Runs the service and waits for requests
         virtual void runAndWait() override ;
+        virtual ErrorCode handleRequestImpl(std::string_view request_body, std::string& response) = 0;
     };
 }  // namespace common
 

@@ -27,6 +27,8 @@ DECLARE_uint32(argon2Parallelism);
 DECLARE_uint32(argon2Mode);
 // IOTA seeds
 DECLARE_uint32(keySecLevel);
+// Http server
+DECLARE_uint32(numThreadsHttp);
 }  // namespace flags
 }  // namespace common
 

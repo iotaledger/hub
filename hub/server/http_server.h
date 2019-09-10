@@ -11,11 +11,9 @@
 #include <memory>
 #include <string>
 
-#include <grpc++/grpc++.h>
-
 #include "common/http_server_base.h"
 #include "cppclient/api.h"
-#include "hub/server/grpc.h"
+#include "hub/server/hub_server_base.h"
 #include "hub/service/attachment_service.h"
 #include "hub/service/sweep_service.h"
 #include "hub/service/user_address_monitor.h"
@@ -26,13 +24,15 @@ namespace hub {
 /// The HubServer runs the local services and holds the instance of the
 /// cppclient::IotaAPI complient API interface to the tangle. It also holds
 /// an instance of the hub service that will accept requests
-class HubHttpServer : public common::HttpServerBase {
+class HubHttpServer : public common::HttpServerBase, public HubServerBase {
  public:
   /// Constructor.
-  HubGrpcServer();
+  HubHttpServer();
 
   /// Creates and initializes the services and the API interface.
   void initialise() override;
+  virtual ErrorCode handleRequestImpl(std::string_view request_body,
+                                      std::string& response) override;
 
  private:
 };
