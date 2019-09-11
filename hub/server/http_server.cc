@@ -25,6 +25,11 @@
 #include "hub/service/sweep_service.h"
 #include "hub/service/user_address_monitor.h"
 
+#include <boost/property_tree/json_parser.hpp>
+#include <boost/property_tree/ptree.hpp>
+#include <sstream>
+
+
 namespace hub {
 HubHttpServer::HubHttpServer() {}
 
@@ -34,9 +39,24 @@ void HubHttpServer::initialise() {
   LOG(INFO) << "Hub http server was successfully initialized";
 }
 
+namespace pt = boost::property_tree;
+
 common::HttpServerBase::ErrorCode HubHttpServer::handleRequestImpl(
     std::string_view request_body, std::string& response) {
-  response = "Not implemented\n";
+  // Create empty property tree object
+  pt::ptree tree;
+
+
+    std::stringstream stream;
+    stream << request_body;
+
+
+  // Parse the XML into the property tree.
+  pt::read_json(stream, tree);
+
+  auto command = tree.get<std::string>("command");
+  response = command + std::string(" Not implemented\n");
+
   return common::HttpServerBase::ErrorCode::OK;
 }
 
