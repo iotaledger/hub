@@ -29,11 +29,18 @@ class GetUserHistory : public common::Command<hub::rpc::GetUserHistoryRequest,
   using Command<hub::rpc::GetUserHistoryRequest,
                 hub::rpc::GetUserHistoryReply>::Command;
 
-  const std::string name() override { return "GetUserHistory"; }
+  static std::shared_ptr<common::ICommand> create() {
+    return std::shared_ptr<common::ICommand>(new GetUserHistory());
+  }
+
+  static const std::string name() { return "GetUserHistory"; }
 
   grpc::Status doProcess(
       const hub::rpc::GetUserHistoryRequest* request,
       hub::rpc::GetUserHistoryReply* response) noexcept override;
+
+  std::string doProcess(
+      const boost::property_tree::ptree& request) noexcept override;
 };
 }  // namespace cmd
 }  // namespace hub

@@ -30,15 +30,22 @@ class RecoverFunds : public common::Command<hub::rpc::RecoverFundsRequest,
   using Command<hub::rpc::RecoverFundsRequest,
                 hub::rpc::RecoverFundsReply>::Command;
 
+  static std::shared_ptr<common::ICommand> create() {
+    return std::shared_ptr<common::ICommand>(new RecoverFunds());
+  }
+
   explicit RecoverFunds(std::shared_ptr<common::ClientSession> session,
                         std::shared_ptr<cppclient::IotaAPI> api)
       : Command(std::move(session)), _api(std::move(api)) {}
 
-  const std::string name() override { return "RecoverFunds"; }
+  static const std::string name() { return "RecoverFunds"; }
 
   grpc::Status doProcess(
       const hub::rpc::RecoverFundsRequest* request,
       hub::rpc::RecoverFundsReply* response) noexcept override;
+
+  std::string doProcess(
+      const boost::property_tree::ptree& request) noexcept override;
 
  private:
   std::shared_ptr<cppclient::IotaAPI> _api;

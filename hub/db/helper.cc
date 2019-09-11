@@ -223,7 +223,6 @@ void helper<C>::markUUIDAsSigned(C& connection,
   connection(insert_into(tbl).set(tbl.uuid = uuid.str()));
 }
 
-
 template <typename C>
 std::vector<Sweep> helper<C>::getUnconfirmedSweeps(
     C& connection, const std::chrono::system_clock::time_point& olderThan) {

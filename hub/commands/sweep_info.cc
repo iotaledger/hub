@@ -13,6 +13,7 @@
 
 #include "common/crypto/types.h"
 #include "common/stats/session.h"
+#include "hub/commands/factory.h"
 #include "hub/commands/helper.h"
 #include "hub/db/connection.h"
 #include "hub/db/types.h"
@@ -21,6 +22,13 @@
 
 namespace hub {
 namespace cmd {
+
+static CommandFactoryRegistrator<SweepInfo> registrator;
+
+std::string SweepInfo::doProcess(
+    const boost::property_tree::ptree& request) noexcept {
+  return "Not implemented\n";
+}
 
 grpc::Status SweepInfo::doProcess(const hub::rpc::SweepInfoRequest* request,
                                   hub::rpc::SweepEvent* response) noexcept {

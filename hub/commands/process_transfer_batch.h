@@ -31,11 +31,18 @@ class ProcessTransferBatch
   using Command<hub::rpc::ProcessTransferBatchRequest,
                 hub::rpc::ProcessTransferBatchReply>::Command;
 
-  const std::string name() override { return "ProcessTransferBatch"; }
+  static std::shared_ptr<common::ICommand> create() {
+    return std::shared_ptr<common::ICommand>(new ProcessTransferBatch());
+  }
+
+  static const std::string name() { return "ProcessTransferBatch"; }
 
   grpc::Status doProcess(
       const hub::rpc::ProcessTransferBatchRequest* request,
       hub::rpc::ProcessTransferBatchReply* response) noexcept override;
+
+  std::string doProcess(
+      const boost::property_tree::ptree& request) noexcept override;
 
  private:
   /// Checks the validity of a batch transfer. For a batch transfer to be valid,

@@ -28,10 +28,17 @@ class GetStats : public common::Command<hub::rpc::GetStatsRequest,
  public:
   using Command<hub::rpc::GetStatsRequest, hub::rpc::GetStatsReply>::Command;
 
-  const std::string name() override { return "GetStats"; }
+  static std::shared_ptr<common::ICommand> create() {
+    return std::shared_ptr<common::ICommand>(new GetStats());
+  }
+
+  static const std::string name() { return "GetStats"; }
 
   grpc::Status doProcess(const hub::rpc::GetStatsRequest* request,
                          hub::rpc::GetStatsReply* response) noexcept override;
+
+  std::string doProcess(
+      const boost::property_tree::ptree& request) noexcept override;
 };
 }  // namespace cmd
 }  // namespace hub

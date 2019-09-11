@@ -29,11 +29,18 @@ class SweepDetail : public common::Command<hub::rpc::SweepDetailRequest,
   using Command<hub::rpc::SweepDetailRequest,
                 hub::rpc::SweepDetailReply>::Command;
 
-  const std::string name() override { return "SweepDetail"; }
+  static std::shared_ptr<common::ICommand> create() {
+    return std::shared_ptr<common::ICommand>(new SweepDetail());
+  }
+
+  static const std::string name() { return "SweepDetail"; }
 
   grpc::Status doProcess(
       const hub::rpc::SweepDetailRequest* request,
       hub::rpc::SweepDetailReply* response) noexcept override;
+
+  std::string doProcess(
+      const boost::property_tree::ptree& request) noexcept override;
 };
 }  // namespace cmd
 }  // namespace hub

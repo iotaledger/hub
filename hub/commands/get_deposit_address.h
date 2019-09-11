@@ -30,11 +30,18 @@ class GetDepositAddress
   using Command<hub::rpc::GetDepositAddressRequest,
                 hub::rpc::GetDepositAddressReply>::Command;
 
-  const std::string name() override { return "GetDepositAddress"; }
+  static std::shared_ptr<common::ICommand> create() {
+    return std::shared_ptr<common::ICommand>(new GetDepositAddress());
+  }
+
+  static const std::string name() { return "GetDepositAddress"; }
 
   grpc::Status doProcess(
       const hub::rpc::GetDepositAddressRequest* request,
       hub::rpc::GetDepositAddressReply* response) noexcept override;
+
+  std::string doProcess(
+      const boost::property_tree::ptree& request) noexcept override;
 };
 }  // namespace cmd
 }  // namespace hub

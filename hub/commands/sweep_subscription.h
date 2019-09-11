@@ -27,11 +27,18 @@ class SweepSubscription
   using Command<hub::rpc::SweepSubscriptionRequest,
                 grpc::ServerWriterInterface<hub::rpc::SweepEvent>>::Command;
 
+  static std::shared_ptr<common::ICommand> create() {
+    return std::shared_ptr<common::ICommand>(new SweepSubscription());
+  }
+
   grpc::Status doProcess(const hub::rpc::SweepSubscriptionRequest* request,
                          grpc::ServerWriterInterface<hub::rpc::SweepEvent>*
                              writer) noexcept override;
 
-  const std::string name() override { return "SweepSubscription"; }
+  std::string doProcess(
+      const boost::property_tree::ptree& request) noexcept override;
+
+  static const std::string name() { return "SweepSubscription"; }
 
   virtual std::vector<db::SweepEvent> getSweeps(
       std::chrono::system_clock::time_point lastCheck);

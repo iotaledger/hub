@@ -17,6 +17,7 @@
 #include "common/stats/session.h"
 #include "hub/auth/hmac_provider.h"
 #include "hub/auth/manager.h"
+#include "hub/commands/factory.h"
 #include "hub/commands/helper.h"
 #include "hub/db/db.h"
 #include "hub/db/helper.h"
@@ -25,6 +26,13 @@
 
 namespace hub {
 namespace cmd {
+
+static CommandFactoryRegistrator<SignBundle> registrator;
+
+std::string SignBundle::doProcess(
+    const boost::property_tree::ptree& request) noexcept {
+  return "Not implemented\n";
+}
 
 grpc::Status SignBundle::doProcess(
     const hub::rpc::SignBundleRequest* request,

@@ -30,11 +30,14 @@ class GetAddressForUUID
   using common::Command<signing::rpc::GetAddressForUUIDRequest,
                         signing::rpc::GetAddressForUUIDReply>::Command;
 
-  const std::string name() override { return "GetAddressForUUID"; }
+  static const std::string name() { return "GetAddressForUUID"; }
 
   grpc::Status doProcess(
       const signing::rpc::GetAddressForUUIDRequest* request,
       signing::rpc::GetAddressForUUIDReply* response) noexcept override;
+
+    std::string doProcess(
+            const boost::property_tree::ptree& request) noexcept override {return "Not implemented";};
 };
 }  // namespace cmd
 }  // namespace signing

@@ -23,10 +23,18 @@
 #include "proto/hub.pb.h"
 #include "schema/schema.h"
 
+#include "hub/commands/factory.h"
 #include "hub/commands/helper.h"
 
 namespace hub {
 namespace cmd {
+
+static CommandFactoryRegistrator<WasWithdrawalCancelled> registrator;
+
+std::string WasWithdrawalCancelled::doProcess(
+    const boost::property_tree::ptree& request) noexcept {
+  return "Not implemented\n";
+}
 
 grpc::Status WasWithdrawalCancelled::doProcess(
     const hub::rpc::WasWithdrawalCancelledRequest* request,

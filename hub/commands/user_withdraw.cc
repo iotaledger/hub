@@ -22,10 +22,18 @@
 
 #include "common/crypto/manager.h"
 #include "common/crypto/types.h"
+#include "hub/commands/factory.h"
 #include "hub/commands/helper.h"
 
 namespace hub {
 namespace cmd {
+
+static CommandFactoryRegistrator<UserWithdraw> registrator;
+
+std::string UserWithdraw::doProcess(
+    const boost::property_tree::ptree& request) noexcept {
+  return "Not implemented\n";
+}
 
 grpc::Status UserWithdraw::doProcess(
     const hub::rpc::UserWithdrawRequest* request,

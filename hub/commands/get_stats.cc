@@ -19,10 +19,18 @@
 #include "proto/hub.pb.h"
 #include "schema/schema.h"
 
+#include "hub/commands/factory.h"
 #include "hub/commands/helper.h"
 
 namespace hub {
 namespace cmd {
+
+static CommandFactoryRegistrator<GetStats> registrator;
+
+std::string GetStats::doProcess(
+    const boost::property_tree::ptree& request) noexcept {
+  return "Not implemented\n";
+}
 
 grpc::Status GetStats::doProcess(const hub::rpc::GetStatsRequest* request,
                                  hub::rpc::GetStatsReply* response) noexcept {

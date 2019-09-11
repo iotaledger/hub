@@ -30,11 +30,14 @@ class GetSignatureForUUID
   using common::Command<signing::rpc::GetSignatureForUUIDRequest,
                         signing::rpc::GetSignatureForUUIDReply>::Command;
 
-  const std::string name() override { return "GetSignatureForUUID"; }
+  static const std::string name() { return "GetSignatureForUUID"; }
 
   grpc::Status doProcess(
       const signing::rpc::GetSignatureForUUIDRequest* request,
       signing::rpc::GetSignatureForUUIDReply* response) noexcept override;
+
+    std::string doProcess(
+            const boost::property_tree::ptree& request) noexcept override {return "Not implemented";};
 };
 }  // namespace cmd
 }  // namespace signing

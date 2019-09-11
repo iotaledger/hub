@@ -26,11 +26,20 @@
 #include "proto/hub.pb.h"
 #include "schema/schema.h"
 
+#include "hub/commands/factory.h"
 #include "hub/commands/helper.h"
 #include "hub/commands/proto_sql_converter.h"
 
 namespace hub {
 namespace cmd {
+
+static CommandFactoryRegistrator<ProcessTransferBatch> registrator;
+
+std::string ProcessTransferBatch::doProcess(
+    const boost::property_tree::ptree& request) noexcept {
+  return "Not implemented\n";
+}
+
 grpc::Status ProcessTransferBatch::doProcess(
     const hub::rpc::ProcessTransferBatchRequest* request,
     hub::rpc::ProcessTransferBatchReply* response) noexcept {

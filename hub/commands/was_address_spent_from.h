@@ -34,15 +34,22 @@ class WasAddressSpentFrom
   using Command<hub::rpc::WasAddressSpentFromRequest,
                 hub::rpc::WasAddressSpentFromReply>::Command;
 
+  static std::shared_ptr<ICommand> create() {
+    return std::shared_ptr<common::ICommand>(new WasAddressSpentFrom());
+  }
+
   explicit WasAddressSpentFrom(std::shared_ptr<common::ClientSession> session,
                                std::shared_ptr<cppclient::IotaAPI> api)
       : Command(std::move(session)), _api(std::move(api)) {}
 
-  const std::string name() override { return "WasAddressSpentFrom"; }
+  static const std::string name() { return "WasAddressSpentFrom"; }
 
   grpc::Status doProcess(
       const hub::rpc::WasAddressSpentFromRequest* request,
       hub::rpc::WasAddressSpentFromReply* response) noexcept override;
+
+  std::string doProcess(
+      const boost::property_tree::ptree& request) noexcept override;
 
  private:
   std::shared_ptr<cppclient::IotaAPI> _api;

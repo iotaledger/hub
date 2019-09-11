@@ -29,11 +29,18 @@ class GetAddressInfo : public common::Command<hub::rpc::GetAddressInfoRequest,
   using Command<hub::rpc::GetAddressInfoRequest,
                 hub::rpc::GetAddressInfoReply>::Command;
 
-  const std::string name() override { return "GetAddressInfo"; }
+  static std::shared_ptr<common::ICommand> create() {
+    return std::shared_ptr<common::ICommand>(new GetAddressInfo());
+  }
+
+  static const std::string name() { return "GetAddressInfo"; }
 
   grpc::Status doProcess(
       const hub::rpc::GetAddressInfoRequest* request,
       hub::rpc::GetAddressInfoReply* response) noexcept override;
+
+  std::string doProcess(
+      const boost::property_tree::ptree& request) noexcept override;
 };
 }  // namespace cmd
 }  // namespace hub

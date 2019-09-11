@@ -18,10 +18,18 @@
 
 #include "common/crypto/manager.h"
 #include "common/crypto/types.h"
+#include "hub/commands/factory.h"
 #include "hub/commands/helper.h"
 
 namespace hub {
 namespace cmd {
+
+static CommandFactoryRegistrator<WasAddressSpentFrom> registrator;
+
+std::string WasAddressSpentFrom::doProcess(
+    const boost::property_tree::ptree& request) noexcept {
+  return "Not implemented\n";
+}
 
 grpc::Status WasAddressSpentFrom::doProcess(
     const hub::rpc::WasAddressSpentFromRequest* request,

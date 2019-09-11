@@ -30,11 +30,14 @@ class GetSecurityLevel
   using common::Command<signing::rpc::GetSecurityLevelRequest,
                         signing::rpc::GetSecurityLevelReply>::Command;
 
-  const std::string name() override { return "GetSecurityLevel"; }
+  static const std::string name() { return "GetSecurityLevel"; }
 
   grpc::Status doProcess(
       const signing::rpc::GetSecurityLevelRequest* request,
       signing::rpc::GetSecurityLevelReply* response) noexcept override;
+
+    std::string doProcess(
+            const boost::property_tree::ptree& request) noexcept override {return "Not implemented";};
 };
 }  // namespace cmd
 }  // namespace signing

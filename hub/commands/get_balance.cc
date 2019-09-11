@@ -19,10 +19,18 @@
 #include "proto/hub.pb.h"
 #include "schema/schema.h"
 
+#include "hub/commands/factory.h"
 #include "hub/commands/helper.h"
 
 namespace hub {
 namespace cmd {
+
+static CommandFactoryRegistrator<GetBalance> registrator;
+
+std::string GetBalance::doProcess(
+    const boost::property_tree::ptree& request) noexcept {
+  return "Not implemented\n";
+}
 
 grpc::Status GetBalance::doProcess(
     const hub::rpc::GetBalanceRequest* request,

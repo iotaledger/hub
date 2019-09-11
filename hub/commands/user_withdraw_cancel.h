@@ -30,11 +30,18 @@ class UserWithdrawCancel
   using Command<hub::rpc::UserWithdrawCancelRequest,
                 hub::rpc::UserWithdrawCancelReply>::Command;
 
-  const std::string name() override { return "UserWithdrawCancel"; }
+  static std::shared_ptr<common::ICommand> create() {
+    return std::shared_ptr<common::ICommand>(new UserWithdrawCancel());
+  }
+
+  static const std::string name() { return "UserWithdrawCancel"; }
 
   grpc::Status doProcess(
       const hub::rpc::UserWithdrawCancelRequest* request,
       hub::rpc::UserWithdrawCancelReply* response) noexcept override;
+
+  std::string doProcess(
+      const boost::property_tree::ptree& request) noexcept override;
 };
 }  // namespace cmd
 }  // namespace hub

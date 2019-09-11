@@ -29,10 +29,17 @@ class GetBalance : public common::Command<hub::rpc::GetBalanceRequest,
   using Command<hub::rpc::GetBalanceRequest,
                 hub::rpc::GetBalanceReply>::Command;
 
-  const std::string name() override { return "GetBalance"; }
+  static std::shared_ptr<common::ICommand> create() {
+    return std::shared_ptr<common::ICommand>(new GetBalance());
+  }
+
+  static const std::string name() { return "GetBalance"; }
 
   grpc::Status doProcess(const hub::rpc::GetBalanceRequest* request,
                          hub::rpc::GetBalanceReply* response) noexcept override;
+
+  std::string doProcess(
+      const boost::property_tree::ptree& request) noexcept override;
 };
 }  // namespace cmd
 }  // namespace hub

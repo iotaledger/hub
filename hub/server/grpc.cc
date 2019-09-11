@@ -51,7 +51,9 @@ grpc::Status HubImpl::CreateUser(grpc::ServerContext* context,
                                  rpc::CreateUserReply* response) {
   auto clientSession = std::make_shared<common::ClientSession>();
   cmd::CreateUser cmd(clientSession);
-  return cmd.process(request, response);
+  cmd::CreateUserRequest genReq = {.userId = request->userid()};
+  cmd::CreateUserReply genRep;
+  return cmd.process(&genReq, &genRep);
 }
 
 grpc::Status HubImpl::GetBalance(grpc::ServerContext* context,

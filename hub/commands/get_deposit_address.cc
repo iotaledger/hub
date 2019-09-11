@@ -13,6 +13,7 @@
 #include "common/crypto/manager.h"
 #include "common/crypto/types.h"
 #include "common/stats/session.h"
+#include "hub/commands/factory.h"
 #include "hub/commands/helper.h"
 #include "hub/db/db.h"
 #include "hub/db/helper.h"
@@ -21,6 +22,13 @@
 
 namespace hub {
 namespace cmd {
+
+static CommandFactoryRegistrator<GetDepositAddress> registrator;
+
+std::string GetDepositAddress::doProcess(
+    const boost::property_tree::ptree& request) noexcept {
+  return "Not implemented\n";
+}
 
 grpc::Status GetDepositAddress::doProcess(
     const hub::rpc::GetDepositAddressRequest* request,

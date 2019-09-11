@@ -33,15 +33,22 @@ class UserWithdraw : public common::Command<hub::rpc::UserWithdrawRequest,
   using Command<hub::rpc::UserWithdrawRequest,
                 hub::rpc::UserWithdrawReply>::Command;
 
+  static std::shared_ptr<common::ICommand> create() {
+    return std::shared_ptr<common::ICommand>(new UserWithdraw());
+  }
+
   explicit UserWithdraw(std::shared_ptr<common::ClientSession> session,
                         std::shared_ptr<cppclient::IotaAPI> api)
       : Command(std::move(session)), _api(std::move(api)) {}
 
-  const std::string name() override { return "UserWithdraw"; }
+  static const std::string name() { return "UserWithdraw"; }
 
   grpc::Status doProcess(
       const hub::rpc::UserWithdrawRequest* request,
       hub::rpc::UserWithdrawReply* response) noexcept override;
+
+  std::string doProcess(
+      const boost::property_tree::ptree& request) noexcept override;
 
  private:
   std::shared_ptr<cppclient::IotaAPI> _api;

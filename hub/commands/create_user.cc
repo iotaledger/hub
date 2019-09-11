@@ -19,18 +19,26 @@
 
 #include "hub/commands/helper.h"
 
+#include "hub/commands/factory.h"
+
 namespace hub {
 namespace cmd {
 
-grpc::Status CreateUser::doProcess(
-    const hub::rpc::CreateUserRequest* request,
-    hub::rpc::CreateUserReply* response) noexcept {
+static CommandFactoryRegistrator<CreateUser> registrator;
+
+std::string CreateUser::doProcess(
+    const boost::property_tree::ptree& request) noexcept {
+  return "Not implemented\n";
+}
+
+grpc::Status CreateUser::doProcess(const CreateUserRequest* request,
+                                   CreateUserReply* response) noexcept {
   auto& connection = db::DBManager::get().connection();
 
   auto transaction = connection.transaction();
 
   try {
-    connection.createUser(request->userid());
+    connection.createUser(request->userId);
     transaction->commit();
   } catch (const sqlpp::exception& ex) {
     LOG(ERROR) << session() << " Commit failed: " << ex.what();
@@ -45,7 +53,7 @@ grpc::Status CreateUser::doProcess(
                         errorToString(hub::rpc::ErrorCode::USER_EXISTS));
   }
 
-  LOG(INFO) << session() << " Created user: " << request->userid();
+  LOG(INFO) << session() << " Created user: " << request->userId;
 
   return grpc::Status::OK;
 }

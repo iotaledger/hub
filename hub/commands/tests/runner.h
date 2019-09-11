@@ -17,10 +17,10 @@ class CommandTest : public hub::Test {
  public:
   grpc::Status createUser(std::shared_ptr<common::ClientSession> session,
                           std::string username) {
-    rpc::CreateUserRequest req;
-    rpc::CreateUserReply res;
+    cmd::CreateUserRequest req;
+    cmd::CreateUserReply res;
 
-    req.set_userid(std::move(username));
+    req.userId = std::move(username);
     cmd::CreateUser command(std::move(session));
     return command.process(&req, &res);
   }

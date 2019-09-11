@@ -29,10 +29,17 @@ class SignBundle : public common::Command<hub::rpc::SignBundleRequest,
   using Command<hub::rpc::SignBundleRequest,
                 hub::rpc::SignBundleReply>::Command;
 
-  const std::string name() override { return "SignBundle"; }
+  static std::shared_ptr<common::ICommand> create() {
+    return std::shared_ptr<common::ICommand>(new SignBundle());
+  }
+
+  static const std::string name() { return "SignBundle"; }
 
   grpc::Status doProcess(const hub::rpc::SignBundleRequest* request,
                          hub::rpc::SignBundleReply* response) noexcept override;
+
+  std::string doProcess(
+      const boost::property_tree::ptree& request) noexcept override;
 };
 }  // namespace cmd
 }  // namespace hub

@@ -15,6 +15,7 @@
 #include "hub/auth/dummy_provider.h"
 #include "hub/auth/hmac_provider.h"
 #include "hub/auth/manager.h"
+#include "hub/commands/factory.h"
 #include "hub/crypto/local_provider.h"
 #include "hub/crypto/remote_signing_provider.h"
 #include "hub/db/db.h"
@@ -28,7 +29,6 @@
 #include <boost/property_tree/json_parser.hpp>
 #include <boost/property_tree/ptree.hpp>
 #include <sstream>
-
 
 namespace hub {
 HubHttpServer::HubHttpServer() {}
@@ -46,16 +46,22 @@ common::HttpServerBase::ErrorCode HubHttpServer::handleRequestImpl(
   // Create empty property tree object
   pt::ptree tree;
 
-
-    std::stringstream stream;
-    stream << request_body;
-
+  std::stringstream jsonRequest;
+  jsonRequest << request_body;
 
   // Parse the XML into the property tree.
-  pt::read_json(stream, tree);
+  pt::read_json(jsonRequest, tree);
 
   auto command = tree.get<std::string>("command");
-  response = command + std::string(" Not implemented\n");
+
+  auto cmd = cmd::CommandFactory::get()->create(command);
+  if (cmd == nullptr) {
+    response = "Unknown command: " + command + std::string("\n");
+    return common::HttpServerBase::ErrorCode::COMMAND_NOT_FOUND;
+  }
+  auto clientSession = std::make_shared<common::ClientSession>();
+  cmd->setClientSession(clientSession);
+  response = cmd->process(tree);
 
   return common::HttpServerBase::ErrorCode::OK;
 }

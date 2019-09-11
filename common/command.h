@@ -14,51 +14,78 @@
 
 #include <glog/logging.h>
 #include <grpc++/grpc++.h>
+#include <boost/property_tree/ptree.hpp>
 
 #include "common/stats/session.h"
 
 namespace common {
 class ClientSession;
 
+class ICommand{
+public:
+    void setClientSession(std::shared_ptr<ClientSession> session){_clientSession = std::move(session);}
+
+    /// constructor
+    /// @param[in] session - the current client session
+    explicit ICommand(std::shared_ptr<ClientSession> session)
+    : _clientSession(std::move(session)) {}
+
+    /// constructor
+    ICommand(){ }
+
+    /// Process the request - invokes the protected doProcess() implementation
+    /// @param[in] request - contains the details of the request
+    /// @return response - respons as a string
+    std::string process(const boost::property_tree::ptree& request) noexcept {
+        return doProcess(request);
+    }
+
+    /// Process the request - invokes the protected doProcess() implementation
+    /// @param[in] request - contains the details of the request
+    /// @return response - respons as a string
+    virtual std::string doProcess(const boost::property_tree::ptree& request) noexcept = 0;
+
+protected:
+    /// Get the shared client session
+    /// @return ClientSession - a client session
+    ClientSession& session() const { return *_clientSession; }
+
+    /// Shared client session
+    std::shared_ptr<ClientSession> _clientSession;
+
+};
+
 template <typename REQ, typename RES>
 /// Command abstract class template. This is the base class for all
 /// command subclasses. Each concrete subclass is responsible for implementing
 /// their respective behaviour for the correponding request to IRI
-class Command {
+class Command : public ICommand {
  public:
-  /// constructor
-  /// @param[in] session - the current client session
-  explicit Command(std::shared_ptr<ClientSession> session)
-      : _clientSession(std::move(session)) {}
+
+    /// constructor
+    /// @param[in] session - the current client session
+    explicit Command(std::shared_ptr<ClientSession> session)
+    : ICommand(std::move(session)) {}
+
+    /// constructor
+    Command(){ }
 
   /// Process the request - invokes the protected doProcess() implementation
   /// @param[in] request - contains the details of the request
   /// @param[in] response - contains the details of the response
   /// @return grpc::Status
   grpc::Status process(const REQ* request, RES* response) noexcept {
-    VLOG(3) << *_clientSession << name() << "::process()";
-
     return doProcess(request, response);
   }
 
-  /// Returns the descriptive name of the command
-  /// @return std::string
-  virtual const std::string name() = 0;
 
   /// Effectively process the request
   /// @param[in] request - contains the details of the request
   /// @param[in] response - contains the details of the response
   /// @return grpc::Status
   virtual grpc::Status doProcess(const REQ* request,
-                                 RES* response) noexcept = 0;
+                                 RES* response) noexcept = 0;  /// Effectively process the request
 
- protected:
-  /// Get the shared client session
-  /// @return ClientSession - a client session
-  ClientSession& session() const { return *_clientSession; }
-
-  /// Shared client session
-  const std::shared_ptr<ClientSession> _clientSession;
 };
 
 }  // namespace common

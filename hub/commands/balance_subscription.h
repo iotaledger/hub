@@ -8,6 +8,7 @@
 #ifndef HUB_COMMANDS_BALANCE_SUBSCRIPTION_H_
 #define HUB_COMMANDS_BALANCE_SUBSCRIPTION_H_
 
+#include <memory>
 #include <string>
 #include <vector>
 
@@ -36,7 +37,11 @@ class BalanceSubscription
   using Command<hub::rpc::BalanceSubscriptionRequest,
                 grpc::ServerWriterInterface<hub::rpc::BalanceEvent>>::Command;
 
-  const std::string name() override { return "BalanceSubscription"; }
+  static const std::string name() { return "BalanceSubscription"; }
+
+  static std::shared_ptr<ICommand> create() {
+    return std::shared_ptr<common::ICommand>(new BalanceSubscription());
+  }
 
   virtual std::vector<db::UserAccountBalanceEvent>
   getAllUsersAccountBalancesSinceTimePoint(
@@ -53,6 +58,9 @@ class BalanceSubscription
   grpc::Status doProcess(const hub::rpc::BalanceSubscriptionRequest* request,
                          grpc::ServerWriterInterface<hub::rpc::BalanceEvent>*
                              writer) noexcept override;
+
+  std::string doProcess(
+      const boost::property_tree::ptree& request) noexcept override;
 };
 }  // namespace cmd
 }  // namespace hub

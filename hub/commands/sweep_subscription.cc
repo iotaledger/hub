@@ -9,6 +9,7 @@
 #include <utility>
 
 #include "common/stats/session.h"
+#include "hub/commands/factory.h"
 #include "hub/commands/helper.h"
 #include "hub/commands/proto_sql_converter.h"
 #include "hub/db/db.h"
@@ -19,6 +20,13 @@
 
 namespace hub {
 namespace cmd {
+
+static CommandFactoryRegistrator<SweepSubscription> registrator;
+
+std::string SweepSubscription::doProcess(
+    const boost::property_tree::ptree& request) noexcept {
+  return "Not implemented\n";
+}
 
 grpc::Status SweepSubscription::doProcess(
     const hub::rpc::SweepSubscriptionRequest* request,

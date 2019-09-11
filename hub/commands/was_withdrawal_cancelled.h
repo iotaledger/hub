@@ -30,11 +30,18 @@ class WasWithdrawalCancelled
   using Command<hub::rpc::WasWithdrawalCancelledRequest,
                 hub::rpc::WasWithdrawalCancelledReply>::Command;
 
-  const std::string name() override { return "WasWithdrawalCancelled"; }
+  static std::shared_ptr<common::ICommand> create() {
+    return std::shared_ptr<common::ICommand>(new WasWithdrawalCancelled());
+  }
+
+  static const std::string name() { return "WasWithdrawalCancelled"; }
 
   grpc::Status doProcess(
       const hub::rpc::WasWithdrawalCancelledRequest* request,
       hub::rpc::WasWithdrawalCancelledReply* response) noexcept override;
+
+  std::string doProcess(
+      const boost::property_tree::ptree& request) noexcept override;
 };
 }  // namespace cmd
 }  // namespace hub
