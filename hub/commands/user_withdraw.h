@@ -47,7 +47,7 @@ class UserWithdraw : public common::Command<hub::rpc::UserWithdrawRequest,
       const hub::rpc::UserWithdrawRequest* request,
       hub::rpc::UserWithdrawReply* response) noexcept override;
 
-  std::string doProcess(
+  boost::property_tree::ptree doProcess(
       const boost::property_tree::ptree& request) noexcept override;
 
  private:

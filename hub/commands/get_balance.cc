@@ -27,9 +27,10 @@ namespace cmd {
 
 static CommandFactoryRegistrator<GetBalance> registrator;
 
-std::string GetBalance::doProcess(
+boost::property_tree::ptree GetBalance::doProcess(
     const boost::property_tree::ptree& request) noexcept {
-  return "Not implemented\n";
+  boost::property_tree::ptree tree;
+  return tree;
 }
 
 grpc::Status GetBalance::doProcess(

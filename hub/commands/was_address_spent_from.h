@@ -48,7 +48,7 @@ class WasAddressSpentFrom
       const hub::rpc::WasAddressSpentFromRequest* request,
       hub::rpc::WasAddressSpentFromReply* response) noexcept override;
 
-  std::string doProcess(
+  boost::property_tree::ptree doProcess(
       const boost::property_tree::ptree& request) noexcept override;
 
  private:

@@ -37,7 +37,7 @@ class GetStats : public common::Command<hub::rpc::GetStatsRequest,
   grpc::Status doProcess(const hub::rpc::GetStatsRequest* request,
                          hub::rpc::GetStatsReply* response) noexcept override;
 
-  std::string doProcess(
+  boost::property_tree::ptree doProcess(
       const boost::property_tree::ptree& request) noexcept override;
 };
 }  // namespace cmd

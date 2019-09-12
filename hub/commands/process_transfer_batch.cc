@@ -35,9 +35,10 @@ namespace cmd {
 
 static CommandFactoryRegistrator<ProcessTransferBatch> registrator;
 
-std::string ProcessTransferBatch::doProcess(
+boost::property_tree::ptree ProcessTransferBatch::doProcess(
     const boost::property_tree::ptree& request) noexcept {
-  return "Not implemented\n";
+  boost::property_tree::ptree tree;
+  return tree;
 }
 
 grpc::Status ProcessTransferBatch::doProcess(

@@ -31,9 +31,10 @@ namespace cmd {
 
 static CommandFactoryRegistrator<WasWithdrawalCancelled> registrator;
 
-std::string WasWithdrawalCancelled::doProcess(
+boost::property_tree::ptree WasWithdrawalCancelled::doProcess(
     const boost::property_tree::ptree& request) noexcept {
-  return "Not implemented\n";
+  boost::property_tree::ptree tree;
+  return tree;
 }
 
 grpc::Status WasWithdrawalCancelled::doProcess(

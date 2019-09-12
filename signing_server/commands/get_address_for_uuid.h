@@ -36,8 +36,8 @@ class GetAddressForUUID
       const signing::rpc::GetAddressForUUIDRequest* request,
       signing::rpc::GetAddressForUUIDReply* response) noexcept override;
 
-    std::string doProcess(
-            const boost::property_tree::ptree& request) noexcept override {return "Not implemented";};
+    boost::property_tree::ptree doProcess(
+            const boost::property_tree::ptree& request) noexcept override {return boost::property_tree::ptree();};
 };
 }  // namespace cmd
 }  // namespace signing

@@ -40,7 +40,7 @@ class CreateUser : public common::Command<CreateUserRequest, CreateUserReply> {
   grpc::Status doProcess(const CreateUserRequest* request,
                          CreateUserReply* response) noexcept override;
 
-  std::string doProcess(
+  boost::property_tree::ptree doProcess(
       const boost::property_tree::ptree& request) noexcept override;
 };
 }  // namespace cmd

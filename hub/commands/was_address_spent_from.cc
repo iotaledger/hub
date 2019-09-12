@@ -26,9 +26,10 @@ namespace cmd {
 
 static CommandFactoryRegistrator<WasAddressSpentFrom> registrator;
 
-std::string WasAddressSpentFrom::doProcess(
+boost::property_tree::ptree WasAddressSpentFrom::doProcess(
     const boost::property_tree::ptree& request) noexcept {
-  return "Not implemented\n";
+  boost::property_tree::ptree tree;
+  return tree;
 }
 
 grpc::Status WasAddressSpentFrom::doProcess(

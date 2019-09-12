@@ -59,7 +59,7 @@ class BalanceSubscription
                          grpc::ServerWriterInterface<hub::rpc::BalanceEvent>*
                              writer) noexcept override;
 
-  std::string doProcess(
+  boost::property_tree::ptree doProcess(
       const boost::property_tree::ptree& request) noexcept override;
 };
 }  // namespace cmd

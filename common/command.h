@@ -35,15 +35,15 @@ public:
 
     /// Process the request - invokes the protected doProcess() implementation
     /// @param[in] request - contains the details of the request
-    /// @return response - respons as a string
-    std::string process(const boost::property_tree::ptree& request) noexcept {
+    /// @return response - respons as a property tree
+    boost::property_tree::ptree process(const boost::property_tree::ptree& request) noexcept {
         return doProcess(request);
     }
 
     /// Process the request - invokes the protected doProcess() implementation
     /// @param[in] request - contains the details of the request
-    /// @return response - respons as a string
-    virtual std::string doProcess(const boost::property_tree::ptree& request) noexcept = 0;
+    /// @return response - respons as a property tree
+    virtual boost::property_tree::ptree doProcess(const boost::property_tree::ptree& request) noexcept = 0;
 
 protected:
     /// Get the shared client session

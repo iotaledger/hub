@@ -38,7 +38,7 @@ class GetBalance : public common::Command<hub::rpc::GetBalanceRequest,
   grpc::Status doProcess(const hub::rpc::GetBalanceRequest* request,
                          hub::rpc::GetBalanceReply* response) noexcept override;
 
-  std::string doProcess(
+  boost::property_tree::ptree doProcess(
       const boost::property_tree::ptree& request) noexcept override;
 };
 }  // namespace cmd

@@ -39,7 +39,7 @@ class GetAddressInfo : public common::Command<hub::rpc::GetAddressInfoRequest,
       const hub::rpc::GetAddressInfoRequest* request,
       hub::rpc::GetAddressInfoReply* response) noexcept override;
 
-  std::string doProcess(
+  boost::property_tree::ptree doProcess(
       const boost::property_tree::ptree& request) noexcept override;
 };
 }  // namespace cmd

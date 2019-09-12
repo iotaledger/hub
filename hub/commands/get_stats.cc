@@ -27,9 +27,10 @@ namespace cmd {
 
 static CommandFactoryRegistrator<GetStats> registrator;
 
-std::string GetStats::doProcess(
+boost::property_tree::ptree GetStats::doProcess(
     const boost::property_tree::ptree& request) noexcept {
-  return "Not implemented\n";
+  boost::property_tree::ptree tree;
+  return tree;
 }
 
 grpc::Status GetStats::doProcess(const hub::rpc::GetStatsRequest* request,

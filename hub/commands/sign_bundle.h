@@ -38,7 +38,7 @@ class SignBundle : public common::Command<hub::rpc::SignBundleRequest,
   grpc::Status doProcess(const hub::rpc::SignBundleRequest* request,
                          hub::rpc::SignBundleReply* response) noexcept override;
 
-  std::string doProcess(
+  boost::property_tree::ptree doProcess(
       const boost::property_tree::ptree& request) noexcept override;
 };
 }  // namespace cmd

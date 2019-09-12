@@ -27,9 +27,10 @@ namespace cmd {
 
 static CommandFactoryRegistrator<GetAddressInfo> registrator;
 
-std::string GetAddressInfo::doProcess(
+boost::property_tree::ptree GetAddressInfo::doProcess(
     const boost::property_tree::ptree& request) noexcept {
-  return "Not implemented\n";
+  boost::property_tree::ptree tree;
+  return tree;
 }
 
 grpc::Status GetAddressInfo::doProcess(

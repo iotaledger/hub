@@ -23,9 +23,10 @@ namespace cmd {
 
 static CommandFactoryRegistrator<SweepSubscription> registrator;
 
-std::string SweepSubscription::doProcess(
+boost::property_tree::ptree SweepSubscription::doProcess(
     const boost::property_tree::ptree& request) noexcept {
-  return "Not implemented\n";
+  boost::property_tree::ptree tree;
+  return tree;
 }
 
 grpc::Status SweepSubscription::doProcess(

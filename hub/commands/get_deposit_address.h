@@ -40,7 +40,7 @@ class GetDepositAddress
       const hub::rpc::GetDepositAddressRequest* request,
       hub::rpc::GetDepositAddressReply* response) noexcept override;
 
-  std::string doProcess(
+  boost::property_tree::ptree doProcess(
       const boost::property_tree::ptree& request) noexcept override;
 };
 }  // namespace cmd

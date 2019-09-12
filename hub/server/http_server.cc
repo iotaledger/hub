@@ -61,7 +61,7 @@ common::HttpServerBase::ErrorCode HubHttpServer::handleRequestImpl(
   }
   auto clientSession = std::make_shared<common::ClientSession>();
   cmd->setClientSession(clientSession);
-  response = cmd->process(tree);
+  // response = cmd->process(tree);
 
   return common::HttpServerBase::ErrorCode::OK;
 }

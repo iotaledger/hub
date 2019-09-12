@@ -25,9 +25,10 @@ namespace cmd {
 
 static CommandFactoryRegistrator<SweepDetail> registrator;
 
-std::string SweepDetail::doProcess(
+boost::property_tree::ptree SweepDetail::doProcess(
     const boost::property_tree::ptree& request) noexcept {
-  return "Not implemented\n";
+  boost::property_tree::ptree tree;
+  return tree;
 }
 
 grpc::Status SweepDetail::doProcess(

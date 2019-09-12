@@ -39,7 +39,7 @@ class GetUserHistory : public common::Command<hub::rpc::GetUserHistoryRequest,
       const hub::rpc::GetUserHistoryRequest* request,
       hub::rpc::GetUserHistoryReply* response) noexcept override;
 
-  std::string doProcess(
+  boost::property_tree::ptree doProcess(
       const boost::property_tree::ptree& request) noexcept override;
 };
 }  // namespace cmd

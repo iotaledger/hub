@@ -24,9 +24,10 @@ namespace cmd {
 
 static CommandFactoryRegistrator<GetUserHistory> registrator;
 
-std::string GetUserHistory::doProcess(
+boost::property_tree::ptree GetUserHistory::doProcess(
     const boost::property_tree::ptree& request) noexcept {
-  return "Not implemented\n";
+  boost::property_tree::ptree tree;
+  return tree;
 }
 
 grpc::Status GetUserHistory::doProcess(

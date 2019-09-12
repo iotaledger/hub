@@ -40,7 +40,7 @@ class WasWithdrawalCancelled
       const hub::rpc::WasWithdrawalCancelledRequest* request,
       hub::rpc::WasWithdrawalCancelledReply* response) noexcept override;
 
-  std::string doProcess(
+  boost::property_tree::ptree doProcess(
       const boost::property_tree::ptree& request) noexcept override;
 };
 }  // namespace cmd

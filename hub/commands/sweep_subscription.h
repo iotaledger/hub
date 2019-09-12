@@ -35,7 +35,7 @@ class SweepSubscription
                          grpc::ServerWriterInterface<hub::rpc::SweepEvent>*
                              writer) noexcept override;
 
-  std::string doProcess(
+  boost::property_tree::ptree doProcess(
       const boost::property_tree::ptree& request) noexcept override;
 
   static const std::string name() { return "SweepSubscription"; }

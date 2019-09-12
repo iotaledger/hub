@@ -26,9 +26,10 @@ namespace cmd {
 
 static CommandFactoryRegistrator<CreateUser> registrator;
 
-std::string CreateUser::doProcess(
+boost::property_tree::ptree CreateUser::doProcess(
     const boost::property_tree::ptree& request) noexcept {
-  return "Not implemented\n";
+  boost::property_tree::ptree tree;
+  return tree;
 }
 
 grpc::Status CreateUser::doProcess(const CreateUserRequest* request,

@@ -44,7 +44,7 @@ class RecoverFunds : public common::Command<hub::rpc::RecoverFundsRequest,
       const hub::rpc::RecoverFundsRequest* request,
       hub::rpc::RecoverFundsReply* response) noexcept override;
 
-  std::string doProcess(
+  boost::property_tree::ptree doProcess(
       const boost::property_tree::ptree& request) noexcept override;
 
  private:

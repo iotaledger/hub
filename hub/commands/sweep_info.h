@@ -37,7 +37,7 @@ class SweepInfo
   grpc::Status doProcess(const hub::rpc::SweepInfoRequest* request,
                          hub::rpc::SweepEvent* response) noexcept override;
 
-  std::string doProcess(
+  boost::property_tree::ptree doProcess(
       const boost::property_tree::ptree& request) noexcept override;
 };
 }  // namespace cmd

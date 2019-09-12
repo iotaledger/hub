@@ -40,7 +40,7 @@ class UserWithdrawCancel
       const hub::rpc::UserWithdrawCancelRequest* request,
       hub::rpc::UserWithdrawCancelReply* response) noexcept override;
 
-  std::string doProcess(
+  boost::property_tree::ptree doProcess(
       const boost::property_tree::ptree& request) noexcept override;
 };
 }  // namespace cmd

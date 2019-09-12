@@ -25,9 +25,10 @@ namespace cmd {
 
 static CommandFactoryRegistrator<GetDepositAddress> registrator;
 
-std::string GetDepositAddress::doProcess(
+boost::property_tree::ptree GetDepositAddress::doProcess(
     const boost::property_tree::ptree& request) noexcept {
-  return "Not implemented\n";
+  boost::property_tree::ptree tree;
+  return tree;
 }
 
 grpc::Status GetDepositAddress::doProcess(
