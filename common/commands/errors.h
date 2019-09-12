@@ -8,6 +8,7 @@
 #ifndef COMMON_ERRORS_H_
 #define COMMON_ERRORS_H_
 
+#include <map>
 #include <memory>
 #include <string>
 
@@ -45,7 +46,12 @@ typedef enum {
 
 } Error;
 
+std::map<Error, std::string> errorToStringMapCreate();
+
 grpc::Status errorToGrpcError(Error err);
+
+static const std::map<Error, std::string> errorToStringMap =
+    errorToStringMapCreate();
 
 }  // namespace cmd
 }  // namespace common

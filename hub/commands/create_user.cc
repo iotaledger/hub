@@ -37,6 +37,10 @@ boost::property_tree::ptree CreateUser::doProcess(
   }
   auto status = doProcess(&req, &rep);
 
+  if (status != common::cmd::OK) {
+    tree.add("error", common::cmd::errorToStringMap.at(status));
+  }
+
   return tree;
 }
 

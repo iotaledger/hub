@@ -7,125 +7,151 @@
 
 #include "common/commands/errors.h"
 
-
 namespace common {
 
-    namespace cmd {
+namespace cmd {
 
-        grpc::Status errorToGrpcError( Error err){
-            grpc::Status status;
-            switch (err) {
-                case OK:
-                    status = grpc::Status::OK;
-                    break;
+std::map<Error, std::string> errorToStringMapCreate() {
+  std::map<Error, std::string> map;
+  map[OK] = "OK";
+  map[CANCELLED] = "Cancelled";
+  map[USER_EXISTS] = "User exist";
+  map[USER_DOES_NOT_EXIST] = "User does not exist";
+  map[UNKNOWN_ADDRESS] = "Unknown address";
+  map[UNKNOWN_ERROR] = "Unknown error";
+  map[GET_ADDRESS_FAILED] = "Get address failed";
+  map[INVALID_UUID] = "Invalid UUID";
+  map[INVALID_CHECKSUM] = "Invalid checksum";
+  map[INVALID_ADDRESS] = "Invalid address";
+  map[ADDRESS_WAS_SPENT] = "Address was already spent";
+  map[IOTA_NODE_UNAVAILABLE] = "IOTA node is unavailable";
+  map[WITHDRAWAL_CAN_NOT_BE_CANCELLED] = "Withdrawal can not be cancelled";
+  map[INVALID_AUTHENTICATION] = "Invalid authentication";
+  map[ADDRESS_NOT_KNOWN_TO_NODE] = "Address is not known to node";
+  map[SIGNATURE_FAILED] = "Signing has failed";
+  map[WRONG_USER_ADDRESS] = "Wrong user address";
+  map[ADDRESS_BALANCE_ZERO] = "Address balance is zero";
+  map[BATCH_INVALID] = "Batch is invalid";
+  map[BATCH_INCONSISTENT] = "Batch is inconsistent";
+  map[BATCH_AMOUNT_NOT_ZERO] = "Batch amount is not zero (unbalanced)";
+  map[INSUFFICIENT_BALANCE] = "Insufficient balance";
 
-                case CANCELLED:
-                    status = grpc::Status::CANCELLED;
-                    break;
-                case USER_EXISTS:
-                    status = grpc::Status(grpc::StatusCode::FAILED_PRECONDITION, "",
-                                      "User does not exist");
-                    break;
-                case UNKNOWN_ADDRESS:
-                    status = grpc::Status(grpc::StatusCode::FAILED_PRECONDITION, "",
-                                          "Unknown address");
-                    break;
+  return map;
+};
 
-                case UNKNOWN_ERROR:
-                    status = grpc::Status(grpc::StatusCode::FAILED_PRECONDITION, "",
-                                          "Unknown error");
-                    break;
+grpc::Status errorToGrpcError(Error err) {
+  grpc::Status status;
+  switch (err) {
+    case OK:
+      status = grpc::Status::OK;
+      break;
 
-                case USER_DOES_NOT_EXIST:
-                    status = grpc::Status(grpc::StatusCode::FAILED_PRECONDITION, "",
-                                          "User does not exist");
-                    break;
+    case CANCELLED:
+      status = grpc::Status::CANCELLED;
+      break;
+    case USER_EXISTS:
+      status = grpc::Status(grpc::StatusCode::FAILED_PRECONDITION, "",
+                            errorToStringMap.at(USER_EXISTS));
+      break;
+    case UNKNOWN_ADDRESS:
+      status = grpc::Status(grpc::StatusCode::FAILED_PRECONDITION, "",
+                            errorToStringMap.at(UNKNOWN_ADDRESS));
+      break;
 
-                case GET_ADDRESS_FAILED:
-                    status = grpc::Status(grpc::StatusCode::FAILED_PRECONDITION, "",
-                                          "failed in trying to get the address");
-                    break;
+    case UNKNOWN_ERROR:
+      status = grpc::Status(grpc::StatusCode::FAILED_PRECONDITION, "",
+                            errorToStringMap.at(UNKNOWN_ERROR));
+      break;
 
-                case INVALID_UUID:
-                    status = grpc::Status(grpc::StatusCode::FAILED_PRECONDITION, "",
-                                          "invalid UUID");
-                    break;
-                case INVALID_CHECKSUM:
-                    status = grpc::Status(grpc::StatusCode::FAILED_PRECONDITION, "",
-                                          "invalid checksum");
-                    break;
-                case INVALID_ADDRESS:
-                    status = grpc::Status(grpc::StatusCode::FAILED_PRECONDITION, "",
-                                          "invalid address");
-                    break;
+    case USER_DOES_NOT_EXIST:
+      status = grpc::Status(grpc::StatusCode::FAILED_PRECONDITION, "",
+                            errorToStringMap.at(USER_DOES_NOT_EXIST));
+      break;
 
-                case IOTA_NODE_UNAVAILABLE:
-                    status = grpc::Status(grpc::StatusCode::FAILED_PRECONDITION, "",
-                                          "iota node is unavailable");
-                    break;
+    case GET_ADDRESS_FAILED:
+      status = grpc::Status(grpc::StatusCode::FAILED_PRECONDITION, "",
+                            errorToStringMap.at(GET_ADDRESS_FAILED));
+      break;
 
-                case ADDRESS_WAS_SPENT:
-                    status = grpc::Status(grpc::StatusCode::FAILED_PRECONDITION, "",
-                                          "address was already spent");
-                    break;
+    case INVALID_UUID:
+      status = grpc::Status(grpc::StatusCode::FAILED_PRECONDITION, "",
+                            errorToStringMap.at(INVALID_UUID));
+      break;
+    case INVALID_CHECKSUM:
+      status = grpc::Status(grpc::StatusCode::FAILED_PRECONDITION, "",
+                            errorToStringMap.at(INVALID_CHECKSUM));
+      break;
+    case INVALID_ADDRESS:
+      status = grpc::Status(grpc::StatusCode::FAILED_PRECONDITION, "",
+                            errorToStringMap.at(INVALID_ADDRESS));
+      break;
 
-                case WITHDRAWAL_CAN_NOT_BE_CANCELLED:
-                    status = grpc::Status(grpc::StatusCode::FAILED_PRECONDITION, "",
-                                          "Withdrawal cannot be cancelled");
-                    break;
+    case IOTA_NODE_UNAVAILABLE:
+      status = grpc::Status(grpc::StatusCode::FAILED_PRECONDITION, "",
+                            errorToStringMap.at(IOTA_NODE_UNAVAILABLE));
+      break;
 
+    case ADDRESS_WAS_SPENT:
+      status = grpc::Status(grpc::StatusCode::FAILED_PRECONDITION, "",
+                            errorToStringMap.at(ADDRESS_WAS_SPENT));
+      break;
 
-                case INVALID_AUTHENTICATION:
-                    status = grpc::Status(grpc::StatusCode::FAILED_PRECONDITION, "",
-                                          "Invalid authentication");
-                    break;
+    case WITHDRAWAL_CAN_NOT_BE_CANCELLED:
+      status =
+          grpc::Status(grpc::StatusCode::FAILED_PRECONDITION, "",
+                       errorToStringMap.at(WITHDRAWAL_CAN_NOT_BE_CANCELLED));
+      break;
 
-                case SIGNATURE_FAILED:
-                    status = grpc::Status(grpc::StatusCode::FAILED_PRECONDITION, "",
-                                          "signature failed");
+    case INVALID_AUTHENTICATION:
+      status = grpc::Status(grpc::StatusCode::FAILED_PRECONDITION, "",
+                            errorToStringMap.at(INVALID_AUTHENTICATION));
+      break;
 
-                case WRONG_USER_ADDRESS:
-                    status = grpc::Status(grpc::StatusCode::FAILED_PRECONDITION, "",
-                                          "wrong user address");
-                    break;
+    case SIGNATURE_FAILED:
+      status = grpc::Status(grpc::StatusCode::FAILED_PRECONDITION, "",
+                            errorToStringMap.at(SIGNATURE_FAILED));
 
-                case ADDRESS_NOT_KNOWN_TO_NODE:
-                    status = grpc::Status(grpc::StatusCode::FAILED_PRECONDITION, "",
-                                          "address not known to node");
-                    break;
+    case WRONG_USER_ADDRESS:
+      status = grpc::Status(grpc::StatusCode::FAILED_PRECONDITION, "",
+                            errorToStringMap.at(WRONG_USER_ADDRESS));
+      break;
 
-                case ADDRESS_BALANCE_ZERO:
-                    status = grpc::Status(grpc::StatusCode::FAILED_PRECONDITION, "",
-                                          "address balance is zero");
-                    break;
+    case ADDRESS_NOT_KNOWN_TO_NODE:
+      status = grpc::Status(grpc::StatusCode::FAILED_PRECONDITION, "",
+                            errorToStringMap.at(ADDRESS_NOT_KNOWN_TO_NODE));
+      break;
 
-                case BATCH_AMOUNT_NOT_ZERO:
-                    status = grpc::Status(grpc::StatusCode::FAILED_PRECONDITION, "",
-                                          "batch amount is not zero");
-                    break;
+    case ADDRESS_BALANCE_ZERO:
+      status = grpc::Status(grpc::StatusCode::FAILED_PRECONDITION, "",
+                            errorToStringMap.at(ADDRESS_BALANCE_ZERO));
+      break;
 
-                case BATCH_INCONSISTENT:
-                    status = grpc::Status(grpc::StatusCode::FAILED_PRECONDITION, "",
-                                          "batch is inconsistent");
-                    break;
+    case BATCH_AMOUNT_NOT_ZERO:
+      status = grpc::Status(grpc::StatusCode::FAILED_PRECONDITION, "",
+                            errorToStringMap.at(BATCH_AMOUNT_NOT_ZERO));
+      break;
 
-                case BATCH_INVALID:
-                    status = grpc::Status(grpc::StatusCode::FAILED_PRECONDITION, "",
-                                          "batch is invalid");
-                    break;
+    case BATCH_INCONSISTENT:
+      status = grpc::Status(grpc::StatusCode::FAILED_PRECONDITION, "",
+                            errorToStringMap.at(BATCH_INCONSISTENT));
+      break;
 
-                case INSUFFICIENT_BALANCE:
-                    status = grpc::Status(grpc::StatusCode::FAILED_PRECONDITION, "",
-                                          "insufficient balance");
-                    break;
-                default:
-                    status = grpc::Status(grpc::StatusCode::FAILED_PRECONDITION, "",
-                                          "unrecognized error code");
-                    break;
-            }
+    case BATCH_INVALID:
+      status = grpc::Status(grpc::StatusCode::FAILED_PRECONDITION, "",
+                            errorToStringMap.at(BATCH_INVALID));
+      break;
 
-            return status;
-        }
-    }
+    case INSUFFICIENT_BALANCE:
+      status = grpc::Status(grpc::StatusCode::FAILED_PRECONDITION, "",
+                            errorToStringMap.at(INSUFFICIENT_BALANCE));
+      break;
+    default:
+      status = grpc::Status(grpc::StatusCode::FAILED_PRECONDITION, "",
+                            "unrecognized error code");
+      break;
+  }
+
+  return status;
 }
-
+}  // namespace cmd
+}  // namespace common

@@ -25,8 +25,8 @@ typedef struct CreateUserReply {
 } CreateUserReply;
 
 /// Creates a new user with a specific id.
-/// @param[in] hub::rpc::CreateUserRequest
-/// @param[in] hub::rpc::CreateUserReply
+/// @param[in] CreateUserRequest
+/// @param[in] CreateUserReply
 class CreateUser : public common::Command<CreateUserRequest, CreateUserReply> {
  public:
   using Command<CreateUserRequest, CreateUserReply>::Command;
