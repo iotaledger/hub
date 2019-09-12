@@ -11,7 +11,6 @@
 #include <sqlpp11/insert.h>
 #include <sqlpp11/transaction.h>
 
-#include "proto/hub.pb.h"
 #include "schema/schema.h"
 
 #include "common/stats/session.h"

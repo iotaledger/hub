@@ -48,16 +48,15 @@ TEST_F(UserWithdrawCancelTest, WithdrawalCancelUpdatesUserBalance) {
 
   ASSERT_EQ(status, common::cmd::OK);
 
-  rpc::GetBalanceRequest balReq;
-  rpc::GetBalanceReply balRep;
+  cmd::GetBalanceRequest balReq = {.userId = username};
+  cmd::GetBalanceReply balRep;
   rpc::Error err;
 
-  balReq.set_userid(username);
   cmd::GetBalance balCommand(session());
 
   ASSERT_EQ(balCommand.doProcess(&balReq, &balRep), common::cmd::OK);
 
-  ASSERT_EQ(USER_BALANCE - toWithdraw, balRep.available());
+  ASSERT_EQ(USER_BALANCE - toWithdraw, balRep.available);
 
   rpc::UserWithdrawCancelRequest req;
   rpc::UserWithdrawCancelReply rep;
@@ -69,7 +68,7 @@ TEST_F(UserWithdrawCancelTest, WithdrawalCancelUpdatesUserBalance) {
 
   ASSERT_EQ(balCommand.doProcess(&balReq, &balRep), common::cmd::OK);
 
-  ASSERT_EQ(USER_BALANCE, balRep.available());
+  ASSERT_EQ(USER_BALANCE, balRep.available);
 }
 
 TEST_F(UserWithdrawCancelTest, WithdrawalCancelOnlyOnce) {
@@ -94,16 +93,15 @@ TEST_F(UserWithdrawCancelTest, WithdrawalCancelOnlyOnce) {
 
   ASSERT_EQ(status, common::cmd::OK);
 
-  rpc::GetBalanceRequest balReq;
-  rpc::GetBalanceReply balRep;
+  cmd::GetBalanceRequest balReq = {.userId = username};
+  cmd::GetBalanceReply balRep;
   rpc::Error err;
 
-  balReq.set_userid(username);
   cmd::GetBalance balCommand(session());
 
   ASSERT_EQ(balCommand.doProcess(&balReq, &balRep), common::cmd::OK);
 
-  ASSERT_EQ(USER_BALANCE - toWithdraw, balRep.available());
+  ASSERT_EQ(USER_BALANCE - toWithdraw, balRep.available);
 
   rpc::UserWithdrawCancelRequest req;
   rpc::UserWithdrawCancelReply rep;
@@ -115,11 +113,11 @@ TEST_F(UserWithdrawCancelTest, WithdrawalCancelOnlyOnce) {
 
   ASSERT_EQ(balCommand.doProcess(&balReq, &balRep), common::cmd::OK);
 
-  ASSERT_EQ(USER_BALANCE, balRep.available());
+  ASSERT_EQ(USER_BALANCE, balRep.available);
 
   ASSERT_NE(cmd.doProcess(&req, &rep), common::cmd::OK);
 
-  ASSERT_EQ(USER_BALANCE, balRep.available());
+  ASSERT_EQ(USER_BALANCE, balRep.available);
 }
 
 };  // namespace

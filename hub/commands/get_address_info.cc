@@ -19,7 +19,6 @@
 #include "hub/commands/helper.h"
 #include "hub/db/db.h"
 #include "hub/db/helper.h"
-#include "proto/hub.pb.h"
 #include "schema/schema.h"
 
 namespace hub {

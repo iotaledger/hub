@@ -72,16 +72,15 @@ TEST_F(UserWithdrawTest, WithdrawalUpdatesUserBalance) {
 
   ASSERT_EQ(status,common::cmd::OK);
 
-  rpc::GetBalanceRequest balReq;
-  rpc::GetBalanceReply balRes;
+  cmd::GetBalanceRequest balReq = {.userId = username};
+  cmd::GetBalanceReply balRes;
   rpc::Error err;
 
-  balReq.set_userid(username);
   cmd::GetBalance balCommand(session());
 
   ASSERT_EQ(balCommand.doProcess(&balReq, &balRes),common::cmd::OK);
 
-  ASSERT_EQ(50, balRes.available());
+  ASSERT_EQ(50, balRes.available);
 }
 
 TEST_F(UserWithdrawTest, ErrorOnInvalidAddress) {

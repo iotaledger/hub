@@ -138,14 +138,14 @@ TEST_F(ProcessTransferBatchTest, TransfersAreRecorded) {
   ASSERT_TRUE(status== common::cmd::OK);
 
   cmd::GetBalance balCmd(session());
-  rpc::GetBalanceRequest getBalReq;
-  rpc::GetBalanceReply getBalRep;
+  cmd::GetBalanceRequest getBalReq;
+  cmd::GetBalanceReply getBalRep;
 
   for (uint32_t i = 0; i < users.size(); ++i) {
-    getBalReq.set_userid(users[i]);
+    getBalReq.userId = users[i];
     int64_t amount = (i % 2) ? absAmount : -absAmount;
     ASSERT_TRUE(balCmd.process(&getBalReq, &getBalRep)== common::cmd::OK);
-    ASSERT_EQ(USER_BALANCE + amount, getBalRep.available());
+    ASSERT_EQ(USER_BALANCE + amount, getBalRep.available);
   }
 }
 
@@ -171,14 +171,14 @@ TEST_F(ProcessTransferBatchTest, TransfersAreRecordedGroupingUserBalances) {
   ASSERT_TRUE(status== common::cmd::OK);
 
   cmd::GetBalance balCmd(session());
-  rpc::GetBalanceRequest getBalReq;
-  rpc::GetBalanceReply getBalRep;
+  cmd::GetBalanceRequest getBalReq;
+  cmd::GetBalanceReply getBalRep;
 
   for (uint32_t i = 0; i < users.size(); ++i) {
-    getBalReq.set_userid(users[i]);
+    getBalReq.userId = users[i];
     int64_t amount = (i % 2) ? absAmount : -absAmount;
     ASSERT_TRUE(balCmd.process(&getBalReq, &getBalRep)== common::cmd::OK);
-    ASSERT_EQ(USER_BALANCE + amount, getBalRep.available());
+    ASSERT_EQ(USER_BALANCE + amount, getBalRep.available);
   }
 }
 
@@ -245,13 +245,13 @@ TEST_F(ProcessTransferBatchTest, SequentialTransfersAreConsistent) {
   }
 
   cmd::GetBalance balCmd(session());
-  rpc::GetBalanceRequest getBalReq;
-  rpc::GetBalanceReply getBalRep;
+  cmd::GetBalanceRequest getBalReq;
+  cmd::GetBalanceReply getBalRep;
 
   for (auto& kv : idsToUsers) {
-    getBalReq.set_userid(kv.second);
+    getBalReq.userId = kv.second;
     ASSERT_EQ(balCmd.process(&getBalReq, &getBalRep), common::cmd::OK);
-    ASSERT_EQ(idsToBalances[kv.first], getBalRep.available());
+    ASSERT_EQ(idsToBalances[kv.first], getBalRep.available);
   }
 }
 
@@ -284,13 +284,13 @@ TEST_F(ProcessTransferBatchTest, ConcurrentTransfersAreConsistent) {
   }
 
   cmd::GetBalance balCmd(session());
-  rpc::GetBalanceRequest getBalReq;
-  rpc::GetBalanceReply getBalRep;
+  cmd::GetBalanceRequest getBalReq;
+  cmd::GetBalanceReply getBalRep;
 
   for (auto& kv : idsToUsers) {
-    getBalReq.set_userid(kv.second);
+    getBalReq.userId = kv.second;
     ASSERT_EQ(balCmd.process(&getBalReq, &getBalRep), common::cmd::OK);
-    //ASSERT_EQ(idsToBalances[kv.first], getBalRep.available());
+    ASSERT_EQ(idsToBalances[kv.first], getBalRep.available);
   }
 }
 

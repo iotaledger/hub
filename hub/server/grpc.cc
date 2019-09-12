@@ -61,7 +61,15 @@ grpc::Status HubImpl::GetBalance(grpc::ServerContext* context,
                                  rpc::GetBalanceReply* rpcResponse) {
   auto clientSession = std::make_shared<common::ClientSession>();
   cmd::GetBalance cmd(clientSession);
-  return common::cmd::errorToGrpcError(cmd.process(rpcRequest, rpcResponse));
+  cmd::GetBalanceRequest req = {.userId = rpcRequest->userid()};
+  cmd::GetBalanceReply rep;
+  auto status = common::cmd::errorToGrpcError(cmd.process(&req, &rep));
+
+  if (status.ok()) {
+    rpcResponse->set_available(rep.available);
+  }
+
+  return status;
 }
 
 grpc::Status HubImpl::GetDepositAddress(

@@ -20,10 +20,9 @@ namespace {
 class GetBalanceTest : public CommandTest {};
 
 TEST_F(GetBalanceTest, UnknownUserShouldFail) {
-  rpc::GetBalanceRequest req;
-  rpc::GetBalanceReply res;
+  cmd::GetBalanceRequest req = {.userId = "User1"};
+  cmd::GetBalanceReply res;
 
-  req.set_userid("User1");
   cmd::GetBalance command(session());
 
   auto status = command.process(&req, &res);
@@ -32,21 +31,18 @@ TEST_F(GetBalanceTest, UnknownUserShouldFail) {
 }
 
 TEST_F(GetBalanceTest, NewUserHasZeroBalance) {
-  rpc::GetBalanceRequest req;
-  rpc::GetBalanceReply res;
+        constexpr auto username = "User1";
+  cmd::GetBalanceRequest req = {.userId = username};
+  cmd::GetBalanceReply res;
   rpc::Error err;
 
-  constexpr auto username = "User1";
-
   createUser(session(), username);
-
-  req.set_userid(username);
 
   cmd::GetBalance command(session());
 
   ASSERT_EQ(command.process(&req, &res), common::cmd::OK);
 
-  ASSERT_EQ(0, res.available());
+  ASSERT_EQ(0, res.available);
 }
 
 };  // namespace
