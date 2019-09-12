@@ -9,7 +9,7 @@
 #include <glog/logging.h>
 
 #include "hub/server/grpc_server.h"
-#include "hub/server/http_server.h"
+#include "hub/server/http_json_server.h"
 
 int main(int argc, char** argv) {
   google::InstallFailureSignalHandler();
@@ -23,7 +23,7 @@ int main(int argc, char** argv) {
   std::shared_ptr<common::ServerBase> server;
 
   if (FLAGS_serverType == "http") {
-    server.reset(new hub::HubHttpServer());
+    server.reset(new hub::HubHttpJsonServer());
   } else {
     server.reset(new hub::HubGrpcServer());
   }

@@ -24,10 +24,10 @@ namespace hub {
 /// The HubServer runs the local services and holds the instance of the
 /// cppclient::IotaAPI complient API interface to the tangle. It also holds
 /// an instance of the hub service that will accept requests
-class HubHttpServer : public common::HttpServerBase, public HubServerBase {
+class HubHttpJsonServer : public common::HttpServerBase, public HubServerBase {
  public:
   /// Constructor.
-  HubHttpServer();
+  HubHttpJsonServer();
 
   /// Creates and initializes the services and the API interface.
   void initialise() override;

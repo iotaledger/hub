@@ -5,7 +5,7 @@
  * Refer to the LICENSE file for licensing information
  */
 
-#include "hub/server/http_server.h"
+#include "hub/server/http_json_server.h"
 
 #include "common/common.h"
 #include "common/crypto/argon2_provider.h"
@@ -31,9 +31,9 @@
 #include <sstream>
 
 namespace hub {
-HubHttpServer::HubHttpServer() {}
+HubHttpJsonServer::HubHttpJsonServer() {}
 
-void HubHttpServer::initialise() {
+void HubHttpJsonServer::initialise() {
   initialise_services();
 
   LOG(INFO) << "Hub http server was successfully initialized";
@@ -41,7 +41,7 @@ void HubHttpServer::initialise() {
 
 namespace pt = boost::property_tree;
 
-common::HttpServerBase::ErrorCode HubHttpServer::handleRequestImpl(
+common::HttpServerBase::ErrorCode HubHttpJsonServer::handleRequestImpl(
     std::string_view request_body, std::string& response) {
   // Create empty property tree object
   pt::ptree requestTree;
