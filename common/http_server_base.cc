@@ -80,8 +80,7 @@ void handleRequest(HttpServerBase& server,
   std::string responseBody;
   auto ec = server.handleRequestImpl(req.body(), responseBody);
   if (ec != HttpServerBase::OK) {
-    // TODO
-    return send(badRequest("TODO - convert error code to string"));
+    return send(badRequest(responseBody));
   }
 
   http::response<http::string_body> res{http::status::ok, req.version()};

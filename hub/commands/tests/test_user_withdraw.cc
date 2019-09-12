@@ -30,7 +30,7 @@ TEST_F(UserWithdrawTest, ErrorOnInvalidPayoutAddress) {
   req.set_amount(0);
 
   req.set_payoutaddress("999999999");
-  ASSERT_FALSE(command.doProcess(&req, &res).ok());
+  ASSERT_NE(command.doProcess(&req, &res), common::cmd::OK);
 }
 
 TEST_F(UserWithdrawTest, ErrorOnZeroAmount) {
@@ -48,7 +48,7 @@ TEST_F(UserWithdrawTest, ErrorOnZeroAmount) {
 
   auto status = command.process(&req, &res);
 
-  ASSERT_FALSE(status.ok());
+  ASSERT_NE(status, common::cmd::OK);
 }
 
 TEST_F(UserWithdrawTest, WithdrawalUpdatesUserBalance) {
@@ -70,7 +70,7 @@ TEST_F(UserWithdrawTest, WithdrawalUpdatesUserBalance) {
 
   auto status = command.doProcess(&req, &res);
 
-  ASSERT_TRUE(status.ok());
+  ASSERT_EQ(status,common::cmd::OK);
 
   rpc::GetBalanceRequest balReq;
   rpc::GetBalanceReply balRes;
@@ -79,7 +79,7 @@ TEST_F(UserWithdrawTest, WithdrawalUpdatesUserBalance) {
   balReq.set_userid(username);
   cmd::GetBalance balCommand(session());
 
-  ASSERT_TRUE(balCommand.doProcess(&balReq, &balRes).ok());
+  ASSERT_EQ(balCommand.doProcess(&balReq, &balRes),common::cmd::OK);
 
   ASSERT_EQ(50, balRes.available());
 }
@@ -104,10 +104,8 @@ TEST_F(UserWithdrawTest, ErrorOnInvalidAddress) {
       "9OQFRVDEF");
 
   auto status = command.doProcess(&req, &res);
-  ASSERT_FALSE(status.ok());
+  ASSERT_EQ(status, common::cmd::INVALID_ADDRESS);
 
-  ASSERT_EQ(hub::rpc::ErrorCode::INELIGIBLE_ADDRESS,
-            errorCodeFromDetails(status.error_details()));
 }
 
 TEST_F(UserWithdrawTest, ErrorOnInvalidChecksumForPayoutAddress) {
@@ -131,7 +129,7 @@ TEST_F(UserWithdrawTest, ErrorOnInvalidChecksumForPayoutAddress) {
 
   auto status = command.doProcess(&req, &res);
 
-  ASSERT_FALSE(status.ok());
+  ASSERT_NE(status, common::cmd::OK);
 }
 
 };  // namespace

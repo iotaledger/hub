@@ -24,7 +24,7 @@ grpc::Status SigningServerImpl::GetAddressForUUID(
     GetAddressForUUIDReply* response) {
   auto clientSession = std::make_shared<common::ClientSession>();
   cmd::GetAddressForUUID cmd(clientSession);
-  return cmd.process(request, response);
+  return common::cmd::errorToGrpcError(cmd.process(request, response));
 }
 // Gets the signature for the UUID
 grpc::Status SigningServerImpl::GetSignatureForUUID(
@@ -32,7 +32,7 @@ grpc::Status SigningServerImpl::GetSignatureForUUID(
     GetSignatureForUUIDReply* response) {
   auto clientSession = std::make_shared<common::ClientSession>();
   cmd::GetSignatureForUUID cmd(clientSession);
-  return cmd.process(request, response);
+  return common::cmd::errorToGrpcError(cmd.process(request, response));
 }
 // Gets the security level of the provider
 grpc::Status SigningServerImpl::GetSecurityLevel(
@@ -40,7 +40,7 @@ grpc::Status SigningServerImpl::GetSecurityLevel(
     GetSecurityLevelReply* response) {
   auto clientSession = std::make_shared<common::ClientSession>();
   cmd::GetSecurityLevel cmd(clientSession);
-  return cmd.process(request, response);
+  return common::cmd::errorToGrpcError(cmd.process(request, response));
 }
 
 }  // namespace rpc

@@ -36,7 +36,7 @@ boost::property_tree::ptree RecoverFunds::doProcess(
   return tree;
 }
 
-grpc::Status RecoverFunds::doProcess(
+common::cmd::Error RecoverFunds::doProcess(
     const hub::rpc::RecoverFundsRequest* request,
     hub::rpc::RecoverFundsReply* response) noexcept {
   auto& connection = db::DBManager::get().connection();
@@ -50,9 +50,7 @@ grpc::Status RecoverFunds::doProcess(
     {
       auto maybeUserId = connection.userIdFromIdentifier(request->userid());
       if (!maybeUserId) {
-        return grpc::Status(
-            grpc::StatusCode::FAILED_PRECONDITION, "",
-            errorToString(hub::rpc::ErrorCode::USER_DOES_NOT_EXIST));
+        return common::cmd::USER_DOES_NOT_EXIST;
       }
 
       userId = maybeUserId.value();
@@ -69,9 +67,7 @@ grpc::Status RecoverFunds::doProcess(
                         .verifyAndStripChecksum(request->payoutaddress()));
 
       if (!payoutAddress.has_value()) {
-        return grpc::Status(
-            grpc::StatusCode::FAILED_PRECONDITION, "",
-            errorToString(hub::rpc::ErrorCode::CHECKSUM_INVALID));
+        return common::cmd::INVALID_CHECKSUM;
       }
     } else {
       payoutAddress = {common::crypto::Address(request->payoutaddress())};
@@ -80,46 +76,34 @@ grpc::Status RecoverFunds::doProcess(
     // 1. Check that address was used before
     auto maybeAddressInfo = connection.getAddressInfo(address.value());
     if (!maybeAddressInfo) {
-      return grpc::Status(grpc::StatusCode::FAILED_PRECONDITION, "",
-                          errorToString(hub::rpc::ErrorCode::UNKNOWN_ADDRESS));
+      return common::cmd::UNKNOWN_ADDRESS;
     }
 
     if (maybeAddressInfo->userId.compare(request->userid()) != 0) {
-      return grpc::Status(
-          grpc::StatusCode::FAILED_PRECONDITION, "",
-          errorToString(hub::rpc::ErrorCode::WRONG_USER_ADDRESS));
+      return common::cmd::WRONG_USER_ADDRESS;
     }
 
     if (!maybeAddressInfo->usedForSweep) {
-      return grpc::Status(
-          grpc::StatusCode::FAILED_PRECONDITION, "",
-          errorToString(hub::rpc::ErrorCode::INELIGIBLE_ADDRESS));
+      return common::cmd::INVALID_ADDRESS;
     }
 
     // Verify payout address wasn't spent before
     auto res = _api->wereAddressesSpentFrom({payoutAddress.value().str()});
     if (!res.has_value() || res.value().states.empty()) {
-      return grpc::Status(
-          grpc::StatusCode::FAILED_PRECONDITION, "",
-          errorToString(hub::rpc::ErrorCode::IRI_CLIENT_UNAVAILABLE));
+      return common::cmd::IOTA_NODE_UNAVAILABLE;
     } else if (res.value().states.front()) {
-      return grpc::Status(
-          grpc::StatusCode::FAILED_PRECONDITION, "",
-          errorToString(hub::rpc::ErrorCode::ADDRESS_WAS_ALREADY_SPENT));
+      return common::cmd::ADDRESS_WAS_SPENT;
     }
 
     const auto& iriBalances = _api->getBalances({request->address()});
     if (!iriBalances) {
-      return grpc::Status(grpc::StatusCode::FAILED_PRECONDITION, "",
-                          errorToString(hub::rpc::ErrorCode::UNKNOWN_ADDRESS));
+      return common::cmd::ADDRESS_NOT_KNOWN_TO_NODE;
     }
 
     auto amount = iriBalances.value().at(request->address());
 
     if (amount == 0) {
-      return grpc::Status(
-          grpc::StatusCode::FAILED_PRECONDITION, "",
-          errorToString(hub::rpc::ErrorCode::ADDRESS_BALANCE_ZERO));
+      return common::cmd::ADDRESS_BALANCE_ZERO;
     }
 
     std::vector<hub::db::TransferInput> deposits;
@@ -140,11 +124,10 @@ grpc::Status RecoverFunds::doProcess(
     connection.createSweep(std::get<0>(bundle), std::get<1>(bundle), 0);
 
   } catch (const std::exception& ex) {
-    return grpc::Status(grpc::StatusCode::FAILED_PRECONDITION, "",
-                        errorToString(hub::rpc::ErrorCode::EC_UNKNOWN));
+    return common::cmd::UNKNOWN_ERROR;
   }
 
-  return grpc::Status::OK;
+  return common::cmd::OK;
 }
 
 }  // namespace cmd

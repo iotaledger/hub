@@ -10,7 +10,7 @@
 
 #include <string>
 
-#include "common/command.h"
+#include "common/commands/command.h"
 namespace hub {
 namespace cmd {
 
@@ -37,8 +37,8 @@ class CreateUser : public common::Command<CreateUserRequest, CreateUserReply> {
 
   static const std::string name() { return "CreateUser"; }
 
-  grpc::Status doProcess(const CreateUserRequest* request,
-                         CreateUserReply* response) noexcept override;
+  common::cmd::Error doProcess(const CreateUserRequest* request,
+                               CreateUserReply* response) noexcept override;
 
   boost::property_tree::ptree doProcess(
       const boost::property_tree::ptree& request) noexcept override;

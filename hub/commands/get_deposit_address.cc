@@ -31,7 +31,7 @@ boost::property_tree::ptree GetDepositAddress::doProcess(
   return tree;
 }
 
-grpc::Status GetDepositAddress::doProcess(
+common::cmd::Error GetDepositAddress::doProcess(
     const hub::rpc::GetDepositAddressRequest* request,
     hub::rpc::GetDepositAddressReply* response) noexcept {
   uint64_t userId;
@@ -42,9 +42,7 @@ grpc::Status GetDepositAddress::doProcess(
   {
     auto maybeUserId = connection.userIdFromIdentifier(request->userid());
     if (!maybeUserId) {
-      return grpc::Status(
-          grpc::StatusCode::FAILED_PRECONDITION, "",
-          errorToString(hub::rpc::ErrorCode::USER_DOES_NOT_EXIST));
+      return common::cmd::USER_DOES_NOT_EXIST;
     }
 
     userId = maybeUserId.value();
@@ -55,8 +53,7 @@ grpc::Status GetDepositAddress::doProcess(
       common::crypto::CryptoManager::get().provider().getAddressForUUID(uuid);
   if (!maybeAddress.has_value()) {
     LOG(ERROR) << session() << " Failed in getAddressForUUID from provider.";
-    return grpc::Status(grpc::StatusCode::UNAVAILABLE, "",
-                        errorToString(hub::rpc::ErrorCode::GET_ADDRESS_FAILED));
+    return common::cmd::GET_ADDRESS_FAILED;
   }
   auto address = maybeAddress.value();
   if (request->includechecksum()) {
@@ -82,11 +79,10 @@ grpc::Status GetDepositAddress::doProcess(
       LOG(ERROR) << session() << " Rollback failed: " << ex.what();
     }
 
-    return grpc::Status(grpc::StatusCode::FAILED_PRECONDITION, "",
-                        errorToString(hub::rpc::ErrorCode::EC_UNKNOWN));
+    return common::cmd::UNKNOWN_ERROR;
   }
 
-  return grpc::Status::OK;
+  return common::cmd::OK;
 }
 }  // namespace cmd
 }  // namespace hub

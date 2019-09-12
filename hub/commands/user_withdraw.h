@@ -12,7 +12,7 @@
 #include <string>
 #include <utility>
 
-#include "common/command.h"
+#include "common/commands/command.h"
 #include "common/stats/session.h"
 #include "cppclient/api.h"
 
@@ -43,7 +43,7 @@ class UserWithdraw : public common::Command<hub::rpc::UserWithdrawRequest,
 
   static const std::string name() { return "UserWithdraw"; }
 
-  grpc::Status doProcess(
+  common::cmd::Error doProcess(
       const hub::rpc::UserWithdrawRequest* request,
       hub::rpc::UserWithdrawReply* response) noexcept override;
 

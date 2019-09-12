@@ -10,7 +10,7 @@
 
 #include <string>
 
-#include "common/command.h"
+#include "common/commands/command.h"
 
 namespace signing {
 namespace rpc {
@@ -32,7 +32,7 @@ class GetAddressForUUID
 
   static const std::string name() { return "GetAddressForUUID"; }
 
-  grpc::Status doProcess(
+    common::cmd::Error doProcess(
       const signing::rpc::GetAddressForUUIDRequest* request,
       signing::rpc::GetAddressForUUIDReply* response) noexcept override;
 

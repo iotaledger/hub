@@ -77,7 +77,7 @@ TEST_F(BalanceSubscriptionTest, BalanceSubscriptionWriteAllEvents) {
   EXPECT_CALL(mockCmd, getAllHubAddressesBalancesSinceTimePoint(_))
       .Times(1)
       .WillOnce(Return(hubAddressEvents));
-  ASSERT_TRUE(mockCmd.process(&request, &mockSW).ok());
+  ASSERT_EQ(mockCmd.process(&request, &mockSW), common::cmd::OK);
 }
 
 TEST_F(BalanceSubscriptionTest, BalanceSubscriptionExitsOnBrokenStream) {
@@ -97,6 +97,6 @@ TEST_F(BalanceSubscriptionTest, BalanceSubscriptionExitsOnBrokenStream) {
       .Times(1)
       .WillOnce(Return(events));
 
-  ASSERT_FALSE(mockCmd.process(&request, &mockSW).ok());
+  ASSERT_NE(mockCmd.process(&request, &mockSW), common::cmd::OK);
 }
 };  // namespace

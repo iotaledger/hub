@@ -41,7 +41,7 @@ boost::property_tree::ptree ProcessTransferBatch::doProcess(
   return tree;
 }
 
-grpc::Status ProcessTransferBatch::doProcess(
+common::cmd::Error ProcessTransferBatch::doProcess(
     const hub::rpc::ProcessTransferBatchRequest* request,
     hub::rpc::ProcessTransferBatchReply* response) noexcept {
   auto& connection = db::DBManager::get().connection();
@@ -54,13 +54,11 @@ grpc::Status ProcessTransferBatch::doProcess(
 
   auto identifierToId = connection.userIdsFromIdentifiers(identifiers);
   if (identifierToId.size() < identifiers.size()) {
-    return grpc::Status(
-        grpc::StatusCode::FAILED_PRECONDITION,
-        errorToString(hub::rpc::ErrorCode::USER_DOES_NOT_EXIST));
+    return common::cmd::USER_DOES_NOT_EXIST;
   }
 
   auto validationStatus = validateTransfers(request, identifierToId);
-  if (!validationStatus.ok()) {
+  if (validationStatus != common::cmd::OK) {
     return validationStatus;
   }
 
@@ -86,13 +84,13 @@ grpc::Status ProcessTransferBatch::doProcess(
       LOG(ERROR) << session() << " Rollback failed: " << ex.what();
     }
 
-    return grpc::Status(grpc::StatusCode::FAILED_PRECONDITION, "",
-                        errorToString(hub::rpc::ErrorCode::EC_UNKNOWN));
+    return common::cmd::UNKNOWN_ERROR;
   }
 
-  return grpc::Status::OK;
+  return common::cmd::OK;
 }
-grpc::Status ProcessTransferBatch::validateTransfers(
+
+common::cmd::Error ProcessTransferBatch::validateTransfers(
     const hub::rpc::ProcessTransferBatchRequest* request,
     const std::map<std::string, int64_t>& identifierToId) noexcept {
   auto& connection = db::DBManager::get().connection();
@@ -116,12 +114,10 @@ grpc::Status ProcessTransferBatch::validateTransfers(
   }
 
   if (zeroAmount) {
-    return grpc::Status(grpc::StatusCode::FAILED_PRECONDITION,
-                        errorToString(hub::rpc::ErrorCode::BATCH_INVALID));
+    return common::cmd::BATCH_INVALID;
   }
   if (totalBatchSum != 0) {
-    return grpc::Status(grpc::StatusCode::FAILED_PRECONDITION,
-                        errorToString(hub::rpc::ErrorCode::BATCH_AMOUNT_ZERO));
+    return common::cmd::BATCH_AMOUNT_NOT_ZERO;
   }
 
   std::set<uint64_t> userIds;
@@ -135,13 +131,11 @@ grpc::Status ProcessTransferBatch::validateTransfers(
     auto balanceChange = kv.second;
 
     if ((availableBalance + balanceChange) < 0) {
-      return grpc::Status(
-          grpc::StatusCode::FAILED_PRECONDITION,
-          errorToString(hub::rpc::ErrorCode::BATCH_INCONSISTENT));
+      return common::cmd::BATCH_INCONSISTENT;
     }
   }
 
-  return grpc::Status::OK;
+  return common::cmd::OK;
 }
 
 }  // namespace cmd

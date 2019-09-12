@@ -10,7 +10,7 @@
 
 #include <string>
 
-#include "common/command.h"
+#include "common/commands/command.h"
 
 namespace hub {
 namespace rpc {
@@ -36,7 +36,7 @@ class UserWithdrawCancel
 
   static const std::string name() { return "UserWithdrawCancel"; }
 
-  grpc::Status doProcess(
+  common::cmd::Error doProcess(
       const hub::rpc::UserWithdrawCancelRequest* request,
       hub::rpc::UserWithdrawCancelReply* response) noexcept override;
 

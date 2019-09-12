@@ -9,7 +9,7 @@
 namespace signing {
 namespace cmd {
 
-grpc::Status GetSignatureForUUID::doProcess(
+    common::cmd::Error GetSignatureForUUID::doProcess(
     const signing::rpc::GetSignatureForUUIDRequest* request,
     signing::rpc::GetSignatureForUUIDReply* response) noexcept {
   try {
@@ -26,10 +26,10 @@ grpc::Status GetSignatureForUUID::doProcess(
   } catch (const std::runtime_error& ex) {
     LOG(ERROR) << session() << "Failed: " << ex.what();
 
-    return grpc::Status(grpc::StatusCode::FAILED_PRECONDITION, "", "");
+    return common::cmd::UNKNOWN_ERROR;
   }
 
-  return grpc::Status::OK;
+  return common::cmd::OK;
 }
 
 }  // namespace cmd

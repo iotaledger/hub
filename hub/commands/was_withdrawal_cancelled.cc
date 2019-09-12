@@ -37,7 +37,7 @@ boost::property_tree::ptree WasWithdrawalCancelled::doProcess(
   return tree;
 }
 
-grpc::Status WasWithdrawalCancelled::doProcess(
+common::cmd::Error WasWithdrawalCancelled::doProcess(
     const hub::rpc::WasWithdrawalCancelledRequest* request,
     hub::rpc::WasWithdrawalCancelledReply* response) noexcept {
   auto& connection = db::DBManager::get().connection();
@@ -52,11 +52,10 @@ grpc::Status WasWithdrawalCancelled::doProcess(
 
   } catch (const std::exception& ex) {
     LOG(ERROR) << session() << " Query failed: " << ex.what();
-    return grpc::Status(grpc::StatusCode::FAILED_PRECONDITION, "",
-                        errorToString(hub::rpc::ErrorCode::INVALID_UUID));
+    return common::cmd::INVALID_UUID;
   }
 
-  return grpc::Status::OK;
+  return common::cmd::OK;
 }  // namespace cmd
 
 }  // namespace cmd

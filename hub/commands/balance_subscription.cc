@@ -34,7 +34,7 @@ boost::property_tree::ptree BalanceSubscription::doProcess(
   return ptree;
 }
 
-grpc::Status BalanceSubscription::doProcess(
+common::cmd::Error BalanceSubscription::doProcess(
     const hub::rpc::BalanceSubscriptionRequest* request,
     grpc::ServerWriterInterface<hub::rpc::BalanceEvent>* writer) noexcept {
   std::chrono::milliseconds dur(request->newerthan());
@@ -58,7 +58,7 @@ grpc::Status BalanceSubscription::doProcess(
     userAccountEvent->set_withdrawaluuid(std::move(b.withdrawalUUID));
     event.set_allocated_useraccountevent(userAccountEvent);
     if (!writer->Write(event)) {
-      return grpc::Status::CANCELLED;
+      return common::cmd::CANCELLED;
     }
   }
 
@@ -82,7 +82,7 @@ grpc::Status BalanceSubscription::doProcess(
 
     event.set_allocated_useraddressevent(userAddressEvent);
     if (!writer->Write(event)) {
-      return grpc::Status::CANCELLED;
+      return common::cmd::CANCELLED;
     }
   }
 
@@ -102,11 +102,11 @@ grpc::Status BalanceSubscription::doProcess(
     hubAddressEvent->set_reason(hubAddressBalanceTypeFromSql(b.reason));
     event.set_allocated_hubaddressevent(hubAddressEvent);
     if (!writer->Write(event)) {
-      return grpc::Status::CANCELLED;
+      return common::cmd::CANCELLED;
     }
   }
 
-  return grpc::Status::OK;
+  return common::cmd::OK;
 }
 
 std::vector<db::UserAccountBalanceEvent>

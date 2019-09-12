@@ -33,7 +33,7 @@ boost::property_tree::ptree GetAddressInfo::doProcess(
   return tree;
 }
 
-grpc::Status GetAddressInfo::doProcess(
+common::cmd::Error GetAddressInfo::doProcess(
     const hub::rpc::GetAddressInfoRequest* request,
     hub::rpc::GetAddressInfoReply* response) noexcept {
   auto& connection = db::DBManager::get().connection();
@@ -45,15 +45,13 @@ grpc::Status GetAddressInfo::doProcess(
 
     if (addressInfo) {
       response->set_userid(std::move(addressInfo->userId));
-      return grpc::Status::OK;
+      return common::cmd::OK;
     }
   } catch (const std::exception& ex) {
-    return grpc::Status(grpc::StatusCode::FAILED_PRECONDITION, "",
-                        errorToString(hub::rpc::ErrorCode::EC_UNKNOWN));
+    return common::cmd::UNKNOWN_ERROR;
   }
 
-  return grpc::Status(grpc::StatusCode::FAILED_PRECONDITION, "",
-                      errorToString(hub::rpc::ErrorCode::UNKNOWN_ADDRESS));
+  return common::cmd::UNKNOWN_ADDRESS;
 }
 
 }  // namespace cmd

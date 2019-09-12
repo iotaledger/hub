@@ -29,7 +29,7 @@ boost::property_tree::ptree SweepSubscription::doProcess(
   return tree;
 }
 
-grpc::Status SweepSubscription::doProcess(
+common::cmd::Error SweepSubscription::doProcess(
     const hub::rpc::SweepSubscriptionRequest* request,
     grpc::ServerWriterInterface<hub::rpc::SweepEvent>* writer) noexcept {
   std::chrono::milliseconds dur(request->newerthan());
@@ -55,9 +55,9 @@ grpc::Status SweepSubscription::doProcess(
     }
   }
   if (cancelled) {
-    return grpc::Status::CANCELLED;
+    return common::cmd::CANCELLED;
   }
-  return grpc::Status::OK;
+  return common::cmd::OK;
 }
 
 std::vector<db::SweepEvent> SweepSubscription::getSweeps(

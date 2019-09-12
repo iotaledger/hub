@@ -11,7 +11,7 @@
 #include <map>
 #include <string>
 
-#include "common/command.h"
+#include "common/commands/command.h"
 
 namespace hub {
 namespace rpc {
@@ -37,7 +37,7 @@ class ProcessTransferBatch
 
   static const std::string name() { return "ProcessTransferBatch"; }
 
-  grpc::Status doProcess(
+  common::cmd::Error doProcess(
       const hub::rpc::ProcessTransferBatchRequest* request,
       hub::rpc::ProcessTransferBatchReply* response) noexcept override;
 
@@ -50,7 +50,7 @@ class ProcessTransferBatch
   /// - There must be no zero transfers
   /// - The sum of all transfers in the batch must amount to zero
   /// - Users must have sufficient funds available
-  grpc::Status validateTransfers(
+  common::cmd::Error validateTransfers(
       const hub::rpc::ProcessTransferBatchRequest* request,
       const std::map<std::string, int64_t>& identifierToId) noexcept;
 };

@@ -46,7 +46,7 @@ TEST_F(UserWithdrawCancelTest, WithdrawalCancelUpdatesUserBalance) {
 
   auto status = withdrawCmd.doProcess(&withdrawRequest, &withdrawReply);
 
-  ASSERT_TRUE(status.ok());
+  ASSERT_EQ(status, common::cmd::OK);
 
   rpc::GetBalanceRequest balReq;
   rpc::GetBalanceReply balRep;
@@ -55,7 +55,7 @@ TEST_F(UserWithdrawCancelTest, WithdrawalCancelUpdatesUserBalance) {
   balReq.set_userid(username);
   cmd::GetBalance balCommand(session());
 
-  ASSERT_TRUE(balCommand.doProcess(&balReq, &balRep).ok());
+  ASSERT_EQ(balCommand.doProcess(&balReq, &balRep), common::cmd::OK);
 
   ASSERT_EQ(USER_BALANCE - toWithdraw, balRep.available());
 
@@ -65,9 +65,9 @@ TEST_F(UserWithdrawCancelTest, WithdrawalCancelUpdatesUserBalance) {
 
   std::string uu = withdrawReply.uuid();
   req.set_uuid(withdrawReply.uuid());
-  ASSERT_TRUE(cmd.doProcess(&req, &rep).ok());
+        ASSERT_EQ(cmd.doProcess(&req, &rep), common::cmd::OK);
 
-  ASSERT_TRUE(balCommand.doProcess(&balReq, &balRep).ok());
+  ASSERT_EQ(balCommand.doProcess(&balReq, &balRep), common::cmd::OK);
 
   ASSERT_EQ(USER_BALANCE, balRep.available());
 }
@@ -92,7 +92,7 @@ TEST_F(UserWithdrawCancelTest, WithdrawalCancelOnlyOnce) {
 
   auto status = withdrawCmd.doProcess(&withdrawRequest, &withdrawReply);
 
-  ASSERT_TRUE(status.ok());
+  ASSERT_EQ(status, common::cmd::OK);
 
   rpc::GetBalanceRequest balReq;
   rpc::GetBalanceReply balRep;
@@ -101,7 +101,7 @@ TEST_F(UserWithdrawCancelTest, WithdrawalCancelOnlyOnce) {
   balReq.set_userid(username);
   cmd::GetBalance balCommand(session());
 
-  ASSERT_TRUE(balCommand.doProcess(&balReq, &balRep).ok());
+  ASSERT_EQ(balCommand.doProcess(&balReq, &balRep), common::cmd::OK);
 
   ASSERT_EQ(USER_BALANCE - toWithdraw, balRep.available());
 
@@ -111,13 +111,13 @@ TEST_F(UserWithdrawCancelTest, WithdrawalCancelOnlyOnce) {
 
   std::string uu = withdrawReply.uuid();
   req.set_uuid(withdrawReply.uuid());
-  ASSERT_TRUE(cmd.doProcess(&req, &rep).ok());
+  ASSERT_EQ(cmd.doProcess(&req, &rep), common::cmd::OK);
 
-  ASSERT_TRUE(balCommand.doProcess(&balReq, &balRep).ok());
+  ASSERT_EQ(balCommand.doProcess(&balReq, &balRep), common::cmd::OK);
 
   ASSERT_EQ(USER_BALANCE, balRep.available());
 
-  ASSERT_FALSE(cmd.doProcess(&req, &rep).ok());
+  ASSERT_NE(cmd.doProcess(&req, &rep), common::cmd::OK);
 
   ASSERT_EQ(USER_BALANCE, balRep.available());
 }

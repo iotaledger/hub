@@ -44,25 +44,31 @@ namespace pt = boost::property_tree;
 common::HttpServerBase::ErrorCode HubHttpServer::handleRequestImpl(
     std::string_view request_body, std::string& response) {
   // Create empty property tree object
-  pt::ptree tree;
+  pt::ptree requestTree;
+  pt::ptree responseTree;
+  std::stringstream stream;
 
   std::stringstream jsonRequest;
   jsonRequest << request_body;
 
   // Parse the XML into the property tree.
-  pt::read_json(jsonRequest, tree);
+  pt::read_json(jsonRequest, requestTree);
 
-  auto command = tree.get<std::string>("command");
+  auto command = requestTree.get<std::string>("command");
 
   auto cmd = cmd::CommandFactory::get()->create(command);
   if (cmd == nullptr) {
-    response = "Unknown command: " + command + std::string("\n");
+    responseTree.add("result", "Unknown command");
+    pt::write_json(stream, responseTree);
+    response = stream.str();
     return common::HttpServerBase::ErrorCode::COMMAND_NOT_FOUND;
   }
   auto clientSession = std::make_shared<common::ClientSession>();
   cmd->setClientSession(clientSession);
-  // response = cmd->process(tree);
+  responseTree = cmd->process(requestTree);
 
+  pt::write_json(stream, responseTree);
+  response = stream.str();
   return common::HttpServerBase::ErrorCode::OK;
 }
 

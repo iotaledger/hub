@@ -12,7 +12,7 @@
 #include <string>
 #include <string_view>
 
-#include "common/command.h"
+#include "common/commands/command.h"
 
 namespace hub {
 

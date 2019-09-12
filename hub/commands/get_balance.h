@@ -10,7 +10,7 @@
 
 #include <string>
 
-#include "common/command.h"
+#include "common/commands/command.h"
 
 namespace hub {
 namespace rpc {
@@ -35,8 +35,9 @@ class GetBalance : public common::Command<hub::rpc::GetBalanceRequest,
 
   static const std::string name() { return "GetBalance"; }
 
-  grpc::Status doProcess(const hub::rpc::GetBalanceRequest* request,
-                         hub::rpc::GetBalanceReply* response) noexcept override;
+  common::cmd::Error doProcess(
+      const hub::rpc::GetBalanceRequest* request,
+      hub::rpc::GetBalanceReply* response) noexcept override;
 
   boost::property_tree::ptree doProcess(
       const boost::property_tree::ptree& request) noexcept override;

@@ -10,7 +10,7 @@
 
 #include <string>
 
-#include "common/command.h"
+#include "common/commands/command.h"
 
 namespace hub {
 namespace rpc {
@@ -34,8 +34,9 @@ class SweepInfo
 
   static const std::string name() { return "SweepInfo"; }
 
-  grpc::Status doProcess(const hub::rpc::SweepInfoRequest* request,
-                         hub::rpc::SweepEvent* response) noexcept override;
+  common::cmd::Error doProcess(
+      const hub::rpc::SweepInfoRequest* request,
+      hub::rpc::SweepEvent* response) noexcept override;
 
   boost::property_tree::ptree doProcess(
       const boost::property_tree::ptree& request) noexcept override;

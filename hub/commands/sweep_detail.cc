@@ -31,7 +31,7 @@ boost::property_tree::ptree SweepDetail::doProcess(
   return tree;
 }
 
-grpc::Status SweepDetail::doProcess(
+common::cmd::Error SweepDetail::doProcess(
     const hub::rpc::SweepDetailRequest* request,
     hub::rpc::SweepDetailReply* response) noexcept {
   auto& connection = db::DBManager::get().connection();
@@ -46,7 +46,7 @@ grpc::Status SweepDetail::doProcess(
   }
 
   if (!maybeDetail) {
-    return grpc::Status::CANCELLED;
+    return common::cmd::CANCELLED;
   }
 
   response->set_confirmed(maybeDetail->confirmed);
@@ -61,7 +61,7 @@ grpc::Status SweepDetail::doProcess(
                   response->add_tailhash(std::move(tail.str()));
                 });
 
-  return grpc::Status::OK;
+  return common::cmd::OK;
 }
 
 }  // namespace cmd

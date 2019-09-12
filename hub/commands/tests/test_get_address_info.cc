@@ -40,11 +40,11 @@ TEST_F(GetAddressInfoTest, AddressCountInDatabaseShouldChange) {
   cmd::GetDepositAddress depCommand(session());
   cmd::GetAddressInfo command(session());
 
-  ASSERT_TRUE(depCommand.process(&depReq, &depRes).ok());
+  ASSERT_EQ(depCommand.process(&depReq, &depRes), common::cmd::OK);
 
   req.set_address(
       depRes.address().substr(0, common::crypto::Address::length()));
-  ASSERT_TRUE(command.process(&req, &res).ok());
+  ASSERT_EQ(command.process(&req, &res), common::cmd::OK);
   ASSERT_EQ(res.userid(), username);
 }
 
@@ -56,17 +56,16 @@ TEST_F(GetAddressInfoTest, InvalidOrUnknownAddressShouldFail) {
   cmd::GetAddressInfo command(session());
 
   req.set_address("A");
-  ASSERT_FALSE(command.process(&req, &res).ok());
+  ASSERT_NE(command.process(&req, &res), common::cmd::OK);
 
   req.set_address(
       "999999999999999999999999999999999999999999999999999999999999999999999999"
       "999999999");
-  ASSERT_FALSE(command.process(&req, &res).ok());
-
+        ASSERT_NE(command.process(&req, &res), common::cmd::OK);
   req.set_address(
       "992999999999999999999999999999999999999999999999999999999999999999999999"
       "999999999");
-  ASSERT_FALSE(command.process(&req, &res).ok());
+        ASSERT_NE(command.process(&req, &res), common::cmd::OK);
 }
 
 };  // namespace

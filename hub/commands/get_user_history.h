@@ -10,7 +10,7 @@
 
 #include <string>
 
-#include "common/command.h"
+#include "common/commands/command.h"
 
 namespace hub {
 namespace rpc {
@@ -35,7 +35,7 @@ class GetUserHistory : public common::Command<hub::rpc::GetUserHistoryRequest,
 
   static const std::string name() { return "GetUserHistory"; }
 
-  grpc::Status doProcess(
+  common::cmd::Error doProcess(
       const hub::rpc::GetUserHistoryRequest* request,
       hub::rpc::GetUserHistoryReply* response) noexcept override;
 

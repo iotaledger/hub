@@ -35,7 +35,7 @@ boost::property_tree::ptree SignBundle::doProcess(
   return tree;
 }
 
-grpc::Status SignBundle::doProcess(
+common::cmd::Error SignBundle::doProcess(
     const hub::rpc::SignBundleRequest* request,
     hub::rpc::SignBundleReply* response) noexcept {
   auto& connection = db::DBManager::get().connection();
@@ -50,9 +50,7 @@ grpc::Status SignBundle::doProcess(
                               .verifyAndStripChecksum(request->address()));
 
       if (!address.has_value()) {
-        return grpc::Status(
-            grpc::StatusCode::FAILED_PRECONDITION, "",
-            errorToString(hub::rpc::ErrorCode::CHECKSUM_INVALID));
+        return common::cmd::INVALID_CHECKSUM;
       }
     } else {
       address = {common::crypto::Address(request->address())};
@@ -63,39 +61,32 @@ grpc::Status SignBundle::doProcess(
     // 1. Check that address was used before
     auto maybeAddressInfo = connection.getAddressInfo(address.value());
     if (!maybeAddressInfo) {
-      return grpc::Status(grpc::StatusCode::FAILED_PRECONDITION, "",
-                          errorToString(hub::rpc::ErrorCode::UNKNOWN_ADDRESS));
+      return common::cmd::UNKNOWN_ADDRESS;
     }
 
     if (!maybeAddressInfo->usedForSweep) {
-      return grpc::Status(
-          grpc::StatusCode::FAILED_PRECONDITION, "",
-          errorToString(hub::rpc::ErrorCode::INELIGIBLE_ADDRESS));
+      return common::cmd::INVALID_ADDRESS;
     }
 
     // 2. Verify authentication token
     if (!authProvider.validateToken(
             auth::SignBundleContext(bundleHash, address.value()),
             request->authentication())) {
-      return grpc::Status(
-          grpc::StatusCode::FAILED_PRECONDITION, "",
-          errorToString(hub::rpc::ErrorCode::INVALID_AUTHENTICATION));
+      return common::cmd::INVALID_AUTHENTICATION;
     }
 
     // 3. Calculate signature
     auto maybeSig = cryptoProvider.forceGetSignatureForUUID(
         maybeAddressInfo->uuid, bundleHash);
     if (!maybeSig.has_value()) {
-      return grpc::Status(grpc::StatusCode::UNAVAILABLE, "",
-                          errorToString(hub::rpc::ErrorCode::SIGNING_FAILED));
+      return common::cmd::SIGNATURE_FAILED;
     }
     response->set_signature(maybeSig.value());
   } catch (const std::exception& ex) {
-    return grpc::Status(grpc::StatusCode::FAILED_PRECONDITION, "",
-                        errorToString(hub::rpc::ErrorCode::EC_UNKNOWN));
+    return common::cmd::UNKNOWN_ERROR;
   }
 
-  return grpc::Status::OK;
+  return common::cmd::OK;
 }
 
 }  // namespace cmd

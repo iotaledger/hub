@@ -1,15 +1,13 @@
 cc_library(
-    name = "common",
+    name = "commands",
     srcs = glob(["*.cc"]),
     hdrs = glob([
         "*.h",
     ]),
     visibility = ["//visibility:public"],
     deps = [
-        "//common/commands",
         "//common/crypto:types",
         "//common/stats",
-        "//proto:hub_grpc_cc",
         "@boost//:beast",
         "@boost//:property_tree",
         "@com_github_gflags_gflags//:gflags",

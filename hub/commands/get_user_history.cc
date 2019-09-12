@@ -30,7 +30,7 @@ boost::property_tree::ptree GetUserHistory::doProcess(
   return tree;
 }
 
-grpc::Status GetUserHistory::doProcess(
+common::cmd::Error GetUserHistory::doProcess(
     const hub::rpc::GetUserHistoryRequest* request,
     hub::rpc::GetUserHistoryReply* response) noexcept {
   auto& connection = db::DBManager::get().connection();
@@ -40,9 +40,7 @@ grpc::Status GetUserHistory::doProcess(
   {
     auto maybeUserId = connection.userIdFromIdentifier(request->userid());
     if (!maybeUserId) {
-      return grpc::Status(
-          grpc::StatusCode::FAILED_PRECONDITION, "",
-          errorToString(hub::rpc::ErrorCode::USER_DOES_NOT_EXIST));
+      return common::cmd::USER_DOES_NOT_EXIST;
     }
 
     userId = maybeUserId.value();
@@ -67,7 +65,7 @@ grpc::Status GetUserHistory::doProcess(
     }
   }
 
-  return grpc::Status::OK;
+  return common::cmd::OK;
 }
 
 }  // namespace cmd

@@ -32,12 +32,12 @@ boost::property_tree::ptree WasAddressSpentFrom::doProcess(
   return tree;
 }
 
-grpc::Status WasAddressSpentFrom::doProcess(
+common::cmd::Error WasAddressSpentFrom::doProcess(
     const hub::rpc::WasAddressSpentFromRequest* request,
     hub::rpc::WasAddressSpentFromReply* response) noexcept {
   auto& connection = db::DBManager::get().connection();
 
-  nonstd::optional<hub::rpc::ErrorCode> errorCode;
+  nonstd::optional<common::cmd::Error> errorCode;
 
   nonstd::optional<common::crypto::Address> address;
 
@@ -48,9 +48,7 @@ grpc::Status WasAddressSpentFrom::doProcess(
                               .verifyAndStripChecksum(request->address()));
 
       if (!address.has_value()) {
-        return grpc::Status(
-            grpc::StatusCode::FAILED_PRECONDITION, "",
-            errorToString(hub::rpc::ErrorCode::CHECKSUM_INVALID));
+        return common::cmd::INVALID_CHECKSUM;
       }
     } else {
       address = {common::crypto::Address(request->address())};
@@ -60,13 +58,11 @@ grpc::Status WasAddressSpentFrom::doProcess(
   catch (const std::exception& ex) {
     LOG(ERROR) << session() << " Withdrawal to invalid address: " << ex.what();
 
-    return grpc::Status(grpc::StatusCode::FAILED_PRECONDITION, "",
-                        errorToString(hub::rpc::ErrorCode::EC_UNKNOWN));
+    return common::cmd::UNKNOWN_ERROR;
   }
 
   if (!isAddressValid(address->str_view())) {
-    return grpc::Status(grpc::StatusCode::FAILED_PRECONDITION, "",
-                        errorToString(hub::rpc::ErrorCode::INELIGIBLE_ADDRESS));
+    return common::cmd::INVALID_ADDRESS;
   }
 
   response->set_wasaddressspentfrom(false);
@@ -75,9 +71,9 @@ grpc::Status WasAddressSpentFrom::doProcess(
     if (_api) {
       auto res = _api->wereAddressesSpentFrom({address.value().str()});
       if (!res.has_value() || res.value().states.empty()) {
-        errorCode = hub::rpc::ErrorCode::IRI_CLIENT_UNAVAILABLE;
+        errorCode = common::cmd::IOTA_NODE_UNAVAILABLE;
       } else if (res.value().states.front()) {
-        errorCode = hub::rpc::ErrorCode::ADDRESS_WAS_ALREADY_SPENT;
+        errorCode = common::cmd::ADDRESS_WAS_SPENT;
         response->set_wasaddressspentfrom(true);
       }
     }
@@ -85,16 +81,15 @@ grpc::Status WasAddressSpentFrom::doProcess(
   } catch (const std::exception& ex) {
     LOG(ERROR) << session() << " Commit failed: " << ex.what();
 
-    errorCode = hub::rpc::ErrorCode::EC_UNKNOWN;
+    errorCode = common::cmd::UNKNOWN_ERROR;
   }
 
 done:
   if (errorCode) {
-    return grpc::Status(grpc::StatusCode::FAILED_PRECONDITION, "",
-                        errorToString(errorCode.value()));
+    return errorCode.value();
   }
 
-  return grpc::Status::OK;
+  return common::cmd::OK;
 }
 
 }  // namespace cmd

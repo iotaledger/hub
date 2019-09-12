@@ -29,11 +29,19 @@ static CommandFactoryRegistrator<CreateUser> registrator;
 boost::property_tree::ptree CreateUser::doProcess(
     const boost::property_tree::ptree& request) noexcept {
   boost::property_tree::ptree tree;
+  CreateUserRequest req;
+  CreateUserReply rep;
+  auto maybeUserId = request.get_optional<std::string>("userId");
+  if (maybeUserId) {
+    req.userId = maybeUserId.value();
+  }
+  auto status = doProcess(&req, &rep);
+
   return tree;
 }
 
-grpc::Status CreateUser::doProcess(const CreateUserRequest* request,
-                                   CreateUserReply* response) noexcept {
+common::cmd::Error CreateUser::doProcess(const CreateUserRequest* request,
+                                         CreateUserReply* response) noexcept {
   auto& connection = db::DBManager::get().connection();
 
   auto transaction = connection.transaction();
@@ -50,13 +58,12 @@ grpc::Status CreateUser::doProcess(const CreateUserRequest* request,
       LOG(ERROR) << session() << " Rollback failed: " << ex.what();
     }
 
-    return grpc::Status(grpc::StatusCode::FAILED_PRECONDITION, "",
-                        errorToString(hub::rpc::ErrorCode::USER_EXISTS));
+    return common::cmd::USER_EXISTS;
   }
 
   LOG(INFO) << session() << " Created user: " << request->userId;
 
-  return grpc::Status::OK;
+  return common::cmd::OK;
 }
 
 }  // namespace cmd

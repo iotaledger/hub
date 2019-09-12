@@ -8,7 +8,7 @@
 
 #include <grpc++/support/sync_stream.h>
 
-#include "common/command.h"
+#include "common/commands/command.h"
 #include "hub/db/helper.h"
 
 namespace hub {
@@ -31,9 +31,10 @@ class SweepSubscription
     return std::shared_ptr<common::ICommand>(new SweepSubscription());
   }
 
-  grpc::Status doProcess(const hub::rpc::SweepSubscriptionRequest* request,
-                         grpc::ServerWriterInterface<hub::rpc::SweepEvent>*
-                             writer) noexcept override;
+  common::cmd::Error doProcess(
+      const hub::rpc::SweepSubscriptionRequest* request,
+      grpc::ServerWriterInterface<hub::rpc::SweepEvent>*
+          writer) noexcept override;
 
   boost::property_tree::ptree doProcess(
       const boost::property_tree::ptree& request) noexcept override;

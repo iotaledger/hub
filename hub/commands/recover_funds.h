@@ -10,7 +10,7 @@
 
 #include <string>
 
-#include "common/command.h"
+#include "common/commands/command.h"
 #include "cppclient/api.h"
 
 namespace hub {
@@ -40,7 +40,7 @@ class RecoverFunds : public common::Command<hub::rpc::RecoverFundsRequest,
 
   static const std::string name() { return "RecoverFunds"; }
 
-  grpc::Status doProcess(
+  common::cmd::Error doProcess(
       const hub::rpc::RecoverFundsRequest* request,
       hub::rpc::RecoverFundsReply* response) noexcept override;
 

@@ -33,7 +33,7 @@ boost::property_tree::ptree GetBalance::doProcess(
   return tree;
 }
 
-grpc::Status GetBalance::doProcess(
+common::cmd::Error GetBalance::doProcess(
     const hub::rpc::GetBalanceRequest* request,
     hub::rpc::GetBalanceReply* response) noexcept {
   auto& connection = db::DBManager::get().connection();
@@ -43,9 +43,7 @@ grpc::Status GetBalance::doProcess(
   {
     auto maybeUserId = connection.userIdFromIdentifier(request->userid());
     if (!maybeUserId) {
-      return grpc::Status(
-          grpc::StatusCode::FAILED_PRECONDITION, "",
-          errorToString(hub::rpc::ErrorCode::USER_DOES_NOT_EXIST));
+      return common::cmd::USER_DOES_NOT_EXIST;
     }
 
     userId = maybeUserId.value();
@@ -55,7 +53,7 @@ grpc::Status GetBalance::doProcess(
   auto amount = connection.availableBalanceForUser(userId);
   response->set_available(amount);
 
-  return grpc::Status::OK;
+  return common::cmd::OK;
 }
 
 }  // namespace cmd

@@ -10,7 +10,7 @@
 
 #include <string>
 
-#include "common/command.h"
+#include "common/commands/command.h"
 
 namespace hub {
 namespace rpc {
@@ -35,7 +35,7 @@ class SweepDetail : public common::Command<hub::rpc::SweepDetailRequest,
 
   static const std::string name() { return "SweepDetail"; }
 
-  grpc::Status doProcess(
+  common::cmd::Error doProcess(
       const hub::rpc::SweepDetailRequest* request,
       hub::rpc::SweepDetailReply* response) noexcept override;
 

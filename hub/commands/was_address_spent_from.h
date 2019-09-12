@@ -12,7 +12,7 @@
 #include <string>
 #include <utility>
 
-#include "common/command.h"
+#include "common/commands/command.h"
 #include "common/stats/session.h"
 #include "cppclient/api.h"
 
@@ -44,7 +44,7 @@ class WasAddressSpentFrom
 
   static const std::string name() { return "WasAddressSpentFrom"; }
 
-  grpc::Status doProcess(
+  common::cmd::Error doProcess(
       const hub::rpc::WasAddressSpentFromRequest* request,
       hub::rpc::WasAddressSpentFromReply* response) noexcept override;
 

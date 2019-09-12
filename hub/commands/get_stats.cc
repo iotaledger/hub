@@ -33,13 +33,14 @@ boost::property_tree::ptree GetStats::doProcess(
   return tree;
 }
 
-grpc::Status GetStats::doProcess(const hub::rpc::GetStatsRequest* request,
-                                 hub::rpc::GetStatsReply* response) noexcept {
+common::cmd::Error GetStats::doProcess(
+    const hub::rpc::GetStatsRequest* request,
+    hub::rpc::GetStatsReply* response) noexcept {
   auto& connection = db::DBManager::get().connection();
 
   response->set_totalbalance(connection.getTotalBalance());
 
-  return grpc::Status::OK;
+  return common::cmd::OK;
 }
 
 }  // namespace cmd

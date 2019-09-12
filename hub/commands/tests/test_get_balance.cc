@@ -28,10 +28,7 @@ TEST_F(GetBalanceTest, UnknownUserShouldFail) {
 
   auto status = command.process(&req, &res);
 
-  ASSERT_FALSE(status.ok());
-
-  auto err = errorFromStatus(status);
-  ASSERT_EQ(err.code(), rpc::ErrorCode::USER_DOES_NOT_EXIST);
+  ASSERT_EQ(status, common::cmd::USER_DOES_NOT_EXIST);
 }
 
 TEST_F(GetBalanceTest, NewUserHasZeroBalance) {
@@ -47,7 +44,7 @@ TEST_F(GetBalanceTest, NewUserHasZeroBalance) {
 
   cmd::GetBalance command(session());
 
-  ASSERT_TRUE(command.process(&req, &res).ok());
+  ASSERT_EQ(command.process(&req, &res), common::cmd::OK);
 
   ASSERT_EQ(0, res.available());
 }

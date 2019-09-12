@@ -10,7 +10,7 @@
 
 #include <string>
 
-#include "common/command.h"
+#include "common/commands/command.h"
 
 namespace hub {
 namespace rpc {
@@ -35,8 +35,9 @@ class SignBundle : public common::Command<hub::rpc::SignBundleRequest,
 
   static const std::string name() { return "SignBundle"; }
 
-  grpc::Status doProcess(const hub::rpc::SignBundleRequest* request,
-                         hub::rpc::SignBundleReply* response) noexcept override;
+  common::cmd::Error doProcess(
+      const hub::rpc::SignBundleRequest* request,
+      hub::rpc::SignBundleReply* response) noexcept override;
 
   boost::property_tree::ptree doProcess(
       const boost::property_tree::ptree& request) noexcept override;

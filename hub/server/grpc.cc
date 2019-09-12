@@ -53,7 +53,7 @@ grpc::Status HubImpl::CreateUser(grpc::ServerContext* context,
   cmd::CreateUser cmd(clientSession);
   cmd::CreateUserRequest genReq = {.userId = request->userid()};
   cmd::CreateUserReply genRep;
-  return cmd.process(&genReq, &genRep);
+  common::cmd::errorToGrpcError(cmd.process(&genReq, &genRep));
 }
 
 grpc::Status HubImpl::GetBalance(grpc::ServerContext* context,
@@ -61,7 +61,7 @@ grpc::Status HubImpl::GetBalance(grpc::ServerContext* context,
                                  rpc::GetBalanceReply* response) {
   auto clientSession = std::make_shared<common::ClientSession>();
   cmd::GetBalance cmd(clientSession);
-  return cmd.process(request, response);
+  return common::cmd::errorToGrpcError(cmd.process(request, response));
 }
 
 grpc::Status HubImpl::GetDepositAddress(
@@ -69,7 +69,7 @@ grpc::Status HubImpl::GetDepositAddress(
     rpc::GetDepositAddressReply* response) {
   auto clientSession = std::make_shared<common::ClientSession>();
   cmd::GetDepositAddress cmd(clientSession);
-  return cmd.process(request, response);
+  return common::cmd::errorToGrpcError(cmd.process(request, response));
 }
 
 grpc::Status HubImpl::UserWithdraw(grpc::ServerContext* context,
@@ -77,7 +77,7 @@ grpc::Status HubImpl::UserWithdraw(grpc::ServerContext* context,
                                    hub::rpc::UserWithdrawReply* response) {
   auto clientSession = std::make_shared<common::ClientSession>();
   cmd::UserWithdraw cmd(clientSession, _api);
-  return cmd.process(request, response);
+  return common::cmd::errorToGrpcError(cmd.process(request, response));
 }
 
 grpc::Status HubImpl::UserWithdrawCancel(
@@ -86,7 +86,7 @@ grpc::Status HubImpl::UserWithdrawCancel(
     hub::rpc::UserWithdrawCancelReply* response) {
   auto clientSession = std::make_shared<common::ClientSession>();
   cmd::UserWithdrawCancel cmd(clientSession);
-  return cmd.process(request, response);
+  return common::cmd::errorToGrpcError(cmd.process(request, response));
 }
 
 grpc::Status HubImpl::GetUserHistory(
@@ -95,7 +95,7 @@ grpc::Status HubImpl::GetUserHistory(
     hub::rpc::GetUserHistoryReply* response) {
   auto clientSession = std::make_shared<common::ClientSession>();
   cmd::GetUserHistory cmd(clientSession);
-  return cmd.process(request, response);
+  return common::cmd::errorToGrpcError(cmd.process(request, response));
 }
 
 grpc::Status HubImpl::BalanceSubscription(
@@ -104,7 +104,7 @@ grpc::Status HubImpl::BalanceSubscription(
     grpc::ServerWriter<hub::rpc::BalanceEvent>* writer) {
   auto clientSession = std::make_shared<common::ClientSession>();
   cmd::BalanceSubscription cmd(clientSession);
-  return cmd.process(request, writer);
+  return common::cmd::errorToGrpcError(cmd.process(request, writer));
 }
 
 grpc::Status HubImpl::ProcessTransferBatch(
@@ -113,7 +113,7 @@ grpc::Status HubImpl::ProcessTransferBatch(
     hub::rpc::ProcessTransferBatchReply* response) {
   auto clientSession = std::make_shared<common::ClientSession>();
   cmd::ProcessTransferBatch cmd(clientSession);
-  return cmd.process(request, response);
+  return common::cmd::errorToGrpcError(cmd.process(request, response));
 }
 
 grpc::Status HubImpl::SweepSubscription(
@@ -122,7 +122,7 @@ grpc::Status HubImpl::SweepSubscription(
     grpc::ServerWriter<hub::rpc::SweepEvent>* writer) {
   auto clientSession = std::make_shared<common::ClientSession>();
   cmd::SweepSubscription cmd(clientSession);
-  return cmd.process(request, writer);
+  return common::cmd::errorToGrpcError(cmd.process(request, writer));
 }
 
 grpc::Status HubImpl::GetAddressInfo(grpc::ServerContext* context,
@@ -130,7 +130,7 @@ grpc::Status HubImpl::GetAddressInfo(grpc::ServerContext* context,
                                      rpc::GetAddressInfoReply* response) {
   auto clientSession = std::make_shared<common::ClientSession>();
   cmd::GetAddressInfo cmd(clientSession);
-  return cmd.process(request, response);
+  return common::cmd::errorToGrpcError(cmd.process(request, response));
 }
 
 grpc::Status HubImpl::SweepInfo(grpc::ServerContext* context,
@@ -138,7 +138,7 @@ grpc::Status HubImpl::SweepInfo(grpc::ServerContext* context,
                                 rpc::SweepEvent* response) {
   auto clientSession = std::make_shared<common::ClientSession>();
   cmd::SweepInfo cmd(clientSession);
-  return cmd.process(request, response);
+  return common::cmd::errorToGrpcError(cmd.process(request, response));
 }
 
 grpc::Status HubImpl::SignBundle(grpc::ServerContext* context,
@@ -152,7 +152,7 @@ grpc::Status HubImpl::SignBundle(grpc::ServerContext* context,
   }
 
   cmd::SignBundle cmd(clientSession);
-  return cmd.process(request, response);
+  return common::cmd::errorToGrpcError(cmd.process(request, response));
 }
 
 grpc::Status HubImpl::SweepDetail(grpc::ServerContext* context,
@@ -160,7 +160,7 @@ grpc::Status HubImpl::SweepDetail(grpc::ServerContext* context,
                                   hub::rpc::SweepDetailReply* response) {
   auto clientSession = std::make_shared<common::ClientSession>();
   cmd::SweepDetail cmd(clientSession);
-  return cmd.process(request, response);
+  return common::cmd::errorToGrpcError(cmd.process(request, response));
 }
 
 grpc::Status HubImpl::GetStats(grpc::ServerContext* context,
@@ -168,7 +168,7 @@ grpc::Status HubImpl::GetStats(grpc::ServerContext* context,
                                hub::rpc::GetStatsReply* response) {
   auto clientSession = std::make_shared<common::ClientSession>();
   cmd::GetStats cmd(clientSession);
-  return cmd.process(request, response);
+  return common::cmd::errorToGrpcError(cmd.process(request, response));
 }
 
 grpc::Status HubImpl::WasWithdrawalCancelled(
@@ -177,7 +177,7 @@ grpc::Status HubImpl::WasWithdrawalCancelled(
     hub::rpc::WasWithdrawalCancelledReply* response) {
   auto clientSession = std::make_shared<common::ClientSession>();
   cmd::WasWithdrawalCancelled cmd(clientSession);
-  return cmd.process(request, response);
+  return common::cmd::errorToGrpcError(cmd.process(request, response));
 }
 
 grpc::Status HubImpl::WasAddressSpentFrom(
@@ -186,7 +186,7 @@ grpc::Status HubImpl::WasAddressSpentFrom(
     hub::rpc::WasAddressSpentFromReply* response) {
   auto clientSession = std::make_shared<common::ClientSession>();
   cmd::WasAddressSpentFrom cmd(clientSession);
-  return cmd.process(request, response);
+  return common::cmd::errorToGrpcError(cmd.process(request, response));
 }
 
 grpc::Status HubImpl::RecoverFunds(grpc::ServerContext* context,
@@ -200,7 +200,7 @@ grpc::Status HubImpl::RecoverFunds(grpc::ServerContext* context,
   }
 
   cmd::RecoverFunds cmd(clientSession, _api);
-  return cmd.process(request, response);
+  return common::cmd::errorToGrpcError(cmd.process(request, response));
 }
 
 }  // namespace hub

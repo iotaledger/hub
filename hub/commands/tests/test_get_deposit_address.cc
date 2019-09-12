@@ -31,10 +31,7 @@ TEST_F(GetDepositAddressTest, UnknownUserShouldFail) {
 
   auto status = command.process(&req, &res);
 
-  ASSERT_FALSE(status.ok());
-
-  auto err = errorFromStatus(status);
-  ASSERT_EQ(err.code(), rpc::ErrorCode::USER_DOES_NOT_EXIST);
+  ASSERT_EQ(status, common::cmd::USER_DOES_NOT_EXIST);
 }
 
 TEST_F(GetDepositAddressTest, AddressCountInDatabaseShouldChange) {
@@ -51,10 +48,10 @@ TEST_F(GetDepositAddressTest, AddressCountInDatabaseShouldChange) {
 
   cmd::GetDepositAddress command(session());
 
-  ASSERT_TRUE(command.process(&req, &res).ok());
+  ASSERT_EQ(command.process(&req, &res), common::cmd::OK);
   std::string address1 = res.address();
   ASSERT_EQ(res.address().length(), common::crypto::Address::length());
-  ASSERT_TRUE(command.process(&req, &res).ok());
+  ASSERT_EQ(command.process(&req, &res), common::cmd::OK);
   ASSERT_EQ(res.address().length(), common::crypto::Address::length());
   ASSERT_NE(address1, res.address());
 
@@ -91,12 +88,12 @@ TEST_F(GetDepositAddressTest, AddressShouldHaveCorrectLength) {
 
   cmd::GetDepositAddress command(session());
 
-  ASSERT_TRUE(command.process(&req, &res).ok());
+  ASSERT_EQ(command.process(&req, &res), common::cmd::OK);
   ASSERT_EQ(res.address().length(), common::crypto::Address::length() +
                                         common::crypto::Checksum::length());
 
   req.set_includechecksum(false);
-  ASSERT_TRUE(command.process(&req, &res).ok());
+  ASSERT_EQ(command.process(&req, &res), common::cmd::OK);
   ASSERT_EQ(res.address().length(), common::crypto::Address::length());
 }
 

@@ -37,13 +37,13 @@ boost::property_tree::ptree UserWithdrawCancel::doProcess(
   return tree;
 }
 
-grpc::Status UserWithdrawCancel::doProcess(
+common::cmd::Error UserWithdrawCancel::doProcess(
     const hub::rpc::UserWithdrawCancelRequest* request,
     hub::rpc::UserWithdrawCancelReply* response) noexcept {
   auto& connection = db::DBManager::get().connection();
   auto transaction = connection.transaction();
 
-  nonstd::optional<hub::rpc::ErrorCode> errorCode;
+  nonstd::optional<common::cmd::Error> errorCode;
   bool success = false;
 
   try {
@@ -73,7 +73,7 @@ grpc::Status UserWithdrawCancel::doProcess(
           << " can not be cancelled. (either it had been swept or it has "
              "already been cancelled)";
 
-      errorCode = hub::rpc::ErrorCode::WITHDRAWAL_CAN_NOT_BE_CANCELLED;
+      errorCode = common::cmd::WITHDRAWAL_CAN_NOT_BE_CANCELLED;
     }
   } catch (const std::exception& ex) {
     LOG(ERROR) << session() << " Commit failed: " << ex.what();
@@ -84,17 +84,16 @@ grpc::Status UserWithdrawCancel::doProcess(
       LOG(ERROR) << session() << " Rollback failed: " << ex.what();
     }
 
-    errorCode = hub::rpc::ErrorCode::EC_UNKNOWN;
+    errorCode = common::cmd::UNKNOWN_ERROR;
   }
 
   if (errorCode) {
-    return grpc::Status(grpc::StatusCode::FAILED_PRECONDITION, "",
-                        errorToString(errorCode.value()));
+    return errorCode.value();
   }
 
   response->set_success(success);
 
-  return grpc::Status::OK;
+  return common::cmd::OK;
 }
 
 }  // namespace cmd

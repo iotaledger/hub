@@ -15,21 +15,14 @@
 namespace hub {
 class CommandTest : public hub::Test {
  public:
-  grpc::Status createUser(std::shared_ptr<common::ClientSession> session,
-                          std::string username) {
+  common::cmd::Error createUser(std::shared_ptr<common::ClientSession> session,
+                                std::string username) {
     cmd::CreateUserRequest req;
     cmd::CreateUserReply res;
 
     req.userId = std::move(username);
     cmd::CreateUser command(std::move(session));
     return command.process(&req, &res);
-  }
-
-  rpc::Error errorFromStatus(grpc::Status& status) {
-    rpc::Error err;
-    err.ParseFromString(status.error_details());
-
-    return err;
   }
 };
 

@@ -10,7 +10,7 @@
 
 #include <string>
 
-#include "common/command.h"
+#include "common/commands/command.h"
 
 namespace signing {
 namespace rpc {
@@ -32,7 +32,7 @@ class GetSecurityLevel
 
   static const std::string name() { return "GetSecurityLevel"; }
 
-  grpc::Status doProcess(
+    common::cmd::Error doProcess(
       const signing::rpc::GetSecurityLevelRequest* request,
       signing::rpc::GetSecurityLevelReply* response) noexcept override;
 

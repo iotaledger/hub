@@ -10,7 +10,7 @@
 
 #include <string>
 
-#include "common/command.h"
+#include "common/commands/command.h"
 
 namespace hub {
 namespace rpc {
@@ -35,7 +35,7 @@ class GetAddressInfo : public common::Command<hub::rpc::GetAddressInfoRequest,
 
   static const std::string name() { return "GetAddressInfo"; }
 
-  grpc::Status doProcess(
+  common::cmd::Error doProcess(
       const hub::rpc::GetAddressInfoRequest* request,
       hub::rpc::GetAddressInfoReply* response) noexcept override;
 

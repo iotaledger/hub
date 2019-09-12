@@ -36,12 +36,12 @@ boost::property_tree::ptree UserWithdraw::doProcess(
   return tree;
 }
 
-grpc::Status UserWithdraw::doProcess(
+common::cmd::Error UserWithdraw::doProcess(
     const hub::rpc::UserWithdrawRequest* request,
     hub::rpc::UserWithdrawReply* response) noexcept {
   auto& connection = db::DBManager::get().connection();
 
-  nonstd::optional<hub::rpc::ErrorCode> errorCode;
+  nonstd::optional<common::cmd::Error> errorCode;
   uint64_t userId;
   uint64_t withdrawalId;
 
@@ -54,8 +54,7 @@ grpc::Status UserWithdraw::doProcess(
   auto withdrawalUUID = *withdrawalUUIDOptional;
 
   if (request->amount() <= 0) {
-    return grpc::Status(grpc::StatusCode::FAILED_PRECONDITION, "",
-                        errorToString(hub::rpc::ErrorCode::EC_UNKNOWN));
+    return common::cmd::UNKNOWN_ERROR;
   }
 
   nonstd::optional<common::crypto::Address> address;
@@ -65,8 +64,7 @@ grpc::Status UserWithdraw::doProcess(
             request->payoutaddress()));
 
     if (!address.has_value()) {
-      return grpc::Status(grpc::StatusCode::FAILED_PRECONDITION, "",
-                          errorToString(hub::rpc::ErrorCode::CHECKSUM_INVALID));
+      return common::cmd::INVALID_CHECKSUM;
     }
   } else {
     try {
@@ -75,14 +73,12 @@ grpc::Status UserWithdraw::doProcess(
       LOG(ERROR) << session()
                  << " Withdrawal to invalid address: " << ex.what();
 
-      return grpc::Status(grpc::StatusCode::FAILED_PRECONDITION, "",
-                          errorToString(hub::rpc::ErrorCode::EC_UNKNOWN));
+      return common::cmd::UNKNOWN_ERROR;
     }
   }
 
   if (!isAddressValid(address->str_view())) {
-    return grpc::Status(grpc::StatusCode::FAILED_PRECONDITION, "",
-                        errorToString(hub::rpc::ErrorCode::INELIGIBLE_ADDRESS));
+    return common::cmd::INVALID_ADDRESS;
   }
 
   auto transaction = connection.transaction();
@@ -97,7 +93,7 @@ grpc::Status UserWithdraw::doProcess(
     {
       auto maybeUserId = connection.userIdFromIdentifier(request->userid());
       if (!maybeUserId) {
-        errorCode = hub::rpc::ErrorCode::USER_DOES_NOT_EXIST;
+        errorCode = common::cmd::USER_DOES_NOT_EXIST;
         goto cleanup;
       }
 
@@ -109,7 +105,7 @@ grpc::Status UserWithdraw::doProcess(
       auto balance = connection.availableBalanceForUser(userId);
 
       if (balance < request->amount()) {
-        errorCode = hub::rpc::ErrorCode::INSUFFICIENT_BALANCE;
+        errorCode = common::cmd::INSUFFICIENT_BALANCE;
         goto cleanup;
       }
     }
@@ -118,10 +114,10 @@ grpc::Status UserWithdraw::doProcess(
     if (_api) {
       auto res = _api->wereAddressesSpentFrom({address.value().str()});
       if (!res.has_value() || res.value().states.empty()) {
-        errorCode = hub::rpc::ErrorCode::IRI_CLIENT_UNAVAILABLE;
+        errorCode = common::cmd::IOTA_NODE_UNAVAILABLE;
         goto cleanup;
       } else if (res.value().states.front()) {
-        errorCode = hub::rpc::ErrorCode::ADDRESS_WAS_ALREADY_SPENT;
+        errorCode = common::cmd::ADDRESS_WAS_SPENT;
         goto cleanup;
       }
     }
@@ -153,15 +149,14 @@ grpc::Status UserWithdraw::doProcess(
       LOG(ERROR) << session() << " Rollback failed: " << ex.what();
     }
 
-    errorCode = hub::rpc::ErrorCode::EC_UNKNOWN;
+    errorCode = common::cmd::UNKNOWN_ERROR;
   }
 
   if (errorCode) {
-    return grpc::Status(grpc::StatusCode::FAILED_PRECONDITION, "",
-                        errorToString(errorCode.value()));
+    return errorCode.value();
   }
 
-  return grpc::Status::OK;
+  return common::cmd::OK;
 }
 
 }  // namespace cmd
