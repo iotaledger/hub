@@ -28,19 +28,39 @@ static CommandFactoryRegistrator<GetDepositAddress> registrator;
 boost::property_tree::ptree GetDepositAddress::doProcess(
     const boost::property_tree::ptree& request) noexcept {
   boost::property_tree::ptree tree;
+
+  GetDepositAddressRequest req;
+  GetDepositAddressReply rep;
+  auto maybeUserId = request.get_optional<std::string>("userId");
+  if (maybeUserId) {
+    req.userId = maybeUserId.value();
+  }
+
+  auto maybeIncludeChecksum =
+      request.get_optional<std::string>("includeChecksum");
+  if (maybeIncludeChecksum) {
+    req.includeChecksum = (maybeIncludeChecksum.value().compare("true") == 0);
+  }
+  auto status = doProcess(&req, &rep);
+
+  if (status != common::cmd::OK) {
+    tree.add("error", common::cmd::errorToStringMap.at(status));
+  } else {
+    tree.add("address", rep.address);
+  }
   return tree;
 }
 
 common::cmd::Error GetDepositAddress::doProcess(
-    const hub::rpc::GetDepositAddressRequest* request,
-    hub::rpc::GetDepositAddressReply* response) noexcept {
+    const GetDepositAddressRequest* request,
+    GetDepositAddressReply* response) noexcept {
   uint64_t userId;
 
   auto& connection = db::DBManager::get().connection();
 
   // Get userId for identifier
   {
-    auto maybeUserId = connection.userIdFromIdentifier(request->userid());
+    auto maybeUserId = connection.userIdFromIdentifier(request->userId);
     if (!maybeUserId) {
       return common::cmd::USER_DOES_NOT_EXIST;
     }
@@ -56,13 +76,13 @@ common::cmd::Error GetDepositAddress::doProcess(
     return common::cmd::GET_ADDRESS_FAILED;
   }
   auto address = maybeAddress.value();
-  if (request->includechecksum()) {
-    response->set_address(address.str() + common::crypto::CryptoManager::get()
-                                              .provider()
-                                              .calcChecksum(address.str())
-                                              .str());
+  if (request->includeChecksum) {
+    response->address = address.str() + common::crypto::CryptoManager::get()
+                                            .provider()
+                                            .calcChecksum(address.str())
+                                            .str();
   } else {
-    response->set_address(address.str());
+    response->address = address.str();
   }
 
   // Add new user address.

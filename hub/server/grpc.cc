@@ -47,29 +47,44 @@ void HubImpl::setApi(std::shared_ptr<cppclient::IotaAPI> api) {
 }
 
 grpc::Status HubImpl::CreateUser(grpc::ServerContext* context,
-                                 const rpc::CreateUserRequest* request,
-                                 rpc::CreateUserReply* response) {
+                                 const rpc::CreateUserRequest* rpcRequest,
+                                 rpc::CreateUserReply* rpcResponse) {
   auto clientSession = std::make_shared<common::ClientSession>();
   cmd::CreateUser cmd(clientSession);
-  cmd::CreateUserRequest genReq = {.userId = request->userid()};
-  cmd::CreateUserReply genRep;
-  common::cmd::errorToGrpcError(cmd.process(&genReq, &genRep));
+  cmd::CreateUserRequest req = {.userId = rpcRequest->userid()};
+  cmd::CreateUserReply rep;
+  return common::cmd::errorToGrpcError(cmd.process(&req, &rep));
 }
 
 grpc::Status HubImpl::GetBalance(grpc::ServerContext* context,
-                                 const rpc::GetBalanceRequest* request,
-                                 rpc::GetBalanceReply* response) {
+                                 const rpc::GetBalanceRequest* rpcRequest,
+                                 rpc::GetBalanceReply* rpcResponse) {
   auto clientSession = std::make_shared<common::ClientSession>();
   cmd::GetBalance cmd(clientSession);
-  return common::cmd::errorToGrpcError(cmd.process(request, response));
+  return common::cmd::errorToGrpcError(cmd.process(rpcRequest, rpcResponse));
 }
 
 grpc::Status HubImpl::GetDepositAddress(
-    grpc::ServerContext* context, const rpc::GetDepositAddressRequest* request,
-    rpc::GetDepositAddressReply* response) {
+    grpc::ServerContext* context,
+    const rpc::GetDepositAddressRequest* rpcRequest,
+    rpc::GetDepositAddressReply* rpcResponse) {
   auto clientSession = std::make_shared<common::ClientSession>();
+
   cmd::GetDepositAddress cmd(clientSession);
-  return common::cmd::errorToGrpcError(cmd.process(request, response));
+
+  cmd::GetDepositAddressRequest req;
+  req.userId = rpcRequest->userid();
+  req.includeChecksum = rpcRequest->includechecksum();
+
+  cmd::GetDepositAddressReply rep;
+
+  auto status = common::cmd::errorToGrpcError(cmd.process(&req, &rep));
+
+  if (status.ok()) {
+    rpcResponse->set_address(rep.address);
+  }
+
+  return status;
 }
 
 grpc::Status HubImpl::UserWithdraw(grpc::ServerContext* context,

@@ -23,10 +23,10 @@ namespace {
 class GetDepositAddressTest : public CommandTest {};
 
 TEST_F(GetDepositAddressTest, UnknownUserShouldFail) {
-  rpc::GetDepositAddressRequest req;
-  rpc::GetDepositAddressReply res;
+  hub::cmd::GetDepositAddressRequest req;
+  hub::cmd::GetDepositAddressReply res;
 
-  req.set_userid("User1");
+  req.userId = "User1";
   cmd::GetDepositAddress command(session());
 
   auto status = command.process(&req, &res);
@@ -35,8 +35,8 @@ TEST_F(GetDepositAddressTest, UnknownUserShouldFail) {
 }
 
 TEST_F(GetDepositAddressTest, AddressCountInDatabaseShouldChange) {
-  rpc::GetDepositAddressRequest req;
-  rpc::GetDepositAddressReply res;
+  cmd::GetDepositAddressRequest req;
+  cmd::GetDepositAddressReply res;
   rpc::Error err;
 
   constexpr auto username = "User1";
@@ -44,21 +44,23 @@ TEST_F(GetDepositAddressTest, AddressCountInDatabaseShouldChange) {
 
   createUser(session(), username);
 
-  req.set_userid(username);
+  req.userId = username;
+  req.includeChecksum = false;
 
   cmd::GetDepositAddress command(session());
 
   ASSERT_EQ(command.process(&req, &res), common::cmd::OK);
-  std::string address1 = res.address();
-  ASSERT_EQ(res.address().length(), common::crypto::Address::length());
+  std::string address1 = res.address;
+  ASSERT_EQ(res.address.length(), common::crypto::Address::length());
   ASSERT_EQ(command.process(&req, &res), common::cmd::OK);
-  ASSERT_EQ(res.address().length(), common::crypto::Address::length());
-  ASSERT_NE(address1, res.address());
+  ASSERT_EQ(res.address.length(), common::crypto::Address::length());
+  ASSERT_NE(address1, res.address);
 
   /*ASSERT_EQ(
     2, conn(select(count(tbl.id)).from(tbl).unconditionally()).front().count);*/
 
   auto unswept = conn.unsweptUserAddresses();
+
 
   ASSERT_EQ(2, unswept.size());
   ASSERT_NE(std::find_if(unswept.begin(), unswept.end(),
@@ -69,32 +71,32 @@ TEST_F(GetDepositAddressTest, AddressCountInDatabaseShouldChange) {
 
   ASSERT_NE(std::find_if(unswept.begin(), unswept.end(),
                          [&res](auto& ref) {
-                           return std::get<1>(ref) == res.address();
+                           return std::get<1>(ref) == res.address;
                          }),
             unswept.end());
 }
 
 TEST_F(GetDepositAddressTest, AddressShouldHaveCorrectLength) {
-  rpc::GetDepositAddressRequest req;
-  rpc::GetDepositAddressReply res;
+  cmd::GetDepositAddressRequest req;
+  cmd::GetDepositAddressReply res;
   rpc::Error err;
 
   constexpr auto username = "User1";
 
   createUser(session(), username);
 
-  req.set_userid(username);
-  req.set_includechecksum(true);
+  req.userId = username;
+  req.includeChecksum = true;
 
   cmd::GetDepositAddress command(session());
 
   ASSERT_EQ(command.process(&req, &res), common::cmd::OK);
-  ASSERT_EQ(res.address().length(), common::crypto::Address::length() +
+  ASSERT_EQ(res.address.length(), common::crypto::Address::length() +
                                         common::crypto::Checksum::length());
 
-  req.set_includechecksum(false);
+  req.includeChecksum = false;
   ASSERT_EQ(command.process(&req, &res), common::cmd::OK);
-  ASSERT_EQ(res.address().length(), common::crypto::Address::length());
+  ASSERT_EQ(res.address.length(), common::crypto::Address::length());
 }
 
 };  // namespace

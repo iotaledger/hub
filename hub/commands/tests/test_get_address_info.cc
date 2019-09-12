@@ -26,8 +26,8 @@ class GetAddressInfoTest : public CommandTest {};
 TEST_F(GetAddressInfoTest, AddressCountInDatabaseShouldChange) {
   rpc::GetAddressInfoRequest req;
   rpc::GetAddressInfoReply res;
-  rpc::GetDepositAddressRequest depReq;
-  rpc::GetDepositAddressReply depRes;
+  cmd::GetDepositAddressRequest depReq;
+  cmd::GetDepositAddressReply depRes;
 
   rpc::Error err;
 
@@ -35,7 +35,7 @@ TEST_F(GetAddressInfoTest, AddressCountInDatabaseShouldChange) {
 
   createUser(session(), username);
 
-  depReq.set_userid(username);
+  depReq.userId = username;
 
   cmd::GetDepositAddress depCommand(session());
   cmd::GetAddressInfo command(session());
@@ -43,7 +43,7 @@ TEST_F(GetAddressInfoTest, AddressCountInDatabaseShouldChange) {
   ASSERT_EQ(depCommand.process(&depReq, &depRes), common::cmd::OK);
 
   req.set_address(
-      depRes.address().substr(0, common::crypto::Address::length()));
+      depRes.address.substr(0, common::crypto::Address::length()));
   ASSERT_EQ(command.process(&req, &res), common::cmd::OK);
   ASSERT_EQ(res.userid(), username);
 }
