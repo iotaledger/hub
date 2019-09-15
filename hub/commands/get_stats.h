@@ -13,20 +13,21 @@
 #include "common/commands/command.h"
 
 namespace hub {
-namespace rpc {
-class GetStatsRequest;
-class GetStatsReply;
-}  // namespace rpc
-
 namespace cmd {
 
+typedef struct GetStatsRequest {
+} GetStatsRequest;
+
+typedef struct GetStatsReply {
+  uint64_t totalBalance;
+} GetStatsReply;
+
 /// Gets statistics about the Hub's current state
-/// @param[in] hub::rpc::GetStatsRequest
-/// @param[in] hub::rpc::GetStatsReply
-class GetStats : public common::Command<hub::rpc::GetStatsRequest,
-                                        hub::rpc::GetStatsReply> {
+/// @param[in] GetStatsRequest
+/// @param[in] GetStatsReply
+class GetStats : public common::Command<GetStatsRequest, GetStatsReply> {
  public:
-  using Command<hub::rpc::GetStatsRequest, hub::rpc::GetStatsReply>::Command;
+  using Command<GetStatsRequest, GetStatsReply>::Command;
 
   static std::shared_ptr<common::ICommand> create() {
     return std::shared_ptr<common::ICommand>(new GetStats());
@@ -34,9 +35,8 @@ class GetStats : public common::Command<hub::rpc::GetStatsRequest,
 
   static const std::string name() { return "GetStats"; }
 
-  common::cmd::Error doProcess(
-      const hub::rpc::GetStatsRequest* request,
-      hub::rpc::GetStatsReply* response) noexcept override;
+  common::cmd::Error doProcess(const GetStatsRequest* request,
+                               GetStatsReply* response) noexcept override;
 
   boost::property_tree::ptree doProcess(
       const boost::property_tree::ptree& request) noexcept override;

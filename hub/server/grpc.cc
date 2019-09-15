@@ -196,11 +196,17 @@ grpc::Status HubImpl::SweepDetail(grpc::ServerContext* context,
 }
 
 grpc::Status HubImpl::GetStats(grpc::ServerContext* context,
-                               const hub::rpc::GetStatsRequest* request,
-                               hub::rpc::GetStatsReply* response) {
+                               const hub::rpc::GetStatsRequest* rpcRequest,
+                               hub::rpc::GetStatsReply* rpcResponse) {
   auto clientSession = std::make_shared<common::ClientSession>();
   cmd::GetStats cmd(clientSession);
-  return common::cmd::errorToGrpcError(cmd.process(request, response));
+  hub::cmd::GetStatsRequest request;
+  hub::cmd::GetStatsReply response;
+  auto status = common::cmd::errorToGrpcError(cmd.process(&request, &response));
+  if (status.ok()) {
+    rpcResponse->set_totalbalance(response.totalBalance);
+  }
+  return status;
 }
 
 grpc::Status HubImpl::WasWithdrawalCancelled(

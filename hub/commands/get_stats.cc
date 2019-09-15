@@ -30,15 +30,23 @@ static CommandFactoryRegistrator<GetStats> registrator;
 boost::property_tree::ptree GetStats::doProcess(
     const boost::property_tree::ptree& request) noexcept {
   boost::property_tree::ptree tree;
+  GetStatsRequest req;
+  GetStatsReply rep;
+  auto status = doProcess(&req, &rep);
+
+  if (status != common::cmd::OK) {
+    tree.add("error", common::cmd::errorToStringMap.at(status));
+  } else {
+    tree.add("totalBalance", rep.totalBalance);
+  }
   return tree;
 }
 
-common::cmd::Error GetStats::doProcess(
-    const hub::rpc::GetStatsRequest* request,
-    hub::rpc::GetStatsReply* response) noexcept {
+common::cmd::Error GetStats::doProcess(const GetStatsRequest* request,
+                                       GetStatsReply* response) noexcept {
   auto& connection = db::DBManager::get().connection();
 
-  response->set_totalbalance(connection.getTotalBalance());
+  response->totalBalance = connection.getTotalBalance();
 
   return common::cmd::OK;
 }
