@@ -148,12 +148,21 @@ grpc::Status HubImpl::SweepSubscription(
   return common::cmd::errorToGrpcError(cmd.process(request, writer));
 }
 
-grpc::Status HubImpl::GetAddressInfo(grpc::ServerContext* context,
-                                     const rpc::GetAddressInfoRequest* request,
-                                     rpc::GetAddressInfoReply* response) {
+grpc::Status HubImpl::GetAddressInfo(
+    grpc::ServerContext* context, const rpc::GetAddressInfoRequest* rpcRequest,
+    rpc::GetAddressInfoReply* rpcResponse) {
   auto clientSession = std::make_shared<common::ClientSession>();
+  cmd::GetAddressInfoRequest request;
+  cmd::GetAddressInfoReply response;
   cmd::GetAddressInfo cmd(clientSession);
-  return common::cmd::errorToGrpcError(cmd.process(request, response));
+  request.address = rpcRequest->address();
+  auto status = common::cmd::errorToGrpcError(cmd.process(&request, &response));
+
+  if (status.ok()) {
+    rpcResponse->set_userid(response.userId);
+  }
+
+  return status;
 }
 
 grpc::Status HubImpl::SweepInfo(grpc::ServerContext* context,

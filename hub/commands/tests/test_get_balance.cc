@@ -31,7 +31,7 @@ TEST_F(GetBalanceTest, UnknownUserShouldFail) {
 }
 
 TEST_F(GetBalanceTest, NewUserHasZeroBalance) {
-        constexpr auto username = "User1";
+  constexpr auto username = "User1";
   cmd::GetBalanceRequest req = {.userId = username};
   cmd::GetBalanceReply res;
   rpc::Error err;

@@ -24,8 +24,8 @@ namespace {
 class GetAddressInfoTest : public CommandTest {};
 
 TEST_F(GetAddressInfoTest, AddressCountInDatabaseShouldChange) {
-  rpc::GetAddressInfoRequest req;
-  rpc::GetAddressInfoReply res;
+  cmd::GetAddressInfoRequest req;
+  cmd::GetAddressInfoReply res;
   cmd::GetDepositAddressRequest depReq;
   cmd::GetDepositAddressReply depRes;
 
@@ -42,30 +42,29 @@ TEST_F(GetAddressInfoTest, AddressCountInDatabaseShouldChange) {
 
   ASSERT_EQ(depCommand.process(&depReq, &depRes), common::cmd::OK);
 
-  req.set_address(
-      depRes.address.substr(0, common::crypto::Address::length()));
+  req.address = depRes.address.substr(0, common::crypto::Address::length());
   ASSERT_EQ(command.process(&req, &res), common::cmd::OK);
-  ASSERT_EQ(res.userid(), username);
+  ASSERT_EQ(res.userId, username);
 }
 
 TEST_F(GetAddressInfoTest, InvalidOrUnknownAddressShouldFail) {
-  rpc::GetAddressInfoRequest req;
-  rpc::GetAddressInfoReply res;
+  cmd::GetAddressInfoRequest req;
+  cmd::GetAddressInfoReply res;
   rpc::Error err;
 
   cmd::GetAddressInfo command(session());
 
-  req.set_address("A");
+  req.address = "A";
   ASSERT_NE(command.process(&req, &res), common::cmd::OK);
 
-  req.set_address(
+  req.address =
       "999999999999999999999999999999999999999999999999999999999999999999999999"
-      "999999999");
-        ASSERT_NE(command.process(&req, &res), common::cmd::OK);
-  req.set_address(
+      "999999999";
+  ASSERT_NE(command.process(&req, &res), common::cmd::OK);
+  req.address =
       "992999999999999999999999999999999999999999999999999999999999999999999999"
-      "999999999");
-        ASSERT_NE(command.process(&req, &res), common::cmd::OK);
+      "999999999";
+  ASSERT_NE(command.process(&req, &res), common::cmd::OK);
 }
 
 };  // namespace

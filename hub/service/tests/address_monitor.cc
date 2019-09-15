@@ -36,8 +36,8 @@ class MockMonitor : public AddressMonitor {
 
 class MockAPI : public cppclient::IotaAPI {
  public:
-  virtual ~MockAPI(){}
-    MockAPI ():IotaAPI(false){}
+  virtual ~MockAPI() {}
+  MockAPI() : IotaAPI(false) {}
 
   virtual bool isNodeSolid() { return true; }
   // MOCK_METHOD0(isNodeSolid, bool());
@@ -74,7 +74,7 @@ class MockAPI : public cppclient::IotaAPI {
 
   MOCK_METHOD2(getTransactionsToApprove,
                nonstd::optional<cppclient::GetTransactionsToApproveResponse>(
-                       uint32_t, const nonstd::optional<std::string>&));
+                   uint32_t, const nonstd::optional<std::string>&));
 
   MOCK_METHOD4(attachToTangle,
                std::vector<std::string>(const std::string&, const std::string&,
@@ -89,7 +89,8 @@ class MockAPI : public cppclient::IotaAPI {
                                        const std::vector<std::string>&));
 
   MOCK_METHOD1(wereAddressesSpentFrom,
-               nonstd::optional<WereAddressesSpentFromResponse> (const std::vector<std::string>&));
+               nonstd::optional<WereAddressesSpentFromResponse>(
+                   const std::vector<std::string>&));
 };
 
 TEST_F(AddressMonitorTest, OnStartShouldInitialise) {

@@ -61,7 +61,6 @@ TEST_F(GetDepositAddressTest, AddressCountInDatabaseShouldChange) {
 
   auto unswept = conn.unsweptUserAddresses();
 
-
   ASSERT_EQ(2, unswept.size());
   ASSERT_NE(std::find_if(unswept.begin(), unswept.end(),
                          [&address1](auto& ref) {
@@ -69,10 +68,9 @@ TEST_F(GetDepositAddressTest, AddressCountInDatabaseShouldChange) {
                          }),
             unswept.end());
 
-  ASSERT_NE(std::find_if(unswept.begin(), unswept.end(),
-                         [&res](auto& ref) {
-                           return std::get<1>(ref) == res.address;
-                         }),
+  ASSERT_NE(std::find_if(
+                unswept.begin(), unswept.end(),
+                [&res](auto& ref) { return std::get<1>(ref) == res.address; }),
             unswept.end());
 }
 
@@ -92,7 +90,7 @@ TEST_F(GetDepositAddressTest, AddressShouldHaveCorrectLength) {
 
   ASSERT_EQ(command.process(&req, &res), common::cmd::OK);
   ASSERT_EQ(res.address.length(), common::crypto::Address::length() +
-                                        common::crypto::Checksum::length());
+                                      common::crypto::Checksum::length());
 
   req.includeChecksum = false;
   ASSERT_EQ(command.process(&req, &res), common::cmd::OK);

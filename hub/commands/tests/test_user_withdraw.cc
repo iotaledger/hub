@@ -70,7 +70,7 @@ TEST_F(UserWithdrawTest, WithdrawalUpdatesUserBalance) {
 
   auto status = command.doProcess(&req, &res);
 
-  ASSERT_EQ(status,common::cmd::OK);
+  ASSERT_EQ(status, common::cmd::OK);
 
   cmd::GetBalanceRequest balReq = {.userId = username};
   cmd::GetBalanceReply balRes;
@@ -78,7 +78,7 @@ TEST_F(UserWithdrawTest, WithdrawalUpdatesUserBalance) {
 
   cmd::GetBalance balCommand(session());
 
-  ASSERT_EQ(balCommand.doProcess(&balReq, &balRes),common::cmd::OK);
+  ASSERT_EQ(balCommand.doProcess(&balReq, &balRes), common::cmd::OK);
 
   ASSERT_EQ(50, balRes.available);
 }
@@ -104,7 +104,6 @@ TEST_F(UserWithdrawTest, ErrorOnInvalidAddress) {
 
   auto status = command.doProcess(&req, &res);
   ASSERT_EQ(status, common::cmd::INVALID_ADDRESS);
-
 }
 
 TEST_F(UserWithdrawTest, ErrorOnInvalidChecksumForPayoutAddress) {

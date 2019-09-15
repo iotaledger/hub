@@ -64,7 +64,7 @@ TEST_F(UserWithdrawCancelTest, WithdrawalCancelUpdatesUserBalance) {
 
   std::string uu = withdrawReply.uuid();
   req.set_uuid(withdrawReply.uuid());
-        ASSERT_EQ(cmd.doProcess(&req, &rep), common::cmd::OK);
+  ASSERT_EQ(cmd.doProcess(&req, &rep), common::cmd::OK);
 
   ASSERT_EQ(balCommand.doProcess(&balReq, &balRep), common::cmd::OK);
 

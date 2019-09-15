@@ -29,21 +29,35 @@ static CommandFactoryRegistrator<GetAddressInfo> registrator;
 boost::property_tree::ptree GetAddressInfo::doProcess(
     const boost::property_tree::ptree& request) noexcept {
   boost::property_tree::ptree tree;
+  GetAddressInfoRequest req;
+  GetAddressInfoReply rep;
+  auto maybeAddress = request.get_optional<std::string>("address");
+  if (maybeAddress) {
+    req.address = maybeAddress.value();
+  }
+  auto status = doProcess(&req, &rep);
+
+  if (status != common::cmd::OK) {
+    tree.add("error", common::cmd::errorToStringMap.at(status));
+  } else {
+    tree.add("userId", rep.userId);
+  }
+
   return tree;
 }
 
 common::cmd::Error GetAddressInfo::doProcess(
-    const hub::rpc::GetAddressInfoRequest* request,
-    hub::rpc::GetAddressInfoReply* response) noexcept {
+    const GetAddressInfoRequest* request,
+    GetAddressInfoReply* response) noexcept {
   auto& connection = db::DBManager::get().connection();
 
   try {
-    common::crypto::Address address(request->address());
+    common::crypto::Address address(request->address);
 
     auto addressInfo = connection.getAddressInfo(address);
 
     if (addressInfo) {
-      response->set_userid(std::move(addressInfo->userId));
+      response->userId = std::move(addressInfo->userId);
       return common::cmd::OK;
     }
   } catch (const std::exception& ex) {
