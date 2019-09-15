@@ -17,6 +17,7 @@
 
 #include "common/stats/session.h"
 #include "hub/commands/balance_subscription.h"
+#include "hub/commands/converter.h"ד
 #include "hub/commands/create_user.h"
 #include "hub/commands/get_address_info.h"
 #include "hub/commands/get_balance.h"
@@ -114,11 +115,25 @@ grpc::Status HubImpl::UserWithdrawCancel(
 
 grpc::Status HubImpl::GetUserHistory(
     grpc::ServerContext* context,
-    const ::hub::rpc::GetUserHistoryRequest* request,
-    hub::rpc::GetUserHistoryReply* response) {
+    const ::hub::rpc::GetUserHistoryRequest* rpcRequest,
+    hub::rpc::GetUserHistoryReply* rpcResponse) {
   auto clientSession = std::make_shared<common::ClientSession>();
   cmd::GetUserHistory cmd(clientSession);
-  return common::cmd::errorToGrpcError(cmd.process(request, response));
+  cmd::GetUserHistoryRequest request;
+  cmd::GetUserHistoryReply reply;
+  auto status = common::cmd::errorToGrpcError(cmd.process(&request, &reply));
+  if (status.ok()) {
+    for (const auto& e : reply.events) {
+      auto* event = rpcResponse->add_events();
+      event->set_userid(e.userId);
+      event->set_timestamp(e.timestamp);
+      event->set_amount(e.amount);
+      event->set_type(cmd::userAccountBalanceEventTypeToProto(e.type));
+      event->set_withdrawaluuid(e.withdrawalUUID);
+      event->set_sweepbundlehash(e.sweepBundleHash);
+    }
+  }
+  return status;
 }
 
 grpc::Status HubImpl::BalanceSubscription(

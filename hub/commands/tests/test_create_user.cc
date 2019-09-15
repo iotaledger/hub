@@ -5,7 +5,6 @@
 #include <sqlpp11/functions.h>
 #include <sqlpp11/select.h>
 
-#include "proto/hub.pb.h"
 #include "schema/schema.h"
 
 #include "hub/commands/create_user.h"

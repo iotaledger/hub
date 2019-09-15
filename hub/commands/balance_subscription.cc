@@ -14,9 +14,9 @@
 #include <utility>
 
 #include "common/stats/session.h"
+#include "hub/commands/converter.h"
 #include "hub/commands/factory.h"
 #include "hub/commands/helper.h"
-#include "hub/commands/proto_sql_converter.h"
 #include "hub/db/db.h"
 #include "hub/db/helper.h"
 #include "proto/hub.grpc.pb.h"
@@ -53,7 +53,8 @@ common::cmd::Error BalanceSubscription::doProcess(
             b.timestamp.time_since_epoch())
             .count());
     userAccountEvent->set_amount(b.amount);
-    userAccountEvent->set_type(userAccountBalanceEventTypeFromSql(b.type));
+    userAccountEvent->set_type(userAccountBalanceEventTypeToProto(
+        userAccountBalanceEventTypeFromSql(b.type)));
     userAccountEvent->set_sweepbundlehash(std::move(b.sweepBundleHash));
     userAccountEvent->set_withdrawaluuid(std::move(b.withdrawalUUID));
     event.set_allocated_useraccountevent(userAccountEvent);

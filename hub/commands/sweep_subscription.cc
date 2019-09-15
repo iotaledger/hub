@@ -9,9 +9,9 @@
 #include <utility>
 
 #include "common/stats/session.h"
+#include "hub/commands/converter.h"
 #include "hub/commands/factory.h"
 #include "hub/commands/helper.h"
-#include "hub/commands/proto_sql_converter.h"
 #include "hub/db/db.h"
 #include "hub/db/helper.h"
 #include "proto/hub.grpc.pb.h"

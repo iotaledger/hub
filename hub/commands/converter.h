@@ -12,11 +12,18 @@
 #include "hub/db/types.h"
 #include "proto/hub.pb.h"
 
+#include "balance_events.h"
+
 namespace hub {
 
 namespace cmd {
-hub::rpc::UserAccountBalanceEventType userAccountBalanceEventTypeFromSql(
+hub::cmd::UserAccountBalanceEventType userAccountBalanceEventTypeFromSql(
     hub::db::UserAccountBalanceReason reason);
+hub::rpc::UserAccountBalanceEventType userAccountBalanceEventTypeToProto(
+    hub::cmd::UserAccountBalanceEventType type);
+std::string userAccountBalanceEventTypeToString(
+    hub::cmd::UserAccountBalanceEventType type);
+
 hub::rpc::UserAddressBalanceReason userAddressBalanceEventTypeFromSql(
     hub::db::UserAddressBalanceReason reason);
 hub::rpc::HubAddressBalanceReason hubAddressBalanceTypeFromSql(

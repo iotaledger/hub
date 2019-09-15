@@ -16,8 +16,8 @@ namespace hub {
 namespace cmd {
 
 /// Gets information on an address
-/// @param[in] hub::cmd::GetAddressInfoRequest
-/// @param[in] hub::cmd::GetAddressInfoReply
+/// @param[in] GetAddressInfoRequest
+/// @param[in] GetAddressInfoReply
 
 typedef struct GetAddressInfoRequest {
   std::string address;

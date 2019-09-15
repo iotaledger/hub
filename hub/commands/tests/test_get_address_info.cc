@@ -11,7 +11,6 @@
 #include "hub/commands/get_deposit_address.h"
 #include "hub/db/db.h"
 #include "hub/db/helper.h"
-#include "proto/hub.pb.h"
 #include "schema/schema.h"
 
 #include "runner.h"
