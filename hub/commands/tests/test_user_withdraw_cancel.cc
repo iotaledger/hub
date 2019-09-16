@@ -2,7 +2,6 @@
 
 #include <gtest/gtest.h>
 
-#include "proto/hub.pb.h"
 #include "schema/schema.h"
 
 #include "hub/commands/get_balance.h"
@@ -57,12 +56,12 @@ TEST_F(UserWithdrawCancelTest, WithdrawalCancelUpdatesUserBalance) {
 
   ASSERT_EQ(USER_BALANCE - toWithdraw, balRep.available);
 
-  rpc::UserWithdrawCancelRequest req;
-  rpc::UserWithdrawCancelReply rep;
+  cmd::UserWithdrawCancelRequest req;
+  cmd::UserWithdrawCancelReply rep;
   cmd::UserWithdrawCancel cmd(session());
 
   std::string uu = withdrawReply.uuid;
-  req.set_uuid(withdrawReply.uuid);
+  req.uuid = withdrawReply.uuid;
   ASSERT_EQ(cmd.doProcess(&req, &rep), common::cmd::OK);
 
   ASSERT_EQ(balCommand.doProcess(&balReq, &balRep), common::cmd::OK);
@@ -101,12 +100,12 @@ TEST_F(UserWithdrawCancelTest, WithdrawalCancelOnlyOnce) {
 
   ASSERT_EQ(USER_BALANCE - toWithdraw, balRep.available);
 
-  rpc::UserWithdrawCancelRequest req;
-  rpc::UserWithdrawCancelReply rep;
+  cmd::UserWithdrawCancelRequest req;
+  cmd::UserWithdrawCancelReply rep;
   cmd::UserWithdrawCancel cmd(session());
 
   std::string uu = withdrawReply.uuid;
-  req.set_uuid(withdrawReply.uuid);
+  req.uuid = withdrawReply.uuid;
   ASSERT_EQ(cmd.doProcess(&req, &rep), common::cmd::OK);
 
   ASSERT_EQ(balCommand.doProcess(&balReq, &balRep), common::cmd::OK);

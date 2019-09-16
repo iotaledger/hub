@@ -20,7 +20,6 @@
 #include "common/stats/session.h"
 #include "hub/db/db.h"
 #include "hub/db/helper.h"
-#include "proto/hub.pb.h"
 #include "schema/schema.h"
 
 #include "hub/commands/factory.h"
@@ -34,12 +33,27 @@ static CommandFactoryRegistrator<UserWithdrawCancel> registrator;
 boost::property_tree::ptree UserWithdrawCancel::doProcess(
     const boost::property_tree::ptree& request) noexcept {
   boost::property_tree::ptree tree;
+  UserWithdrawCancelRequest req;
+  UserWithdrawCancelReply rep;
+  auto maybeUuid = request.get_optional<std::string>("uuid");
+  if (maybeUuid) {
+    req.uuid = maybeUuid.value();
+  }
+
+  auto status = doProcess(&req, &rep);
+
+  if (status != common::cmd::OK) {
+    tree.add("error", common::cmd::errorToStringMap.at(status));
+  } else {
+    tree.add("success", rep.success ? "true" : "false");
+  }
+
   return tree;
 }
 
 common::cmd::Error UserWithdrawCancel::doProcess(
-    const hub::rpc::UserWithdrawCancelRequest* request,
-    hub::rpc::UserWithdrawCancelReply* response) noexcept {
+    const UserWithdrawCancelRequest* request,
+    UserWithdrawCancelReply* response) noexcept {
   auto& connection = db::DBManager::get().connection();
   auto transaction = connection.transaction();
 
@@ -47,7 +61,7 @@ common::cmd::Error UserWithdrawCancel::doProcess(
   bool success = false;
 
   try {
-    boost::uuids::uuid uuid = boost::uuids::string_generator()(request->uuid());
+    boost::uuids::uuid uuid = boost::uuids::string_generator()(request->uuid);
 
     auto result = connection.cancelWithdrawal(boost::uuids::to_string(uuid));
 
@@ -64,12 +78,12 @@ common::cmd::Error UserWithdrawCancel::doProcess(
 
       transaction->commit();
 
-      LOG(INFO) << "Withdrawal: " << request->uuid()
+      LOG(INFO) << "Withdrawal: " << request->uuid
                 << " cancelled successfully.";
     } else {
       transaction->rollback();
       LOG(ERROR)
-          << "Withdrawal: " << request->uuid()
+          << "Withdrawal: " << request->uuid
           << " can not be cancelled. (either it had been swept or it has "
              "already been cancelled)";
 
@@ -91,7 +105,7 @@ common::cmd::Error UserWithdrawCancel::doProcess(
     return errorCode.value();
   }
 
-  response->set_success(success);
+  response->success = success;
 
   return common::cmd::OK;
 }

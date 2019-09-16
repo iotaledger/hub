@@ -120,11 +120,21 @@ grpc::Status HubImpl::UserWithdraw(
 
 grpc::Status HubImpl::UserWithdrawCancel(
     grpc::ServerContext* context,
-    const hub::rpc::UserWithdrawCancelRequest* request,
-    hub::rpc::UserWithdrawCancelReply* response) {
+    const hub::rpc::UserWithdrawCancelRequest* rpcRequest,
+    hub::rpc::UserWithdrawCancelReply* rpcResponse) {
   auto clientSession = std::make_shared<common::ClientSession>();
   cmd::UserWithdrawCancel cmd(clientSession);
-  return common::cmd::errorToGrpcError(cmd.process(request, response));
+  cmd::UserWithdrawCancelRequest request;
+  cmd::UserWithdrawCancelReply response;
+
+  request.uuid = rpcRequest->uuid();
+
+  auto status = common::cmd::errorToGrpcError(cmd.process(&request, &response));
+  rpcResponse->set_success(false);
+  if (status.ok()) {
+    rpcResponse->set_success(response.success);
+  }
+  return status;
 }
 
 grpc::Status HubImpl::GetUserHistory(
