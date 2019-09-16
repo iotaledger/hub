@@ -17,13 +17,14 @@
 #include "common/stats/session.h"
 #include "hub/db/db.h"
 #include "hub/db/helper.h"
-#include "proto/hub.pb.h"
 #include "schema/schema.h"
 
 #include "common/crypto/manager.h"
 #include "common/crypto/types.h"
 #include "hub/commands/factory.h"
 #include "hub/commands/helper.h"
+
+#include <istream>
 
 namespace hub {
 namespace cmd {
@@ -33,12 +34,49 @@ static CommandFactoryRegistrator<UserWithdraw> registrator;
 boost::property_tree::ptree UserWithdraw::doProcess(
     const boost::property_tree::ptree& request) noexcept {
   boost::property_tree::ptree tree;
+  UserWithdrawRequest req;
+  UserWithdrawReply rep;
+
+  auto maybeUserId = request.get_optional<std::string>("userId");
+  if (maybeUserId) {
+    req.userId = maybeUserId.value();
+  }
+
+  req.validateChecksum = false;
+  auto maybeValidateChecksum =
+      request.get_optional<std::string>("validateChecksum");
+  if (maybeValidateChecksum) {
+    req.validateChecksum = (maybeValidateChecksum.value().compare("true") == 0);
+  }
+
+  auto maybePayoutAddress = request.get_optional<std::string>("payoutAddress");
+  if (maybePayoutAddress) {
+    req.payoutAddress = maybePayoutAddress.value();
+  }
+
+  auto maybeAmount = request.get_optional<std::string>("amount");
+  if (maybeAmount) {
+    std::istringstream iss(maybeAmount.value());
+    iss >> req.amount;
+  }
+
+  auto maybeTag = request.get_optional<std::string>("tag");
+  if (maybeTag) {
+    req.tag = maybeTag.value();
+  }
+
+  auto status = doProcess(&req, &rep);
+
+  if (status != common::cmd::OK) {
+    tree.add("error", common::cmd::errorToStringMap.at(status));
+  } else {
+    tree.add("uuid", rep.uuid);
+  }
   return tree;
 }
 
 common::cmd::Error UserWithdraw::doProcess(
-    const hub::rpc::UserWithdrawRequest* request,
-    hub::rpc::UserWithdrawReply* response) noexcept {
+    const UserWithdrawRequest* request, UserWithdrawReply* response) noexcept {
   auto& connection = db::DBManager::get().connection();
 
   nonstd::optional<common::cmd::Error> errorCode;
@@ -53,22 +91,22 @@ common::cmd::Error UserWithdraw::doProcess(
   }
   auto withdrawalUUID = *withdrawalUUIDOptional;
 
-  if (request->amount() <= 0) {
+  if (request->amount <= 0) {
     return common::cmd::UNKNOWN_ERROR;
   }
 
   nonstd::optional<common::crypto::Address> address;
-  if (request->validatechecksum()) {
+  if (request->validateChecksum) {
     address = std::move(
         common::crypto::CryptoManager::get().provider().verifyAndStripChecksum(
-            request->payoutaddress()));
+            request->payoutAddress));
 
     if (!address.has_value()) {
       return common::cmd::INVALID_CHECKSUM;
     }
   } else {
     try {
-      address = {common::crypto::Address(request->payoutaddress())};
+      address = {common::crypto::Address(request->payoutAddress)};
     } catch (const std::exception& ex) {
       LOG(ERROR) << session()
                  << " Withdrawal to invalid address: " << ex.what();
@@ -85,13 +123,12 @@ common::cmd::Error UserWithdraw::doProcess(
 
   try {
     common::crypto::Tag withdrawalTag(
-        request->tag() +
-        std::string(common::crypto::Tag::length() - request->tag().size(),
-                    '9'));
+        request->tag +
+        std::string(common::crypto::Tag::length() - request->tag.size(), '9'));
 
     // Get userId for identifier
     {
-      auto maybeUserId = connection.userIdFromIdentifier(request->userid());
+      auto maybeUserId = connection.userIdFromIdentifier(request->userId);
       if (!maybeUserId) {
         errorCode = common::cmd::USER_DOES_NOT_EXIST;
         goto cleanup;
@@ -104,7 +141,7 @@ common::cmd::Error UserWithdraw::doProcess(
     {
       auto balance = connection.availableBalanceForUser(userId);
 
-      if (balance < request->amount()) {
+      if (balance < request->amount) {
         errorCode = common::cmd::INSUFFICIENT_BALANCE;
         goto cleanup;
       }
@@ -124,15 +161,15 @@ common::cmd::Error UserWithdraw::doProcess(
 
     // Add withdrawal
     withdrawalId = connection.createWithdrawal(
-        boost::uuids::to_string(withdrawalUUID), userId, request->amount(),
+        boost::uuids::to_string(withdrawalUUID), userId, request->amount,
         withdrawalTag, address.value());
 
     // Add user account balance entry
     connection.createUserAccountBalanceEntry(
-        userId, -request->amount(), db::UserAccountBalanceReason::WITHDRAWAL,
+        userId, -request->amount, db::UserAccountBalanceReason::WITHDRAWAL,
         withdrawalId);
 
-    response->set_uuid(boost::uuids::to_string(withdrawalUUID));
+    response->uuid = boost::uuids::to_string(withdrawalUUID);
 
   cleanup:
     if (errorCode) {

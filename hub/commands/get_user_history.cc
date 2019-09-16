@@ -47,7 +47,7 @@ boost::property_tree::ptree GetUserHistory::doProcess(
     int i = 0;
     for (auto event : rep.events) {
       auto eventId = "event_" + std::to_string(i++);
-      auto pt = tree.add(eventId, "");
+      tree.add(eventId, "");
       tree.put(eventId + ".userID", event.userId);
       tree.put(eventId + ".timestamp", event.timestamp);
       tree.put(eventId + ".amount", event.amount);

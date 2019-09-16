@@ -17,7 +17,7 @@
 
 #include "common/stats/session.h"
 #include "hub/commands/balance_subscription.h"
-#include "hub/commands/converter.h"ד
+#include "hub/commands/converter.h"
 #include "hub/commands/create_user.h"
 #include "hub/commands/get_address_info.h"
 #include "hub/commands/get_balance.h"
@@ -96,12 +96,26 @@ grpc::Status HubImpl::GetDepositAddress(
   return status;
 }
 
-grpc::Status HubImpl::UserWithdraw(grpc::ServerContext* context,
-                                   const hub::rpc::UserWithdrawRequest* request,
-                                   hub::rpc::UserWithdrawReply* response) {
+grpc::Status HubImpl::UserWithdraw(
+    grpc::ServerContext* context,
+    const hub::rpc::UserWithdrawRequest* rpcRequest,
+    hub::rpc::UserWithdrawReply* rpcResponse) {
   auto clientSession = std::make_shared<common::ClientSession>();
   cmd::UserWithdraw cmd(clientSession, _api);
-  return common::cmd::errorToGrpcError(cmd.process(request, response));
+  cmd::UserWithdrawRequest request;
+  cmd::UserWithdrawReply response;
+  request.userId = rpcRequest->userid();
+  request.amount = rpcRequest->amount();
+  request.payoutAddress = rpcRequest->payoutaddress();
+  request.validateChecksum = rpcRequest->validatechecksum();
+  request.tag = rpcRequest->tag();
+
+  auto status = common::cmd::errorToGrpcError(cmd.process(&request, &response));
+  if (status.ok()) {
+    rpcResponse->set_uuid(response.uuid);
+  }
+
+  return status;
 }
 
 grpc::Status HubImpl::UserWithdrawCancel(

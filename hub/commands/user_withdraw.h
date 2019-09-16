@@ -17,21 +17,26 @@
 #include "cppclient/api.h"
 
 namespace hub {
-namespace rpc {
-class UserWithdrawRequest;
-class UserWithdrawReply;
-}  // namespace rpc
-
 namespace cmd {
 
+typedef struct UserWithdrawRequest {
+  std::string userId;
+  uint64_t amount;
+  bool validateChecksum;
+  std::string payoutAddress;
+  std::string tag;
+} UserWithdrawRequest;
+typedef struct UserWithdrawReply {
+  std::string uuid;
+} UserWithdrawReply;
+
 /// Process a withdrawal command for a user.
-/// @param[in] hub::rpc::UserWithdrawRequest
-/// @param[in] hub::rpc::UserWithdrawReply
-class UserWithdraw : public common::Command<hub::rpc::UserWithdrawRequest,
-                                            hub::rpc::UserWithdrawReply> {
+/// @param[in] UserWithdrawRequest
+/// @param[in] rpc::UserWithdrawReply
+class UserWithdraw
+    : public common::Command<UserWithdrawRequest, UserWithdrawReply> {
  public:
-  using Command<hub::rpc::UserWithdrawRequest,
-                hub::rpc::UserWithdrawReply>::Command;
+  using Command<UserWithdrawRequest, UserWithdrawReply>::Command;
 
   static std::shared_ptr<common::ICommand> create() {
     return std::shared_ptr<common::ICommand>(new UserWithdraw());
@@ -43,9 +48,8 @@ class UserWithdraw : public common::Command<hub::rpc::UserWithdrawRequest,
 
   static const std::string name() { return "UserWithdraw"; }
 
-  common::cmd::Error doProcess(
-      const hub::rpc::UserWithdrawRequest* request,
-      hub::rpc::UserWithdrawReply* response) noexcept override;
+  common::cmd::Error doProcess(const UserWithdrawRequest* request,
+                               UserWithdrawReply* response) noexcept override;
 
   boost::property_tree::ptree doProcess(
       const boost::property_tree::ptree& request) noexcept override;
