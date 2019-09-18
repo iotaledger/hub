@@ -84,6 +84,35 @@ rpc::UserAddressBalanceReason userAddressBalanceEventTypeFromSql(
   }
 }
 
+hub::rpc::UserAddressBalanceReason userAddressBalanceEventTypeToProto(
+    hub::cmd::UserAccountBalanceEventType type) {
+  using TYPE = hub::cmd::UserAddressBalanceEventType;
+
+  switch (type) {
+    case TYPE::UA_DEPOSIT:
+      return rpc::UserAddressBalanceReason::UA_DEPOSIT;
+    case TYPE::UA_SWEEP:
+      return rpc::UserAddressBalanceReason::UA_SWEEP;
+
+    default:
+      return rpc::UserAddressBalanceReason::UADD_UNKNOWN;
+  }
+}
+
+std::string userAddressBalanceEventTypeToString(
+    hub::cmd::UserAccountBalanceEventType type) {
+  using TYPE = hub::cmd::UserAddressBalanceEventType;
+
+  switch (type) {
+    case TYPE::UA_SWEEP:
+      return "UA_SWEEP";
+    case TYPE::UA_DEPOSIT:
+      return "UA_DEPOSIT";
+    default:
+      return "UADD_UNKNOWN";
+  }
+}
+
 hub::rpc::HubAddressBalanceReason hubAddressBalanceTypeFromSql(
     hub::db::HubAddressBalanceReason reason) {
   using REASON = db::HubAddressBalanceReason;
@@ -95,6 +124,36 @@ hub::rpc::HubAddressBalanceReason hubAddressBalanceTypeFromSql(
       return rpc::HubAddressBalanceReason::OUTBOUND;
     default:
       return rpc::HubAddressBalanceReason::HUB_UNKNOWN;
+  }
+}
+
+hub::rpc::HubAddressBalanceReason hubAddressBalanceTypeToProto(
+    hub::cmd::HubAddressBalanceEventType type) {
+  using TYPE = hub::cmd::HubAddressBalanceEventType;
+
+  switch (type) {
+    case TYPE::INBOUND:
+      return rpc::HubAddressBalanceReason ::INBOUND;
+    case TYPE::OUTBOUND:
+      return rpc::HubAddressBalanceReason::OUTBOUND;
+
+    default:
+      return rpc::HubAddressBalanceReason::HUB_UNKNOWN;
+  }
+}
+
+std::string hubAddressBalanceTypeToString(
+    hub::cmd::HubAddressBalanceEventType type) {
+  using TYPE = hub::cmd::HubAddressBalanceEventType;
+
+  switch (type) {
+    case TYPE::INBOUND:
+      return "INBOUND";
+    case TYPE::OUTBOUND:
+      return "OUTBOUND";
+
+    default:
+      return "HUB_UNKNOWN";
   }
 }
 

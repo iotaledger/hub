@@ -17,17 +17,36 @@
 namespace hub {
 
 namespace cmd {
+
+/// Account balance event
 hub::cmd::UserAccountBalanceEventType userAccountBalanceEventTypeFromSql(
     hub::db::UserAccountBalanceReason reason);
+
 hub::rpc::UserAccountBalanceEventType userAccountBalanceEventTypeToProto(
     hub::cmd::UserAccountBalanceEventType type);
+
 std::string userAccountBalanceEventTypeToString(
     hub::cmd::UserAccountBalanceEventType type);
 
+/// User address balance event
 hub::rpc::UserAddressBalanceReason userAddressBalanceEventTypeFromSql(
     hub::db::UserAddressBalanceReason reason);
+
+hub::rpc::UserAddressBalanceReason userAddressBalanceEventTypeToProto(
+    hub::cmd::UserAddressBalanceEventType type);
+
+std::string userAddressBalanceEventTypeToString(
+    hub::cmd::UserAccountBalanceEventType type);
+
+/// Hub address balance event
 hub::rpc::HubAddressBalanceReason hubAddressBalanceTypeFromSql(
     hub::db::HubAddressBalanceReason reason);
+
+hub::rpc::HubAddressBalanceReason hubAddressBalanceTypeToProto(
+    hub::cmd::HubAddressBalanceEventType type);
+
+std::string hubAddressBalanceTypeToString(
+    hub::cmd::HubAddressBalanceEventType type);
 
 }  // namespace cmd
 }  // namespace hub

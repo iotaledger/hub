@@ -28,6 +28,22 @@ typedef enum {
   SELL
 } UserAccountBalanceEventType;
 
+typedef enum {
+  UADD_UNKNOWN = 0,
+  // New user deposit tracked
+  UA_DEPOSIT = 1,
+  // Hub-sweep.
+  UA_SWEEP = 2
+} UserAddressBalanceEventType;
+
+typedef enum {
+  HUB_UNKNOWN = 0,
+  // Sweep inbound (used as reminader address)
+  INBOUND = 1,
+  // Sweep outbound (used as input)
+  OUTBOUND = 2
+} HubAddressBalanceEventType;
+
 typedef struct UserAccountBalanceEvent {
   std::string userId;
   uint64_t timestamp;
@@ -42,6 +58,9 @@ typedef struct SweepEvent {
   uint64_t timestamp;
   std::vector<std::string> uuids;
 } SweepEvent;
+
+typedef struct BalanceEvent {
+} BalanceEvent;
 
 }  // namespace cmd
 }  // namespace hub
