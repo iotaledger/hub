@@ -46,7 +46,7 @@ boost::property_tree::ptree SweepSubscription::doProcess(
       tree.put(eventId + ".timestamp", event.timestamp);
 
       for (auto uuid : event.uuids) {
-        tree.add(eventId + ".withdrawalUuid" , uuid);
+        tree.add(eventId + ".withdrawalUuid", uuid);
       }
     }
   }

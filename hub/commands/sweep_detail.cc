@@ -26,41 +26,39 @@ static CommandFactoryRegistrator<SweepDetail> registrator;
 
 boost::property_tree::ptree SweepDetail::doProcess(
     const boost::property_tree::ptree& request) noexcept {
-    boost::property_tree::ptree tree;
-    SweepDetailRequest req;
-    SweepDetailReply rep;
+  boost::property_tree::ptree tree;
+  SweepDetailRequest req;
+  SweepDetailReply rep;
 
-    auto maybeBundleHash = request.get_optional<std::string>("bundleHash");
-    if (maybeBundleHash) {
-        req.bundleHash = maybeBundleHash.value();
+  auto maybeBundleHash = request.get_optional<std::string>("bundleHash");
+  if (maybeBundleHash) {
+    req.bundleHash = maybeBundleHash.value();
 
-        auto status = doProcess(&req, &rep);
+    auto status = doProcess(&req, &rep);
 
-        if (status != common::cmd::OK) {
-            tree.add("error", common::cmd::errorToStringMap.at(status));
-        } else {
-            tree.add("confirmed", rep.confirmed);
-
-            for (auto txTrytes : rep.trytes) {
-
-                tree.add("trytes", txTrytes);
-            }
-
-            for (auto tailHash : rep.tailHashes){
-                tree.add("tailHash", tailHash);
-            }
-        }
+    if (status != common::cmd::OK) {
+      tree.add("error", common::cmd::errorToStringMap.at(status));
     } else {
-        tree.add("error",
-                 common::cmd::errorToStringMap.at(common::cmd::UNKNOWN_ERROR));
-    }
+      tree.add("confirmed", rep.confirmed);
 
-    return tree;
+      for (auto txTrytes : rep.trytes) {
+        tree.add("trytes", txTrytes);
+      }
+
+      for (auto tailHash : rep.tailHashes) {
+        tree.add("tailHash", tailHash);
+      }
+    }
+  } else {
+    tree.add("error",
+             common::cmd::errorToStringMap.at(common::cmd::UNKNOWN_ERROR));
+  }
+
+  return tree;
 }
 
-common::cmd::Error SweepDetail::doProcess(
-    const SweepDetailRequest* request,
-    SweepDetailReply* response) noexcept {
+common::cmd::Error SweepDetail::doProcess(const SweepDetailRequest* request,
+                                          SweepDetailReply* response) noexcept {
   auto& connection = db::DBManager::get().connection();
 
   nonstd::optional<hub::db::SweepDetail> maybeDetail;

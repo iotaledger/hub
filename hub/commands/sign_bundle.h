@@ -13,21 +13,25 @@
 #include "common/commands/command.h"
 
 namespace hub {
-namespace rpc {
-class SignBundleRequest;
-class SignBundleReply;
-}  // namespace rpc
 
 namespace cmd {
 
+typedef struct SignBundleRequest {
+  bool validateChecksum;
+  std::string address;
+  std::string authenticationToken;
+  std::string bundleHash;
+} SignBundleRequest;
+typedef struct SignBundleReply {
+  std::string signature;
+} SignBundleReply;
+
 /// Gets information on an address
-/// @param[in] hub::rpc::SignBundleRequest
-/// @param[in] hub::rpc::SignBundleReply
-class SignBundle : public common::Command<hub::rpc::SignBundleRequest,
-                                          hub::rpc::SignBundleReply> {
+/// @param[in] SignBundleRequest
+/// @param[in] SignBundleReply
+class SignBundle : public common::Command<SignBundleRequest, SignBundleReply> {
  public:
-  using Command<hub::rpc::SignBundleRequest,
-                hub::rpc::SignBundleReply>::Command;
+  using Command<SignBundleRequest, SignBundleReply>::Command;
 
   static std::shared_ptr<common::ICommand> create() {
     return std::shared_ptr<common::ICommand>(new SignBundle());
@@ -35,9 +39,8 @@ class SignBundle : public common::Command<hub::rpc::SignBundleRequest,
 
   static const std::string name() { return "SignBundle"; }
 
-  common::cmd::Error doProcess(
-      const hub::rpc::SignBundleRequest* request,
-      hub::rpc::SignBundleReply* response) noexcept override;
+  common::cmd::Error doProcess(const SignBundleRequest* request,
+                               SignBundleReply* response) noexcept override;
 
   boost::property_tree::ptree doProcess(
       const boost::property_tree::ptree& request) noexcept override;

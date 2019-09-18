@@ -254,8 +254,8 @@ grpc::Status HubImpl::SweepInfo(grpc::ServerContext* context,
 }
 
 grpc::Status HubImpl::SignBundle(grpc::ServerContext* context,
-                                 const hub::rpc::SignBundleRequest* request,
-                                 hub::rpc::SignBundleReply* response) {
+                                 const hub::rpc::SignBundleRequest* rpcRequest,
+                                 hub::rpc::SignBundleReply* rpcResponse) {
   auto clientSession = std::make_shared<common::ClientSession>();
 
   if (!FLAGS_SignBundle_enabled) {
@@ -264,26 +264,41 @@ grpc::Status HubImpl::SignBundle(grpc::ServerContext* context,
   }
 
   cmd::SignBundle cmd(clientSession);
-  return common::cmd::errorToGrpcError(cmd.process(request, response));
+  cmd::SignBundleRequest request;
+  cmd::SignBundleReply response;
+
+  request.bundleHash = rpcRequest->bundlehash();
+  request.validateChecksum = rpcRequest->validatechecksum();
+  request.address = rpcRequest->address();
+  request.authenticationToken = rpcRequest->authentication();
+
+  auto status = common::cmd::errorToGrpcError(cmd.process(&request, &response));
+
+  if (status.ok()) {
+    rpcResponse->set_signature(std::move(response.signature));
+  }
+
+  return status;
 }
 
-grpc::Status HubImpl::SweepDetail(grpc::ServerContext* context,
-                                  const hub::rpc::SweepDetailRequest* rpcRequest,
-                                  hub::rpc::SweepDetailReply* rpcResponse) {
+grpc::Status HubImpl::SweepDetail(
+    grpc::ServerContext* context,
+    const hub::rpc::SweepDetailRequest* rpcRequest,
+    hub::rpc::SweepDetailReply* rpcResponse) {
   auto clientSession = std::make_shared<common::ClientSession>();
   cmd::SweepDetail cmd(clientSession);
   cmd::SweepDetailRequest request;
   cmd::SweepDetailReply response;
   request.bundleHash = rpcRequest->bundlehash();
   auto status = common::cmd::errorToGrpcError(cmd.process(&request, &response));
-  if (status.ok()){
-      rpcResponse->set_confirmed(response.confirmed);
-      for (auto txTrytes: response.trytes){
-          rpcResponse->add_trytes(txTrytes);
-      }
-      for (auto tailHash : response.tailHashes){
-          rpcResponse->add_tailhash(tailHash);
-      }
+  if (status.ok()) {
+    rpcResponse->set_confirmed(response.confirmed);
+    for (auto txTrytes : response.trytes) {
+      rpcResponse->add_trytes(txTrytes);
+    }
+    for (auto tailHash : response.tailHashes) {
+      rpcResponse->add_tailhash(tailHash);
+    }
   }
 
   return status;

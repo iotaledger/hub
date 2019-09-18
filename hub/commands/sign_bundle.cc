@@ -21,7 +21,6 @@
 #include "hub/commands/helper.h"
 #include "hub/db/db.h"
 #include "hub/db/helper.h"
-#include "proto/hub.pb.h"
 #include "schema/schema.h"
 
 namespace hub {
@@ -32,31 +31,61 @@ static CommandFactoryRegistrator<SignBundle> registrator;
 boost::property_tree::ptree SignBundle::doProcess(
     const boost::property_tree::ptree& request) noexcept {
   boost::property_tree::ptree tree;
+
+  SignBundleRequest req;
+  SignBundleReply rep;
+  auto maybeAddress = request.get_optional<std::string>("address");
+  if (maybeAddress) {
+    req.address = maybeAddress.value();
+  }
+
+  auto maybeValidateChecksum =
+      request.get_optional<std::string>("validateChecksum");
+  if (maybeValidateChecksum) {
+    req.validateChecksum = (maybeValidateChecksum.value().compare("true") == 0);
+  }
+
+  auto maybeBundleHash = request.get_optional<std::string>("bundleHash");
+  if (maybeBundleHash) {
+    req.bundleHash = maybeBundleHash.value();
+  }
+
+  auto maybeAuthenticationToken =
+      request.get_optional<std::string>("authenticationToken");
+  if (maybeAuthenticationToken) {
+    req.authenticationToken = maybeAuthenticationToken.value();
+  }
+  auto status = doProcess(&req, &rep);
+
+  if (status != common::cmd::OK) {
+    tree.add("error", common::cmd::errorToStringMap.at(status));
+  } else {
+    tree.add("signature", rep.signature);
+  }
   return tree;
 }
 
-common::cmd::Error SignBundle::doProcess(
-    const hub::rpc::SignBundleRequest* request,
-    hub::rpc::SignBundleReply* response) noexcept {
+common::cmd::Error SignBundle::doProcess(const SignBundleRequest* request,
+                                         SignBundleReply* response) noexcept {
   auto& connection = db::DBManager::get().connection();
   auto& cryptoProvider = common::crypto::CryptoManager::get().provider();
   auto& authProvider = auth::AuthManager::get().provider();
 
   try {
     nonstd::optional<common::crypto::Address> address;
-    if (request->validatechecksum()) {
+    if (request->validateChecksum) {
       address = std::move(common::crypto::CryptoManager::get()
                               .provider()
-                              .verifyAndStripChecksum(request->address()));
+                              .verifyAndStripChecksum(request->address));
 
       if (!address.has_value()) {
         return common::cmd::INVALID_CHECKSUM;
       }
     } else {
-      address = {common::crypto::Address(request->address())};
+      address = {common::crypto::Address(request->address)};
     }
 
-    common::crypto::Hash bundleHash(request->bundlehash());
+    common::crypto::Hash bundleHash(request->bundleHash);
 
     // 1. Check that address was used before
     auto maybeAddressInfo = connection.getAddressInfo(address.value());
@@ -71,7 +100,7 @@ common::cmd::Error SignBundle::doProcess(
     // 2. Verify authentication token
     if (!authProvider.validateToken(
             auth::SignBundleContext(bundleHash, address.value()),
-            request->authentication())) {
+            request->authenticationToken)) {
       return common::cmd::INVALID_AUTHENTICATION;
     }
 
@@ -81,7 +110,7 @@ common::cmd::Error SignBundle::doProcess(
     if (!maybeSig.has_value()) {
       return common::cmd::SIGNATURE_FAILED;
     }
-    response->set_signature(maybeSig.value());
+    response->signature = maybeSig.value();
   } catch (const std::exception& ex) {
     return common::cmd::UNKNOWN_ERROR;
   }
