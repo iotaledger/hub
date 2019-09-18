@@ -171,11 +171,18 @@ grpc::Status HubImpl::BalanceSubscription(
 
 grpc::Status HubImpl::ProcessTransferBatch(
     grpc::ServerContext* context,
-    const hub::rpc::ProcessTransferBatchRequest* request,
-    hub::rpc::ProcessTransferBatchReply* response) {
+    const hub::rpc::ProcessTransferBatchRequest* rpcRequest,
+    hub::rpc::ProcessTransferBatchReply* rpcResponse) {
   auto clientSession = std::make_shared<common::ClientSession>();
   cmd::ProcessTransferBatch cmd(clientSession);
-  return common::cmd::errorToGrpcError(cmd.process(request, response));
+  cmd::ProcessTransferBatchRequest request;
+  cmd::ProcessTransferBatchReply response;
+  for (auto i = 0; i < rpcRequest->transfers_size(); ++i) {
+    request.transfers.emplace_back(
+        cmd::UserTransfer{.userId = rpcRequest->transfers(i).userid(),
+                          .amount = rpcRequest->transfers(i).amount()});
+  }
+  return common::cmd::errorToGrpcError(cmd.process(&request, &response));
 }
 
 grpc::Status HubImpl::SweepSubscription(

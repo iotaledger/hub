@@ -11,7 +11,6 @@
 #include <boost/range/adaptors.hpp>
 #include <boost/range/algorithm/copy.hpp>
 
-#include "proto/hub.pb.h"
 #include "schema/schema.h"
 
 #include "hub/commands/create_user.h"
@@ -50,8 +49,8 @@ void processRandomTransfer(std::map<uint64_t, std::string>& idsToUsers,
   cmd::ProcessTransferBatch cmd(std::move(session));
 
   for (uint32_t i = 0; i < NUM_TRANSFERS; ++i) {
-    rpc::ProcessTransferBatchRequest req;
-    rpc::ProcessTransferBatchReply res;
+    cmd::ProcessTransferBatchRequest req;
+    cmd::ProcessTransferBatchReply res;
 
     auto idsToAmounts = createZigZagTransfer(users, req, distr(eng));
     bool cmdOK = false;
@@ -79,16 +78,15 @@ void processRandomTransfer(std::map<uint64_t, std::string>& idsToUsers,
 }
 
 TEST_F(ProcessTransferBatchTest, FailOnNonExistingUserId) {
-  rpc::ProcessTransferBatchRequest req;
-  rpc::ProcessTransferBatchReply res;
+  cmd::ProcessTransferBatchRequest req;
+  cmd::ProcessTransferBatchReply res;
 
-  auto* transfer = req.add_transfers();
-  transfer->set_amount(100);
-  transfer->set_userid("Imaginary User");
+  constexpr static auto userId = "Imaginary User";
 
-  transfer = req.add_transfers();
-  transfer->set_amount(-100);
-  transfer->set_userid("Imaginary User");
+  req.transfers.emplace_back(
+      cmd::UserTransfer{.userId = userId, .amount = 100});
+  req.transfers.emplace_back(
+      cmd::UserTransfer{.userId = userId, .amount = -100});
 
   cmd::ProcessTransferBatch command(session());
 
@@ -98,16 +96,14 @@ TEST_F(ProcessTransferBatchTest, FailOnNonExistingUserId) {
 }
 
 TEST_F(ProcessTransferBatchTest, ZeroAmountTransferFails) {
-  rpc::ProcessTransferBatchRequest req;
-  rpc::ProcessTransferBatchReply res;
+  cmd::ProcessTransferBatchRequest req;
+  cmd::ProcessTransferBatchReply res;
 
   auto userId = "User Id";
   auto status = createUser(session(), userId);
   ASSERT_TRUE(status == common::cmd::OK);
 
-  auto* transfer = req.add_transfers();
-  transfer->set_amount(0);
-  transfer->set_userid(userId);
+  req.transfers.emplace_back(cmd::UserTransfer{.userId = userId, .amount = 0});
 
   cmd::ProcessTransferBatch command(session());
 
@@ -116,8 +112,8 @@ TEST_F(ProcessTransferBatchTest, ZeroAmountTransferFails) {
 }
 
 TEST_F(ProcessTransferBatchTest, TransfersAreRecorded) {
-  rpc::ProcessTransferBatchRequest req;
-  rpc::ProcessTransferBatchReply res;
+  cmd::ProcessTransferBatchRequest req;
+  cmd::ProcessTransferBatchReply res;
   std::vector<std::string> users;
   std::vector<uint64_t> userIds;
   cmd::ProcessTransferBatch command(session());
@@ -148,8 +144,8 @@ TEST_F(ProcessTransferBatchTest, TransfersAreRecorded) {
 }
 
 TEST_F(ProcessTransferBatchTest, TransfersAreRecordedGroupingUserBalances) {
-  rpc::ProcessTransferBatchRequest req;
-  rpc::ProcessTransferBatchReply res;
+  cmd::ProcessTransferBatchRequest req;
+  cmd::ProcessTransferBatchReply res;
   std::vector<std::string> users;
   std::vector<uint64_t> userIds;
   cmd::ProcessTransferBatch command(session());
@@ -181,8 +177,8 @@ TEST_F(ProcessTransferBatchTest, TransfersAreRecordedGroupingUserBalances) {
 }
 
 TEST_F(ProcessTransferBatchTest, TransfersMustBeZeroSummed) {
-  rpc::ProcessTransferBatchRequest req;
-  rpc::ProcessTransferBatchReply res;
+  cmd::ProcessTransferBatchRequest req;
+  cmd::ProcessTransferBatchReply res;
   std::vector<std::string> users;
   std::vector<uint64_t> userIds;
   cmd::ProcessTransferBatch command(session());
@@ -202,8 +198,8 @@ TEST_F(ProcessTransferBatchTest, TransfersMustBeZeroSummed) {
 }
 
 TEST_F(ProcessTransferBatchTest, TransferMustHaveSufficientFunds) {
-  rpc::ProcessTransferBatchRequest req;
-  rpc::ProcessTransferBatchReply res;
+  cmd::ProcessTransferBatchRequest req;
+  cmd::ProcessTransferBatchReply res;
   std::vector<std::string> users;
   std::vector<uint64_t> userIds;
   cmd::ProcessTransferBatch command(session());

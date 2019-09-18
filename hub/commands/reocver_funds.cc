@@ -22,7 +22,6 @@
 #include "hub/db/db.h"
 #include "hub/db/helper.h"
 #include "hub/db/types.h"
-#include "proto/hub.pb.h"
 #include "schema/schema.h"
 
 namespace hub {

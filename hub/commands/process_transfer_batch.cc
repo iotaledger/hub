@@ -23,7 +23,6 @@
 #include "common/stats/session.h"
 #include "hub/db/db.h"
 #include "hub/db/helper.h"
-#include "proto/hub.pb.h"
 #include "schema/schema.h"
 
 #include "hub/commands/converter.h"
@@ -38,18 +37,42 @@ static CommandFactoryRegistrator<ProcessTransferBatch> registrator;
 boost::property_tree::ptree ProcessTransferBatch::doProcess(
     const boost::property_tree::ptree& request) noexcept {
   boost::property_tree::ptree tree;
+
+  ProcessTransferBatchRequest req;
+  ProcessTransferBatchReply rep;
+  int64_t currAmount;
+
+  for (auto it : request) {
+    auto maybeUserId = it.second.get_optional<std::string>("userId");
+    auto maybeAmount = it.second.get_optional<std::string>("amount");
+    if (!maybeUserId || !maybeAmount) {
+      tree.add("error", common::cmd::UNKNOWN_ERROR);
+      return tree;
+    }
+
+    std::istringstream iss(maybeAmount.value());
+    iss >> currAmount;
+    req.transfers.emplace_back(
+        cmd::UserTransfer{.userId = maybeUserId.value(), .amount = currAmount});
+  }
+
+  auto status = doProcess(&req, &rep);
+
+  if (status != common::cmd::OK) {
+    tree.add("error", common::cmd::errorToStringMap.at(status));
+  }
+
   return tree;
 }
 
 common::cmd::Error ProcessTransferBatch::doProcess(
-    const hub::rpc::ProcessTransferBatchRequest* request,
-    hub::rpc::ProcessTransferBatchReply* response) noexcept {
+    const ProcessTransferBatchRequest* request,
+    ProcessTransferBatchReply* response) noexcept {
   auto& connection = db::DBManager::get().connection();
   std::set<std::string> identifiers;
 
-  for (auto i = 0; i < request->transfers_size(); ++i) {
-    const auto& t = request->transfers(i);
-    identifiers.insert(t.userid());
+  for (auto transfer : request->transfers) {
+    identifiers.insert(transfer.userId);
   }
 
   auto identifierToId = connection.userIdsFromIdentifiers(identifiers);
@@ -63,11 +86,10 @@ common::cmd::Error ProcessTransferBatch::doProcess(
   }
 
   std::vector<hub::db::UserTransfer> transfers;
-  for (auto i = 0; i < request->transfers_size(); ++i) {
-    const hub::rpc::ProcessTransferBatchRequest_Transfer& t =
-        request->transfers(i);
+  for (auto transfer : request->transfers) {
     transfers.emplace_back(hub::db::UserTransfer{
-        static_cast<uint64_t>(identifierToId[t.userid()]), t.amount()});
+        static_cast<uint64_t>(identifierToId[transfer.userId]),
+        transfer.amount});
   }
 
   // Actual transfer insertion to db
@@ -91,7 +113,7 @@ common::cmd::Error ProcessTransferBatch::doProcess(
 }
 
 common::cmd::Error ProcessTransferBatch::validateTransfers(
-    const hub::rpc::ProcessTransferBatchRequest* request,
+    const ProcessTransferBatchRequest* request,
     const std::map<std::string, int64_t>& identifierToId) noexcept {
   auto& connection = db::DBManager::get().connection();
   std::unordered_map<std::string, int64_t> userToTransferAmount;
@@ -100,17 +122,17 @@ common::cmd::Error ProcessTransferBatch::validateTransfers(
 
   bool zeroAmount = false;
   // validate amounts are not zero
-  for (auto i = 0; i < request->transfers_size(); ++i) {
-    const auto& t = request->transfers(i);
-    if (t.amount() == 0) {
+  for (auto transfer : request->transfers) {
+    if (transfer.amount == 0) {
       zeroAmount = true;
       break;
     }
-    totalBatchSum += t.amount();
-    if (userToTransferAmount.find(t.userid()) == userToTransferAmount.end()) {
-      userToTransferAmount[t.userid()] = 0;
+    totalBatchSum += transfer.amount;
+    if (userToTransferAmount.find(transfer.userId) ==
+        userToTransferAmount.end()) {
+      userToTransferAmount[transfer.userId] = 0;
     }
-    userToTransferAmount[t.userid()] += t.amount();
+    userToTransferAmount[transfer.userId] += transfer.amount;
   }
 
   if (zeroAmount) {
