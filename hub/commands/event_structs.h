@@ -37,6 +37,12 @@ typedef struct UserAccountBalanceEvent {
   std::string withdrawalUUID;
 } UserAccountBalanceEvent;
 
+typedef struct SweepEvent {
+  std::string bundleHash;
+  uint64_t timestamp;
+  std::vector<std::string> uuids;
+} SweepEvent;
+
 }  // namespace cmd
 }  // namespace hub
 #endif  // HUB_COMMANDS_BALANCE_EVENTS_H_

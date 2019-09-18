@@ -11,22 +11,24 @@
 #include <string>
 
 #include "common/commands/command.h"
+#include "event_structs.h"
 
 namespace hub {
-namespace rpc {
-class SweepInfoRequest;
-class SweepEvent;
-}  // namespace rpc
 
 namespace cmd {
 
+typedef struct SweepInfoRequest {
+  bool requestByUuid;
+  std::string bundleHash;
+  std::string uuid;
+} SweepInfoRequest;
+
 /// Gets the history of transactions for a user.
-/// @param[in] hub::rpc::SweepInfoRequest
-/// @param[in] hub::rpc::SweepEvent
-class SweepInfo
-    : public common::Command<hub::rpc::SweepInfoRequest, hub::rpc::SweepEvent> {
+/// @param[in] SweepInfoRequest
+/// @param[in] SweepEvent
+class SweepInfo : public common::Command<SweepInfoRequest, SweepEvent> {
  public:
-  using Command<hub::rpc::SweepInfoRequest, hub::rpc::SweepEvent>::Command;
+  using Command<SweepInfoRequest, SweepEvent>::Command;
 
   static std::shared_ptr<common::ICommand> create() {
     return std::shared_ptr<common::ICommand>(new SweepInfo());
@@ -34,9 +36,8 @@ class SweepInfo
 
   static const std::string name() { return "SweepInfo"; }
 
-  common::cmd::Error doProcess(
-      const hub::rpc::SweepInfoRequest* request,
-      hub::rpc::SweepEvent* response) noexcept override;
+  common::cmd::Error doProcess(const SweepInfoRequest* request,
+                               SweepEvent* response) noexcept override;
 
   boost::property_tree::ptree doProcess(
       const boost::property_tree::ptree& request) noexcept override;

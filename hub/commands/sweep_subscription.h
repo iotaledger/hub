@@ -10,6 +10,7 @@
 #include <grpc++/support/sync_stream.h>
 
 #include "common/commands/command.h"
+#include "event_structs.h"ד
 #include "hub/db/helper.h"
 
 namespace hub {
@@ -19,12 +20,6 @@ namespace cmd {
 typedef struct SweepSubscriptionRequest {
   uint64_t newerThan;
 } SweepSubscriptionRequest;
-
-typedef struct SweepEvent {
-  std::string bundleHash;
-  uint64_t timestamp;
-  std::vector<std::string> uuids;
-} SweepEvent;
 
 class SweepSubscription : public common::Command<SweepSubscriptionRequest,
                                                  std::vector<SweepEvent>> {

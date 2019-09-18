@@ -12,7 +12,7 @@
 #include "hub/db/types.h"
 #include "proto/hub.pb.h"
 
-#include "balance_events.h"
+#include "event_structs.h"
 
 namespace hub {
 

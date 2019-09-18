@@ -12,7 +12,7 @@
 #include <vector>
 
 #include "common/commands/command.h"
-#include "hub/commands/balance_events.h"
+#include "hub/commands/event_structs.h"
 
 namespace hub {
 namespace cmd {

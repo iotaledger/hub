@@ -227,11 +227,30 @@ grpc::Status HubImpl::GetAddressInfo(
 }
 
 grpc::Status HubImpl::SweepInfo(grpc::ServerContext* context,
-                                const rpc::SweepInfoRequest* request,
-                                rpc::SweepEvent* response) {
+                                const rpc::SweepInfoRequest* rpcRequest,
+                                rpc::SweepEvent* rpcResponse) {
   auto clientSession = std::make_shared<common::ClientSession>();
   cmd::SweepInfo cmd(clientSession);
-  return common::cmd::errorToGrpcError(cmd.process(request, response));
+  cmd::SweepInfoRequest request;
+  cmd::SweepEvent response;
+  if (rpcRequest->requestBy_case() ==
+      hub::rpc::SweepInfoRequest::kWithdrawalUUID) {
+    request.requestByUuid = true;
+    request.uuid = rpcRequest->withdrawaluuid();
+  } else {
+    request.requestByUuid = false;
+    request.bundleHash = rpcRequest->bundlehash();
+  }
+  auto status = common::cmd::errorToGrpcError(cmd.process(&request, &response));
+
+  if (status.ok()) {
+    rpcResponse->set_bundlehash(response.bundleHash);
+    rpcResponse->set_timestamp(response.timestamp);
+    for (auto uuid : response.uuids) {
+      rpcResponse->add_withdrawaluuid(uuid);
+    }
+  }
+  return status;
 }
 
 grpc::Status HubImpl::SignBundle(grpc::ServerContext* context,
