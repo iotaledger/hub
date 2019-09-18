@@ -45,10 +45,8 @@ boost::property_tree::ptree SweepSubscription::doProcess(
       tree.put(eventId + ".bundleHash", event.bundleHash);
       tree.put(eventId + ".timestamp", event.timestamp);
 
-      auto uuidNum = 0;
       for (auto uuid : event.uuids) {
-        auto uuidId = "uuid_" + std::to_string(uuidNum++);
-        tree.put(eventId + "." + uuidId, uuid);
+        tree.add(eventId + ".withdrawalUuid" , uuid);
       }
     }
   }

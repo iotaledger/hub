@@ -268,11 +268,25 @@ grpc::Status HubImpl::SignBundle(grpc::ServerContext* context,
 }
 
 grpc::Status HubImpl::SweepDetail(grpc::ServerContext* context,
-                                  const hub::rpc::SweepDetailRequest* request,
-                                  hub::rpc::SweepDetailReply* response) {
+                                  const hub::rpc::SweepDetailRequest* rpcRequest,
+                                  hub::rpc::SweepDetailReply* rpcResponse) {
   auto clientSession = std::make_shared<common::ClientSession>();
   cmd::SweepDetail cmd(clientSession);
-  return common::cmd::errorToGrpcError(cmd.process(request, response));
+  cmd::SweepDetailRequest request;
+  cmd::SweepDetailReply response;
+  request.bundleHash = rpcRequest->bundlehash();
+  auto status = common::cmd::errorToGrpcError(cmd.process(&request, &response));
+  if (status.ok()){
+      rpcResponse->set_confirmed(response.confirmed);
+      for (auto txTrytes: response.trytes){
+          rpcResponse->add_trytes(txTrytes);
+      }
+      for (auto tailHash : response.tailHashes){
+          rpcResponse->add_tailhash(tailHash);
+      }
+  }
+
+  return status;
 }
 
 grpc::Status HubImpl::GetStats(grpc::ServerContext* context,

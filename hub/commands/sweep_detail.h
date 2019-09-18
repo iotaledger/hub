@@ -13,21 +13,27 @@
 #include "common/commands/command.h"
 
 namespace hub {
-namespace rpc {
-class SweepDetailRequest;
-class SweepDetailReply;
-}  // namespace rpc
 
 namespace cmd {
 
+    typedef struct SweepDetailRequest {
+        std::string bundleHash;
+    } SweepDetailRequest;
+    typedef struct SweepDetailReply {
+        bool confirmed;
+        std::vector<std::string> trytes;
+        std::vector<std::string> tailHashes;
+
+    } SweepDetailReply;
+
 /// Gets the history of transactions for a user.
-/// @param[in] hub::rpc::SweepInfoRequest
-/// @param[in] hub::rpc::SweepEvent
-class SweepDetail : public common::Command<hub::rpc::SweepDetailRequest,
-                                           hub::rpc::SweepDetailReply> {
+/// @param[in] SweepInfoRequest
+/// @param[in] SweepEvent
+class SweepDetail : public common::Command<SweepDetailRequest,
+                                           SweepDetailReply> {
  public:
-  using Command<hub::rpc::SweepDetailRequest,
-                hub::rpc::SweepDetailReply>::Command;
+  using Command<SweepDetailRequest,
+                SweepDetailReply>::Command;
 
   static std::shared_ptr<common::ICommand> create() {
     return std::shared_ptr<common::ICommand>(new SweepDetail());
@@ -36,8 +42,8 @@ class SweepDetail : public common::Command<hub::rpc::SweepDetailRequest,
   static const std::string name() { return "SweepDetail"; }
 
   common::cmd::Error doProcess(
-      const hub::rpc::SweepDetailRequest* request,
-      hub::rpc::SweepDetailReply* response) noexcept override;
+      const SweepDetailRequest* request,
+      SweepDetailReply* response) noexcept override;
 
   boost::property_tree::ptree doProcess(
       const boost::property_tree::ptree& request) noexcept override;

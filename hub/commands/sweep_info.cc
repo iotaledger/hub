@@ -65,10 +65,8 @@ boost::property_tree::ptree SweepInfo::doProcess(
       tree.add("bundleHash", rep.bundleHash);
       tree.add("timestamp", rep.timestamp);
 
-      auto uuidNum = 0;
       for (auto uuid : rep.uuids) {
-        auto uuidId = "uuid_" + std::to_string(uuidNum++);
-        tree.put("." + uuidId, uuid);
+        tree.add("uuid", uuid);
       }
     }
   } else {
