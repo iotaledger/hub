@@ -34,21 +34,36 @@ static CommandFactoryRegistrator<WasWithdrawalCancelled> registrator;
 boost::property_tree::ptree WasWithdrawalCancelled::doProcess(
     const boost::property_tree::ptree& request) noexcept {
   boost::property_tree::ptree tree;
+  WasWithdrawalCancelledRequest req;
+  WasWithdrawalCancelledReply rep;
+  auto maybeUuid = request.get_optional<std::string>("uuid");
+  if (maybeUuid) {
+    req.uuid = maybeUuid.value();
+  }
+
+  auto status = doProcess(&req, &rep);
+
+  if (status != common::cmd::OK) {
+    tree.add("error", common::cmd::errorToStringMap.at(status));
+  } else {
+    tree.add("success", rep.wasWihdrawalCancelled ? "true" : "false");
+  }
+
   return tree;
 }
 
 common::cmd::Error WasWithdrawalCancelled::doProcess(
-    const hub::rpc::WasWithdrawalCancelledRequest* request,
-    hub::rpc::WasWithdrawalCancelledReply* response) noexcept {
+    const WasWithdrawalCancelledRequest* request,
+    WasWithdrawalCancelledReply* response) noexcept {
   auto& connection = db::DBManager::get().connection();
 
   try {
-    boost::uuids::uuid uuid = boost::uuids::string_generator()(request->uuid());
+    boost::uuids::uuid uuid = boost::uuids::string_generator()(request->uuid);
 
     auto withdrawalInfo =
         connection.getWithdrawalInfoFromUUID(boost::uuids::to_string(uuid));
 
-    response->set_wascancelled(withdrawalInfo.wasCancelled);
+    response->wasWihdrawalCancelled = withdrawalInfo.wasCancelled;
 
   } catch (const std::exception& ex) {
     LOG(ERROR) << session() << " Query failed: " << ex.what();

@@ -26,36 +26,58 @@ static CommandFactoryRegistrator<SweepSubscription> registrator;
 boost::property_tree::ptree SweepSubscription::doProcess(
     const boost::property_tree::ptree& request) noexcept {
   boost::property_tree::ptree tree;
+  SweepSubscriptionRequest req;
+  std::vector<SweepEvent> rep;
+
+  auto maybeAmount = request.get_optional<std::string>("newerThan");
+  if (maybeAmount) {
+    std::istringstream iss(maybeAmount.value());
+    iss >> req.newerThan;
+  }
+
+  auto status = doProcess(&req, &rep);
+
+  if (status != common::cmd::OK) {
+    tree.add("error", common::cmd::errorToStringMap.at(status));
+  } else {
+    int i = 0;
+    for (auto event : rep) {
+      auto eventId = "event_" + std::to_string(i++);
+      tree.add(eventId, "");
+      tree.put(eventId + ".bundleHash", event.bundleHash);
+      tree.put(eventId + ".timestamp", event.timestamp);
+
+      auto uuidNum = 0;
+      for (auto uuid : event.uuids) {
+        auto uuidId = "uuid_" + std::to_string(uuidNum++);
+        tree.put(eventId + "." + uuidId, uuid);
+      }
+    }
+  }
+
   return tree;
 }
 
 common::cmd::Error SweepSubscription::doProcess(
-    const hub::rpc::SweepSubscriptionRequest* request,
-    grpc::ServerWriterInterface<hub::rpc::SweepEvent>* writer) noexcept {
-  std::chrono::milliseconds dur(request->newerthan());
+    const SweepSubscriptionRequest* request,
+    std::vector<SweepEvent>* writer) noexcept {
+  std::chrono::milliseconds dur(request->newerThan);
   std::chrono::time_point<std::chrono::system_clock> newerThan(dur);
 
   auto sweeps = getSweeps(newerThan);
-  bool cancelled = false;
   for (auto& s : sweeps) {
-    hub::rpc::SweepEvent event;
-    event.set_bundlehash(std::move(s.bundleHash));
-    event.set_timestamp(std::chrono::duration_cast<std::chrono::milliseconds>(
-                            s.timestamp.time_since_epoch())
-                            .count());
+    SweepEvent event;
+    event.bundleHash = std::move(s.bundleHash);
+    event.timestamp = std::chrono::duration_cast<std::chrono::milliseconds>(
+                          s.timestamp.time_since_epoch())
+                          .count();
     auto& uuids = s.withdrawalUUIDs;
 
     std::for_each(uuids.begin(), uuids.end(), [&](std::string& uuid) {
-      event.add_withdrawaluuid(std::move(uuid));
+      event.uuids.emplace_back(std::move(uuid));
     });
 
-    if (!writer->Write(std::move(event))) {
-      cancelled = true;
-      break;
-    }
-  }
-  if (cancelled) {
-    return common::cmd::CANCELLED;
+    writer->emplace_back(std::move(event));
   }
   return common::cmd::OK;
 }

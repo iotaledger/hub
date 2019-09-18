@@ -17,22 +17,25 @@
 #include "cppclient/api.h"
 
 namespace hub {
-namespace rpc {
-class WasAddressSpentFromRequest;
-class WasAddressSpentFromReply;
-}  // namespace rpc
 
 namespace cmd {
 
+typedef struct WasAddressSpentFromRequest {
+  std::string address;
+  bool validateChecksum;
+} WasAddressSpentFromRequest;
+
+typedef struct WasAddressSpentFromReply {
+  bool wasAddressSpentFrom;
+} WasAddressSpentFromReply;
+
 /// Returns whether or not an address was spent.
-/// @param[in] hub::rpc::WasAddressSpentFromRequest
-/// @param[in] hub::rpc::WasAddressSpentFromReply
-class WasAddressSpentFrom
-    : public common::Command<hub::rpc::WasAddressSpentFromRequest,
-                             hub::rpc::WasAddressSpentFromReply> {
+/// @param[in] WasAddressSpentFromRequest
+/// @param[in] WasAddressSpentFromReply
+class WasAddressSpentFrom : public common::Command<WasAddressSpentFromRequest,
+                                                   WasAddressSpentFromReply> {
  public:
-  using Command<hub::rpc::WasAddressSpentFromRequest,
-                hub::rpc::WasAddressSpentFromReply>::Command;
+  using Command<WasAddressSpentFromRequest, WasAddressSpentFromReply>::Command;
 
   static std::shared_ptr<ICommand> create() {
     return std::shared_ptr<common::ICommand>(new WasAddressSpentFrom());
@@ -45,8 +48,8 @@ class WasAddressSpentFrom
   static const std::string name() { return "WasAddressSpentFrom"; }
 
   common::cmd::Error doProcess(
-      const hub::rpc::WasAddressSpentFromRequest* request,
-      hub::rpc::WasAddressSpentFromReply* response) noexcept override;
+      const WasAddressSpentFromRequest* request,
+      WasAddressSpentFromReply* response) noexcept override;
 
   boost::property_tree::ptree doProcess(
       const boost::property_tree::ptree& request) noexcept override;

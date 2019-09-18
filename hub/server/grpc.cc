@@ -180,11 +180,33 @@ grpc::Status HubImpl::ProcessTransferBatch(
 
 grpc::Status HubImpl::SweepSubscription(
     grpc::ServerContext* context,
-    const hub::rpc::SweepSubscriptionRequest* request,
+    const hub::rpc::SweepSubscriptionRequest* rpcRequest,
     grpc::ServerWriter<hub::rpc::SweepEvent>* writer) {
   auto clientSession = std::make_shared<common::ClientSession>();
   cmd::SweepSubscription cmd(clientSession);
-  return common::cmd::errorToGrpcError(cmd.process(request, writer));
+
+  cmd::SweepSubscriptionRequest request;
+  std::vector<cmd::SweepEvent> sweepEvents;
+
+  request.newerThan = rpcRequest->newerthan();
+  auto status =
+      common::cmd::errorToGrpcError(cmd.process(&request, &sweepEvents));
+
+  if (status.ok()) {
+    for (auto event : sweepEvents) {
+      hub::rpc::SweepEvent rpcEvent;
+      rpcEvent.set_bundlehash(event.bundleHash);
+      rpcEvent.set_timestamp(event.timestamp);
+      for (auto uuid : event.uuids) {
+        rpcEvent.add_withdrawaluuid(uuid);
+      }
+      if (!writer->Write(rpcEvent)) {
+        return grpc::Status::CANCELLED;
+      }
+    }
+  }
+
+  return status;
 }
 
 grpc::Status HubImpl::GetAddressInfo(
@@ -250,20 +272,35 @@ grpc::Status HubImpl::GetStats(grpc::ServerContext* context,
 
 grpc::Status HubImpl::WasWithdrawalCancelled(
     grpc::ServerContext* context,
-    const hub::rpc::WasWithdrawalCancelledRequest* request,
-    hub::rpc::WasWithdrawalCancelledReply* response) {
+    const hub::rpc::WasWithdrawalCancelledRequest* rpcRequest,
+    hub::rpc::WasWithdrawalCancelledReply* rpcResponse) {
   auto clientSession = std::make_shared<common::ClientSession>();
   cmd::WasWithdrawalCancelled cmd(clientSession);
-  return common::cmd::errorToGrpcError(cmd.process(request, response));
+  cmd::WasWithdrawalCancelledRequest request;
+  cmd::WasWithdrawalCancelledReply response;
+  request.uuid = rpcRequest->uuid();
+  auto status = common::cmd::errorToGrpcError(cmd.process(&request, &response));
+  if (status.ok()) {
+    rpcResponse->set_wascancelled(response.wasWihdrawalCancelled);
+  }
+  return status;
 }
 
 grpc::Status HubImpl::WasAddressSpentFrom(
     grpc::ServerContext* context,
-    const hub::rpc::WasAddressSpentFromRequest* request,
-    hub::rpc::WasAddressSpentFromReply* response) {
+    const hub::rpc::WasAddressSpentFromRequest* rpcRequest,
+    hub::rpc::WasAddressSpentFromReply* rpcResponse) {
   auto clientSession = std::make_shared<common::ClientSession>();
   cmd::WasAddressSpentFrom cmd(clientSession);
-  return common::cmd::errorToGrpcError(cmd.process(request, response));
+  cmd::WasAddressSpentFromRequest request;
+  cmd::WasAddressSpentFromReply response;
+  request.address = rpcRequest->address();
+  request.validateChecksum = rpcRequest->validatechecksum();
+  auto status = common::cmd::errorToGrpcError(cmd.process(&request, &response));
+  if (status.ok()) {
+    rpcResponse->set_wasaddressspentfrom(response.wasAddressSpentFrom);
+  }
+  return status;
 }
 
 grpc::Status HubImpl::RecoverFunds(grpc::ServerContext* context,

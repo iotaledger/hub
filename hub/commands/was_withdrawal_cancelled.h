@@ -13,22 +13,25 @@
 #include "common/commands/command.h"
 
 namespace hub {
-namespace rpc {
-class WasWithdrawalCancelledRequest;
-class WasWithdrawalCancelledReply;
-}  // namespace rpc
-
 namespace cmd {
 
+typedef struct WasWithdrawalCancelledRequest {
+  std::string uuid;
+} WasWithdrawalCancelledRequest;
+
+typedef struct WasWithdrawalCancelledReply {
+  bool wasWihdrawalCancelled;
+} WasWithdrawalCancelledReply;
+
 /// Returns true if withdrawal was cancelled
-/// @param[in] request - a rpc::WasWithdrawalCancelledRequest request
-/// @param[in] response - a rpc::WasWithdrawalCancelledResponse response
+/// @param[in] request - a WasWithdrawalCancelledRequest request
+/// @param[in] response - a WasWithdrawalCancelledResponse response
 class WasWithdrawalCancelled
-    : public common::Command<hub::rpc::WasWithdrawalCancelledRequest,
-                             hub::rpc::WasWithdrawalCancelledReply> {
+    : public common::Command<WasWithdrawalCancelledRequest,
+                             WasWithdrawalCancelledReply> {
  public:
-  using Command<hub::rpc::WasWithdrawalCancelledRequest,
-                hub::rpc::WasWithdrawalCancelledReply>::Command;
+  using Command<WasWithdrawalCancelledRequest,
+                WasWithdrawalCancelledReply>::Command;
 
   static std::shared_ptr<common::ICommand> create() {
     return std::shared_ptr<common::ICommand>(new WasWithdrawalCancelled());
@@ -37,8 +40,8 @@ class WasWithdrawalCancelled
   static const std::string name() { return "WasWithdrawalCancelled"; }
 
   common::cmd::Error doProcess(
-      const hub::rpc::WasWithdrawalCancelledRequest* request,
-      hub::rpc::WasWithdrawalCancelledReply* response) noexcept override;
+      const WasWithdrawalCancelledRequest* request,
+      WasWithdrawalCancelledReply* response) noexcept override;
 
   boost::property_tree::ptree doProcess(
       const boost::property_tree::ptree& request) noexcept override;

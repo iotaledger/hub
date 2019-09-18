@@ -13,7 +13,6 @@
 #include "common/stats/session.h"
 #include "hub/db/db.h"
 #include "hub/db/helper.h"
-#include "proto/hub.pb.h"
 #include "schema/schema.h"
 
 #include "common/crypto/manager.h"
@@ -29,12 +28,32 @@ static CommandFactoryRegistrator<WasAddressSpentFrom> registrator;
 boost::property_tree::ptree WasAddressSpentFrom::doProcess(
     const boost::property_tree::ptree& request) noexcept {
   boost::property_tree::ptree tree;
+  WasAddressSpentFromRequest req;
+  WasAddressSpentFromReply rep;
+  auto maybeAddress = request.get_optional<std::string>("address");
+  if (maybeAddress) {
+    req.address = maybeAddress.value();
+  }
+
+  auto maybeValidateChecksum =
+      request.get_optional<std::string>("validateChecksum");
+  if (maybeValidateChecksum) {
+    req.validateChecksum = (maybeValidateChecksum.value().compare("true") == 0);
+  }
+
+  auto status = doProcess(&req, &rep);
+
+  if (status != common::cmd::OK) {
+    tree.add("error", common::cmd::errorToStringMap.at(status));
+  } else {
+    tree.add("wasAddressSpentFrom", rep.wasAddressSpentFrom ? "true" : "false");
+  }
   return tree;
 }
 
 common::cmd::Error WasAddressSpentFrom::doProcess(
-    const hub::rpc::WasAddressSpentFromRequest* request,
-    hub::rpc::WasAddressSpentFromReply* response) noexcept {
+    const WasAddressSpentFromRequest* request,
+    WasAddressSpentFromReply* response) noexcept {
   auto& connection = db::DBManager::get().connection();
 
   nonstd::optional<common::cmd::Error> errorCode;
@@ -42,16 +61,16 @@ common::cmd::Error WasAddressSpentFrom::doProcess(
   nonstd::optional<common::crypto::Address> address;
 
   try {
-    if (request->validatechecksum()) {
+    if (request->validateChecksum) {
       address = std::move(common::crypto::CryptoManager::get()
                               .provider()
-                              .verifyAndStripChecksum(request->address()));
+                              .verifyAndStripChecksum(request->address));
 
       if (!address.has_value()) {
         return common::cmd::INVALID_CHECKSUM;
       }
     } else {
-      address = {common::crypto::Address(request->address())};
+      address = {common::crypto::Address(request->address)};
     }
   }
 
@@ -65,7 +84,7 @@ common::cmd::Error WasAddressSpentFrom::doProcess(
     return common::cmd::INVALID_ADDRESS;
   }
 
-  response->set_wasaddressspentfrom(false);
+  response->wasAddressSpentFrom = false;
   try {
     // Verify address wasn't spent before
     if (_api) {
@@ -74,7 +93,7 @@ common::cmd::Error WasAddressSpentFrom::doProcess(
         errorCode = common::cmd::IOTA_NODE_UNAVAILABLE;
       } else if (res.value().states.front()) {
         errorCode = common::cmd::ADDRESS_WAS_SPENT;
-        response->set_wasaddressspentfrom(true);
+        response->wasAddressSpentFrom = true;
       }
     }
 

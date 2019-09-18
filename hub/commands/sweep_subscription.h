@@ -4,6 +4,7 @@
 #define HUB_COMMANDS_SWEEP_SUBSCRIPTION_H_
 
 #include <string>
+#include <string_view>
 #include <vector>
 
 #include <grpc++/support/sync_stream.h>
@@ -12,29 +13,31 @@
 #include "hub/db/helper.h"
 
 namespace hub {
-namespace rpc {
-class SweepSubscriptionRequest;
-class SweepEvent;
-}  // namespace rpc
 
 namespace cmd {
 
-class SweepSubscription
-    : public common::Command<
-          hub::rpc::SweepSubscriptionRequest,
-          grpc::ServerWriterInterface<hub::rpc::SweepEvent>> {
+typedef struct SweepSubscriptionRequest {
+  uint64_t newerThan;
+} SweepSubscriptionRequest;
+
+typedef struct SweepEvent {
+  std::string bundleHash;
+  uint64_t timestamp;
+  std::vector<std::string> uuids;
+} SweepEvent;
+
+class SweepSubscription : public common::Command<SweepSubscriptionRequest,
+                                                 std::vector<SweepEvent>> {
  public:
-  using Command<hub::rpc::SweepSubscriptionRequest,
-                grpc::ServerWriterInterface<hub::rpc::SweepEvent>>::Command;
+  using Command<SweepSubscriptionRequest, std::vector<SweepEvent>>::Command;
 
   static std::shared_ptr<common::ICommand> create() {
     return std::shared_ptr<common::ICommand>(new SweepSubscription());
   }
 
   common::cmd::Error doProcess(
-      const hub::rpc::SweepSubscriptionRequest* request,
-      grpc::ServerWriterInterface<hub::rpc::SweepEvent>*
-          writer) noexcept override;
+      const SweepSubscriptionRequest* request,
+      std::vector<SweepEvent>* writer) noexcept override;
 
   boost::property_tree::ptree doProcess(
       const boost::property_tree::ptree& request) noexcept override;
