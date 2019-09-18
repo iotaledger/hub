@@ -14,21 +14,24 @@
 #include "cppclient/api.h"
 
 namespace hub {
-namespace rpc {
-class RecoverFundsRequest;
-class RecoverFundsReply;
-}  // namespace rpc
-
 namespace cmd {
 
+typedef struct RecoverFundsRequest {
+  std::string userId;
+  std::string address;
+  std::string payoutAddress;
+  bool validateChecksum;
+} RecoverFundsRequest;
+typedef struct RecoverFundsReply {
+} RecoverFundsReply;
+
 /// Recover funds from an already spent address into an output address
-/// @param[in] hub::rpc::RecoverFundsRequest
-/// @param[in] hub::rpc::RecoverFundsReply
-class RecoverFunds : public common::Command<hub::rpc::RecoverFundsRequest,
-                                            hub::rpc::RecoverFundsReply> {
+/// @param[in] RecoverFundsRequest
+/// @param[in] RecoverFundsReply
+class RecoverFunds
+    : public common::Command<RecoverFundsRequest, RecoverFundsReply> {
  public:
-  using Command<hub::rpc::RecoverFundsRequest,
-                hub::rpc::RecoverFundsReply>::Command;
+  using Command<RecoverFundsRequest, RecoverFundsReply>::Command;
 
   static std::shared_ptr<common::ICommand> create() {
     return std::shared_ptr<common::ICommand>(new RecoverFunds());
@@ -40,9 +43,8 @@ class RecoverFunds : public common::Command<hub::rpc::RecoverFundsRequest,
 
   static const std::string name() { return "RecoverFunds"; }
 
-  common::cmd::Error doProcess(
-      const hub::rpc::RecoverFundsRequest* request,
-      hub::rpc::RecoverFundsReply* response) noexcept override;
+  common::cmd::Error doProcess(const RecoverFundsRequest* request,
+                               RecoverFundsReply* response) noexcept override;
 
   boost::property_tree::ptree doProcess(
       const boost::property_tree::ptree& request) noexcept override;

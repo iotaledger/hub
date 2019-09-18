@@ -33,12 +33,42 @@ static CommandFactoryRegistrator<RecoverFunds> registrator;
 boost::property_tree::ptree RecoverFunds::doProcess(
     const boost::property_tree::ptree& request) noexcept {
   boost::property_tree::ptree tree;
+
+  RecoverFundsRequest req;
+  RecoverFundsReply rep;
+
+  auto maybeUserId = request.get_optional<std::string>("userId");
+  if (maybeUserId) {
+    req.userId = maybeUserId.value();
+  }
+
+  auto maybeAddress = request.get_optional<std::string>("address");
+  if (maybeAddress) {
+    req.address = maybeAddress.value();
+  }
+
+  auto maybePayoutAddress = request.get_optional<std::string>("payoutAddress");
+  if (maybePayoutAddress) {
+    req.payoutAddress = maybePayoutAddress.value();
+  }
+
+  auto maybeValidateChecksum =
+      request.get_optional<std::string>("validateChecksum");
+  if (maybeValidateChecksum) {
+    req.validateChecksum = (maybeValidateChecksum.value().compare("true") == 0);
+  }
+
+  auto status = doProcess(&req, &rep);
+
+  if (status != common::cmd::OK) {
+    tree.add("error", common::cmd::errorToStringMap.at(status));
+  }
+
   return tree;
 }
 
 common::cmd::Error RecoverFunds::doProcess(
-    const hub::rpc::RecoverFundsRequest* request,
-    hub::rpc::RecoverFundsReply* response) noexcept {
+    const RecoverFundsRequest* request, RecoverFundsReply* response) noexcept {
   auto& connection = db::DBManager::get().connection();
   auto& cryptoProvider = common::crypto::CryptoManager::get().provider();
   auto& authProvider = auth::AuthManager::get().provider();
@@ -48,7 +78,7 @@ common::cmd::Error RecoverFunds::doProcess(
 
     // Get userId for identifier
     {
-      auto maybeUserId = connection.userIdFromIdentifier(request->userid());
+      auto maybeUserId = connection.userIdFromIdentifier(request->userId);
       if (!maybeUserId) {
         return common::cmd::USER_DOES_NOT_EXIST;
       }
@@ -57,20 +87,20 @@ common::cmd::Error RecoverFunds::doProcess(
     }
 
     nonstd::optional<common::crypto::Address> address = {
-        common::crypto::Address(request->address())};
+        common::crypto::Address(request->address)};
     nonstd::optional<common::crypto::Address> payoutAddress;
 
-    if (request->validatechecksum()) {
+    if (request->validateChecksum) {
       payoutAddress =
           std::move(common::crypto::CryptoManager::get()
                         .provider()
-                        .verifyAndStripChecksum(request->payoutaddress()));
+                        .verifyAndStripChecksum(request->payoutAddress));
 
       if (!payoutAddress.has_value()) {
         return common::cmd::INVALID_CHECKSUM;
       }
     } else {
-      payoutAddress = {common::crypto::Address(request->payoutaddress())};
+      payoutAddress = {common::crypto::Address(request->payoutAddress)};
     }
 
     // 1. Check that address was used before
@@ -79,7 +109,7 @@ common::cmd::Error RecoverFunds::doProcess(
       return common::cmd::UNKNOWN_ADDRESS;
     }
 
-    if (maybeAddressInfo->userId.compare(request->userid()) != 0) {
+    if (maybeAddressInfo->userId.compare(request->userId) != 0) {
       return common::cmd::WRONG_USER_ADDRESS;
     }
 
@@ -95,12 +125,12 @@ common::cmd::Error RecoverFunds::doProcess(
       return common::cmd::ADDRESS_WAS_SPENT;
     }
 
-    const auto& iriBalances = _api->getBalances({request->address()});
+    const auto& iriBalances = _api->getBalances({request->address});
     if (!iriBalances) {
       return common::cmd::ADDRESS_NOT_KNOWN_TO_NODE;
     }
 
-    auto amount = iriBalances.value().at(request->address());
+    auto amount = iriBalances.value().at(request->address);
 
     if (amount == 0) {
       return common::cmd::ADDRESS_BALANCE_ZERO;

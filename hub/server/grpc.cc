@@ -351,9 +351,10 @@ grpc::Status HubImpl::WasAddressSpentFrom(
   return status;
 }
 
-grpc::Status HubImpl::RecoverFunds(grpc::ServerContext* context,
-                                   const hub::rpc::RecoverFundsRequest* request,
-                                   hub::rpc::RecoverFundsReply* response) {
+grpc::Status HubImpl::RecoverFunds(
+    grpc::ServerContext* context,
+    const hub::rpc::RecoverFundsRequest* rpcRequest,
+    hub::rpc::RecoverFundsReply* rpcResponse) {
   auto clientSession = std::make_shared<common::ClientSession>();
 
   if (!FLAGS_RecoverFunds_enabled) {
@@ -362,7 +363,13 @@ grpc::Status HubImpl::RecoverFunds(grpc::ServerContext* context,
   }
 
   cmd::RecoverFunds cmd(clientSession, _api);
-  return common::cmd::errorToGrpcError(cmd.process(request, response));
+  cmd::RecoverFundsRequest request;
+  cmd::RecoverFundsReply response;
+  request.userId = rpcRequest->userid();
+  request.payoutAddress = rpcRequest->payoutaddress();
+  request.validateChecksum = rpcRequest->validatechecksum();
+  request.address = rpcRequest->address();
+  return common::cmd::errorToGrpcError(cmd.process(&request, &response));
 }
 
 }  // namespace hub
