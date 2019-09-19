@@ -9,6 +9,7 @@
 #define HUB_COMMANDS_BALANCE_EVENTS_H_
 
 #include <string>
+#include <variant>
 
 namespace hub {
 namespace cmd {
@@ -53,14 +54,61 @@ typedef struct UserAccountBalanceEvent {
   std::string withdrawalUUID;
 } UserAccountBalanceEvent;
 
+typedef struct UserAddressBalanceEvent {
+  std::string userId;
+  std::string userAddress;
+  int64_t amount;
+  UserAddressBalanceEventType type;
+  std::string hash;
+  uint64_t timestamp;
+  std::string message;
+} UserAddressBalanceEvent;
+
+typedef struct HubAddressBalanceEvent {
+  std::string hubAddress;
+  int64_t amount;
+  HubAddressBalanceEventType type;
+  std::string sweepBundleHash;
+  uint64_t timestamp;
+} HubAddressBalanceEvent;
+
+class BalanceEvent {
+ public:
+  BalanceEvent(const UserAccountBalanceEvent&& e) {
+    _variant.emplace<UserAccountBalanceEvent>(e);
+  }
+
+  BalanceEvent(const UserAddressBalanceEvent&& e) {
+    _variant.emplace<UserAddressBalanceEvent>(e);
+  }
+
+  BalanceEvent(const HubAddressBalanceEvent&& e) {
+    _variant.emplace<HubAddressBalanceEvent>(e);
+  }
+
+  UserAccountBalanceEvent& getUserAccountBalanceEvent() {
+    return std::get<UserAccountBalanceEvent>(_variant);
+  }
+
+  UserAddressBalanceEvent& getUserAddressBalanceEvent() {
+    return std::get<UserAddressBalanceEvent>(_variant);
+  }
+
+  HubAddressBalanceEvent& getHubAddressBalanceEvent() {
+    return std::get<HubAddressBalanceEvent>(_variant);
+  }
+
+ private:
+  std::variant<UserAccountBalanceEvent, UserAddressBalanceEvent,
+               HubAddressBalanceEvent>
+      _variant;
+};
+
 typedef struct SweepEvent {
   std::string bundleHash;
   uint64_t timestamp;
   std::vector<std::string> uuids;
 } SweepEvent;
-
-typedef struct BalanceEvent {
-} BalanceEvent;
 
 }  // namespace cmd
 }  // namespace hub

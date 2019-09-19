@@ -13,6 +13,7 @@
 #include <vector>
 
 #include <grpc++/support/sync_stream.h>
+#include "events.h"
 
 #include "common/commands/command.h"
 #include "hub/db/helper.h"

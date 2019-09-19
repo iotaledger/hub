@@ -10,7 +10,7 @@
 #include <grpc++/support/sync_stream.h>
 
 #include "common/commands/command.h"
-#include "event_structs.h"
+#include "events.h"
 #include "hub/db/helper.h"
 
 namespace hub {

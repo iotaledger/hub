@@ -11,7 +11,7 @@
 #include <string>
 
 #include "common/commands/command.h"
-#include "event_structs.h"
+#include "events.h"
 
 namespace hub {
 
