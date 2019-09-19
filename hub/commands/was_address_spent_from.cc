@@ -32,10 +32,15 @@ boost::property_tree::ptree WasAddressSpentFrom::doProcess(
   WasAddressSpentFromRequest req;
   WasAddressSpentFromReply rep;
   auto maybeAddress = request.get_optional<std::string>("address");
-  if (maybeAddress) {
-    req.address = maybeAddress.value();
+  if (!maybeAddress) {
+    tree.add("error",
+             common::cmd::errorToStringMap.at(common::cmd::MISSING_ARGUMENT));
+    return tree;
   }
 
+  req.address = maybeAddress.value();
+
+  req.validateChecksum = false;
   auto maybeValidateChecksum =
       request.get_optional<std::string>("validateChecksum");
   if (maybeValidateChecksum) {

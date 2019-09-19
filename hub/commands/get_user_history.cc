@@ -30,10 +30,13 @@ boost::property_tree::ptree GetUserHistory::doProcess(
   GetUserHistoryRequest req;
   GetUserHistoryReply rep;
   auto maybeUserId = request.get_optional<std::string>("userId");
-  if (maybeUserId) {
-    req.userId = maybeUserId.value();
+  if (!maybeUserId) {
+    tree.add("error",
+             common::cmd::errorToStringMap.at(common::cmd::MISSING_ARGUMENT));
+    return tree;
   }
 
+  req.userId = maybeUserId.value();
   req.newerThan = 0;
   auto maybeNewerThan = request.get_optional<std::uint64_t>("newerThan");
   if (maybeNewerThan) {

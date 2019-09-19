@@ -14,6 +14,7 @@ namespace cmd {
 std::map<Error, std::string> errorToStringMapCreate() {
   std::map<Error, std::string> map;
   map[OK] = "OK";
+  map[MISSING_ARGUMENT] = "MISSING_ARGUMENT";
   map[CANCELLED] = "Cancelled";
   map[USER_EXISTS] = "User exist";
   map[USER_DOES_NOT_EXIST] = "User does not exist";
@@ -44,6 +45,11 @@ grpc::Status errorToGrpcError(Error err) {
   switch (err) {
     case OK:
       status = grpc::Status::OK;
+      break;
+
+    case MISSING_ARGUMENT:
+      status = grpc::Status(grpc::StatusCode::FAILED_PRECONDITION, "",
+                            errorToStringMap.at(MISSING_ARGUMENT));
       break;
 
     case CANCELLED:

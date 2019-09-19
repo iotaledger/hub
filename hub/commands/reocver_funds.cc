@@ -38,19 +38,31 @@ boost::property_tree::ptree RecoverFunds::doProcess(
   RecoverFundsReply rep;
 
   auto maybeUserId = request.get_optional<std::string>("userId");
-  if (maybeUserId) {
-    req.userId = maybeUserId.value();
+  if (!maybeUserId) {
+    tree.add("error",
+             common::cmd::errorToStringMap.at(common::cmd::MISSING_ARGUMENT));
+    return tree;
   }
 
+  req.userId = maybeUserId.value();
+
   auto maybeAddress = request.get_optional<std::string>("address");
-  if (maybeAddress) {
-    req.address = maybeAddress.value();
+  if (!maybeAddress) {
+    tree.add("error",
+             common::cmd::errorToStringMap.at(common::cmd::MISSING_ARGUMENT));
+    return tree;
   }
+
+  req.address = maybeAddress.value();
 
   auto maybePayoutAddress = request.get_optional<std::string>("payoutAddress");
   if (maybePayoutAddress) {
-    req.payoutAddress = maybePayoutAddress.value();
+    tree.add("error",
+             common::cmd::errorToStringMap.at(common::cmd::MISSING_ARGUMENT));
+    return tree;
   }
+  req.payoutAddress = maybePayoutAddress.value();
+  req.validateChecksum = false;
 
   auto maybeValidateChecksum =
       request.get_optional<std::string>("validateChecksum");

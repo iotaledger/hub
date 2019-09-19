@@ -33,9 +33,13 @@ boost::property_tree::ptree GetBalance::doProcess(
   GetBalanceRequest req;
   GetBalanceReply rep;
   auto maybeUserId = request.get_optional<std::string>("userId");
-  if (maybeUserId) {
-    req.userId = maybeUserId.value();
+  if (!maybeUserId) {
+    tree.add("error",
+             common::cmd::errorToStringMap.at(common::cmd::MISSING_ARGUMENT));
+    return tree;
   }
+
+  req.userId = maybeUserId.value();
 
   auto status = doProcess(&req, &rep);
 

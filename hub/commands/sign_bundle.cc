@@ -36,9 +36,14 @@ boost::property_tree::ptree SignBundle::doProcess(
   SignBundleRequest req;
   SignBundleReply rep;
   auto maybeAddress = request.get_optional<std::string>("address");
-  if (maybeAddress) {
-    req.address = maybeAddress.value();
+  if (!maybeAddress) {
+    tree.add("error",
+             common::cmd::errorToStringMap.at(common::cmd::MISSING_ARGUMENT));
+    return tree;
   }
+
+  req.address = maybeAddress.value();
+  req.validateChecksum = false;
 
   auto maybeValidateChecksum =
       request.get_optional<std::string>("validateChecksum");
@@ -48,8 +53,12 @@ boost::property_tree::ptree SignBundle::doProcess(
 
   auto maybeBundleHash = request.get_optional<std::string>("bundleHash");
   if (maybeBundleHash) {
-    req.bundleHash = maybeBundleHash.value();
+    tree.add("error",
+             common::cmd::errorToStringMap.at(common::cmd::MISSING_ARGUMENT));
+    return tree;
   }
+
+  req.bundleHash = maybeBundleHash.value();
 
   auto maybeAuthenticationToken =
       request.get_optional<std::string>("authenticationToken");

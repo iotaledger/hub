@@ -47,7 +47,7 @@ boost::property_tree::ptree ProcessTransferBatch::doProcess(
     auto maybeUserId = it.second.get_optional<std::string>("userId");
     auto maybeAmount = it.second.get_optional<std::string>("amount");
     if (!maybeUserId || !maybeAmount) {
-      tree.add("error", common::cmd::UNKNOWN_ERROR);
+      tree.add("error", common::cmd::MISSING_ARGUMENT);
       return tree;
     }
 

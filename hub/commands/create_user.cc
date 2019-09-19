@@ -31,9 +31,12 @@ boost::property_tree::ptree CreateUser::doProcess(
   CreateUserRequest req;
   CreateUserReply rep;
   auto maybeUserId = request.get_optional<std::string>("userId");
-  if (maybeUserId) {
-    req.userId = maybeUserId.value();
+  if (!maybeUserId) {
+    tree.add("error",
+             common::cmd::errorToStringMap.at(common::cmd::MISSING_ARGUMENT));
+    return tree;
   }
+  req.userId = maybeUserId.value();
   auto status = doProcess(&req, &rep);
 
   if (status != common::cmd::OK) {

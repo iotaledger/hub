@@ -32,9 +32,12 @@ boost::property_tree::ptree GetAddressInfo::doProcess(
   GetAddressInfoRequest req;
   GetAddressInfoReply rep;
   auto maybeAddress = request.get_optional<std::string>("address");
-  if (maybeAddress) {
-    req.address = maybeAddress.value();
+  if (!maybeAddress) {
+    tree.add("error",
+             common::cmd::errorToStringMap.at(common::cmd::MISSING_ARGUMENT));
+    return tree;
   }
+  req.address = maybeAddress.value();
   auto status = doProcess(&req, &rep);
 
   if (status != common::cmd::OK) {

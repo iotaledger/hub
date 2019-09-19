@@ -52,7 +52,7 @@ boost::property_tree::ptree SweepDetail::doProcess(
     }
   } else {
     tree.add("error",
-             common::cmd::errorToStringMap.at(common::cmd::UNKNOWN_ERROR));
+             common::cmd::errorToStringMap.at(common::cmd::MISSING_ARGUMENT));
   }
 
   return tree;

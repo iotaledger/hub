@@ -28,9 +28,9 @@ boost::property_tree::ptree SweepSubscription::doProcess(
   SweepSubscriptionRequest req;
   std::vector<SweepEvent> rep;
 
-  auto maybeAmount = request.get_optional<std::string>("newerThan");
-  if (maybeAmount) {
-    std::istringstream iss(maybeAmount.value());
+  auto maybeNewerThan = request.get_optional<std::string>("newerThan");
+  if (maybeNewerThan) {
+    std::istringstream iss(maybeNewerThan.value());
     iss >> req.newerThan;
   }
 

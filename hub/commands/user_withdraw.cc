@@ -39,10 +39,13 @@ boost::property_tree::ptree UserWithdraw::doProcess(
   UserWithdrawReply rep;
 
   auto maybeUserId = request.get_optional<std::string>("userId");
-  if (maybeUserId) {
-    req.userId = maybeUserId.value();
+  if (!maybeUserId) {
+    tree.add("error",
+             common::cmd::errorToStringMap.at(common::cmd::MISSING_ARGUMENT));
+    return tree;
   }
 
+  req.userId = maybeUserId.value();
   req.validateChecksum = false;
   auto maybeValidateChecksum =
       request.get_optional<std::string>("validateChecksum");

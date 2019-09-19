@@ -22,6 +22,7 @@ namespace cmd {
 typedef enum {
 
   OK = 0,
+  MISSING_ARGUMENT,
   CANCELLED,
   USER_EXISTS,
   USER_DOES_NOT_EXIST,

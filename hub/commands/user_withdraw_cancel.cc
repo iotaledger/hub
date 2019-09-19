@@ -37,10 +37,13 @@ boost::property_tree::ptree UserWithdrawCancel::doProcess(
   UserWithdrawCancelRequest req;
   UserWithdrawCancelReply rep;
   auto maybeUuid = request.get_optional<std::string>("uuid");
-  if (maybeUuid) {
-    req.uuid = maybeUuid.value();
+  if (!maybeUuid) {
+    tree.add("error",
+             common::cmd::errorToStringMap.at(common::cmd::MISSING_ARGUMENT));
+    return tree;
   }
 
+  req.uuid = maybeUuid.value();
   auto status = doProcess(&req, &rep);
 
   if (status != common::cmd::OK) {

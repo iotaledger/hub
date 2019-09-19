@@ -33,10 +33,15 @@ boost::property_tree::ptree GetDepositAddress::doProcess(
   GetDepositAddressRequest req;
   GetDepositAddressReply rep;
   auto maybeUserId = request.get_optional<std::string>("userId");
-  if (maybeUserId) {
-    req.userId = maybeUserId.value();
+  if (!maybeUserId) {
+    tree.add("error",
+             common::cmd::errorToStringMap.at(common::cmd::MISSING_ARGUMENT));
+    return tree;
   }
 
+  req.userId = maybeUserId.value();
+
+  req.includeChecksum = false;
   auto maybeIncludeChecksum =
       request.get_optional<std::string>("includeChecksum");
   if (maybeIncludeChecksum) {
