@@ -9,7 +9,7 @@
 
 #include <chrono>
 #include <functional>
-#include <iostream>
+#include <sstream>
 #include <thread>
 #include <utility>
 
@@ -19,8 +19,6 @@
 #include "hub/commands/helper.h"
 #include "hub/db/db.h"
 #include "hub/db/helper.h"
-#include "proto/hub.grpc.pb.h"
-#include "proto/hub.pb.h"
 #include "schema/schema.h"
 
 namespace hub {
@@ -30,81 +28,129 @@ static CommandFactoryRegistrator<BalanceSubscription> registrator;
 
 boost::property_tree::ptree BalanceSubscription::doProcess(
     const boost::property_tree::ptree& request) noexcept {
-  boost::property_tree::ptree ptree;
-  return ptree;
+  boost::property_tree::ptree tree;
+  BalanceSubscriptionRequest req;
+  std::vector<BalanceEvent> events;
+  req.newerThan = 0;
+  auto maybeNewerThan = request.get_optional<std::string>("newerThan");
+  if (maybeNewerThan) {
+    std::istringstream iss(maybeNewerThan.value());
+    iss >> req.newerThan;
+  }
+
+  auto status = doProcess(&req, &events);
+
+  if (status != common::cmd::OK) {
+    tree.add("error", common::cmd::errorToStringMap.at(status));
+  } else {
+    int i = 0;
+    for (auto event : events) {
+      if (auto pval =
+              std::get_if<cmd::UserAccountBalanceEvent>(&event.getVariant())) {
+        auto eventId = "event_" + std::to_string(i++);
+        tree.add(eventId, "");
+        tree.put(eventId + ".type", "USER_ACCOUNT");
+        tree.put(eventId + ".reason",
+                 userAccountBalanceEventTypeToString(pval->type));
+        tree.put(eventId + ".userId", std::move(pval->userId));
+        std::stringstream ss;
+        ss << pval->timestamp;
+        tree.put(eventId + ".timestamp", ss.str());
+        tree.put(eventId + ".sweepBundleHash",
+                 std::move(pval->sweepBundleHash));
+        tree.put(eventId + ".withdrawalUuid", std::move(pval->withdrawalUUID));
+
+      } else if (auto pval = std::get_if<cmd::UserAddressBalanceEvent>(
+                     &event.getVariant())) {
+        auto eventId = "event_" + std::to_string(i++);
+        tree.add(eventId, "");
+        tree.put(eventId + ".type", "USER_ADDRESS");
+        tree.put(eventId + ".reason",
+                 userAddressBalanceEventTypeToString(pval->type));
+        tree.put(eventId + ".userId", std::move(pval->userId));
+        std::stringstream ss;
+        ss << pval->timestamp;
+        tree.put(eventId + ".timestamp", ss.str());
+        tree.put(eventId + ".userAddress", std::move(pval->userAddress));
+        tree.put(eventId + ".hash", std::move(pval->hash));
+        tree.put(eventId + ".message", std::move(pval->message));
+
+      } else if (auto pval = std::get_if<cmd::HubAddressBalanceEvent>(
+                     &event.getVariant())) {
+        auto eventId = "event_" + std::to_string(i++);
+        tree.add(eventId, "");
+        tree.put(eventId + ".type", "HUB_ADDRESS");
+        tree.put(eventId + ".hubAddress", std::move(pval->hubAddress));
+        tree.put(eventId + ".reason",
+                 hubAddressBalanceTypeToString(pval->type));
+        std::stringstream ss;
+        ss << pval->timestamp;
+        tree.put(eventId + ".timestamp", ss.str());
+        ss.clear();
+        ss << pval->amount;
+        tree.put(eventId + ".amount", pval->amount);
+        tree.put(eventId + ".sweepBundleHash",
+                 std::move(pval->sweepBundleHash));
+      }
+    }
+  }
+
+  return tree;
 }
 
 common::cmd::Error BalanceSubscription::doProcess(
-    const hub::rpc::BalanceSubscriptionRequest* request,
-    grpc::ServerWriterInterface<hub::rpc::BalanceEvent>* writer) noexcept {
-  std::chrono::milliseconds dur(request->newerthan());
+    const BalanceSubscriptionRequest* request,
+    std::vector<BalanceEvent>* events) noexcept {
+  std::chrono::milliseconds dur(request->newerThan);
   std::chrono::time_point<std::chrono::system_clock> newerThan(dur);
 
   auto userAccountBalances =
       getAllUsersAccountBalancesSinceTimePoint(newerThan);
 
   for (auto& b : userAccountBalances) {
-    hub::rpc::BalanceEvent event;
-    hub::rpc::UserAccountBalanceEvent* userAccountEvent =
-        new hub::rpc::UserAccountBalanceEvent();
-    userAccountEvent->set_userid(std::move(b.userIdentifier));
-    userAccountEvent->set_timestamp(
-        std::chrono::duration_cast<std::chrono::milliseconds>(
-            b.timestamp.time_since_epoch())
-            .count());
-    userAccountEvent->set_amount(b.amount);
-    userAccountEvent->set_type(userAccountBalanceEventTypeToProto(
-        userAccountBalanceEventTypeFromSql(b.type)));
-    userAccountEvent->set_sweepbundlehash(std::move(b.sweepBundleHash));
-    userAccountEvent->set_withdrawaluuid(std::move(b.withdrawalUUID));
-    event.set_allocated_useraccountevent(userAccountEvent);
-    if (!writer->Write(event)) {
-      return common::cmd::CANCELLED;
-    }
+    uint64_t timestamp = std::chrono::duration_cast<std::chrono::milliseconds>(
+                             b.timestamp.time_since_epoch())
+                             .count();
+
+    events->emplace_back(UserAccountBalanceEvent{
+        .userId = std::move(b.userIdentifier),
+        .timestamp = timestamp,
+        .type = userAccountBalanceEventTypeFromSql(b.type),
+        .amount = b.amount,
+        .sweepBundleHash = b.sweepBundleHash,
+        .withdrawalUUID = b.withdrawalUUID});
   }
 
   auto userAddressBalances =
       getAllUserAddressesBalancesSinceTimePoint(newerThan);
 
   for (auto& b : userAddressBalances) {
-    hub::rpc::BalanceEvent event;
-    hub::rpc::UserAddressBalanceEvent* userAddressEvent =
-        new hub::rpc::UserAddressBalanceEvent();
-    userAddressEvent->set_userid(std::move(b.userIdentifier));
-    userAddressEvent->set_timestamp(
-        std::chrono::duration_cast<std::chrono::milliseconds>(
-            b.timestamp.time_since_epoch())
-            .count());
-    userAddressEvent->set_amount(b.amount);
-    userAddressEvent->set_reason(userAddressBalanceEventTypeFromSql(b.reason));
-    userAddressEvent->set_hash(std::move(b.hash));
-    userAddressEvent->set_useraddress(std::move(b.userAddress));
-    userAddressEvent->set_message(std::move(b.message));
-
-    event.set_allocated_useraddressevent(userAddressEvent);
-    if (!writer->Write(event)) {
-      return common::cmd::CANCELLED;
-    }
+    uint64_t timestamp = std::chrono::duration_cast<std::chrono::milliseconds>(
+                             b.timestamp.time_since_epoch())
+                             .count();
+    events->emplace_back(UserAddressBalanceEvent{
+        .userId = std::move(b.userIdentifier),
+        .userAddress = b.userAddress,
+        .amount = b.amount,
+        .type = userAddressBalanceEventTypeFromSql(b.reason),
+        .hash = std::move(b.hash),
+        .timestamp = timestamp,
+        .message = std::move(b.message)});
   }
 
   auto hubAddressBalances = getAllHubAddressesBalancesSinceTimePoint(newerThan);
 
   for (auto& b : hubAddressBalances) {
-    hub::rpc::BalanceEvent event;
-    hub::rpc::HubAddressBalanceEvent* hubAddressEvent =
-        new hub::rpc::HubAddressBalanceEvent();
-    hubAddressEvent->set_hubaddress(std::move(b.hubAddress));
-    hubAddressEvent->set_timestamp(
-        std::chrono::duration_cast<std::chrono::milliseconds>(
-            b.timestamp.time_since_epoch())
-            .count());
-    hubAddressEvent->set_amount(b.amount);
-    hubAddressEvent->set_sweepbundlehash(std::move(b.sweepBundleHash));
-    hubAddressEvent->set_reason(hubAddressBalanceTypeFromSql(b.reason));
-    event.set_allocated_hubaddressevent(hubAddressEvent);
-    if (!writer->Write(event)) {
-      return common::cmd::CANCELLED;
-    }
+    uint64_t timestamp = std::chrono::duration_cast<std::chrono::milliseconds>(
+                             b.timestamp.time_since_epoch())
+                             .count();
+    events->emplace_back(HubAddressBalanceEvent{
+        .hubAddress = std::move(b.hubAddress),
+        .amount = b.amount,
+        .type = hubAddressBalanceTypeFromSql(b.reason),
+        .sweepBundleHash = std::move(b.sweepBundleHash),
+        .timestamp = timestamp,
+    });
   }
 
   return common::cmd::OK;

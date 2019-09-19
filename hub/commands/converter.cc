@@ -70,22 +70,22 @@ std::string userAccountBalanceEventTypeToString(
   }
 }
 
-rpc::UserAddressBalanceReason userAddressBalanceEventTypeFromSql(
+hub::cmd::UserAddressBalanceEventType userAddressBalanceEventTypeFromSql(
     hub::db::UserAddressBalanceReason reason) {
   using REASON = db::UserAddressBalanceReason;
 
   switch (reason) {
     case REASON::DEPOSIT:
-      return rpc::UserAddressBalanceReason::UA_DEPOSIT;
+      return hub::cmd::UserAddressBalanceEventType::UA_DEPOSIT;
     case REASON::SWEEP:
-      return rpc::UserAddressBalanceReason::UA_SWEEP;
+      return hub::cmd::UserAddressBalanceEventType::UA_SWEEP;
     default:
-      return rpc::UserAddressBalanceReason::UADD_UNKNOWN;
+      return hub::cmd::UserAddressBalanceEventType::UADD_UNKNOWN;
   }
 }
 
 hub::rpc::UserAddressBalanceReason userAddressBalanceEventTypeToProto(
-    hub::cmd::UserAccountBalanceEventType type) {
+    hub::cmd::UserAddressBalanceEventType type) {
   using TYPE = hub::cmd::UserAddressBalanceEventType;
 
   switch (type) {
@@ -100,7 +100,7 @@ hub::rpc::UserAddressBalanceReason userAddressBalanceEventTypeToProto(
 }
 
 std::string userAddressBalanceEventTypeToString(
-    hub::cmd::UserAccountBalanceEventType type) {
+    hub::cmd::UserAddressBalanceEventType type) {
   using TYPE = hub::cmd::UserAddressBalanceEventType;
 
   switch (type) {
@@ -113,17 +113,17 @@ std::string userAddressBalanceEventTypeToString(
   }
 }
 
-hub::rpc::HubAddressBalanceReason hubAddressBalanceTypeFromSql(
+hub::cmd::HubAddressBalanceEventType hubAddressBalanceTypeFromSql(
     hub::db::HubAddressBalanceReason reason) {
   using REASON = db::HubAddressBalanceReason;
 
   switch (reason) {
     case REASON::INBOUND:
-      return rpc::HubAddressBalanceReason::INBOUND;
+      return hub::cmd::HubAddressBalanceEventType::INBOUND;
     case REASON::OUTBOUND:
-      return rpc::HubAddressBalanceReason::OUTBOUND;
+      return hub::cmd::HubAddressBalanceEventType::OUTBOUND;
     default:
-      return rpc::HubAddressBalanceReason::HUB_UNKNOWN;
+      return hub::cmd::HubAddressBalanceEventType::HUB_UNKNOWN;
   }
 }
 

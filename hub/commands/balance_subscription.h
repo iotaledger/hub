@@ -12,31 +12,27 @@
 #include <string>
 #include <vector>
 
-#include <grpc++/support/sync_stream.h>
 #include "events.h"
 
 #include "common/commands/command.h"
 #include "hub/db/helper.h"
 
 namespace hub {
-namespace rpc {
-class BalanceSubscriptionRequest;
-class BalanceEvent;
-}  // namespace rpc
 
 namespace cmd {
 
-/// @param[in] hub::rpc::BalanceSubscriptionRequest
-/// @param[in] hub::rpc::ServerWriterInterface
+typedef struct BalanceSubscriptionRequest {
+  uint64_t newerThan;
+} BalanceSubscriptionRequest;
+
+/// @param[in] BalanceSubscriptionRequest
+/// @param[in] std::vector<BalanceEvent> events
 /// Collects records about balance actions to and from user addresses
 /// and hub's addresses as well (Depsoits/Withdrawals/Hub address actions)
-class BalanceSubscription
-    : public common::Command<
-          hub::rpc::BalanceSubscriptionRequest,
-          grpc::ServerWriterInterface<hub::rpc::BalanceEvent>> {
+class BalanceSubscription : public common::Command<BalanceSubscriptionRequest,
+                                                   std::vector<BalanceEvent>> {
  public:
-  using Command<hub::rpc::BalanceSubscriptionRequest,
-                grpc::ServerWriterInterface<hub::rpc::BalanceEvent>>::Command;
+  using Command<BalanceSubscriptionRequest, std::vector<BalanceEvent>>::Command;
 
   static const std::string name() { return "BalanceSubscription"; }
 
@@ -57,9 +53,8 @@ class BalanceSubscription
       std::chrono::system_clock::time_point lastCheck);
 
   common::cmd::Error doProcess(
-      const hub::rpc::BalanceSubscriptionRequest* request,
-      grpc::ServerWriterInterface<hub::rpc::BalanceEvent>*
-          writer) noexcept override;
+      const BalanceSubscriptionRequest* request,
+      std::vector<BalanceEvent>* events) noexcept override;
 
   boost::property_tree::ptree doProcess(
       const boost::property_tree::ptree& request) noexcept override;

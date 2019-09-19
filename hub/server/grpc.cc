@@ -162,11 +162,57 @@ grpc::Status HubImpl::GetUserHistory(
 
 grpc::Status HubImpl::BalanceSubscription(
     grpc::ServerContext* context,
-    const hub::rpc::BalanceSubscriptionRequest* request,
+    const hub::rpc::BalanceSubscriptionRequest* rpcRequest,
     grpc::ServerWriter<hub::rpc::BalanceEvent>* writer) {
   auto clientSession = std::make_shared<common::ClientSession>();
   cmd::BalanceSubscription cmd(clientSession);
-  return common::cmd::errorToGrpcError(cmd.process(request, writer));
+  cmd::BalanceSubscriptionRequest request;
+  std::vector<cmd::BalanceEvent> events;
+  request.newerThan = rpcRequest->newerthan();
+  auto status = common::cmd::errorToGrpcError(cmd.process(&request, &events));
+
+  if (status.ok()) {
+    hub::rpc::BalanceEvent rpcBalanceEvent;
+    for (auto event : events)
+
+      if (auto pval =
+              std::get_if<cmd::UserAccountBalanceEvent>(&event.getVariant())) {
+        auto rpcEvent = new hub::rpc::UserAccountBalanceEvent();
+        rpcEvent->set_userid(pval->userId);
+        rpcEvent->set_timestamp(pval->timestamp);
+        rpcEvent->set_amount(pval->amount);
+        rpcEvent->set_type(userAccountBalanceEventTypeToProto(pval->type));
+        rpcEvent->set_sweepbundlehash(std::move(pval->sweepBundleHash));
+        rpcEvent->set_withdrawaluuid(std::move(pval->withdrawalUUID));
+        rpcBalanceEvent.set_allocated_useraccountevent(rpcEvent);
+
+      } else if (auto pval = std::get_if<cmd::UserAddressBalanceEvent>(
+                     &event.getVariant())) {
+        auto rpcEvent = new hub::rpc::UserAddressBalanceEvent();
+        rpcEvent->set_userid(pval->userId);
+        rpcEvent->set_timestamp(pval->timestamp);
+        rpcEvent->set_amount(pval->amount);
+        rpcEvent->set_reason(userAddressBalanceEventTypeToProto(pval->type));
+        rpcEvent->set_hash(std::move(pval->hash));
+        rpcEvent->set_message(std::move(pval->message));
+        rpcEvent->set_useraddress(std::move(pval->userAddress));
+        rpcBalanceEvent.set_allocated_useraddressevent(rpcEvent);
+      } else if (auto pval = std::get_if<cmd::HubAddressBalanceEvent>(
+                     &event.getVariant())) {
+        auto rpcEvent = new hub::rpc::HubAddressBalanceEvent();
+        rpcEvent->set_timestamp(pval->timestamp);
+        rpcEvent->set_amount(pval->amount);
+        rpcEvent->set_reason(hubAddressBalanceTypeToProto(pval->type));
+        rpcEvent->set_sweepbundlehash(std::move(pval->sweepBundleHash));
+        rpcEvent->set_hubaddress(std::move(pval->hubAddress));
+        rpcBalanceEvent.set_allocated_hubaddressevent(rpcEvent);
+      }
+    if (!writer->Write(rpcBalanceEvent)) {
+      return grpc::Status::CANCELLED;
+    }
+  }
+
+  return status;
 }
 
 grpc::Status HubImpl::ProcessTransferBatch(

@@ -29,17 +29,17 @@ std::string userAccountBalanceEventTypeToString(
     hub::cmd::UserAccountBalanceEventType type);
 
 /// User address balance event
-hub::rpc::UserAddressBalanceReason userAddressBalanceEventTypeFromSql(
+hub::cmd::UserAddressBalanceEventType userAddressBalanceEventTypeFromSql(
     hub::db::UserAddressBalanceReason reason);
 
 hub::rpc::UserAddressBalanceReason userAddressBalanceEventTypeToProto(
     hub::cmd::UserAddressBalanceEventType type);
 
 std::string userAddressBalanceEventTypeToString(
-    hub::cmd::UserAccountBalanceEventType type);
+    hub::cmd::UserAddressBalanceEventType type);
 
 /// Hub address balance event
-hub::rpc::HubAddressBalanceReason hubAddressBalanceTypeFromSql(
+hub::cmd::HubAddressBalanceEventType hubAddressBalanceTypeFromSql(
     hub::db::HubAddressBalanceReason reason);
 
 hub::rpc::HubAddressBalanceReason hubAddressBalanceTypeToProto(

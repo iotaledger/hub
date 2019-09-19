@@ -86,16 +86,10 @@ class BalanceEvent {
     _variant.emplace<HubAddressBalanceEvent>(e);
   }
 
-  UserAccountBalanceEvent& getUserAccountBalanceEvent() {
-    return std::get<UserAccountBalanceEvent>(_variant);
-  }
-
-  UserAddressBalanceEvent& getUserAddressBalanceEvent() {
-    return std::get<UserAddressBalanceEvent>(_variant);
-  }
-
-  HubAddressBalanceEvent& getHubAddressBalanceEvent() {
-    return std::get<HubAddressBalanceEvent>(_variant);
+  std::variant<UserAccountBalanceEvent, UserAddressBalanceEvent,
+               HubAddressBalanceEvent>&
+  getVariant() {
+    return _variant;
   }
 
  private:
