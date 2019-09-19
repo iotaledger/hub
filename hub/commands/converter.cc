@@ -10,88 +10,88 @@
 namespace hub {
 namespace cmd {
 
-UserAccountBalanceEventType userAccountBalanceEventTypeFromSql(
+UserAccountBalanceEventReason userAccountBalanceEventReasonFromSql(
     db::UserAccountBalanceReason reason) {
   using REASON = db::UserAccountBalanceReason;
 
   switch (reason) {
     case REASON::SWEEP:
-      return cmd::UserAccountBalanceEventType::DEPOSIT;
+      return cmd::UserAccountBalanceEventReason::DEPOSIT;
     case REASON::BUY:
-      return cmd::UserAccountBalanceEventType::BUY;
+      return cmd::UserAccountBalanceEventReason::BUY;
     case REASON::WITHDRAWAL:
-      return cmd::UserAccountBalanceEventType::WITHDRAWAL;
+      return cmd::UserAccountBalanceEventReason::WITHDRAWAL;
     case REASON::WITHDRAWAL_CANCEL:
-      return cmd::UserAccountBalanceEventType::WITHDRAWAL_CANCELED;
+      return cmd::UserAccountBalanceEventReason::WITHDRAWAL_CANCELED;
     case REASON::SELL:
-      return cmd::UserAccountBalanceEventType::SELL;
+      return cmd::UserAccountBalanceEventReason::SELL;
     default:
-      return cmd::UserAccountBalanceEventType::UAB_UNKNOWN;
+      return cmd::UserAccountBalanceEventReason::UAB_UNKNOWN;
   }
 }
 
-hub::rpc::UserAccountBalanceEventType userAccountBalanceEventTypeToProto(
-    hub::cmd::UserAccountBalanceEventType type) {
-  using TYPE = hub::cmd::UserAccountBalanceEventType;
+hub::rpc::UserAccountBalanceEventType userAccountBalanceEventReasonToProto(
+    UserAccountBalanceEventReason reason) {
+  using REASON = hub::cmd::UserAccountBalanceEventReason;
 
-  switch (type) {
-    case TYPE::DEPOSIT:
+  switch (reason) {
+    case REASON::DEPOSIT:
       return rpc::UserAccountBalanceEventType::DEPOSIT;
-    case TYPE::BUY:
+    case REASON::BUY:
       return rpc::UserAccountBalanceEventType::BUY;
-    case TYPE::WITHDRAWAL:
+    case REASON::WITHDRAWAL:
       return rpc::UserAccountBalanceEventType::WITHDRAWAL;
-    case TYPE::WITHDRAWAL_CANCELED:
+    case REASON::WITHDRAWAL_CANCELED:
       return rpc::UserAccountBalanceEventType::WITHDRAWAL_CANCELED;
-    case TYPE::SELL:
+    case REASON::SELL:
       return rpc::UserAccountBalanceEventType::SELL;
     default:
       return rpc::UserAccountBalanceEventType::UAB_UNKNOWN;
   }
 }
 
-std::string userAccountBalanceEventTypeToString(
-    hub::cmd::UserAccountBalanceEventType type) {
-  using TYPE = hub::cmd::UserAccountBalanceEventType;
+std::string userAccountBalanceEventReasonToString(
+    UserAccountBalanceEventReason reason) {
+  using REASON = hub::cmd::UserAccountBalanceEventReason;
 
-  switch (type) {
-    case TYPE::DEPOSIT:
+  switch (reason) {
+    case REASON::DEPOSIT:
       return "DEPOSIT";
-    case TYPE::BUY:
+    case REASON::BUY:
       return "BUY";
-    case TYPE::WITHDRAWAL:
+    case REASON::WITHDRAWAL:
       return "WITHDRAWAL";
-    case TYPE::WITHDRAWAL_CANCELED:
+    case REASON::WITHDRAWAL_CANCELED:
       return "WITHDRAWAL_CANCELED";
-    case TYPE::SELL:
+    case REASON::SELL:
       return "SELL";
     default:
       return "UAB_UNKNOWN";
   }
 }
 
-hub::cmd::UserAddressBalanceEventType userAddressBalanceEventTypeFromSql(
+hub::cmd::UserAddressBalanceEventReason userAddressBalanceEventReasonFromSql(
     hub::db::UserAddressBalanceReason reason) {
   using REASON = db::UserAddressBalanceReason;
 
   switch (reason) {
     case REASON::DEPOSIT:
-      return hub::cmd::UserAddressBalanceEventType::UA_DEPOSIT;
+      return hub::cmd::UserAddressBalanceEventReason::UA_DEPOSIT;
     case REASON::SWEEP:
-      return hub::cmd::UserAddressBalanceEventType::UA_SWEEP;
+      return hub::cmd::UserAddressBalanceEventReason::UA_SWEEP;
     default:
-      return hub::cmd::UserAddressBalanceEventType::UADD_UNKNOWN;
+      return hub::cmd::UserAddressBalanceEventReason::UADD_UNKNOWN;
   }
 }
 
-hub::rpc::UserAddressBalanceReason userAddressBalanceEventTypeToProto(
-    hub::cmd::UserAddressBalanceEventType type) {
-  using TYPE = hub::cmd::UserAddressBalanceEventType;
+hub::rpc::UserAddressBalanceReason userAddressBalanceEventReasonToProto(
+    UserAddressBalanceEventReason reason) {
+  using REASON = hub::cmd::UserAddressBalanceEventReason;
 
-  switch (type) {
-    case TYPE::UA_DEPOSIT:
+  switch (reason) {
+    case REASON::UA_DEPOSIT:
       return rpc::UserAddressBalanceReason::UA_DEPOSIT;
-    case TYPE::UA_SWEEP:
+    case REASON::UA_SWEEP:
       return rpc::UserAddressBalanceReason::UA_SWEEP;
 
     default:
@@ -99,42 +99,42 @@ hub::rpc::UserAddressBalanceReason userAddressBalanceEventTypeToProto(
   }
 }
 
-std::string userAddressBalanceEventTypeToString(
-    hub::cmd::UserAddressBalanceEventType type) {
-  using TYPE = hub::cmd::UserAddressBalanceEventType;
+std::string userAddressBalanceEventReasonToString(
+    UserAddressBalanceEventReason reason) {
+  using REASON = hub::cmd::UserAddressBalanceEventReason;
 
-  switch (type) {
-    case TYPE::UA_SWEEP:
+  switch (reason) {
+    case REASON::UA_SWEEP:
       return "UA_SWEEP";
-    case TYPE::UA_DEPOSIT:
+    case REASON::UA_DEPOSIT:
       return "UA_DEPOSIT";
     default:
       return "UADD_UNKNOWN";
   }
 }
 
-hub::cmd::HubAddressBalanceEventType hubAddressBalanceTypeFromSql(
+hub::cmd::HubAddressBalanceEventReason hubAddressBalanceReasonFromSql(
     hub::db::HubAddressBalanceReason reason) {
   using REASON = db::HubAddressBalanceReason;
 
   switch (reason) {
     case REASON::INBOUND:
-      return hub::cmd::HubAddressBalanceEventType::INBOUND;
+      return hub::cmd::HubAddressBalanceEventReason::INBOUND;
     case REASON::OUTBOUND:
-      return hub::cmd::HubAddressBalanceEventType::OUTBOUND;
+      return hub::cmd::HubAddressBalanceEventReason::OUTBOUND;
     default:
-      return hub::cmd::HubAddressBalanceEventType::HUB_UNKNOWN;
+      return hub::cmd::HubAddressBalanceEventReason::HUB_UNKNOWN;
   }
 }
 
-hub::rpc::HubAddressBalanceReason hubAddressBalanceTypeToProto(
-    hub::cmd::HubAddressBalanceEventType type) {
-  using TYPE = hub::cmd::HubAddressBalanceEventType;
+hub::rpc::HubAddressBalanceReason hubAddressBalanceReasonToProto(
+    HubAddressBalanceEventReason reason) {
+  using REASON = hub::cmd::HubAddressBalanceEventReason;
 
-  switch (type) {
-    case TYPE::INBOUND:
+  switch (reason) {
+    case REASON::INBOUND:
       return rpc::HubAddressBalanceReason ::INBOUND;
-    case TYPE::OUTBOUND:
+    case REASON::OUTBOUND:
       return rpc::HubAddressBalanceReason::OUTBOUND;
 
     default:
@@ -142,14 +142,14 @@ hub::rpc::HubAddressBalanceReason hubAddressBalanceTypeToProto(
   }
 }
 
-std::string hubAddressBalanceTypeToString(
-    hub::cmd::HubAddressBalanceEventType type) {
-  using TYPE = hub::cmd::HubAddressBalanceEventType;
+std::string hubAddressBalanceReasonToString(
+    HubAddressBalanceEventReason reason) {
+  using REASON = hub::cmd::HubAddressBalanceEventReason;
 
-  switch (type) {
-    case TYPE::INBOUND:
+  switch (reason) {
+    case REASON::INBOUND:
       return "INBOUND";
-    case TYPE::OUTBOUND:
+    case REASON::OUTBOUND:
       return "OUTBOUND";
 
     default:

@@ -27,7 +27,7 @@ typedef enum {
   WITHDRAWAL_CANCELED,
   // User lost tokens as part of a transfer batch (negative amount)
   SELL
-} UserAccountBalanceEventType;
+} UserAccountBalanceEventReason;
 
 typedef enum {
   UADD_UNKNOWN = 0,
@@ -35,7 +35,7 @@ typedef enum {
   UA_DEPOSIT = 1,
   // Hub-sweep.
   UA_SWEEP = 2
-} UserAddressBalanceEventType;
+} UserAddressBalanceEventReason;
 
 typedef enum {
   HUB_UNKNOWN = 0,
@@ -43,12 +43,12 @@ typedef enum {
   INBOUND = 1,
   // Sweep outbound (used as input)
   OUTBOUND = 2
-} HubAddressBalanceEventType;
+} HubAddressBalanceEventReason;
 
 typedef struct UserAccountBalanceEvent {
   std::string userId;
   uint64_t timestamp;
-  UserAccountBalanceEventType type;
+  UserAccountBalanceEventReason reason;
   int64_t amount;
   std::string sweepBundleHash;
   std::string withdrawalUUID;
@@ -58,7 +58,7 @@ typedef struct UserAddressBalanceEvent {
   std::string userId;
   std::string userAddress;
   int64_t amount;
-  UserAddressBalanceEventType type;
+  UserAddressBalanceEventReason reason;
   std::string hash;
   uint64_t timestamp;
   std::string message;
@@ -67,7 +67,7 @@ typedef struct UserAddressBalanceEvent {
 typedef struct HubAddressBalanceEvent {
   std::string hubAddress;
   int64_t amount;
-  HubAddressBalanceEventType type;
+  HubAddressBalanceEventReason reason;
   std::string sweepBundleHash;
   uint64_t timestamp;
 } HubAddressBalanceEvent;

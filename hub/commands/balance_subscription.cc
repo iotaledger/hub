@@ -51,7 +51,7 @@ boost::property_tree::ptree BalanceSubscription::doProcess(
         tree.add(eventId, "");
         tree.put(eventId + ".type", "USER_ACCOUNT");
         tree.put(eventId + ".reason",
-                 userAccountBalanceEventTypeToString(pval->type));
+                 userAccountBalanceEventReasonToString(pval->reason));
         tree.put(eventId + ".userId", std::move(pval->userId));
         std::stringstream ss;
         ss << pval->timestamp;
@@ -66,7 +66,7 @@ boost::property_tree::ptree BalanceSubscription::doProcess(
         tree.add(eventId, "");
         tree.put(eventId + ".type", "USER_ADDRESS");
         tree.put(eventId + ".reason",
-                 userAddressBalanceEventTypeToString(pval->type));
+                 userAddressBalanceEventReasonToString(pval->reason));
         tree.put(eventId + ".userId", std::move(pval->userId));
         std::stringstream ss;
         ss << pval->timestamp;
@@ -82,7 +82,7 @@ boost::property_tree::ptree BalanceSubscription::doProcess(
         tree.put(eventId + ".type", "HUB_ADDRESS");
         tree.put(eventId + ".hubAddress", std::move(pval->hubAddress));
         tree.put(eventId + ".reason",
-                 hubAddressBalanceTypeToString(pval->type));
+                 hubAddressBalanceReasonToString(pval->reason));
         std::stringstream ss;
         ss << pval->timestamp;
         tree.put(eventId + ".timestamp", ss.str());
@@ -115,7 +115,7 @@ common::cmd::Error BalanceSubscription::doProcess(
     events->emplace_back(UserAccountBalanceEvent{
         .userId = std::move(b.userIdentifier),
         .timestamp = timestamp,
-        .type = userAccountBalanceEventTypeFromSql(b.type),
+        .reason = userAccountBalanceEventReasonFromSql(b.type),
         .amount = b.amount,
         .sweepBundleHash = b.sweepBundleHash,
         .withdrawalUUID = b.withdrawalUUID});
@@ -132,7 +132,7 @@ common::cmd::Error BalanceSubscription::doProcess(
         .userId = std::move(b.userIdentifier),
         .userAddress = b.userAddress,
         .amount = b.amount,
-        .type = userAddressBalanceEventTypeFromSql(b.reason),
+        .reason = userAddressBalanceEventReasonFromSql(b.reason),
         .hash = std::move(b.hash),
         .timestamp = timestamp,
         .message = std::move(b.message)});
@@ -147,7 +147,7 @@ common::cmd::Error BalanceSubscription::doProcess(
     events->emplace_back(HubAddressBalanceEvent{
         .hubAddress = std::move(b.hubAddress),
         .amount = b.amount,
-        .type = hubAddressBalanceTypeFromSql(b.reason),
+        .reason = hubAddressBalanceReasonFromSql(b.reason),
         .sweepBundleHash = std::move(b.sweepBundleHash),
         .timestamp = timestamp,
     });

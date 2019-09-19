@@ -152,7 +152,7 @@ grpc::Status HubImpl::GetUserHistory(
       event->set_userid(e.userId);
       event->set_timestamp(e.timestamp);
       event->set_amount(e.amount);
-      event->set_type(cmd::userAccountBalanceEventTypeToProto(e.type));
+      event->set_type(cmd::userAccountBalanceEventReasonToProto(e.reason));
       event->set_withdrawaluuid(e.withdrawalUUID);
       event->set_sweepbundlehash(e.sweepBundleHash);
     }
@@ -181,7 +181,7 @@ grpc::Status HubImpl::BalanceSubscription(
         rpcEvent->set_userid(pval->userId);
         rpcEvent->set_timestamp(pval->timestamp);
         rpcEvent->set_amount(pval->amount);
-        rpcEvent->set_type(userAccountBalanceEventTypeToProto(pval->type));
+        rpcEvent->set_type(userAccountBalanceEventReasonToProto(pval->reason));
         rpcEvent->set_sweepbundlehash(std::move(pval->sweepBundleHash));
         rpcEvent->set_withdrawaluuid(std::move(pval->withdrawalUUID));
         rpcBalanceEvent.set_allocated_useraccountevent(rpcEvent);
@@ -192,7 +192,8 @@ grpc::Status HubImpl::BalanceSubscription(
         rpcEvent->set_userid(pval->userId);
         rpcEvent->set_timestamp(pval->timestamp);
         rpcEvent->set_amount(pval->amount);
-        rpcEvent->set_reason(userAddressBalanceEventTypeToProto(pval->type));
+        rpcEvent->set_reason(
+            userAddressBalanceEventReasonToProto(pval->reason));
         rpcEvent->set_hash(std::move(pval->hash));
         rpcEvent->set_message(std::move(pval->message));
         rpcEvent->set_useraddress(std::move(pval->userAddress));
@@ -202,7 +203,7 @@ grpc::Status HubImpl::BalanceSubscription(
         auto rpcEvent = new hub::rpc::HubAddressBalanceEvent();
         rpcEvent->set_timestamp(pval->timestamp);
         rpcEvent->set_amount(pval->amount);
-        rpcEvent->set_reason(hubAddressBalanceTypeToProto(pval->type));
+        rpcEvent->set_reason(hubAddressBalanceReasonToProto(pval->reason));
         rpcEvent->set_sweepbundlehash(std::move(pval->sweepBundleHash));
         rpcEvent->set_hubaddress(std::move(pval->hubAddress));
         rpcBalanceEvent.set_allocated_hubaddressevent(rpcEvent);

@@ -19,34 +19,34 @@ namespace hub {
 namespace cmd {
 
 /// Account balance event
-hub::cmd::UserAccountBalanceEventType userAccountBalanceEventTypeFromSql(
+hub::cmd::UserAccountBalanceEventReason userAccountBalanceEventReasonFromSql(
     hub::db::UserAccountBalanceReason reason);
 
-hub::rpc::UserAccountBalanceEventType userAccountBalanceEventTypeToProto(
-    hub::cmd::UserAccountBalanceEventType type);
+hub::rpc::UserAccountBalanceEventType userAccountBalanceEventReasonToProto(
+    hub::cmd::UserAccountBalanceEventReason reason);
 
-std::string userAccountBalanceEventTypeToString(
-    hub::cmd::UserAccountBalanceEventType type);
+std::string userAccountBalanceEventReasonToString(
+    hub::cmd::UserAccountBalanceEventReason reason);
 
 /// User address balance event
-hub::cmd::UserAddressBalanceEventType userAddressBalanceEventTypeFromSql(
+hub::cmd::UserAddressBalanceEventReason userAddressBalanceEventReasonFromSql(
     hub::db::UserAddressBalanceReason reason);
 
-hub::rpc::UserAddressBalanceReason userAddressBalanceEventTypeToProto(
-    hub::cmd::UserAddressBalanceEventType type);
+hub::rpc::UserAddressBalanceReason userAddressBalanceEventReasonToProto(
+    hub::cmd::UserAddressBalanceEventReason reason);
 
-std::string userAddressBalanceEventTypeToString(
-    hub::cmd::UserAddressBalanceEventType type);
+std::string userAddressBalanceEventReasonToString(
+    hub::cmd::UserAddressBalanceEventReason reason);
 
 /// Hub address balance event
-hub::cmd::HubAddressBalanceEventType hubAddressBalanceTypeFromSql(
+hub::cmd::HubAddressBalanceEventReason hubAddressBalanceReasonFromSql(
     hub::db::HubAddressBalanceReason reason);
 
-hub::rpc::HubAddressBalanceReason hubAddressBalanceTypeToProto(
-    hub::cmd::HubAddressBalanceEventType type);
+hub::rpc::HubAddressBalanceReason hubAddressBalanceReasonToProto(
+    hub::cmd::HubAddressBalanceEventReason reason);
 
-std::string hubAddressBalanceTypeToString(
-    hub::cmd::HubAddressBalanceEventType type);
+std::string hubAddressBalanceReasonToString(
+    hub::cmd::HubAddressBalanceEventReason reason);
 
 }  // namespace cmd
 }  // namespace hub

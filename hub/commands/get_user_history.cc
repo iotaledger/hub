@@ -52,7 +52,7 @@ boost::property_tree::ptree GetUserHistory::doProcess(
       tree.put(eventId + ".timestamp", event.timestamp);
       tree.put(eventId + ".amount", event.amount);
       tree.put(eventId + ".type",
-               userAccountBalanceEventTypeToString(event.type));
+               userAccountBalanceEventReasonToString(event.reason));
       tree.put(eventId + ".sweepBundleHash", event.sweepBundleHash);
       tree.put(eventId + ".withdrawalUUID", event.withdrawalUUID);
     }
@@ -88,7 +88,7 @@ common::cmd::Error GetUserHistory::doProcess(
           .timestamp = std::chrono::duration_cast<std::chrono::milliseconds>(
                            b.timestamp.time_since_epoch())
                            .count(),
-          .type = userAccountBalanceEventTypeFromSql(b.type),
+          .reason = userAccountBalanceEventReasonFromSql(b.type),
           .amount = b.amount,
           .sweepBundleHash = b.sweepBundleHash,
           .withdrawalUUID = b.withdrawalUUID});
