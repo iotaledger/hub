@@ -101,7 +101,7 @@ struct WithdrawalInfo {
 struct TransferInput {
  public:
   int64_t addressId;
-  int64_t userId;
+  uint64_t userId;
   common::crypto::Address address;
   common::crypto::UUID uuid;
   uint64_t amount;

@@ -69,9 +69,6 @@ boost::property_tree::ptree RecoverFunds::doProcess(
 common::cmd::Error RecoverFunds::doProcess(
     const RecoverFundsRequest* request, RecoverFundsReply* response) noexcept {
   auto& connection = db::DBManager::get().connection();
-  auto& cryptoProvider = common::crypto::CryptoManager::get().provider();
-  auto& authProvider = auth::AuthManager::get().provider();
-
   try {
     uint64_t userId;
 

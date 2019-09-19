@@ -55,10 +55,6 @@ boost::property_tree::ptree WasAddressSpentFrom::doProcess(
 common::cmd::Error WasAddressSpentFrom::doProcess(
     const WasAddressSpentFromRequest* request,
     WasAddressSpentFromReply* response) noexcept {
-  auto& connection = db::DBManager::get().connection();
-
-  nonstd::optional<common::cmd::Error> errorCode;
-
   nonstd::optional<common::crypto::Address> address;
 
   try {
@@ -91,22 +87,17 @@ common::cmd::Error WasAddressSpentFrom::doProcess(
     if (_api) {
       auto res = _api->wereAddressesSpentFrom({address.value().str()});
       if (!res.has_value() || res.value().states.empty()) {
-        errorCode = common::cmd::IOTA_NODE_UNAVAILABLE;
+        return common::cmd::IOTA_NODE_UNAVAILABLE;
       } else if (res.value().states.front()) {
-        errorCode = common::cmd::ADDRESS_WAS_SPENT;
         response->wasAddressSpentFrom = true;
+        return common::cmd::ADDRESS_WAS_SPENT;
       }
     }
 
   } catch (const std::exception& ex) {
     LOG(ERROR) << session() << " Commit failed: " << ex.what();
 
-    errorCode = common::cmd::UNKNOWN_ERROR;
-  }
-
-done:
-  if (errorCode) {
-    return errorCode.value();
+    return common::cmd::UNKNOWN_ERROR;
   }
 
   return common::cmd::OK;

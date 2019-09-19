@@ -74,7 +74,7 @@ void handleRequest(HttpServerBase& server,
   }
 
   if (req.body().empty()) {
-    return send(badRequest("Empty request"));
+    return send(serverError("Empty request"));
   }
 
   std::string responseBody;
@@ -503,10 +503,10 @@ class SslHttpSession : public httpSession<SslHttpSession>,
 // Detects SSL handshakes
 class HttpDetectSession
     : public std::enable_shared_from_this<HttpDetectSession> {
+  HttpServerBase& _server;
   beast::tcp_stream _stream;
   ssl::context& _ctx;
   beast::flat_buffer _buffer;
-  HttpServerBase& _server;
 
  public:
   explicit HttpDetectSession(HttpServerBase& server, tcp::socket&& socket,
@@ -544,10 +544,10 @@ class HttpDetectSession
 
 // Accepts incoming connections and launches the sessions
 class HttpListener : public std::enable_shared_from_this<HttpListener> {
+    HttpServerBase& _server;
   net::io_context& _ioc;
   ssl::context& _ctx;
   tcp::acceptor _acceptor;
-  HttpServerBase& _server;
 
  public:
   HttpListener(HttpServerBase& server, net::io_context& ioc, ssl::context& ctx,

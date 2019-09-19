@@ -27,7 +27,7 @@ class CommandFactory {
     try {
       auto creator = get()->_factoryMap.at(name.data());
       cmd = creator();
-    } catch (std::out_of_range e) {
+    } catch (const std::out_of_range &e) {
       LOG(ERROR) << name << " is an unknown command\n";
     }
 
