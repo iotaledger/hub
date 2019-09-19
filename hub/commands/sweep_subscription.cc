@@ -56,7 +56,7 @@ boost::property_tree::ptree SweepSubscription::doProcess(
 
 common::cmd::Error SweepSubscription::doProcess(
     const SweepSubscriptionRequest* request,
-    std::vector<SweepEvent>* writer) noexcept {
+    std::vector<SweepEvent>* events) noexcept {
   std::chrono::milliseconds dur(request->newerThan);
   std::chrono::time_point<std::chrono::system_clock> newerThan(dur);
 
@@ -73,7 +73,7 @@ common::cmd::Error SweepSubscription::doProcess(
       event.uuids.emplace_back(std::move(uuid));
     });
 
-    writer->emplace_back(std::move(event));
+    events->emplace_back(std::move(event));
   }
   return common::cmd::OK;
 }

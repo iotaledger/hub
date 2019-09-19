@@ -32,7 +32,7 @@ class SweepSubscription : public common::Command<SweepSubscriptionRequest,
 
   common::cmd::Error doProcess(
       const SweepSubscriptionRequest* request,
-      std::vector<SweepEvent>* writer) noexcept override;
+      std::vector<SweepEvent>* events) noexcept override;
 
   boost::property_tree::ptree doProcess(
       const boost::property_tree::ptree& request) noexcept override;
