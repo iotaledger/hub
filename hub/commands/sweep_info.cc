@@ -11,6 +11,7 @@
 #include <nonstd/optional.hpp>
 #include <utility>
 
+#include "common/converter.h"
 #include "common/crypto/types.h"
 #include "common/stats/session.h"
 #include "hub/commands/factory.h"
@@ -33,7 +34,7 @@ boost::property_tree::ptree SweepInfo::doProcess(
 
   auto maybeRequestByUuid = request.get_optional<std::string>("requestByUuid");
   if (maybeRequestByUuid) {
-    req.requestByUuid = stringToBool(maybeRequestByUuid.value());
+    req.requestByUuid = common::stringToBool(maybeRequestByUuid.value());
 
     if (req.requestByUuid) {
       auto maybeWithdrawalUuid =
@@ -104,9 +105,7 @@ common::cmd::Error SweepInfo::doProcess(const SweepInfoRequest* request,
   }
 
   response->bundleHash = std::move(maybeEvent->bundleHash);
-  response->timestamp = std::chrono::duration_cast<std::chrono::milliseconds>(
-                            maybeEvent->timestamp.time_since_epoch())
-                            .count();
+  response->timestamp = common::timepointToUint64(maybeEvent->timestamp);
   auto& uuids = maybeEvent->withdrawalUUIDs;
   std::for_each(uuids.begin(), uuids.end(), [&](std::string& uuid) {
     response->uuids.emplace_back(std::move(uuid));

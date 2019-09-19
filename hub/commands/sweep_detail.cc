@@ -11,6 +11,7 @@
 #include <nonstd/optional.hpp>
 #include <utility>
 
+#include "common/converter.h"
 #include "common/crypto/types.h"
 #include "common/stats/session.h"
 #include "hub/commands/factory.h"
@@ -39,7 +40,7 @@ boost::property_tree::ptree SweepDetail::doProcess(
     if (status != common::cmd::OK) {
       tree.add("error", common::cmd::errorToStringMap.at(status));
     } else {
-      tree.add("confirmed", boolToString(rep.confirmed));
+      tree.add("confirmed", common::boolToString(rep.confirmed));
 
       for (auto txTrytes : rep.trytes) {
         tree.add("trytes", txTrytes);

@@ -8,6 +8,7 @@
 #include <thread>
 #include <utility>
 
+#include "common/converter.h"
 #include "common/stats/session.h"
 #include "hub/commands/converter.h"
 #include "hub/commands/factory.h"
@@ -64,9 +65,7 @@ common::cmd::Error SweepSubscription::doProcess(
   for (auto& s : sweeps) {
     SweepEvent event;
     event.bundleHash = std::move(s.bundleHash);
-    event.timestamp = std::chrono::duration_cast<std::chrono::milliseconds>(
-                          s.timestamp.time_since_epoch())
-                          .count();
+    event.timestamp = common::timepointToUint64(s.timestamp);
     auto& uuids = s.withdrawalUUIDs;
 
     std::for_each(uuids.begin(), uuids.end(), [&](std::string& uuid) {

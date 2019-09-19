@@ -14,6 +14,7 @@
 #include <boost/uuid/uuid.hpp>
 #include <boost/uuid/uuid_io.hpp>
 
+#include "common/converter.h"
 #include "common/stats/session.h"
 #include "hub/db/db.h"
 #include "hub/db/helper.h"
@@ -46,7 +47,7 @@ boost::property_tree::ptree UserWithdraw::doProcess(
   auto maybeValidateChecksum =
       request.get_optional<std::string>("validateChecksum");
   if (maybeValidateChecksum) {
-    req.validateChecksum = stringToBool(maybeValidateChecksum.value());
+    req.validateChecksum = common::stringToBool(maybeValidateChecksum.value());
   }
 
   auto maybePayoutAddress = request.get_optional<std::string>("payoutAddress");

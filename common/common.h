@@ -11,9 +11,6 @@
 #include <memory>
 #include <string>
 
-#include "grpc++/grpc++.h"
-
-
 namespace common {
 
 std::string readFile(const std::string& fileName);

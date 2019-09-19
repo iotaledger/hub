@@ -13,6 +13,7 @@
 #include <thread>
 #include <utility>
 
+#include "common/converter.h"
 #include "common/stats/session.h"
 #include "hub/commands/converter.h"
 #include "hub/commands/factory.h"
@@ -108,13 +109,9 @@ common::cmd::Error BalanceSubscription::doProcess(
       getAllUsersAccountBalancesSinceTimePoint(newerThan);
 
   for (auto& b : userAccountBalances) {
-    uint64_t timestamp = std::chrono::duration_cast<std::chrono::milliseconds>(
-                             b.timestamp.time_since_epoch())
-                             .count();
-
     events->emplace_back(UserAccountBalanceEvent{
         .userId = std::move(b.userIdentifier),
-        .timestamp = timestamp,
+        .timestamp = common::timepointToUint64(b.timestamp),
         .reason = userAccountBalanceEventReasonFromSql(b.type),
         .amount = b.amount,
         .sweepBundleHash = b.sweepBundleHash,
@@ -125,31 +122,25 @@ common::cmd::Error BalanceSubscription::doProcess(
       getAllUserAddressesBalancesSinceTimePoint(newerThan);
 
   for (auto& b : userAddressBalances) {
-    uint64_t timestamp = std::chrono::duration_cast<std::chrono::milliseconds>(
-                             b.timestamp.time_since_epoch())
-                             .count();
     events->emplace_back(UserAddressBalanceEvent{
         .userId = std::move(b.userIdentifier),
         .userAddress = b.userAddress,
         .amount = b.amount,
         .reason = userAddressBalanceEventReasonFromSql(b.reason),
         .hash = std::move(b.hash),
-        .timestamp = timestamp,
+        .timestamp = common::timepointToUint64(b.timestamp),
         .message = std::move(b.message)});
   }
 
   auto hubAddressBalances = getAllHubAddressesBalancesSinceTimePoint(newerThan);
 
   for (auto& b : hubAddressBalances) {
-    uint64_t timestamp = std::chrono::duration_cast<std::chrono::milliseconds>(
-                             b.timestamp.time_since_epoch())
-                             .count();
     events->emplace_back(HubAddressBalanceEvent{
         .hubAddress = std::move(b.hubAddress),
         .amount = b.amount,
         .reason = hubAddressBalanceReasonFromSql(b.reason),
         .sweepBundleHash = std::move(b.sweepBundleHash),
-        .timestamp = timestamp,
+        .timestamp = common::timepointToUint64(b.timestamp),
     });
   }
 

@@ -10,6 +10,7 @@
 #include <sqlpp11/exception.h>
 #include <cstdint>
 
+#include "common/converter.h"
 #include "common/crypto/manager.h"
 #include "common/crypto/types.h"
 #include "common/stats/session.h"
@@ -39,7 +40,7 @@ boost::property_tree::ptree GetDepositAddress::doProcess(
   auto maybeIncludeChecksum =
       request.get_optional<std::string>("includeChecksum");
   if (maybeIncludeChecksum) {
-    req.includeChecksum = stringToBool(maybeIncludeChecksum.value());
+    req.includeChecksum = common::stringToBool(maybeIncludeChecksum.value());
   }
   auto status = doProcess(&req, &rep);
 

@@ -9,6 +9,7 @@
 
 #include <cstdint>
 
+#include "common/converter.h"
 #include "common/stats/session.h"
 #include "hub/db/db.h"
 #include "hub/db/helper.h"
@@ -85,9 +86,7 @@ common::cmd::Error GetUserHistory::doProcess(
     for (const auto& b : balances) {
       response->events.emplace_back(hub::cmd::UserAccountBalanceEvent{
           .userId = b.userIdentifier,
-          .timestamp = std::chrono::duration_cast<std::chrono::milliseconds>(
-                           b.timestamp.time_since_epoch())
-                           .count(),
+          .timestamp = common::timepointToUint64(b.timestamp),
           .reason = userAccountBalanceEventReasonFromSql(b.type),
           .amount = b.amount,
           .sweepBundleHash = b.sweepBundleHash,

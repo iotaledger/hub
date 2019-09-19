@@ -1,0 +1,24 @@
+/*
+ * Copyright (c) 2019 IOTA Stiftung
+ * https://github.com/iotaledger/rpchub
+ *
+ * Refer to the LICENSE file for licensing information
+ */
+
+#include "common/converter.h"
+
+
+namespace common {
+
+
+    std::string boolToString(bool isTrue) { return isTrue ? "true" : "false"; }
+    bool stringToBool(std::string isTrueStr) {
+        return isTrueStr.compare("true") ? true : false;
+    }
+
+    uint64_t timepointToUint64(std::chrono::system_clock::time_point timepoint){
+        return std::chrono::duration_cast<std::chrono::milliseconds>(
+                timepoint.time_since_epoch())
+                .count();
+    }
+}  // namespace common

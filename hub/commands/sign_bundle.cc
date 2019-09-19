@@ -12,6 +12,7 @@
 
 #include <sqlpp11/exception.h>
 
+#include "common/converter.h"
 #include "common/crypto/manager.h"
 #include "common/crypto/types.h"
 #include "common/stats/session.h"
@@ -42,7 +43,7 @@ boost::property_tree::ptree SignBundle::doProcess(
   auto maybeValidateChecksum =
       request.get_optional<std::string>("validateChecksum");
   if (maybeValidateChecksum) {
-    req.validateChecksum = stringToBool(maybeValidateChecksum.value());
+    req.validateChecksum = common::stringToBool(maybeValidateChecksum.value());
   }
 
   auto maybeBundleHash = request.get_optional<std::string>("bundleHash");

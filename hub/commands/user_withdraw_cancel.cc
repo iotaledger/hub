@@ -17,6 +17,7 @@
 #include <boost/uuid/uuid.hpp>
 #include <boost/uuid/uuid_io.hpp>
 
+#include "common/converter.h"
 #include "common/stats/session.h"
 #include "hub/db/db.h"
 #include "hub/db/helper.h"
@@ -45,7 +46,7 @@ boost::property_tree::ptree UserWithdrawCancel::doProcess(
   if (status != common::cmd::OK) {
     tree.add("error", common::cmd::errorToStringMap.at(status));
   } else {
-    tree.add("success", boolToString(rep.success));
+    tree.add("success", common::boolToString(rep.success));
   }
 
   return tree;

@@ -20,6 +20,7 @@
 #include <sqlpp11/functions.h>
 #include <sqlpp11/select.h>
 
+#include "common/converter.h"
 #include "common/stats/session.h"
 #include "hub/db/db.h"
 #include "hub/db/helper.h"

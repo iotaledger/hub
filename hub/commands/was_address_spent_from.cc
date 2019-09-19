@@ -10,6 +10,7 @@
 #include <cstdint>
 #include <exception>
 
+#include "common/converter.h"
 #include "common/stats/session.h"
 #include "hub/db/db.h"
 #include "hub/db/helper.h"
@@ -38,7 +39,7 @@ boost::property_tree::ptree WasAddressSpentFrom::doProcess(
   auto maybeValidateChecksum =
       request.get_optional<std::string>("validateChecksum");
   if (maybeValidateChecksum) {
-    req.validateChecksum = stringToBool(maybeValidateChecksum.value());
+    req.validateChecksum = common::stringToBool(maybeValidateChecksum.value());
   }
 
   auto status = doProcess(&req, &rep);
@@ -47,7 +48,7 @@ boost::property_tree::ptree WasAddressSpentFrom::doProcess(
     tree.add("error", common::cmd::errorToStringMap.at(status));
   } else {
     tree.add("wasAddressSpentFrom",
-             std::move(boolToString(rep.wasAddressSpentFrom)));
+             std::move(common::boolToString(rep.wasAddressSpentFrom)));
   }
   return tree;
 }

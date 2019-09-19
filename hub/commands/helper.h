@@ -17,9 +17,6 @@ namespace hub {
 namespace cmd {
 std::string errorToString(const hub::rpc::ErrorCode& e);
 
-std::string boolToString(bool isTrue);
-bool stringToBool(std::string isTrueStr);
-
 bool isAddressValid(std::string_view sv);
 }  // namespace cmd
 }  // namespace hub
