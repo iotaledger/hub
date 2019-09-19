@@ -45,7 +45,7 @@ boost::property_tree::ptree UserWithdrawCancel::doProcess(
   if (status != common::cmd::OK) {
     tree.add("error", common::cmd::errorToStringMap.at(status));
   } else {
-    tree.add("success", rep.success ? "true" : "false");
+    tree.add("success", boolToString(rep.success));
   }
 
   return tree;

@@ -39,7 +39,7 @@ boost::property_tree::ptree GetDepositAddress::doProcess(
   auto maybeIncludeChecksum =
       request.get_optional<std::string>("includeChecksum");
   if (maybeIncludeChecksum) {
-    req.includeChecksum = (maybeIncludeChecksum.value().compare("true") == 0);
+    req.includeChecksum = stringToBool(maybeIncludeChecksum.value());
   }
   auto status = doProcess(&req, &rep);
 

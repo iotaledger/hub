@@ -33,8 +33,7 @@ boost::property_tree::ptree SweepInfo::doProcess(
 
   auto maybeRequestByUuid = request.get_optional<std::string>("requestByUuid");
   if (maybeRequestByUuid) {
-    req.requestByUuid =
-        maybeRequestByUuid.value().compare("true") == 0 ? true : false;
+    req.requestByUuid = stringToBool(maybeRequestByUuid.value());
 
     if (req.requestByUuid) {
       auto maybeWithdrawalUuid =

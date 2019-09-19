@@ -46,7 +46,7 @@ boost::property_tree::ptree WasWithdrawalCancelled::doProcess(
   if (status != common::cmd::OK) {
     tree.add("error", common::cmd::errorToStringMap.at(status));
   } else {
-    tree.add("success", rep.wasWihdrawalCancelled ? "true" : "false");
+    tree.add("success", std::move(boolToString(rep.wasWihdrawalCancelled)));
   }
 
   return tree;

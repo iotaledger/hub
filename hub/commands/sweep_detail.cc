@@ -39,7 +39,7 @@ boost::property_tree::ptree SweepDetail::doProcess(
     if (status != common::cmd::OK) {
       tree.add("error", common::cmd::errorToStringMap.at(status));
     } else {
-      tree.add("confirmed", rep.confirmed);
+      tree.add("confirmed", boolToString(rep.confirmed));
 
       for (auto txTrytes : rep.trytes) {
         tree.add("trytes", txTrytes);

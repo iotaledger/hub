@@ -54,7 +54,7 @@ boost::property_tree::ptree RecoverFunds::doProcess(
   auto maybeValidateChecksum =
       request.get_optional<std::string>("validateChecksum");
   if (maybeValidateChecksum) {
-    req.validateChecksum = (maybeValidateChecksum.value().compare("true") == 0);
+    req.validateChecksum = stringToBool(maybeValidateChecksum.value());
   }
 
   auto status = doProcess(&req, &rep);

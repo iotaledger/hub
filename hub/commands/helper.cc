@@ -42,5 +42,10 @@ bool isAddressValid(std::string_view sv) {
   }
   return is_valid;
 }
+
+std::string boolToString(bool isTrue) { return isTrue ? "true" : "false"; }
+bool stringToBool(std::string isTrueStr) {
+  return isTrueStr.compare("true") ? true : false;
+}
 }  // namespace cmd
 }  // namespace hub
