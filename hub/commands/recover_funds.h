@@ -14,6 +14,8 @@
 
 #include "common/commands/command.h"
 
+DECLARE_bool(RecoverFunds_enabled);
+
 namespace hub {
 namespace cmd {
 

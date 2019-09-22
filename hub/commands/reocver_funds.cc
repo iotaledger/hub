@@ -22,11 +22,19 @@
 namespace hub {
 namespace cmd {
 
+DEFINE_bool(RecoverFunds_enabled, false,
+            "Whether the RecoverFunds API call should be available");
+
 static CommandFactoryRegistrator<RecoverFunds> registrator;
 
 boost::property_tree::ptree RecoverFunds::doProcess(
     const boost::property_tree::ptree& request) noexcept {
   boost::property_tree::ptree tree;
+
+  if (!FLAGS_RecoverFunds_enabled) {
+    LOG(ERROR) << session() << ": Recover funds is disabled";
+    tree.add("error", common::cmd::errorToStringMap.at(common::cmd::CANCELLED));
+  }
 
   RecoverFundsRequest req;
   RecoverFundsReply rep;
@@ -75,6 +83,11 @@ boost::property_tree::ptree RecoverFunds::doProcess(
 
 common::cmd::Error RecoverFunds::doProcess(
     const RecoverFundsRequest* request, RecoverFundsReply* response) noexcept {
+  if (!FLAGS_RecoverFunds_enabled) {
+    LOG(ERROR) << session() << ": Recover funds is disabled";
+    return common::cmd::CANCELLED;
+  }
+
   auto& connection = db::DBManager::get().connection();
   try {
     uint64_t userId;

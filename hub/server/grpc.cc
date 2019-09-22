@@ -35,12 +35,6 @@
 #include "hub/commands/was_address_spent_from.h"
 #include "hub/commands/was_withdrawal_cancelled.h"
 
-DEFINE_bool(SignBundle_enabled, false,
-            "Whether the SignBundle API call should be available");
-
-DEFINE_bool(RecoverFunds_enabled, false,
-            "Whether the RecoverFunds API call should be available");
-
 namespace hub {
 
 void HubImpl::setApi(std::shared_ptr<cppclient::IotaAPI> api) {
@@ -312,11 +306,6 @@ grpc::Status HubImpl::SignBundle(grpc::ServerContext* context,
                                  hub::rpc::SignBundleReply* rpcResponse) {
   auto clientSession = std::make_shared<common::ClientSession>();
 
-  if (!FLAGS_SignBundle_enabled) {
-    LOG(ERROR) << clientSession << ": SignBundle is disabled";
-    return grpc::Status::CANCELLED;
-  }
-
   cmd::SignBundle cmd(clientSession);
   cmd::SignBundleRequest request;
   cmd::SignBundleReply response;
@@ -410,11 +399,6 @@ grpc::Status HubImpl::RecoverFunds(
     const hub::rpc::RecoverFundsRequest* rpcRequest,
     hub::rpc::RecoverFundsReply* rpcResponse) {
   auto clientSession = std::make_shared<common::ClientSession>();
-
-  if (!FLAGS_RecoverFunds_enabled) {
-    LOG(ERROR) << clientSession << ": Recover funds is disabled";
-    return grpc::Status::CANCELLED;
-  }
 
   cmd::RecoverFunds cmd(clientSession, _api);
   cmd::RecoverFundsRequest request;

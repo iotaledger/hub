@@ -12,6 +12,8 @@
 
 #include "common/commands/command.h"
 
+DECLARE_bool(SignBundle_enabled);
+
 namespace hub {
 
 namespace cmd {

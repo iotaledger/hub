@@ -21,11 +21,20 @@
 namespace hub {
 namespace cmd {
 
+// Commands
+DEFINE_bool(SignBundle_enabled, false,
+            "Whether the SignBundle API call should be available");
+
 static CommandFactoryRegistrator<SignBundle> registrator;
 
 boost::property_tree::ptree SignBundle::doProcess(
     const boost::property_tree::ptree& request) noexcept {
   boost::property_tree::ptree tree;
+
+  if (!FLAGS_SignBundle_enabled) {
+    LOG(ERROR) << session() << ": Recover funds is disabled";
+    tree.add("error", common::cmd::errorToStringMap.at(common::cmd::CANCELLED));
+  }
 
   SignBundleRequest req;
   SignBundleReply rep;
@@ -71,6 +80,11 @@ boost::property_tree::ptree SignBundle::doProcess(
 
 common::cmd::Error SignBundle::doProcess(const SignBundleRequest* request,
                                          SignBundleReply* response) noexcept {
+  if (!FLAGS_SignBundle_enabled) {
+    LOG(ERROR) << session() << ": Recover funds is disabled";
+    return common::cmd::CANCELLED;
+  }
+
   auto& connection = db::DBManager::get().connection();
   auto& cryptoProvider = common::crypto::CryptoManager::get().provider();
   auto& authProvider = auth::AuthManager::get().provider();

@@ -385,6 +385,7 @@
 - Returns a signature for a bundle created by the caller (external to hub)
   This command should be used to release the funds locked in an address that
   has already been swept (in case where user mistakenly funded an address more than once) 
+  (Disabled by default, set _SignBundle_enabled_ to enable)
 
 - Arguments
 
@@ -420,6 +421,7 @@
   This command should be used to release the funds locked in an address that
   has already been swept (in case where user mistakenly funded an address more than once)
   It gives the caller less control than _SignBundle_ but it does not require extra work 
+  (Disabled by default, set _RecoverFunds_enabled_ to enable)
 
 - Arguments
 
