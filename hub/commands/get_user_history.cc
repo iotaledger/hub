@@ -51,7 +51,7 @@ boost::property_tree::ptree GetUserHistory::doProcess(
       tree.put(eventId + ".userID", event.userId);
       tree.put(eventId + ".timestamp", event.timestamp);
       tree.put(eventId + ".amount", event.amount);
-      tree.put(eventId + ".type",
+      tree.put(eventId + ".reason",
                userAccountBalanceEventReasonToString(event.reason));
       tree.put(eventId + ".sweepBundleHash", event.sweepBundleHash);
       tree.put(eventId + ".withdrawalUUID", event.withdrawalUUID);

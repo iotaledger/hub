@@ -56,7 +56,7 @@ See [Getting Started](docs/getting_started.md) for information on how to use the
     -dbType (Type of DB) type: string default: "mariadb"
     -dbUser (Database user) type: string default: "user"
 
-  Flags from hub/server/server.cc:
+  Flags from hub/server/hub_server_base.cc:
     -apiAddress (IRI node api to listen on. Format [host:port]) type: string
       default: "127.0.0.1:14265"
     -attachmentInterval (Attachment service check interval (0=disabled) [ms])
@@ -88,6 +88,7 @@ See [Getting Started](docs/getting_started.md) for information on how to use the
       type: bool (--fetchTransactionMessages or --nofetchTransactionMessages)
     -useHttpsIRI (Determines if the connection with IRI should be over HTTPS (make sure `apiAddress` supports https)) 
      type: bool (--useHttpsIRI or --nouseHttpsIRI)
+    -serverType (Which API should server expose {grpc (default), REST)
 
   Flags from hub/service/sweep_service.cc:
     -sweep_max_deposit (Maximum number of user deposits to process per sweep.)
