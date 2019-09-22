@@ -5,22 +5,18 @@
  * Refer to the LICENSE file for licensing information
  */
 
+#include <chrono>
+#include <sstream>
+
 #include "hub/commands/balance_subscription.h"
 
-#include <chrono>
-#include <functional>
-#include <sstream>
-#include <thread>
-#include <utility>
-
 #include "common/converter.h"
-#include "common/stats/session.h"
+
 #include "hub/commands/converter.h"
 #include "hub/commands/factory.h"
 #include "hub/commands/helper.h"
-#include "hub/db/db.h"
+
 #include "hub/db/helper.h"
-#include "schema/schema.h"
 
 namespace hub {
 namespace cmd {

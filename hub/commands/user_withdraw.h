@@ -8,13 +8,11 @@
 #ifndef HUB_COMMANDS_USER_WITHDRAW_H_
 #define HUB_COMMANDS_USER_WITHDRAW_H_
 
-#include <memory>
 #include <string>
-#include <utility>
+
+#include "cppclient/api.h"
 
 #include "common/commands/command.h"
-#include "common/stats/session.h"
-#include "cppclient/api.h"
 
 namespace hub {
 namespace cmd {

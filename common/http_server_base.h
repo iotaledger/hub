@@ -8,20 +8,12 @@
 #ifndef COMMON_HTTP_SERVER_BASE_H_
 #define COMMON_HTTP_SERVER_BASE_H_
 
-#include <memory>
 #include <string>
 #include <boost/asio/bind_executor.hpp>
 #include <boost/asio/signal_set.hpp>
-#include <boost/asio/steady_timer.hpp>
-#include <boost/asio/strand.hpp>
 #include <boost/beast/core.hpp>
 #include <boost/beast/http.hpp>
 #include <boost/beast/ssl.hpp>
-#include <boost/beast/version.hpp>
-#include <boost/beast/websocket.hpp>
-#include <boost/asio/bind_executor.hpp>
-#include <boost/asio/signal_set.hpp>
-#include <boost/asio/steady_timer.hpp>
 #include <boost/asio/strand.hpp>
 #include <boost/beast/core.hpp>
 #include <boost/beast/http.hpp>

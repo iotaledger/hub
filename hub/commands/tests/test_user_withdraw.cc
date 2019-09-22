@@ -2,12 +2,9 @@
 
 #include <gtest/gtest.h>
 
-#include "schema/schema.h"
-
 #include "hub/commands/get_balance.h"
 #include "hub/commands/tests/helper.h"
 #include "hub/commands/user_withdraw.h"
-#include "hub/db/db.h"
 
 #include "runner.h"
 

@@ -9,6 +9,7 @@
 #define HUB_COMMANDS_PROTO_SQL_CONVERTER_H_
 
 #include <string>
+
 #include "hub/db/types.h"
 #include "proto/hub.pb.h"
 

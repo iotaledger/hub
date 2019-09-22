@@ -8,7 +8,6 @@
 #ifndef COMMON_SERVER_BASE_H_
 #define COMMON_SERVER_BASE_H_
 
-#include <memory>
 #include "common/flags.h"
 
 namespace common {

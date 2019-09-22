@@ -8,11 +8,8 @@
 #ifndef COMMON_COMMANDS_COMMAND_H_
 #define COMMON_COMMANDS_COMMAND_H_
 
-#include <memory>
 #include <string>
-#include <utility>
 
-#include <glog/logging.h>
 #include <boost/property_tree/ptree.hpp>
 
 #include "common/commands/errors.h"
@@ -21,6 +18,8 @@
 namespace common {
 class ClientSession;
 
+/// Command abstract class. This is the base class for all
+/// command subclasses.
 class ICommand {
  public:
   void setClientSession(std::shared_ptr<ClientSession> session) {
@@ -43,12 +42,6 @@ class ICommand {
     return doProcess(request);
   }
 
-  /// Process the request - invokes the protected doProcess() implementation
-  /// @param[in] request - contains the details of the request
-  /// @return response - respons as a property tree
-  virtual boost::property_tree::ptree doProcess(
-      const boost::property_tree::ptree& request) noexcept = 0;
-
  protected:
   /// Get the shared client session
   /// @return ClientSession - a client session
@@ -56,12 +49,19 @@ class ICommand {
 
   /// Shared client session
   std::shared_ptr<ClientSession> _clientSession;
+
+ private:
+  /// Process the request - invokes the protected doProcess() implementation
+  /// @param[in] request - contains the details of the request
+  /// @return response - respons as a property tree
+  virtual boost::property_tree::ptree doProcess(
+      const boost::property_tree::ptree& request) noexcept = 0;
 };
 
-template <typename REQ, typename RES>
-/// Command abstract class template. This is the base class for all
-/// command subclasses. Each concrete subclass is responsible for implementing
+/// Command abstract class template.
+/// Each concrete subclass is responsible for implementing
 /// their respective behaviour for the correponding request to IRI
+template <typename REQ, typename RES>
 class Command : public ICommand {
  public:
   /// constructor

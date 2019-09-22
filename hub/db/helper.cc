@@ -5,8 +5,6 @@
  * Refer to the LICENSE file for licensing information
  */
 
-#include "hub/db/helper.h"
-
 #include <algorithm>
 #include <unordered_map>
 #include <unordered_set>
@@ -22,6 +20,8 @@
 
 #include <sqlpp11/mysql/connection.h>
 #include <sqlpp11/sqlite3/connection.h>
+
+#include "hub/db/helper.h"
 
 namespace hub {
 namespace db {

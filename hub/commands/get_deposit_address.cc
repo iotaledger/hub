@@ -5,21 +5,16 @@
  * Refer to the LICENSE file for licensing information
  */
 
-#include "hub/commands/get_deposit_address.h"
-
-#include <sqlpp11/exception.h>
 #include <cstdint>
 
 #include "common/converter.h"
 #include "common/crypto/manager.h"
 #include "common/crypto/types.h"
-#include "common/stats/session.h"
 #include "hub/commands/factory.h"
 #include "hub/commands/helper.h"
-#include "hub/db/db.h"
 #include "hub/db/helper.h"
-#include "proto/hub.pb.h"
-#include "schema/schema.h"
+
+#include "hub/commands/get_deposit_address.h"
 
 namespace hub {
 namespace cmd {

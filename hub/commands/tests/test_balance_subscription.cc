@@ -1,11 +1,11 @@
 // Copyright 2018 IOTA Foundation
 
-#include <gmock/gmock.h>
-#include <gtest/gtest.h>
 #include <chrono>
 #include <thread>
 
-#include "common/stats/session.h"
+#include <gmock/gmock.h>
+#include <gtest/gtest.h>
+
 #include "hub/commands/balance_subscription.h"
 #include "runner.h"
 

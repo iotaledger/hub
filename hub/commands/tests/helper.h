@@ -9,7 +9,6 @@
 #include <gtest/gtest.h>
 
 #include "hub/commands/process_transfer_batch.h"
-
 #include "hub/tests/runner.h"
 
 namespace hub {

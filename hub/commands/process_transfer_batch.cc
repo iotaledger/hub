@@ -5,30 +5,22 @@
  * Refer to the LICENSE file for licensing information
  */
 
-#include "hub/commands/process_transfer_batch.h"
-
 #include <algorithm>
 #include <cstdint>
 #include <set>
 #include <unordered_map>
-#include <vector>
 
 #include <boost/range/adaptors.hpp>
 #include <boost/range/algorithm/copy.hpp>
 
-#include <sqlpp11/connection.h>
-#include <sqlpp11/functions.h>
-#include <sqlpp11/select.h>
-
 #include "common/converter.h"
-#include "common/stats/session.h"
-#include "hub/db/db.h"
 #include "hub/db/helper.h"
-#include "schema/schema.h"
 
 #include "hub/commands/converter.h"
 #include "hub/commands/factory.h"
 #include "hub/commands/helper.h"
+
+#include "hub/commands/process_transfer_batch.h"
 
 namespace hub {
 namespace cmd {

@@ -2,14 +2,7 @@
 
 #include <gtest/gtest.h>
 
-#include <sqlpp11/functions.h>
-#include <sqlpp11/select.h>
-
-#include "schema/schema.h"
-
 #include "hub/commands/create_user.h"
-#include "hub/db/db.h"
-
 #include "runner.h"
 
 using namespace hub;

@@ -8,25 +8,21 @@
 /// The following implementation is based on:
 ///https://www.boost.org/doc/libs/develop/libs/beast/example/advanced/server/advanced_server.cpp
 
-#include "common/http_server_base.h"
-#include "common/common.h"
-
-#include <glog/logging.h>
-#include <boost/asio.hpp>
-
 #include <algorithm>
-#include <boost/make_unique.hpp>
-#include <boost/optional.hpp>
 #include <chrono>
 #include <cstdlib>
 #include <cstring>
-#include <functional>
-#include <iostream>
-#include <list>
-#include <memory>
-#include <string>
 #include <thread>
 #include <vector>
+
+#include <glog/logging.h>
+
+#include <boost/make_unique.hpp>
+#include <boost/optional.hpp>
+
+#include "common/http_server_base.h"
+#include "common/common.h"
+
 
 namespace beast = boost::beast;          // from <boost/beast.hpp>
 namespace http = beast::http;            // from <boost/beast/http.hpp>

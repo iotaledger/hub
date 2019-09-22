@@ -5,21 +5,15 @@
  * Refer to the LICENSE file for licensing information
  */
 
-#include "hub/commands/get_address_info.h"
-
 #include <cstdint>
-#include <utility>
-
-#include <sqlpp11/exception.h>
 
 #include "common/crypto/manager.h"
 #include "common/crypto/types.h"
-#include "common/stats/session.h"
 #include "hub/commands/factory.h"
 #include "hub/commands/helper.h"
-#include "hub/db/db.h"
 #include "hub/db/helper.h"
-#include "schema/schema.h"
+
+#include "hub/commands/get_address_info.h"
 
 namespace hub {
 namespace cmd {

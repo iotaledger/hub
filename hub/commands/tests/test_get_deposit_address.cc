@@ -2,16 +2,10 @@
 
 #include <gmock/gmock.h>
 #include <gtest/gtest.h>
-#include <sqlpp11/functions.h>
-#include <sqlpp11/select.h>
 
 #include "common/crypto/types.h"
-#include "common/stats/session.h"
 #include "hub/commands/get_deposit_address.h"
-#include "hub/db/db.h"
 #include "hub/db/helper.h"
-#include "proto/hub.pb.h"
-#include "schema/schema.h"
 
 #include "runner.h"
 
@@ -37,7 +31,6 @@ TEST_F(GetDepositAddressTest, UnknownUserShouldFail) {
 TEST_F(GetDepositAddressTest, AddressCountInDatabaseShouldChange) {
   cmd::GetDepositAddressRequest req;
   cmd::GetDepositAddressReply res;
-  rpc::Error err;
 
   constexpr auto username = "User1";
   auto& conn = hub::db::DBManager::get().connection();
@@ -77,7 +70,6 @@ TEST_F(GetDepositAddressTest, AddressCountInDatabaseShouldChange) {
 TEST_F(GetDepositAddressTest, AddressShouldHaveCorrectLength) {
   cmd::GetDepositAddressRequest req;
   cmd::GetDepositAddressReply res;
-  rpc::Error err;
 
   constexpr auto username = "User1";
 

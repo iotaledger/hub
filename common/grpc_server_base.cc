@@ -5,10 +5,10 @@
  * Refer to the LICENSE file for licensing information
  */
 
+#include <glog/logging.h>
+
 #include "common/grpc_server_base.h"
 #include "common/common.h"
-
-#include <glog/logging.h>
 
 namespace common {
 

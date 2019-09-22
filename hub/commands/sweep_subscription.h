@@ -7,11 +7,8 @@
 #include <string_view>
 #include <vector>
 
-#include <grpc++/support/sync_stream.h>
-
 #include "common/commands/command.h"
 #include "events.h"
-#include "hub/db/helper.h"
 
 namespace hub {
 

@@ -5,10 +5,6 @@
  * Refer to the LICENSE file for licensing information
  */
 
-#include "hub/crypto/remote_signing_provider.h"
-
-#include <utility>
-
 #include <glog/logging.h>
 #include <grpc/grpc.h>
 #include <grpcpp/channel.h>
@@ -17,6 +13,8 @@
 #include <grpcpp/security/credentials.h>
 
 #include "common/common.h"
+
+#include "hub/crypto/remote_signing_provider.h"
 
 using grpc::Channel;
 using grpc::ClientContext;

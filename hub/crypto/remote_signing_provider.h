@@ -9,12 +9,12 @@
 #define HUB_CRYPTO_REMOTE_SIGNING_PROVIDER_H_
 
 #include <memory>
-#include <nonstd/optional.hpp>
 #include <string>
+
+#include <nonstd/optional.hpp>
+
 #include "common/crypto/provider_base.h"
-
 #include "hub/db/db.h"
-
 #include "proto/signing_server.grpc.pb.h"
 #include "proto/signing_server.pb.h"
 

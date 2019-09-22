@@ -2,16 +2,11 @@
 
 #include <gmock/gmock.h>
 #include <gtest/gtest.h>
-#include <sqlpp11/functions.h>
-#include <sqlpp11/select.h>
 
 #include "common/crypto/types.h"
-#include "common/stats/session.h"
 #include "hub/commands/get_address_info.h"
 #include "hub/commands/get_deposit_address.h"
-#include "hub/db/db.h"
 #include "hub/db/helper.h"
-#include "schema/schema.h"
 
 #include "runner.h"
 
@@ -27,8 +22,6 @@ TEST_F(GetAddressInfoTest, AddressCountInDatabaseShouldChange) {
   cmd::GetAddressInfoReply res;
   cmd::GetDepositAddressRequest depReq;
   cmd::GetDepositAddressReply depRes;
-
-  rpc::Error err;
 
   constexpr auto username = "User1";
 
@@ -49,7 +42,6 @@ TEST_F(GetAddressInfoTest, AddressCountInDatabaseShouldChange) {
 TEST_F(GetAddressInfoTest, InvalidOrUnknownAddressShouldFail) {
   cmd::GetAddressInfoRequest req;
   cmd::GetAddressInfoReply res;
-  rpc::Error err;
 
   cmd::GetAddressInfo command(session());
 

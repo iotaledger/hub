@@ -9,7 +9,6 @@
 #define COMMON_ERRORS_H_
 
 #include <map>
-#include <memory>
 #include <string>
 
 #include <grpc++/support/sync_stream.h>

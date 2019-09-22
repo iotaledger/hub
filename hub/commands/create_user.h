@@ -8,9 +8,10 @@
 #ifndef HUB_COMMANDS_CREATE_USER_H_
 #define HUB_COMMANDS_CREATE_USER_H_
 
+#include "common/commands/command.h"
+
 #include <string>
 
-#include "common/commands/command.h"
 namespace hub {
 namespace cmd {
 

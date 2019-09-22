@@ -1,13 +1,9 @@
 // Copyright 2018 IOTA Foundation
 
 #include <gtest/gtest.h>
-#include <sqlpp11/functions.h>
-#include <sqlpp11/select.h>
-#include "common/stats/session.h"
+
 #include "hub/commands/get_user_history.h"
-#include "hub/db/db.h"
 #include "runner.h"
-#include "schema/schema.h"
 
 using namespace hub;
 using namespace sqlpp;

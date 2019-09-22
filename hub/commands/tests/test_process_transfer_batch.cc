@@ -11,14 +11,11 @@
 #include <boost/range/adaptors.hpp>
 #include <boost/range/algorithm/copy.hpp>
 
-#include "schema/schema.h"
-
 #include "hub/commands/create_user.h"
 #include "hub/commands/get_balance.h"
 #include "hub/commands/helper.h"
 #include "hub/commands/process_transfer_batch.h"
 #include "hub/commands/tests/helper.h"
-#include "hub/db/db.h"
 
 #include "runner.h"
 

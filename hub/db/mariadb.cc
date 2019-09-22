@@ -5,10 +5,10 @@
  * Refer to the LICENSE file for licensing information
  */
 
-#include <sqlpp11/mysql/connection.h>
-
 #include <memory>
 #include <utility>
+
+#include <sqlpp11/mysql/connection.h>
 
 #include "hub/db/db.h"
 #include "hub/db/mariadb.h"

@@ -11,17 +11,15 @@
 #include <chrono>
 #include <cstdint>
 #include <map>
-#include <memory>
-#include <nonstd/optional.hpp>
 #include <set>
 #include <string>
 #include <tuple>
 #include <unordered_map>
-#include <utility>
 #include <vector>
 
+#include <nonstd/optional.hpp>
+
 #include "common/crypto/types.h"
-#include "hub/db/db.h"
 #include "hub/db/helper.h"
 #include "hub/db/types.h"
 

@@ -6,11 +6,9 @@
 #include <gtest/gtest.h>
 
 #include "common/crypto/manager.h"
-#include "common/stats/session.h"
 #include "hub/commands/create_user.h"
 #include "hub/db/db.h"
 #include "hub/tests/runner.h"
-#include "proto/hub.pb.h"
 
 namespace hub {
 class CommandTest : public hub::Test {

@@ -5,26 +5,18 @@
  * Refer to the LICENSE file for licensing information
  */
 
-#include "hub/commands/user_withdraw_cancel.h"
-
 #include <cstdint>
-
-#include <sqlpp11/connection.h>
-#include <sqlpp11/functions.h>
-#include <sqlpp11/select.h>
 
 #include <boost/uuid/string_generator.hpp>
 #include <boost/uuid/uuid.hpp>
 #include <boost/uuid/uuid_io.hpp>
 
 #include "common/converter.h"
-#include "common/stats/session.h"
-#include "hub/db/db.h"
-#include "hub/db/helper.h"
-#include "schema/schema.h"
-
 #include "hub/commands/factory.h"
 #include "hub/commands/helper.h"
+#include "hub/db/helper.h"
+
+#include "hub/commands/user_withdraw_cancel.h"
 
 namespace hub {
 namespace cmd {

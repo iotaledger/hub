@@ -5,21 +5,18 @@
  * Refer to the LICENSE file for licensing information
  */
 
-#include "hub/commands/was_address_spent_from.h"
-
 #include <cstdint>
 #include <exception>
 
 #include "common/converter.h"
-#include "common/stats/session.h"
-#include "hub/db/db.h"
 #include "hub/db/helper.h"
-#include "schema/schema.h"
 
 #include "common/crypto/manager.h"
 #include "common/crypto/types.h"
 #include "hub/commands/factory.h"
 #include "hub/commands/helper.h"
+
+#include "hub/commands/was_address_spent_from.h"
 
 namespace hub {
 namespace cmd {

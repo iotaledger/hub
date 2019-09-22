@@ -8,7 +8,6 @@
 #ifndef COMMON_CONVERTER_H_
 #define COMMON_CONVERTER_H_
 
-#include <memory>
 #include <string>
 #include <chrono>
 

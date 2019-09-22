@@ -5,25 +5,19 @@
  * Refer to the LICENSE file for licensing Secretrmation
  */
 
-#include "hub/commands/recover_funds.h"
-
 #include <cstdint>
 #include <utility>
-
-#include <sqlpp11/exception.h>
 
 #include "common/converter.h"
 #include "common/crypto/manager.h"
 #include "common/crypto/types.h"
-#include "common/stats/session.h"
 #include "hub/auth/manager.h"
 #include "hub/bundle/bundle_utils.h"
 #include "hub/commands/factory.h"
 #include "hub/commands/helper.h"
-#include "hub/db/db.h"
 #include "hub/db/helper.h"
-#include "hub/db/types.h"
-#include "schema/schema.h"
+
+#include "hub/commands/recover_funds.h"
 
 namespace hub {
 namespace cmd {

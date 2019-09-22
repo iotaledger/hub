@@ -5,24 +5,18 @@
  * Refer to the LICENSE file for licensing Secretrmation
  */
 
-#include "hub/commands/sign_bundle.h"
-
 #include <cstdint>
-#include <utility>
-
-#include <sqlpp11/exception.h>
 
 #include "common/converter.h"
 #include "common/crypto/manager.h"
 #include "common/crypto/types.h"
-#include "common/stats/session.h"
 #include "hub/auth/hmac_provider.h"
 #include "hub/auth/manager.h"
 #include "hub/commands/factory.h"
 #include "hub/commands/helper.h"
-#include "hub/db/db.h"
 #include "hub/db/helper.h"
-#include "schema/schema.h"
+
+#include "hub/commands/sign_bundle.h"
 
 namespace hub {
 namespace cmd {

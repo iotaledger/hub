@@ -5,21 +5,17 @@
  * Refer to the LICENSE file for licensing information
  */
 
-#include "hub/commands/sweep_info.h"
-
 #include <cstdint>
+
 #include <nonstd/optional.hpp>
-#include <utility>
 
 #include "common/converter.h"
 #include "common/crypto/types.h"
-#include "common/stats/session.h"
 #include "hub/commands/factory.h"
 #include "hub/commands/helper.h"
-#include "hub/db/connection.h"
-#include "hub/db/types.h"
-#include "proto/hub.pb.h"
-#include "schema/schema.h"
+#include "hub/db/helper.h"
+
+#include "hub/commands/sweep_info.h"
 
 namespace hub {
 namespace cmd {

@@ -5,27 +5,22 @@
  * Refer to the LICENSE file for licensing information
  */
 
-#include "hub/commands/user_withdraw.h"
-
 #include <cstdint>
 #include <exception>
+#include <istream>
 
 #include <boost/uuid/random_generator.hpp>
 #include <boost/uuid/uuid.hpp>
 #include <boost/uuid/uuid_io.hpp>
 
 #include "common/converter.h"
-#include "common/stats/session.h"
-#include "hub/db/db.h"
-#include "hub/db/helper.h"
-#include "schema/schema.h"
-
 #include "common/crypto/manager.h"
 #include "common/crypto/types.h"
 #include "hub/commands/factory.h"
 #include "hub/commands/helper.h"
+#include "hub/db/helper.h"
 
-#include <istream>
+#include "hub/commands/user_withdraw.h"
 
 namespace hub {
 namespace cmd {

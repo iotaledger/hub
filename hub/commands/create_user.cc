@@ -5,20 +5,11 @@
  * Refer to the LICENSE file for licensing information
  */
 
-#include "hub/commands/create_user.h"
-
-#include <sqlpp11/connection.h>
-#include <sqlpp11/insert.h>
-#include <sqlpp11/transaction.h>
-
-#include "schema/schema.h"
-
-#include "common/stats/session.h"
-#include "hub/db/db.h"
-
-#include "hub/commands/helper.h"
-
 #include "hub/commands/factory.h"
+#include "hub/commands/helper.h"
+#include "hub/db/helper.h"
+
+#include "hub/commands/create_user.h"
 
 namespace hub {
 namespace cmd {

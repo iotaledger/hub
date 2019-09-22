@@ -10,8 +10,9 @@
 
 #include <string>
 
-#include "common/commands/command.h"
 #include "cppclient/api.h"
+
+#include "common/commands/command.h"
 
 namespace hub {
 namespace cmd {

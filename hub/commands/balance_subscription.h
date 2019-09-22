@@ -8,13 +8,11 @@
 #ifndef HUB_COMMANDS_BALANCE_SUBSCRIPTION_H_
 #define HUB_COMMANDS_BALANCE_SUBSCRIPTION_H_
 
-#include <memory>
 #include <string>
 #include <vector>
 
-#include "events.h"
-
 #include "common/commands/command.h"
+#include "events.h"
 #include "hub/db/helper.h"
 
 namespace hub {

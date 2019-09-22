@@ -12,7 +12,6 @@
 
 #include "common/crypto/argon2_provider.h"
 #include "common/crypto/types.h"
-#include "hub/db/db.h"
 #include "hub/db/helper.h"
 
 namespace hub {
