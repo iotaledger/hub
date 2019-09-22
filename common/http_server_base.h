@@ -30,6 +30,7 @@ namespace common {
         typedef enum {
             OK = 0,
             COMMAND_NOT_FOUND,
+            WRONG_REQUEST_FORMAT
         }ErrorCode;
         /// Runs the service and waits for requests
         virtual void runAndWait() override ;

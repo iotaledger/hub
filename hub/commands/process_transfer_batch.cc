@@ -10,6 +10,7 @@
 #include <set>
 #include <unordered_map>
 
+#include <boost/algorithm/string.hpp>
 #include <boost/range/adaptors.hpp>
 #include <boost/range/algorithm/copy.hpp>
 
@@ -35,18 +36,54 @@ boost::property_tree::ptree ProcessTransferBatch::doProcess(
   ProcessTransferBatchReply rep;
   int64_t currAmount;
 
-  for (auto it : request) {
-    auto maybeUserId = it.second.get_optional<std::string>("userId");
-    auto maybeAmount = it.second.get_optional<std::string>("amount");
-    if (!maybeUserId || !maybeAmount) {
-      tree.add("error", common::cmd::MISSING_ARGUMENT);
+  std::map<std::string, int64_t> userToAmount;
+
+  auto maybeTransfers = request.get_optional<std::string>("transfers");
+  if (!maybeTransfers) {
+    tree.add("error",
+             common::cmd::errorToStringMap.at(common::cmd::MISSING_ARGUMENT));
+    return tree;
+  }
+
+  std::string transfersStr = maybeTransfers.value();
+  std::string toRemove = "[]{} ";
+  transfersStr.erase(remove_if(transfersStr.begin(), transfersStr.end(),
+                               [&toRemove](const char& c) {
+                                 return toRemove.find(c) != std::string::npos;
+                               }),
+                     transfersStr.end());
+
+  std::vector<std::string> transfersStrVec;
+  boost::split(transfersStrVec, transfersStr, boost::is_any_of(","));
+
+  for (auto&& transferStr : transfersStrVec) {
+    std::vector<std::string> userAndAmountVec;
+    boost::split(userAndAmountVec, transferStr, boost::is_any_of(";"));
+    auto userIdKeyValue = userAndAmountVec.front();
+    auto amountKeyValue = userAndAmountVec.back();
+
+    std::vector<std::string> userIdKeyValueVec;
+    boost::split(userIdKeyValueVec, userIdKeyValue, boost::is_any_of(":"));
+
+    std::vector<std::string> amountKeyValueVec;
+    boost::split(amountKeyValueVec, amountKeyValue, boost::is_any_of(":"));
+
+    if (userIdKeyValueVec.front().compare("userId") ||
+        amountKeyValueVec.front().compare("amount")) {
+      tree.add("error", common::cmd::errorToStringMap.at(
+                            common::cmd::WRONG_ARGUMENT_NAME));
       return tree;
     }
 
-    std::istringstream iss(maybeAmount.value());
+    std::istringstream iss(amountKeyValueVec.back());
     iss >> currAmount;
-    req.transfers.emplace_back(
-        cmd::UserTransfer{.userId = maybeUserId.value(), .amount = currAmount});
+
+    userToAmount[userIdKeyValueVec.back()] += currAmount;
+  }
+
+  for (auto&& userAmountPair : userToAmount) {
+    req.transfers.emplace_back(cmd::UserTransfer{
+        .userId = userAmountPair.first, .amount = userAmountPair.second});
   }
 
   auto status = doProcess(&req, &rep);

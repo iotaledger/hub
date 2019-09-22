@@ -12,7 +12,7 @@ namespace common {
 
     std::string boolToString(bool isTrue) { return isTrue ? "true" : "false"; }
     bool stringToBool(std::string_view isTrueStr) {
-        return isTrueStr.compare("true") ? true : false;
+        return (isTrueStr.compare("true") == 0)? true : false;
     }
 
     uint64_t timepointToUint64(std::chrono::system_clock::time_point timepoint){

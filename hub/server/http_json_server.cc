@@ -51,13 +51,24 @@ common::HttpServerBase::ErrorCode HubHttpJsonServer::handleRequestImpl(
   std::stringstream jsonRequest;
   jsonRequest << request_body;
 
-  // Parse the XML into the property tree.
-  pt::read_json(jsonRequest, requestTree);
+  // Parse the Json into the property tree.
+  try {
+    pt::read_json(jsonRequest, requestTree);
+  } catch (
+      boost::wrapexcept<boost::property_tree::json_parser::json_parser_error>
+          ex) {
+    LOG(ERROR) << "Wrong request format";
+    responseTree.add("result", "Wrong request format");
+    pt::write_json(stream, responseTree);
+    response = stream.str();
+    return common::HttpServerBase::ErrorCode::WRONG_REQUEST_FORMAT;
+  }
 
   auto command = requestTree.get<std::string>("command");
 
   auto cmd = cmd::CommandFactory::get()->create(command);
   if (cmd == nullptr) {
+    LOG(ERROR) << "Unknown command";
     responseTree.add("result", "Unknown command");
     pt::write_json(stream, responseTree);
     response = stream.str();

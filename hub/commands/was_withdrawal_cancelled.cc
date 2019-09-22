@@ -30,7 +30,7 @@ boost::property_tree::ptree WasWithdrawalCancelled::doProcess(
   WasWithdrawalCancelledRequest req;
   WasWithdrawalCancelledReply rep;
   auto maybeUuid = request.get_optional<std::string>("uuid");
-  if (maybeUuid) {
+  if (!maybeUuid) {
     tree.add("error",
              common::cmd::errorToStringMap.at(common::cmd::MISSING_ARGUMENT));
     return tree;
@@ -43,7 +43,7 @@ boost::property_tree::ptree WasWithdrawalCancelled::doProcess(
   if (status != common::cmd::OK) {
     tree.add("error", common::cmd::errorToStringMap.at(status));
   } else {
-    tree.add("success",
+    tree.add("wasCancelled",
              std::move(common::boolToString(rep.wasWihdrawalCancelled)));
   }
 

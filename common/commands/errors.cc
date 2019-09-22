@@ -15,6 +15,7 @@ std::map<Error, std::string> errorToStringMapCreate() {
   std::map<Error, std::string> map;
   map[OK] = "OK";
   map[MISSING_ARGUMENT] = "MISSING_ARGUMENT";
+  map[WRONG_ARGUMENT_NAME] = "WRONG_ARGUMENT_NAME";
   map[CANCELLED] = "Cancelled";
   map[USER_EXISTS] = "User exist";
   map[USER_DOES_NOT_EXIST] = "User does not exist";
@@ -50,6 +51,11 @@ grpc::Status errorToGrpcError(Error err) {
     case MISSING_ARGUMENT:
       status = grpc::Status(grpc::StatusCode::FAILED_PRECONDITION, "",
                             errorToStringMap.at(MISSING_ARGUMENT));
+      break;
+
+    case WRONG_ARGUMENT_NAME:
+      status = grpc::Status(grpc::StatusCode::FAILED_PRECONDITION, "",
+                            errorToStringMap.at(WRONG_ARGUMENT_NAME));
       break;
 
     case CANCELLED:
