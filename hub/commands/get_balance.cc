@@ -21,9 +21,9 @@ static CommandFactoryRegistrator<GetBalance> registrator;
 boost::property_tree::ptree GetBalance::doProcess(
     const boost::property_tree::ptree& request) noexcept {
   boost::property_tree::ptree tree;
-
   GetBalanceRequest req;
   GetBalanceReply rep;
+
   auto maybeUserId = request.get_optional<std::string>("userId");
   if (!maybeUserId) {
     tree.add("error",

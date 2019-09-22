@@ -25,6 +25,7 @@ boost::property_tree::ptree GetAddressInfo::doProcess(
   boost::property_tree::ptree tree;
   GetAddressInfoRequest req;
   GetAddressInfoReply rep;
+
   auto maybeAddress = request.get_optional<std::string>("address");
   if (!maybeAddress) {
     tree.add("error",

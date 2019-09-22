@@ -9,13 +9,14 @@
 #define COMMON_CONVERTER_H_
 
 #include <string>
+#include <string_view>
 #include <chrono>
 
 
 
 namespace common {
     std::string boolToString(bool isTrue);
-    bool stringToBool(std::string isTrueStr);
+    bool stringToBool(std::string_view isTrueStr);
 
     uint64_t timepointToUint64(std::chrono::system_clock::time_point timepoint);
 }

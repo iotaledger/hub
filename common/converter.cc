@@ -7,12 +7,11 @@
 
 #include "common/converter.h"
 
-
 namespace common {
 
 
     std::string boolToString(bool isTrue) { return isTrue ? "true" : "false"; }
-    bool stringToBool(std::string isTrueStr) {
+    bool stringToBool(std::string_view isTrueStr) {
         return isTrueStr.compare("true") ? true : false;
     }
 

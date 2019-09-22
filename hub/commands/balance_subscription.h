@@ -24,7 +24,7 @@ typedef struct BalanceSubscriptionRequest {
 } BalanceSubscriptionRequest;
 
 /// @param[in] BalanceSubscriptionRequest
-/// @param[in] std::vector<BalanceEvent> events
+/// @param[out] std::vector<BalanceEvent> events
 /// Collects records about balance actions to and from user addresses
 /// and hub's addresses as well (Depsoits/Withdrawals/Hub address actions)
 class BalanceSubscription : public common::Command<BalanceSubscriptionRequest,
