@@ -26,7 +26,7 @@ boost::property_tree::ptree GetStats::doProcess(
   auto status = doProcess(&req, &rep);
 
   if (status != common::cmd::OK) {
-    tree.add("error", common::cmd::errorToStringMap.at(status));
+    tree.add("error", common::cmd::getErrorString(status));
   } else {
     tree.add("totalBalance", rep.totalBalance);
   }

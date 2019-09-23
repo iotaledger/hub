@@ -11,8 +11,12 @@ namespace common {
 
 namespace cmd {
 
-std::map<Error, std::string> errorToStringMapCreate() {
-  std::map<Error, std::string> map;
+
+    static std::unordered_map<Error, std::string> errorToStringMap =
+    errorToStringMapCreate();
+
+std::unordered_map<Error, std::string> errorToStringMapCreate() {
+  std::unordered_map<Error, std::string> map;
   map[OK] = "Ok";
   map[MISSING_ARGUMENT] = "Missing argument";
   map[WRONG_ARGUMENT_NAME] = "Wrong argument name";
@@ -39,6 +43,10 @@ std::map<Error, std::string> errorToStringMapCreate() {
   map[INSUFFICIENT_BALANCE] = "Insufficient balance";
 
   return map;
+}
+
+std::string getErrorString(Error error){
+    return errorToStringMap.at(error);
 }
 
 grpc::Status errorToGrpcError(Error err) {

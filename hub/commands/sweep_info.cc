@@ -36,7 +36,7 @@ boost::property_tree::ptree SweepInfo::doProcess(
       auto maybeWithdrawalUuid =
           request.get_optional<std::string>("withdrawalUuid");
       if (!maybeWithdrawalUuid) {
-        tree.add("error", common::cmd::errorToStringMap.at(
+        tree.add("error", common::cmd::getErrorString(
                               common::cmd::MISSING_ARGUMENT));
         return tree;
       } else {
@@ -45,7 +45,7 @@ boost::property_tree::ptree SweepInfo::doProcess(
     } else {
       auto maybeBundleHash = request.get_optional<std::string>("bundleHash");
       if (!maybeBundleHash) {
-        tree.add("error", common::cmd::errorToStringMap.at(
+        tree.add("error", common::cmd::getErrorString(
                               common::cmd::MISSING_ARGUMENT));
         return tree;
       } else {
@@ -56,7 +56,7 @@ boost::property_tree::ptree SweepInfo::doProcess(
     auto status = doProcess(&req, &rep);
 
     if (status != common::cmd::OK) {
-      tree.add("error", common::cmd::errorToStringMap.at(status));
+      tree.add("error", common::cmd::getErrorString(status));
     } else {
       tree.add("bundleHash", rep.bundleHash);
       tree.add("timestamp", rep.timestamp);
@@ -67,7 +67,7 @@ boost::property_tree::ptree SweepInfo::doProcess(
     }
   } else {
     tree.add("error",
-             common::cmd::errorToStringMap.at(common::cmd::MISSING_ARGUMENT));
+             common::cmd::getErrorString(common::cmd::MISSING_ARGUMENT));
   }
 
   return tree;

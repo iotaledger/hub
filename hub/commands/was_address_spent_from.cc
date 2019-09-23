@@ -31,7 +31,7 @@ boost::property_tree::ptree WasAddressSpentFrom::doProcess(
   auto maybeAddress = request.get_optional<std::string>("address");
   if (!maybeAddress) {
     tree.add("error",
-             common::cmd::errorToStringMap.at(common::cmd::MISSING_ARGUMENT));
+             common::cmd::getErrorString(common::cmd::MISSING_ARGUMENT));
     return tree;
   }
 
@@ -47,7 +47,7 @@ boost::property_tree::ptree WasAddressSpentFrom::doProcess(
   auto status = doProcess(&req, &rep);
 
   if (status != common::cmd::OK) {
-    tree.add("error", common::cmd::errorToStringMap.at(status));
+    tree.add("error", common::cmd::getErrorString(status));
   } else {
     tree.add("wasAddressSpentFrom",
              std::move(common::boolToString(rep.wasAddressSpentFrom)));

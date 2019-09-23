@@ -33,7 +33,7 @@ boost::property_tree::ptree RecoverFunds::doProcess(
 
   if (!FLAGS_RecoverFunds_enabled) {
     LOG(ERROR) << session() << ": Recover funds is disabled";
-    tree.add("error", common::cmd::errorToStringMap.at(common::cmd::CANCELLED));
+    tree.add("error", common::cmd::getErrorString(common::cmd::CANCELLED));
   }
 
   RecoverFundsRequest req;
@@ -42,7 +42,7 @@ boost::property_tree::ptree RecoverFunds::doProcess(
   auto maybeUserId = request.get_optional<std::string>("userId");
   if (!maybeUserId) {
     tree.add("error",
-             common::cmd::errorToStringMap.at(common::cmd::MISSING_ARGUMENT));
+             common::cmd::getErrorString(common::cmd::MISSING_ARGUMENT));
     return tree;
   }
 
@@ -51,7 +51,7 @@ boost::property_tree::ptree RecoverFunds::doProcess(
   auto maybeAddress = request.get_optional<std::string>("address");
   if (!maybeAddress) {
     tree.add("error",
-             common::cmd::errorToStringMap.at(common::cmd::MISSING_ARGUMENT));
+             common::cmd::getErrorString(common::cmd::MISSING_ARGUMENT));
     return tree;
   }
 
@@ -60,7 +60,7 @@ boost::property_tree::ptree RecoverFunds::doProcess(
   auto maybePayoutAddress = request.get_optional<std::string>("payoutAddress");
   if (maybePayoutAddress) {
     tree.add("error",
-             common::cmd::errorToStringMap.at(common::cmd::MISSING_ARGUMENT));
+             common::cmd::getErrorString(common::cmd::MISSING_ARGUMENT));
     return tree;
   }
   req.payoutAddress = maybePayoutAddress.value();
@@ -75,7 +75,7 @@ boost::property_tree::ptree RecoverFunds::doProcess(
   auto status = doProcess(&req, &rep);
 
   if (status != common::cmd::OK) {
-    tree.add("error", common::cmd::errorToStringMap.at(status));
+    tree.add("error", common::cmd::getErrorString(status));
   }
 
   return tree;

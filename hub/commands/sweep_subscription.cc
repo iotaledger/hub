@@ -31,7 +31,7 @@ boost::property_tree::ptree SweepSubscription::doProcess(
   auto status = doProcess(&req, &rep);
 
   if (status != common::cmd::OK) {
-    tree.add("error", common::cmd::errorToStringMap.at(status));
+    tree.add("error", common::cmd::getErrorString(status));
   } else {
     int i = 0;
     for (auto event : rep) {

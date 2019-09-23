@@ -41,7 +41,7 @@ boost::property_tree::ptree ProcessTransferBatch::doProcess(
   auto maybeTransfers = request.get_optional<std::string>("transfers");
   if (!maybeTransfers) {
     tree.add("error",
-             common::cmd::errorToStringMap.at(common::cmd::MISSING_ARGUMENT));
+             common::cmd::getErrorString(common::cmd::MISSING_ARGUMENT));
     return tree;
   }
 
@@ -70,7 +70,7 @@ boost::property_tree::ptree ProcessTransferBatch::doProcess(
 
     if (userIdKeyValueVec.front().compare("userId") ||
         amountKeyValueVec.front().compare("amount")) {
-      tree.add("error", common::cmd::errorToStringMap.at(
+      tree.add("error", common::cmd::getErrorString(
                             common::cmd::WRONG_ARGUMENT_NAME));
       return tree;
     }
@@ -89,7 +89,7 @@ boost::property_tree::ptree ProcessTransferBatch::doProcess(
   auto status = doProcess(&req, &rep);
 
   if (status != common::cmd::OK) {
-    tree.add("error", common::cmd::errorToStringMap.at(status));
+    tree.add("error", common::cmd::getErrorString(status));
   }
 
   return tree;

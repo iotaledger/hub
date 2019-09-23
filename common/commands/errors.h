@@ -8,8 +8,8 @@
 #ifndef COMMON_ERRORS_H_
 #define COMMON_ERRORS_H_
 
-#include <map>
 #include <string>
+#include <unordered_map>
 
 #include <grpc++/support/sync_stream.h>
 #include "grpc++/grpc++.h"
@@ -47,12 +47,11 @@ typedef enum {
 
 } Error;
 
-std::map<Error, std::string> errorToStringMapCreate();
+std::unordered_map<Error, std::string> errorToStringMapCreate();
 
 grpc::Status errorToGrpcError(Error err);
 
-static const std::map<Error, std::string> errorToStringMap =
-    errorToStringMapCreate();
+std::string getErrorString(Error);
 
 }  // namespace cmd
 }  // namespace common

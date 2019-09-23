@@ -33,7 +33,7 @@ boost::property_tree::ptree SignBundle::doProcess(
 
   if (!FLAGS_SignBundle_enabled) {
     LOG(ERROR) << session() << ": Recover funds is disabled";
-    tree.add("error", common::cmd::errorToStringMap.at(common::cmd::CANCELLED));
+    tree.add("error", common::cmd::getErrorString(common::cmd::CANCELLED));
   }
 
   SignBundleRequest req;
@@ -41,7 +41,7 @@ boost::property_tree::ptree SignBundle::doProcess(
   auto maybeAddress = request.get_optional<std::string>("address");
   if (!maybeAddress) {
     tree.add("error",
-             common::cmd::errorToStringMap.at(common::cmd::MISSING_ARGUMENT));
+             common::cmd::getErrorString(common::cmd::MISSING_ARGUMENT));
     return tree;
   }
 
@@ -57,7 +57,7 @@ boost::property_tree::ptree SignBundle::doProcess(
   auto maybeBundleHash = request.get_optional<std::string>("bundleHash");
   if (maybeBundleHash) {
     tree.add("error",
-             common::cmd::errorToStringMap.at(common::cmd::MISSING_ARGUMENT));
+             common::cmd::getErrorString(common::cmd::MISSING_ARGUMENT));
     return tree;
   }
 
@@ -71,7 +71,7 @@ boost::property_tree::ptree SignBundle::doProcess(
   auto status = doProcess(&req, &rep);
 
   if (status != common::cmd::OK) {
-    tree.add("error", common::cmd::errorToStringMap.at(status));
+    tree.add("error", common::cmd::getErrorString(status));
   } else {
     tree.add("signature", rep.signature);
   }

@@ -38,7 +38,7 @@ boost::property_tree::ptree BalanceSubscription::doProcess(
   auto status = doProcess(&req, &events);
 
   if (status != common::cmd::OK) {
-    tree.add("error", common::cmd::errorToStringMap.at(status));
+    tree.add("error", common::cmd::getErrorString(status));
   } else {
     int i = 0;
     for (auto event : events) {
