@@ -28,6 +28,6 @@ int main(int argc, char** argv) {
     server.reset(new hub::HubGrpcServer());
   }
 
-  server->initialise();
+  server->initialize();
   server->runAndWait();
 }

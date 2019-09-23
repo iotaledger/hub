@@ -72,7 +72,7 @@ DEFINE_string(serverType, "grpc", "Server type to use {grpc,http}");
 namespace hub {
 HubServerBase::HubServerBase() {}
 
-void HubServerBase::initialise_services() {
+void HubServerBase::initialize_services() {
   if (FLAGS_signingMode == "remote") {
     common::crypto::CryptoManager::get().setProvider(
         std::make_unique<crypto::RemoteSigningProvider>(

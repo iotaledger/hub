@@ -25,7 +25,7 @@ namespace crypto {
 class SigningServer : public common::GrpcServerBase {
  public:
   /// Creates and initializes the API interface.
-  void initialise() override;
+  void initialize() override;
 
  private:
   signing::rpc::SigningServerImpl _service;

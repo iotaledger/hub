@@ -35,7 +35,7 @@ class HubGrpcServer : public common::GrpcServerBase, public HubServerBase {
   HubGrpcServer();
 
   /// Creates and initializes the services and the API interface.
-  void initialise() override;
+  void initialize() override;
 
  private:
   /// The hub::HubImpl service that listens to requests from clients

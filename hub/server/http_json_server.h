@@ -30,7 +30,7 @@ class HubHttpJsonServer : public common::HttpServerBase, public HubServerBase {
   HubHttpJsonServer();
 
   /// Creates and initializes the services and the API interface.
-  void initialise() override;
+  void initialize() override;
   virtual ErrorCode handleRequestImpl(std::string_view request_body,
                                       std::string& response) override;
 

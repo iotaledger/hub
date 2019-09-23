@@ -33,8 +33,8 @@
 namespace hub {
 HubHttpJsonServer::HubHttpJsonServer() {}
 
-void HubHttpJsonServer::initialise() {
-  initialise_services();
+void HubHttpJsonServer::initialize() {
+  initialize_services();
 
   LOG(INFO) << "Hub http server was successfully initialized";
 }

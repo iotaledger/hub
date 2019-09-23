@@ -34,8 +34,8 @@ using grpc::ServerBuilder;
 namespace hub {
 HubGrpcServer::HubGrpcServer() {}
 
-void HubGrpcServer::initialise() {
-  initialise_services();
+void HubGrpcServer::initialize() {
+  initialize_services();
 
   _service.setApi(_api);
 

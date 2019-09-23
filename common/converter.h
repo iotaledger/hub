@@ -12,8 +12,6 @@
 #include <string_view>
 #include <chrono>
 
-
-
 namespace common {
     std::string boolToString(bool isTrue);
     bool stringToBool(std::string_view isTrueStr);

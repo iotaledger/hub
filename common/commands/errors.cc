@@ -13,9 +13,9 @@ namespace cmd {
 
 std::map<Error, std::string> errorToStringMapCreate() {
   std::map<Error, std::string> map;
-  map[OK] = "OK";
-  map[MISSING_ARGUMENT] = "MISSING_ARGUMENT";
-  map[WRONG_ARGUMENT_NAME] = "WRONG_ARGUMENT_NAME";
+  map[OK] = "Ok";
+  map[MISSING_ARGUMENT] = "Missing argument";
+  map[WRONG_ARGUMENT_NAME] = "Wrong argument name";
   map[CANCELLED] = "Cancelled";
   map[USER_EXISTS] = "User exist";
   map[USER_DOES_NOT_EXIST] = "User does not exist";
@@ -39,7 +39,7 @@ std::map<Error, std::string> errorToStringMapCreate() {
   map[INSUFFICIENT_BALANCE] = "Insufficient balance";
 
   return map;
-};
+}
 
 grpc::Status errorToGrpcError(Error err) {
   grpc::Status status;

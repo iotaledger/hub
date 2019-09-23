@@ -15,7 +15,7 @@ namespace common {
     class ServerBase {
     public:
         /// Creates and initializes the API interface.
-        virtual void initialise() = 0;
+        virtual void initialize() = 0;
         /// Runs the service and waits for requests
         virtual void runAndWait() = 0;
     };

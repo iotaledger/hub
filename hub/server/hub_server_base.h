@@ -60,7 +60,7 @@ class HubServerBase {
   HubServerBase();
 
   /// Creates and initializes the services and the API interface.
-  void initialise_services();
+  void initialize_services();
 
  protected:
   std::shared_ptr<cppclient::IotaAPI> _api;
