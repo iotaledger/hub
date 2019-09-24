@@ -17,7 +17,7 @@ int main(int argc, char** argv) {
   google::InitGoogleLogging(programName);
   gflags::ParseCommandLineFlags(&argc, &argv, true);
 
-  LOG(INFO) << "Crypto provider starting up.";
+  LOG(INFO) << "Signing server starting up.";
 
   signing::crypto::SigningServer server;
 
