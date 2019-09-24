@@ -38,5 +38,13 @@ service Hub {
   rpc SweepDetail (SweepDetailRequest) returns (SweepDetailReply);
   // Returns whether withdrawal was cancelled or not
   rpc WasWithdrawalCancelled (WasWithdrawalCancelledRequest) returns (WasWithdrawalCancelledReply);
+  // Returns whether an address was spent from
+  rpc WasAddressSpentFrom (WasAddressSpentFromRequest) returns (WasAddressSpentFromReply);
+  // Recover funds from an already spent address
+  //This API call is an alternative for "SignBundle" which requires the caller
+  //to first create the bundle with the address and the amount he/she is interested in
+  //instead, the "RecoverFunds" creates a bundle that spend the entire balance that
+  //is found on the given address
+  rpc RecoverFunds (RecoverFundsRequest) returns (RecoverFundsReply);
 }
 

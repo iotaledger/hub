@@ -144,8 +144,6 @@ TEST_F(LocalSigningProviderTest, ShouldOnlySignOnce) {
   hub::crypto::LocalSigningProvider provider(std::string("abcdefgh"));
   common::crypto::UUID uuid;
 
-  auto& connection = hub::db::DBManager::get().connection();
-
   // First time should work.
   provider.getSignatureForUUID(
       uuid,

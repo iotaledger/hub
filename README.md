@@ -86,12 +86,21 @@ See [Getting Started](docs/getting_started.md) for information on how to use the
     -powMode (Proof of work mode, local or remote)
     -fetchTransactionMessages (Determines if Should store deposit transaction's message) 
       type: bool (--fetchTransactionMessages or --nofetchTransactionMessages)
+    -useHttpsIRI (Determines if the connection with IRI should be over HTTPS (make sure `apiAddress` supports https)) 
+     type: bool (--useHttpsIRI or --nouseHttpsIRI)
 
   Flags from hub/service/sweep_service.cc:
     -sweep_max_deposit (Maximum number of user deposits to process per sweep.)
       type: uint32 default: 5
     -sweep_max_withdraw (Maximum number of withdraw requests to service per
       sweep.) type: uint32 default: 7
+      
+  Flags from hub/server/grpc.cc:
+    -SignBundle_enabled (Whether the SignBundle API call should be available) 
+      type: bool (--SignBundle_enabled or --noSignBundle_enabled)
+       
+    -RecoverFunds_enabled (Whether the RecoverFunds API call should be available) 
+      type: bool (--RecoverFunds_enabled or --noRecoverFunds_enabled)
       
 ```
 

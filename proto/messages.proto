@@ -48,6 +48,10 @@ enum ErrorCode {
   ADDRESS_WAS_ALREADY_SPENT = 16;
   //Provided uuid is invalid
   INVALID_UUID = 17;
+  //Provided address is not user's
+  WRONG_USER_ADDRESS = 18;
+  //Address's balance is zero
+  ADDRESS_BALANCE_ZERO = 19;
 }
 
 /*
@@ -330,3 +334,28 @@ message WasWithdrawalCancelledReply{
     //True if withdrawal was cancelled
     bool wasCancelled = 1;
 }
+
+message WasAddressSpentFromRequest{
+    //The address in question
+    string address = 1;
+    // should command validate address
+    bool validateChecksum = 2;
+}
+
+message WasAddressSpentFromReply{
+    //True if the address was spent from
+    bool wasAddressSpentFrom = 1;
+}
+
+message RecoverFundsRequest {
+  string userId = 1;
+  // The Hub-owned IOTA address that should be signed. (without checksum)
+  string address = 2;
+  // should command validate address
+  bool validateChecksum = 3;
+  // Address the user requests payout to. Should be without checksum.
+  string payoutAddress = 4;
+}
+
+message RecoverFundsReply {}
+

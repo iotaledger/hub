@@ -32,4 +32,5 @@ cc_test(
         "//hub/tests",
         "@com_google_googletest//:gtest",
     ],
+    timeout = "moderate"
 )

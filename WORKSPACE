@@ -20,7 +20,7 @@ git_repository(
 
 git_repository(
     name = "rules_iota",
-    commit = "7c2446c6cf94486071f6ad1067385b393fbe3dd4",
+    commit = "739a65952c3cf455d00e3944cf68e42720d938ce",
     remote = "https://github.com/iotaledger/rules_iota.git",
 )
 
@@ -73,29 +73,29 @@ new_git_repository(
 new_git_repository(
     name = "sqlpp11",
     build_file = "//:third-party/sqlpp11/BUILD.bzl",
-    commit = "ba05135d47e8674f429ba1e03a0259a48f05a4c4",
+    commit = "4f9f001fbd692d3b1c045280f309b61d046e7783",
     remote = "https://github.com/rbock/sqlpp11.git",
 )
 
 new_git_repository(
     name = "sqlpp11sqlite",
     build_file = "//:third-party/sqlpp11sqlite/BUILD.bzl",
-    commit = "cf37829fc9828a36afa050f960d09abcaf6aeb6a",
+    commit = "192c593f8862ee6a63a60538fbf87794bfa9464e",
     remote = "https://github.com/rbock/sqlpp11-connector-sqlite3.git",
 )
 
 new_git_repository(
     name = "sqlpp11mysql",
     build_file = "//:third-party/sqlpp11mysql/BUILD.bzl",
-    commit = "8a48bc2d6157fc445cda5b9beac9b7901fff625c",
+    commit = "5e0913c843e0cf7ede439f05373033ceb2f39d11",
     remote = "https://github.com/rbock/sqlpp11-connector-mysql.git",
 )
 
 http_archive(
     name = "org_iota_entangled",
-    sha256 = "001264f930dfb9082f8936a38b3c2ecb472d567bf1053bea13e04bef529d50ab",
-    strip_prefix = "entangled-b95d477dabd52e8e37c71df747a42153f9e55485",
-    url = "https://github.com/iotaledger/entangled/archive/b95d477dabd52e8e37c71df747a42153f9e55485.zip",
+    sha256 = "44acf23ebe05da0a748ba211ddaa4208db36e758e09a283fad05e457b32ee0a0",
+    strip_prefix = "entangled-22059fa56d353bd9bc5af4614737fd820dc08eac",
+    url = "https://github.com/iotaledger/entangled/archive/22059fa56d353bd9bc5af4614737fd820dc08eac.zip",
 )
 
 new_git_repository(

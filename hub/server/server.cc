@@ -66,6 +66,9 @@ DEFINE_bool(fetchTransactionMessages, false,
             "Whether or not should hub fetch messages from transactions that "
             "are funding user addresses");
 
+DEFINE_bool(useHttpsIRI, false,
+            "Whether or not should hub connect with IRI over Https connection");
+
 using grpc::Server;
 using grpc::ServerBuilder;
 
@@ -116,7 +119,8 @@ void HubServer::initialise() {
     auto host = FLAGS_apiAddress.substr(0, portIdx);
     auto port = std::stoi(FLAGS_apiAddress.substr(portIdx + 1));
 
-    _api = std::make_shared<cppclient::BeastIotaAPI>(host, port);
+    _api = std::make_shared<cppclient::BeastIotaAPI>(host, port,
+                                                     FLAGS_useHttpsIRI);
     _service.setApi(_api);
   }
 
@@ -125,7 +129,7 @@ void HubServer::initialise() {
         _api, FLAGS_depth, FLAGS_minWeightMagnitude));
   } else if (FLAGS_powMode == "local") {
     iota::POWManager::get().setProvider(std::make_unique<iota::LocalPOW>(
-        FLAGS_depth, FLAGS_minWeightMagnitude));
+        _api, FLAGS_depth, FLAGS_minWeightMagnitude));
   } else {
     LOG(FATAL) << "PoW mode: \"" << FLAGS_powMode << "\" not recognized";
   }

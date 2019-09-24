@@ -71,23 +71,9 @@ grpc::Status UserWithdraw::doProcess(
     }
   }
 
-  // Currently, all IOTA addresses' last trit must be 0.
-  // This means 9ABCDWXYZ'
-  switch (address->str_view()[80]) {
-    case '9':
-    case 'A':
-    case 'B':
-    case 'C':
-    case 'D':
-    case 'W':
-    case 'X':
-    case 'Y':
-    case 'Z':
-      break;
-    default:
-      return grpc::Status(
-          grpc::StatusCode::FAILED_PRECONDITION, "",
-          errorToString(hub::rpc::ErrorCode::INELIGIBLE_ADDRESS));
+  if (!isAddressValid(address->str_view())) {
+    return grpc::Status(grpc::StatusCode::FAILED_PRECONDITION, "",
+                        errorToString(hub::rpc::ErrorCode::INELIGIBLE_ADDRESS));
   }
 
   auto transaction = connection.transaction();
@@ -122,10 +108,10 @@ grpc::Status UserWithdraw::doProcess(
     // Verify address wasn't spent before
     if (_api) {
       auto res = _api->wereAddressesSpentFrom({address.value().str()});
-      if (res.states.empty()) {
+      if (!res.has_value() || res.value().states.empty()) {
         errorCode = hub::rpc::ErrorCode::IRI_CLIENT_UNAVAILABLE;
         goto cleanup;
-      } else if (res.states.front()) {
+      } else if (res.value().states.front()) {
         errorCode = hub::rpc::ErrorCode::ADDRESS_WAS_ALREADY_SPENT;
         goto cleanup;
       }
@@ -161,7 +147,6 @@ grpc::Status UserWithdraw::doProcess(
     errorCode = hub::rpc::ErrorCode::EC_UNKNOWN;
   }
 
-done:
   if (errorCode) {
     return grpc::Status(grpc::StatusCode::FAILED_PRECONDITION, "",
                         errorToString(errorCode.value()));

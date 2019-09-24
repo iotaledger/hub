@@ -10,7 +10,7 @@ std::map<uint64_t, int64_t> createZigZagTransfer(
     std::vector<std::string>& users, rpc::ProcessTransferBatchRequest& req,
     int64_t absAmount) {
   std::map<uint64_t, int64_t> idsToTransAmount;
-  for (auto i = 0; i < users.size(); ++i) {
+  for (uint32_t i = 0; i < users.size(); ++i) {
     auto* transfer = req.add_transfers();
     int64_t mul = (i % 2) ? 1 : -1;
     transfer->set_amount(mul * absAmount);

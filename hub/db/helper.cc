@@ -223,6 +223,7 @@ void helper<C>::markUUIDAsSigned(C& connection,
   connection(insert_into(tbl).set(tbl.uuid = uuid.str()));
 }
 
+
 template <typename C>
 std::vector<Sweep> helper<C>::getUnconfirmedSweeps(
     C& connection, const std::chrono::system_clock::time_point& olderThan) {
@@ -323,14 +324,14 @@ std::vector<UserAccountBalanceEvent> helper<C>::getUserAccountBalances(
   for (auto& row : result) {
     std::chrono::time_point<std::chrono::system_clock> ts =
         row.occuredAt.value();
-    if (row.reason == static_cast<int>(UserAccountBalanceReason::SWEEP)) {
+    if (row.reason == static_cast<long int>(UserAccountBalanceReason::SWEEP)) {
       balances.emplace_back(UserAccountBalanceEvent{
           std::move(row.identifier), ts, row.amount,
           static_cast<UserAccountBalanceReason>((row.reason.value())),
           row.bundleHash});
-    } else if (row.reason ==
-                   static_cast<int>(UserAccountBalanceReason::WITHDRAWAL) ||
-               row.reason == static_cast<int>(
+    } else if (row.reason == static_cast<long int>(
+                                 UserAccountBalanceReason::WITHDRAWAL) ||
+               row.reason == static_cast<long int>(
                                  UserAccountBalanceReason::WITHDRAWAL_CANCEL)) {
       balances.emplace_back(UserAccountBalanceEvent{
           std::move(row.identifier), ts, row.amount,
@@ -514,8 +515,6 @@ void helper<C>::insertUserTransfers(
   if (transfers.empty()) {
     return;
   }
-  auto now = ::sqlpp::chrono::floor<::std::chrono::milliseconds>(
-      std::chrono::system_clock::now());
 
   auto multi_insert =
       insert_into(bal).columns(bal.userId, bal.amount, bal.reason);
@@ -813,7 +812,7 @@ nonstd::optional<AddressInfo> helper<C>::getAddressInfo(
 
   auto result = connection(
       select(
-          acc.identifier, add.seedUuid,
+          add.id, acc.identifier, add.seedUuid,
           exists(select(bal.id).from(bal).where(
               bal.userAddress == add.id &&
               bal.reason == static_cast<int>(UserAddressBalanceReason::SWEEP))))
@@ -824,7 +823,7 @@ nonstd::optional<AddressInfo> helper<C>::getAddressInfo(
     return {};
   } else {
     auto& front = result.front();
-    return {AddressInfo{std::move(front.identifier.value()),
+    return {AddressInfo{front.id, std::move(front.identifier.value()),
                         common::crypto::UUID(front.seedUuid.value()),
                         front.exists}};
   }
@@ -887,7 +886,6 @@ template <typename C>
 nonstd::optional<hub::db::SweepDetail> helper<C>::getSweepDetailByBundleHash(
     C& connection, const common::crypto::Hash& bundleHash) {
   db::sql::Sweep swp;
-  db::sql::SweepTails tls;
 
   hub::db::SweepDetail sweepsDetails;
 

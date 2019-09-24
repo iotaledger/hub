@@ -105,7 +105,7 @@ TEST_F(LocalPOWTests, CorrectDigest) {
             resp.trunkTransaction);
   char* digest = iota_digest(powedTxs[0].c_str());
   std::string prev = digest;
-  for (auto i = 1; i < powedTxs.size(); ++i) {
+  for (uint32_t i = 1; i < powedTxs.size(); ++i) {
     free(digest);
     EXPECT_EQ(powedTxs[i].substr(hub::iota::LocalPOW::BRANCH_OFFSET, 81),
               resp.trunkTransaction);
