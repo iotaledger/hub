@@ -21,6 +21,6 @@ int main(int argc, char** argv) {
 
   signing::crypto::SigningServer server;
 
-    server.initialize();
+  server.initialize();
   server.runAndWait();
 }
