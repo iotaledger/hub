@@ -1,44 +1,63 @@
 /*
  * Copyright (c) 2018 IOTA Stiftung
- * https://github.com/iotaledger/rpchub
+ * https://github.com/iotaledger/hub
  *
  * Refer to the LICENSE file for licensing information
  */
 
-#include "hub/commands/user_withdraw_cancel.h"
-
 #include <cstdint>
-
-#include <sqlpp11/connection.h>
-#include <sqlpp11/functions.h>
-#include <sqlpp11/select.h>
 
 #include <boost/uuid/string_generator.hpp>
 #include <boost/uuid/uuid.hpp>
 #include <boost/uuid/uuid_io.hpp>
 
-#include "common/stats/session.h"
-#include "hub/db/db.h"
-#include "hub/db/helper.h"
-#include "proto/hub.pb.h"
-#include "schema/schema.h"
-
+#include "common/converter.h"
+#include "hub/commands/factory.h"
 #include "hub/commands/helper.h"
+#include "hub/db/helper.h"
+
+#include "hub/commands/user_withdraw_cancel.h"
 
 namespace hub {
 namespace cmd {
 
-grpc::Status UserWithdrawCancel::doProcess(
-    const hub::rpc::UserWithdrawCancelRequest* request,
-    hub::rpc::UserWithdrawCancelReply* response) noexcept {
+static CommandFactoryRegistrator<UserWithdrawCancel> registrator;
+
+boost::property_tree::ptree UserWithdrawCancel::doProcess(
+    const boost::property_tree::ptree& request) noexcept {
+  boost::property_tree::ptree tree;
+  UserWithdrawCancelRequest req;
+  UserWithdrawCancelReply rep;
+  auto maybeUuid = request.get_optional<std::string>("uuid");
+  if (!maybeUuid) {
+    tree.add("error",
+             common::cmd::getErrorString(common::cmd::MISSING_ARGUMENT));
+    return tree;
+  }
+
+  req.uuid = maybeUuid.value();
+  auto status = doProcess(&req, &rep);
+
+  if (status != common::cmd::OK) {
+    tree.add("error", common::cmd::getErrorString(status));
+  } else {
+    tree.add("success", common::boolToString(rep.success));
+  }
+
+  return tree;
+}
+
+common::cmd::Error UserWithdrawCancel::doProcess(
+    const UserWithdrawCancelRequest* request,
+    UserWithdrawCancelReply* response) noexcept {
   auto& connection = db::DBManager::get().connection();
   auto transaction = connection.transaction();
 
-  nonstd::optional<hub::rpc::ErrorCode> errorCode;
+  nonstd::optional<common::cmd::Error> errorCode;
   bool success = false;
 
   try {
-    boost::uuids::uuid uuid = boost::uuids::string_generator()(request->uuid());
+    boost::uuids::uuid uuid = boost::uuids::string_generator()(request->uuid);
 
     auto result = connection.cancelWithdrawal(boost::uuids::to_string(uuid));
 
@@ -55,16 +74,16 @@ grpc::Status UserWithdrawCancel::doProcess(
 
       transaction->commit();
 
-      LOG(INFO) << "Withdrawal: " << request->uuid()
+      LOG(INFO) << "Withdrawal: " << request->uuid
                 << " cancelled successfully.";
     } else {
       transaction->rollback();
       LOG(ERROR)
-          << "Withdrawal: " << request->uuid()
+          << "Withdrawal: " << request->uuid
           << " can not be cancelled. (either it had been swept or it has "
              "already been cancelled)";
 
-      errorCode = hub::rpc::ErrorCode::WITHDRAWAL_CAN_NOT_BE_CANCELLED;
+      errorCode = common::cmd::WITHDRAWAL_CAN_NOT_BE_CANCELLED;
     }
   } catch (const std::exception& ex) {
     LOG(ERROR) << session() << " Commit failed: " << ex.what();
@@ -75,17 +94,16 @@ grpc::Status UserWithdrawCancel::doProcess(
       LOG(ERROR) << session() << " Rollback failed: " << ex.what();
     }
 
-    errorCode = hub::rpc::ErrorCode::EC_UNKNOWN;
+    errorCode = common::cmd::UNKNOWN_ERROR;
   }
 
   if (errorCode) {
-    return grpc::Status(grpc::StatusCode::FAILED_PRECONDITION, "",
-                        errorToString(errorCode.value()));
+    return errorCode.value();
   }
 
-  response->set_success(success);
+  response->success = success;
 
-  return grpc::Status::OK;
+  return common::cmd::OK;
 }
 
 }  // namespace cmd

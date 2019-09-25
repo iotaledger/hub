@@ -1,6 +1,6 @@
 /*
  * Copyright (c) 2018 IOTA Stiftung
- * https://github.com/iotaledger/rpchub
+ * https://github.com/iotaledger/hub
  *
  * Refer to the LICENSE file for licensing information
  */
@@ -10,29 +10,38 @@
 
 #include <string>
 
-#include "common/command.h"
+#include "common/commands/command.h"
 
 namespace hub {
-namespace rpc {
-class GetBalanceRequest;
-class GetBalanceReply;
-}  // namespace rpc
 
 namespace cmd {
 
+typedef struct GetBalanceRequest {
+  std::string userId;
+} GetBalanceRequest;
+
+typedef struct GetBalanceReply {
+  uint64_t available;
+} GetBalanceReply;
+
 /// Gets the current balance for a user with a specific id.
-/// @param[in] hub::rpc::GetBalanceRequest
-/// @param[in] hub::rpc::GetBalanceReply
-class GetBalance : public common::Command<hub::rpc::GetBalanceRequest,
-                                          hub::rpc::GetBalanceReply> {
+/// @param[in] GetBalanceRequest
+/// @param[in] GetBalanceReply
+class GetBalance : public common::Command<GetBalanceRequest, GetBalanceReply> {
  public:
-  using Command<hub::rpc::GetBalanceRequest,
-                hub::rpc::GetBalanceReply>::Command;
+  using Command<GetBalanceRequest, GetBalanceReply>::Command;
 
-  const std::string name() override { return "GetBalance"; }
+  static std::shared_ptr<common::ICommand> create() {
+    return std::shared_ptr<common::ICommand>(new GetBalance());
+  }
 
-  grpc::Status doProcess(const hub::rpc::GetBalanceRequest* request,
-                         hub::rpc::GetBalanceReply* response) noexcept override;
+  static const std::string name() { return "GetBalance"; }
+
+  common::cmd::Error doProcess(const GetBalanceRequest* request,
+                               GetBalanceReply* response) noexcept override;
+
+  boost::property_tree::ptree doProcess(
+      const boost::property_tree::ptree& request) noexcept override;
 };
 }  // namespace cmd
 }  // namespace hub

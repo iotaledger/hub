@@ -1,6 +1,6 @@
 /*
  * Copyright (c) 2018 IOTA Stiftung
- * https://github.com/iotaledger/rpchub
+ * https://github.com/iotaledger/hub
  *
  * Refer to the LICENSE file for licensing information
  */
@@ -10,31 +10,38 @@
 
 #include <string>
 
-#include "common/command.h"
+#include "common/commands/command.h"
 
 namespace hub {
-namespace rpc {
-class GetDepositAddressRequest;
-class GetDepositAddressReply;
-}  // namespace rpc
-
 namespace cmd {
 
-/// Gets a new deposit address.
-/// @param[in] hub::rpc::GetDepositAddressRequest
-/// @param[in] hub::rpc::GetDepositAddressReply
+typedef struct GetDepositAddressRequest {
+  GetDepositAddressRequest() : includeChecksum(false) {}
+  std::string userId;
+  bool includeChecksum;
+} GetDepositAddressRequest;
+
+typedef struct GetDepositAddressReply {
+  std::string address;
+} GetDepositAddressReply;
+
 class GetDepositAddress
-    : public common::Command<hub::rpc::GetDepositAddressRequest,
-                             hub::rpc::GetDepositAddressReply> {
+    : public common::Command<GetDepositAddressRequest, GetDepositAddressReply> {
  public:
-  using Command<hub::rpc::GetDepositAddressRequest,
-                hub::rpc::GetDepositAddressReply>::Command;
+  using Command<GetDepositAddressRequest, GetDepositAddressReply>::Command;
 
-  const std::string name() override { return "GetDepositAddress"; }
+  static std::shared_ptr<common::ICommand> create() {
+    return std::shared_ptr<common::ICommand>(new GetDepositAddress());
+  }
 
-  grpc::Status doProcess(
-      const hub::rpc::GetDepositAddressRequest* request,
-      hub::rpc::GetDepositAddressReply* response) noexcept override;
+  static const std::string name() { return "GetDepositAddress"; }
+
+  common::cmd::Error doProcess(
+      const GetDepositAddressRequest* request,
+      GetDepositAddressReply* response) noexcept override;
+
+  boost::property_tree::ptree doProcess(
+      const boost::property_tree::ptree& request) noexcept override;
 };
 }  // namespace cmd
 }  // namespace hub

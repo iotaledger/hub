@@ -1,6 +1,6 @@
 /*
  * Copyright (c) 2018 IOTA Stiftung
- * https://github.com/iotaledger/rpchub
+ * https://github.com/iotaledger/hub
  *
  * Refer to the LICENSE file for licensing information
  */
@@ -12,7 +12,7 @@
 #include <string>
 
 #include <grpc++/grpc++.h>
-#include "common/server_base.h"
+#include "common/grpc_server_base.h"
 #include "signing_server/grpc.h"
 
 namespace signing {
@@ -22,10 +22,10 @@ namespace crypto {
 /// SigningServer class.
 /// The SigningServer holds the underlying logic which provides
 /// Addresses/Signature/Seed generation based on a secret "salt" argument
-class SigningServer : public common::ServerBase {
+class SigningServer : public common::GrpcServerBase {
  public:
   /// Creates and initializes the API interface.
-  void initialise() override;
+  void initialize() override;
 
  private:
   signing::rpc::SigningServerImpl _service;

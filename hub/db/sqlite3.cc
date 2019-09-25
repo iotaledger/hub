@@ -1,17 +1,17 @@
 /*
  * Copyright (c) 2018 IOTA Stiftung
- * https://github.com/iotaledger/rpchub
+ * https://github.com/iotaledger/hub
  *
  * Refer to the LICENSE file for licensing information
  */
-
-#include "hub/db/sqlite3.h"
 
 #include <memory>
 
 #include <sqlpp11/sqlite3/connection.h>
 
 #include "hub/db/db.h"
+
+#include "hub/db/sqlite3.h"
 
 namespace hub {
 namespace db {

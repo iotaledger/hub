@@ -53,7 +53,7 @@ TEST_F(DBTest, HubAddressTriggerWorks) {
   auto hubOutputAddress = cryptoProvider.getAddressForUUID(uuid).value();
 
   std::vector<uint64_t> hubAddressIds;
-  for (uint32_t i = 0 ; i < balances.size(); ++i) {
+  for (uint32_t i = 0; i < balances.size(); ++i) {
     auto hubAddressId = connection.createHubAddress(uuid, hubOutputAddress);
     hubAddressIds.push_back(hubAddressId);
   }

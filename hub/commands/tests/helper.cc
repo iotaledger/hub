@@ -7,14 +7,13 @@ namespace hub {
 namespace tests {
 
 std::map<uint64_t, int64_t> createZigZagTransfer(
-    std::vector<std::string>& users, rpc::ProcessTransferBatchRequest& req,
+    std::vector<std::string>& users, cmd::ProcessTransferBatchRequest& req,
     int64_t absAmount) {
   std::map<uint64_t, int64_t> idsToTransAmount;
   for (uint32_t i = 0; i < users.size(); ++i) {
-    auto* transfer = req.add_transfers();
     int64_t mul = (i % 2) ? 1 : -1;
-    transfer->set_amount(mul * absAmount);
-    transfer->set_userid(users[i]);
+    req.transfers.emplace_back(
+        cmd::UserTransfer{.userId = users[i], .amount = mul * absAmount});
     idsToTransAmount[i + 1] = mul * absAmount;
   }
   return idsToTransAmount;
@@ -32,12 +31,6 @@ std::map<uint64_t, int64_t> createBalanceForUsers(std::vector<uint64_t> ids,
   auto& connection = db::DBManager::get().connection();
   connection.insertUserTransfers(transfers);
   return idsToBalances;
-}
-
-hub::rpc::ErrorCode errorCodeFromDetails(const std::string& errorStr) {
-  hub::rpc::Error error;
-  error.ParseFromString(errorStr);
-  return error.code();
 }
 
 }  // namespace tests

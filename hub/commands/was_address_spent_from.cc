@@ -1,91 +1,109 @@
 /*
  * Copyright (c) 2018 IOTA Stiftung
- * https://github.com/iotaledger/rpchub
+ * https://github.com/iotaledger/hub
  *
  * Refer to the LICENSE file for licensing information
  */
 
-#include "hub/commands/was_address_spent_from.h"
-
 #include <cstdint>
 #include <exception>
 
-#include "common/stats/session.h"
-#include "hub/db/db.h"
+#include "common/converter.h"
 #include "hub/db/helper.h"
-#include "proto/hub.pb.h"
-#include "schema/schema.h"
 
 #include "common/crypto/manager.h"
 #include "common/crypto/types.h"
+#include "hub/commands/factory.h"
 #include "hub/commands/helper.h"
+
+#include "hub/commands/was_address_spent_from.h"
 
 namespace hub {
 namespace cmd {
 
-grpc::Status WasAddressSpentFrom::doProcess(
-    const hub::rpc::WasAddressSpentFromRequest* request,
-    hub::rpc::WasAddressSpentFromReply* response) noexcept {
-  auto& connection = db::DBManager::get().connection();
+static CommandFactoryRegistrator<WasAddressSpentFrom> registrator;
 
-  nonstd::optional<hub::rpc::ErrorCode> errorCode;
+boost::property_tree::ptree WasAddressSpentFrom::doProcess(
+    const boost::property_tree::ptree& request) noexcept {
+  boost::property_tree::ptree tree;
+  WasAddressSpentFromRequest req;
+  WasAddressSpentFromReply rep;
+  auto maybeAddress = request.get_optional<std::string>("address");
+  if (!maybeAddress) {
+    tree.add("error",
+             common::cmd::getErrorString(common::cmd::MISSING_ARGUMENT));
+    return tree;
+  }
 
+  req.address = maybeAddress.value();
+
+  req.validateChecksum = false;
+  auto maybeValidateChecksum =
+      request.get_optional<std::string>("validateChecksum");
+  if (maybeValidateChecksum) {
+    req.validateChecksum = common::stringToBool(maybeValidateChecksum.value());
+  }
+
+  auto status = doProcess(&req, &rep);
+
+  if (status != common::cmd::OK) {
+    tree.add("error", common::cmd::getErrorString(status));
+  } else {
+    tree.add("wasAddressSpentFrom",
+             std::move(common::boolToString(rep.wasAddressSpentFrom)));
+  }
+  return tree;
+}
+
+common::cmd::Error WasAddressSpentFrom::doProcess(
+    const WasAddressSpentFromRequest* request,
+    WasAddressSpentFromReply* response) noexcept {
   nonstd::optional<common::crypto::Address> address;
 
   try {
-    if (request->validatechecksum()) {
+    if (request->validateChecksum) {
       address = std::move(common::crypto::CryptoManager::get()
                               .provider()
-                              .verifyAndStripChecksum(request->address()));
+                              .verifyAndStripChecksum(request->address));
 
       if (!address.has_value()) {
-        return grpc::Status(
-            grpc::StatusCode::FAILED_PRECONDITION, "",
-            errorToString(hub::rpc::ErrorCode::CHECKSUM_INVALID));
+        return common::cmd::INVALID_CHECKSUM;
       }
     } else {
-      address = {common::crypto::Address(request->address())};
+      address = {common::crypto::Address(request->address)};
     }
   }
 
   catch (const std::exception& ex) {
     LOG(ERROR) << session() << " Withdrawal to invalid address: " << ex.what();
 
-    return grpc::Status(grpc::StatusCode::FAILED_PRECONDITION, "",
-                        errorToString(hub::rpc::ErrorCode::EC_UNKNOWN));
+    return common::cmd::UNKNOWN_ERROR;
   }
 
   if (!isAddressValid(address->str_view())) {
-    return grpc::Status(grpc::StatusCode::FAILED_PRECONDITION, "",
-                        errorToString(hub::rpc::ErrorCode::INELIGIBLE_ADDRESS));
+    return common::cmd::INVALID_ADDRESS;
   }
 
-  response->set_wasaddressspentfrom(false);
+  response->wasAddressSpentFrom = false;
   try {
     // Verify address wasn't spent before
     if (_api) {
       auto res = _api->wereAddressesSpentFrom({address.value().str()});
       if (!res.has_value() || res.value().states.empty()) {
-        errorCode = hub::rpc::ErrorCode::IRI_CLIENT_UNAVAILABLE;
+        return common::cmd::IOTA_NODE_UNAVAILABLE;
       } else if (res.value().states.front()) {
-        errorCode = hub::rpc::ErrorCode::ADDRESS_WAS_ALREADY_SPENT;
-        response->set_wasaddressspentfrom(true);
+        response->wasAddressSpentFrom = true;
+        return common::cmd::ADDRESS_WAS_SPENT;
       }
     }
 
   } catch (const std::exception& ex) {
     LOG(ERROR) << session() << " Commit failed: " << ex.what();
 
-    errorCode = hub::rpc::ErrorCode::EC_UNKNOWN;
+    return common::cmd::UNKNOWN_ERROR;
   }
 
-done:
-  if (errorCode) {
-    return grpc::Status(grpc::StatusCode::FAILED_PRECONDITION, "",
-                        errorToString(errorCode.value()));
-  }
-
-  return grpc::Status::OK;
+  return common::cmd::OK;
 }
 
 }  // namespace cmd

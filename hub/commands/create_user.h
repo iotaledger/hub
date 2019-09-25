@@ -1,6 +1,6 @@
 /*
  * Copyright (c) 2018 IOTA Stiftung
- * https://github.com/iotaledger/rpchub
+ * https://github.com/iotaledger/hub
  *
  * Refer to the LICENSE file for licensing information
  */
@@ -8,31 +8,41 @@
 #ifndef HUB_COMMANDS_CREATE_USER_H_
 #define HUB_COMMANDS_CREATE_USER_H_
 
+#include "common/commands/command.h"
+
 #include <string>
 
-#include "common/command.h"
-
 namespace hub {
-namespace rpc {
-class CreateUserRequest;
-class CreateUserReply;
-}  // namespace rpc
-
 namespace cmd {
 
+typedef struct CreateUserRequest {
+  std::string userId;
+
+} CreateUserRequest;
+
+typedef struct CreateUserReply {
+  std::string userId;
+
+} CreateUserReply;
+
 /// Creates a new user with a specific id.
-/// @param[in] hub::rpc::CreateUserRequest
-/// @param[in] hub::rpc::CreateUserReply
-class CreateUser : public common::Command<hub::rpc::CreateUserRequest,
-                                          hub::rpc::CreateUserReply> {
+/// @param[in] CreateUserRequest
+/// @param[in] CreateUserReply
+class CreateUser : public common::Command<CreateUserRequest, CreateUserReply> {
  public:
-  using Command<hub::rpc::CreateUserRequest,
-                hub::rpc::CreateUserReply>::Command;
+  using Command<CreateUserRequest, CreateUserReply>::Command;
 
-  const std::string name() override { return "CreateUser"; }
+  static std::shared_ptr<ICommand> create() {
+    return std::shared_ptr<common::ICommand>(new CreateUser());
+  }
 
-  grpc::Status doProcess(const hub::rpc::CreateUserRequest* request,
-                         hub::rpc::CreateUserReply* response) noexcept override;
+  static const std::string name() { return "CreateUser"; }
+
+  common::cmd::Error doProcess(const CreateUserRequest* request,
+                               CreateUserReply* response) noexcept override;
+
+  boost::property_tree::ptree doProcess(
+      const boost::property_tree::ptree& request) noexcept override;
 };
 }  // namespace cmd
 }  // namespace hub

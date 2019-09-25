@@ -1,11 +1,9 @@
 /*
  * Copyright (c) 2018 IOTA Stiftung
- * https://github.com/iotaledger/rpchub
+ * https://github.com/iotaledger/hub
  *
  * Refer to the LICENSE file for licensing information
  */
-
-#include "hub/db/helper.h"
 
 #include <algorithm>
 #include <unordered_map>
@@ -22,6 +20,8 @@
 
 #include <sqlpp11/mysql/connection.h>
 #include <sqlpp11/sqlite3/connection.h>
+
+#include "hub/db/helper.h"
 
 namespace hub {
 namespace db {
@@ -222,7 +222,6 @@ void helper<C>::markUUIDAsSigned(C& connection,
 
   connection(insert_into(tbl).set(tbl.uuid = uuid.str()));
 }
-
 
 template <typename C>
 std::vector<Sweep> helper<C>::getUnconfirmedSweeps(

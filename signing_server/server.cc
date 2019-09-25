@@ -20,7 +20,7 @@ namespace signing {
 
 namespace crypto {
 
-void SigningServer::initialise() {
+void SigningServer::initialize() {
   if (common::flags::FLAGS_salt.size() <= 20) {
     LOG(FATAL) << "Salt must be more than 20 characters long.";
   }

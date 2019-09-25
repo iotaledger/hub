@@ -1,6 +1,6 @@
 /*
  * Copyright (c) 2018 IOTA Stiftung
- * https://github.com/iotaledger/rpchub
+ * https://github.com/iotaledger/hub
  *
  * Refer to the LICENSE file for licensing information
  */
@@ -10,30 +10,39 @@
 
 #include <string>
 
-#include "common/command.h"
+#include "common/commands/command.h"
 
 namespace hub {
-namespace rpc {
-class GetAddressInfoRequest;
-class GetAddressInfoReply;
-}  // namespace rpc
-
 namespace cmd {
 
 /// Gets information on an address
-/// @param[in] hub::rpc::GetAddressInfoRequest
-/// @param[in] hub::rpc::GetAddressInfoReply
-class GetAddressInfo : public common::Command<hub::rpc::GetAddressInfoRequest,
-                                              hub::rpc::GetAddressInfoReply> {
+/// @param[in] GetAddressInfoRequest
+/// @param[in] GetAddressInfoReply
+
+typedef struct GetAddressInfoRequest {
+  std::string address;
+} GetAddressInfoRequest;
+
+typedef struct GetAddressInfoReply {
+  std::string userId;
+} GetAddressInfoReply;
+
+class GetAddressInfo
+    : public common::Command<GetAddressInfoRequest, GetAddressInfoReply> {
  public:
-  using Command<hub::rpc::GetAddressInfoRequest,
-                hub::rpc::GetAddressInfoReply>::Command;
+  using Command<GetAddressInfoRequest, GetAddressInfoReply>::Command;
 
-  const std::string name() override { return "GetAddressInfo"; }
+  static std::shared_ptr<common::ICommand> create() {
+    return std::shared_ptr<common::ICommand>(new GetAddressInfo());
+  }
 
-  grpc::Status doProcess(
-      const hub::rpc::GetAddressInfoRequest* request,
-      hub::rpc::GetAddressInfoReply* response) noexcept override;
+  static const std::string name() { return "GetAddressInfo"; }
+
+  common::cmd::Error doProcess(const GetAddressInfoRequest *request,
+                               GetAddressInfoReply *response) noexcept override;
+
+  boost::property_tree::ptree doProcess(
+      const boost::property_tree::ptree &request) noexcept override;
 };
 }  // namespace cmd
 }  // namespace hub

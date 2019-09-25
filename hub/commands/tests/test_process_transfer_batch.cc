@@ -11,15 +11,11 @@
 #include <boost/range/adaptors.hpp>
 #include <boost/range/algorithm/copy.hpp>
 
-#include "proto/hub.pb.h"
-#include "schema/schema.h"
-
 #include "hub/commands/create_user.h"
 #include "hub/commands/get_balance.h"
 #include "hub/commands/helper.h"
 #include "hub/commands/process_transfer_batch.h"
 #include "hub/commands/tests/helper.h"
-#include "hub/db/db.h"
 
 #include "runner.h"
 
@@ -50,14 +46,14 @@ void processRandomTransfer(std::map<uint64_t, std::string>& idsToUsers,
   cmd::ProcessTransferBatch cmd(std::move(session));
 
   for (uint32_t i = 0; i < NUM_TRANSFERS; ++i) {
-    rpc::ProcessTransferBatchRequest req;
-    rpc::ProcessTransferBatchReply res;
+    cmd::ProcessTransferBatchRequest req;
+    cmd::ProcessTransferBatchReply res;
 
     auto idsToAmounts = createZigZagTransfer(users, req, distr(eng));
     bool cmdOK = false;
     try {
       auto status = cmd.process(&req, &res);
-      cmdOK = status.ok();
+      cmdOK = (status == common::cmd::OK);
     } catch (const sqlpp::exception& ex) {
     }
 
@@ -79,49 +75,42 @@ void processRandomTransfer(std::map<uint64_t, std::string>& idsToUsers,
 }
 
 TEST_F(ProcessTransferBatchTest, FailOnNonExistingUserId) {
-  rpc::ProcessTransferBatchRequest req;
-  rpc::ProcessTransferBatchReply res;
+  cmd::ProcessTransferBatchRequest req;
+  cmd::ProcessTransferBatchReply res;
 
-  auto* transfer = req.add_transfers();
-  transfer->set_amount(100);
-  transfer->set_userid("Imaginary User");
+  constexpr static auto userId = "Imaginary User";
 
-  transfer = req.add_transfers();
-  transfer->set_amount(-100);
-  transfer->set_userid("Imaginary User");
+  req.transfers.emplace_back(
+      cmd::UserTransfer{.userId = userId, .amount = 100});
+  req.transfers.emplace_back(
+      cmd::UserTransfer{.userId = userId, .amount = -100});
 
   cmd::ProcessTransferBatch command(session());
 
   auto status = command.process(&req, &res);
 
-  ASSERT_FALSE(status.ok());
-  ASSERT_EQ(status.error_message(),
-            cmd::errorToString(hub::rpc::ErrorCode::USER_DOES_NOT_EXIST));
+  ASSERT_EQ(status, common::cmd::USER_DOES_NOT_EXIST);
 }
 
 TEST_F(ProcessTransferBatchTest, ZeroAmountTransferFails) {
-  rpc::ProcessTransferBatchRequest req;
-  rpc::ProcessTransferBatchReply res;
+  cmd::ProcessTransferBatchRequest req;
+  cmd::ProcessTransferBatchReply res;
 
   auto userId = "User Id";
   auto status = createUser(session(), userId);
-  ASSERT_TRUE(status.ok());
+  ASSERT_TRUE(status == common::cmd::OK);
 
-  auto* transfer = req.add_transfers();
-  transfer->set_amount(0);
-  transfer->set_userid(userId);
+  req.transfers.emplace_back(cmd::UserTransfer{.userId = userId, .amount = 0});
 
   cmd::ProcessTransferBatch command(session());
 
   status = command.process(&req, &res);
-  ASSERT_FALSE(status.ok());
-  ASSERT_EQ(status.error_message(),
-            cmd::errorToString(hub::rpc::ErrorCode::BATCH_INVALID));
+  ASSERT_EQ(status, common::cmd::BATCH_INVALID);
 }
 
 TEST_F(ProcessTransferBatchTest, TransfersAreRecorded) {
-  rpc::ProcessTransferBatchRequest req;
-  rpc::ProcessTransferBatchReply res;
+  cmd::ProcessTransferBatchRequest req;
+  cmd::ProcessTransferBatchReply res;
   std::vector<std::string> users;
   std::vector<uint64_t> userIds;
   cmd::ProcessTransferBatch command(session());
@@ -131,29 +120,29 @@ TEST_F(ProcessTransferBatchTest, TransfersAreRecorded) {
     users.push_back("User " + std::to_string(i + 1));
     userIds.push_back(i + 1);  // incremental keys are predictable
     auto status = createUser(session(), users[i]);
-    ASSERT_TRUE(status.ok());
+    ASSERT_TRUE(status == common::cmd::OK);
   }
   createBalanceForUsers(userIds, USER_BALANCE);
   createZigZagTransfer(users, req, absAmount);
   auto status = command.process(&req, &res);
 
-  ASSERT_TRUE(status.ok());
+  ASSERT_TRUE(status == common::cmd::OK);
 
   cmd::GetBalance balCmd(session());
-  rpc::GetBalanceRequest getBalReq;
-  rpc::GetBalanceReply getBalRep;
+  cmd::GetBalanceRequest getBalReq;
+  cmd::GetBalanceReply getBalRep;
 
   for (uint32_t i = 0; i < users.size(); ++i) {
-    getBalReq.set_userid(users[i]);
+    getBalReq.userId = users[i];
     int64_t amount = (i % 2) ? absAmount : -absAmount;
-    ASSERT_TRUE(balCmd.process(&getBalReq, &getBalRep).ok());
-    ASSERT_EQ(USER_BALANCE + amount, getBalRep.available());
+    ASSERT_TRUE(balCmd.process(&getBalReq, &getBalRep) == common::cmd::OK);
+    ASSERT_EQ(USER_BALANCE + amount, getBalRep.available);
   }
 }
 
 TEST_F(ProcessTransferBatchTest, TransfersAreRecordedGroupingUserBalances) {
-  rpc::ProcessTransferBatchRequest req;
-  rpc::ProcessTransferBatchReply res;
+  cmd::ProcessTransferBatchRequest req;
+  cmd::ProcessTransferBatchReply res;
   std::vector<std::string> users;
   std::vector<uint64_t> userIds;
   cmd::ProcessTransferBatch command(session());
@@ -163,30 +152,30 @@ TEST_F(ProcessTransferBatchTest, TransfersAreRecordedGroupingUserBalances) {
     users.push_back("User " + std::to_string(i + 1));
     userIds.push_back(i + 1);  // incremental keys are predictable
     auto status = createUser(session(), users[i]);
-    ASSERT_TRUE(status.ok());
+    ASSERT_TRUE(status == common::cmd::OK);
   }
   createBalanceForUsers(userIds, USER_BALANCE / 2);
   createBalanceForUsers(userIds, USER_BALANCE / 2);
   createZigZagTransfer(users, req, absAmount);
   auto status = command.process(&req, &res);
 
-  ASSERT_TRUE(status.ok());
+  ASSERT_TRUE(status == common::cmd::OK);
 
   cmd::GetBalance balCmd(session());
-  rpc::GetBalanceRequest getBalReq;
-  rpc::GetBalanceReply getBalRep;
+  cmd::GetBalanceRequest getBalReq;
+  cmd::GetBalanceReply getBalRep;
 
   for (uint32_t i = 0; i < users.size(); ++i) {
-    getBalReq.set_userid(users[i]);
+    getBalReq.userId = users[i];
     int64_t amount = (i % 2) ? absAmount : -absAmount;
-    ASSERT_TRUE(balCmd.process(&getBalReq, &getBalRep).ok());
-    ASSERT_EQ(USER_BALANCE + amount, getBalRep.available());
+    ASSERT_TRUE(balCmd.process(&getBalReq, &getBalRep) == common::cmd::OK);
+    ASSERT_EQ(USER_BALANCE + amount, getBalRep.available);
   }
 }
 
 TEST_F(ProcessTransferBatchTest, TransfersMustBeZeroSummed) {
-  rpc::ProcessTransferBatchRequest req;
-  rpc::ProcessTransferBatchReply res;
+  cmd::ProcessTransferBatchRequest req;
+  cmd::ProcessTransferBatchReply res;
   std::vector<std::string> users;
   std::vector<uint64_t> userIds;
   cmd::ProcessTransferBatch command(session());
@@ -195,20 +184,19 @@ TEST_F(ProcessTransferBatchTest, TransfersMustBeZeroSummed) {
     users.push_back("User " + std::to_string(i + 1));
     userIds.push_back(i + 1);  // incremental keys are predictable
     auto status = createUser(session(), users[i]);
-    ASSERT_TRUE(status.ok());
+    ASSERT_TRUE(status == common::cmd::OK);
   }
   createBalanceForUsers(userIds, USER_BALANCE);
   createZigZagTransfer(users, req, USER_BALANCE / 2);
   auto status = command.process(&req, &res);
 
-  ASSERT_FALSE(status.ok());
-  ASSERT_EQ(status.error_message(),
-            cmd::errorToString(hub::rpc::ErrorCode::BATCH_AMOUNT_ZERO));
+  ASSERT_FALSE(status == common::cmd::OK);
+  ASSERT_EQ(status, common::cmd::BATCH_AMOUNT_NOT_ZERO);
 }
 
 TEST_F(ProcessTransferBatchTest, TransferMustHaveSufficientFunds) {
-  rpc::ProcessTransferBatchRequest req;
-  rpc::ProcessTransferBatchReply res;
+  cmd::ProcessTransferBatchRequest req;
+  cmd::ProcessTransferBatchReply res;
   std::vector<std::string> users;
   std::vector<uint64_t> userIds;
   cmd::ProcessTransferBatch command(session());
@@ -217,15 +205,13 @@ TEST_F(ProcessTransferBatchTest, TransferMustHaveSufficientFunds) {
     users.push_back("User " + std::to_string(i + 1));
     userIds.push_back(i + 1);  // incremental keys are predictable
     auto status = createUser(session(), users[i]);
-    ASSERT_TRUE(status.ok());
+    ASSERT_TRUE(status == common::cmd::OK);
   }
   createBalanceForUsers(userIds, USER_BALANCE);
   createZigZagTransfer(users, req, USER_BALANCE + 1);
   auto status = command.process(&req, &res);
 
-  ASSERT_FALSE(status.ok());
-  ASSERT_EQ(status.error_message(),
-            cmd::errorToString(hub::rpc::ErrorCode::BATCH_INCONSISTENT));
+  ASSERT_EQ(status, common::cmd::BATCH_INCONSISTENT);
 }
 
 TEST_F(ProcessTransferBatchTest, SequentialTransfersAreConsistent) {
@@ -235,7 +221,7 @@ TEST_F(ProcessTransferBatchTest, SequentialTransfersAreConsistent) {
   for (uint32_t i = 0; i < NUM_USERS; ++i) {
     idsToUsers[i + 1] = "User " + std::to_string(i + 1);
     auto status = createUser(session(), idsToUsers[i + 1]);
-    ASSERT_TRUE(status.ok());
+    ASSERT_EQ(status, common::cmd::OK);
   }
 
   std::vector<uint64_t> userIds;
@@ -249,13 +235,13 @@ TEST_F(ProcessTransferBatchTest, SequentialTransfersAreConsistent) {
   }
 
   cmd::GetBalance balCmd(session());
-  rpc::GetBalanceRequest getBalReq;
-  rpc::GetBalanceReply getBalRep;
+  cmd::GetBalanceRequest getBalReq;
+  cmd::GetBalanceReply getBalRep;
 
   for (auto& kv : idsToUsers) {
-    getBalReq.set_userid(kv.second);
-    ASSERT_TRUE(balCmd.process(&getBalReq, &getBalRep).ok());
-    ASSERT_EQ(idsToBalances[kv.first], getBalRep.available());
+    getBalReq.userId = kv.second;
+    ASSERT_EQ(balCmd.process(&getBalReq, &getBalRep), common::cmd::OK);
+    ASSERT_EQ(idsToBalances[kv.first], getBalRep.available);
   }
 }
 
@@ -269,7 +255,7 @@ TEST_F(ProcessTransferBatchTest, ConcurrentTransfersAreConsistent) {
   for (uint32_t i = 0; i < NUM_USERS; ++i) {
     idsToUsers[i + 1] = "User " + std::to_string(i + 1);
     auto status = createUser(session(), idsToUsers[i + 1]);
-    ASSERT_TRUE(status.ok());
+    ASSERT_EQ(status, common::cmd::OK);
   }
 
   std::vector<uint64_t> userIds;
@@ -288,13 +274,13 @@ TEST_F(ProcessTransferBatchTest, ConcurrentTransfersAreConsistent) {
   }
 
   cmd::GetBalance balCmd(session());
-  rpc::GetBalanceRequest getBalReq;
-  rpc::GetBalanceReply getBalRep;
+  cmd::GetBalanceRequest getBalReq;
+  cmd::GetBalanceReply getBalRep;
 
   for (auto& kv : idsToUsers) {
-    getBalReq.set_userid(kv.second);
-    ASSERT_TRUE(balCmd.process(&getBalReq, &getBalRep).ok());
-    ASSERT_EQ(idsToBalances[kv.first], getBalRep.available());
+    getBalReq.userId = kv.second;
+    ASSERT_EQ(balCmd.process(&getBalReq, &getBalRep), common::cmd::OK);
+    ASSERT_EQ(idsToBalances[kv.first], getBalRep.available);
   }
 }
 

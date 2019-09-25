@@ -1,6 +1,6 @@
 /*
  * Copyright (c) 2018 IOTA Stiftung
- * https://github.com/iotaledger/rpchub
+ * https://github.com/iotaledger/hub
  *
  * Refer to the LICENSE file for licensing information
  */
@@ -107,11 +107,12 @@ std::tuple<common::crypto::Hash, std::string> createBundle(
   std::unordered_map<common::crypto::Address, std::string> signaturesForAddress;
 
   for (const auto& in : deposits) {
-    if (recoverFunds){
-        signaturesForAddress[in.address] = cryptoProvider.forceGetSignatureForUUID(in.uuid, bundleHash).value();
-    }else{
-        signaturesForAddress[in.address] =
-                cryptoProvider.getSignatureForUUID(in.uuid, bundleHash).value();
+    if (recoverFunds) {
+      signaturesForAddress[in.address] =
+          cryptoProvider.forceGetSignatureForUUID(in.uuid, bundleHash).value();
+    } else {
+      signaturesForAddress[in.address] =
+          cryptoProvider.getSignatureForUUID(in.uuid, bundleHash).value();
     }
   }
   for (const auto& in : hubInputs) {

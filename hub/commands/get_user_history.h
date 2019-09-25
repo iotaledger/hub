@@ -1,6 +1,6 @@
 /*
  * Copyright (c) 2018 IOTA Stiftung
- * https://github.com/iotaledger/rpchub
+ * https://github.com/iotaledger/hub
  *
  * Refer to the LICENSE file for licensing information
  */
@@ -9,31 +9,43 @@
 #define HUB_COMMANDS_GET_USER_HISTORY_H_
 
 #include <string>
+#include <vector>
 
-#include "common/command.h"
+#include "common/commands/command.h"
+#include "hub/commands/events.h"
 
 namespace hub {
-namespace rpc {
-class GetUserHistoryRequest;
-class GetUserHistoryReply;
-}  // namespace rpc
-
 namespace cmd {
 
 /// Gets the history of transactions for a user.
-/// @param[in] hub::rpc::GetUserHistoryRequest
-/// @param[in] hub::rpc::GetUserHistoryReply
-class GetUserHistory : public common::Command<hub::rpc::GetUserHistoryRequest,
-                                              hub::rpc::GetUserHistoryReply> {
+/// @param[in] GetUserHistoryRequest
+/// @param[in] GetUserHistoryReply
+
+typedef struct GetUserHistoryRequest {
+  std::string userId;
+  uint64_t newerThan;
+} GetUserHistoryRequest;
+
+typedef struct GetUserHistoryReply {
+  std::vector<UserAccountBalanceEvent> events;
+} GetUserHistoryReply;
+
+class GetUserHistory
+    : public common::Command<GetUserHistoryRequest, GetUserHistoryReply> {
  public:
-  using Command<hub::rpc::GetUserHistoryRequest,
-                hub::rpc::GetUserHistoryReply>::Command;
+  using Command<GetUserHistoryRequest, GetUserHistoryReply>::Command;
 
-  const std::string name() override { return "GetUserHistory"; }
+  static std::shared_ptr<common::ICommand> create() {
+    return std::shared_ptr<common::ICommand>(new GetUserHistory());
+  }
 
-  grpc::Status doProcess(
-      const hub::rpc::GetUserHistoryRequest* request,
-      hub::rpc::GetUserHistoryReply* response) noexcept override;
+  static const std::string name() { return "GetUserHistory"; }
+
+  common::cmd::Error doProcess(const GetUserHistoryRequest* request,
+                               GetUserHistoryReply* response) noexcept override;
+
+  boost::property_tree::ptree doProcess(
+      const boost::property_tree::ptree& request) noexcept override;
 };
 }  // namespace cmd
 }  // namespace hub

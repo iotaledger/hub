@@ -1,6 +1,6 @@
 /*
  * Copyright (c) 2018 IOTA Stiftung
- * https://github.com/iotaledger/rpchub
+ * https://github.com/iotaledger/hub
  *
  * Refer to the LICENSE file for licensing information
  */
@@ -10,29 +10,42 @@
 
 #include <string>
 
-#include "common/command.h"
+#include "common/commands/command.h"
+
+DECLARE_bool(SignBundle_enabled);
 
 namespace hub {
-namespace rpc {
-class SignBundleRequest;
-class SignBundleReply;
-}  // namespace rpc
 
 namespace cmd {
 
+typedef struct SignBundleRequest {
+  bool validateChecksum;
+  std::string address;
+  std::string authenticationToken;
+  std::string bundleHash;
+} SignBundleRequest;
+typedef struct SignBundleReply {
+  std::string signature;
+} SignBundleReply;
+
 /// Gets information on an address
-/// @param[in] hub::rpc::SignBundleRequest
-/// @param[in] hub::rpc::SignBundleReply
-class SignBundle : public common::Command<hub::rpc::SignBundleRequest,
-                                          hub::rpc::SignBundleReply> {
+/// @param[in] SignBundleRequest
+/// @param[in] SignBundleReply
+class SignBundle : public common::Command<SignBundleRequest, SignBundleReply> {
  public:
-  using Command<hub::rpc::SignBundleRequest,
-                hub::rpc::SignBundleReply>::Command;
+  using Command<SignBundleRequest, SignBundleReply>::Command;
 
-  const std::string name() override { return "SignBundle"; }
+  static std::shared_ptr<common::ICommand> create() {
+    return std::shared_ptr<common::ICommand>(new SignBundle());
+  }
 
-  grpc::Status doProcess(const hub::rpc::SignBundleRequest* request,
-                         hub::rpc::SignBundleReply* response) noexcept override;
+  static const std::string name() { return "SignBundle"; }
+
+  common::cmd::Error doProcess(const SignBundleRequest* request,
+                               SignBundleReply* response) noexcept override;
+
+  boost::property_tree::ptree doProcess(
+      const boost::property_tree::ptree& request) noexcept override;
 };
 }  // namespace cmd
 }  // namespace hub
