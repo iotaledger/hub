@@ -62,7 +62,9 @@ boost::property_tree::ptree SweepInfo::doProcess(
       tree.add("timestamp", rep.timestamp);
 
       for (auto uuid : rep.uuids) {
-        tree.add("uuid", uuid);
+        if (!uuid.empty()) {
+          tree.add("withdrawalUuid", uuid);
+        }
       }
     }
   } else {

@@ -209,7 +209,8 @@
     {
             "bundleHash": "LFABJNKAKJVXYH9OPVZ9HJFOPOHDAGKOHZSRWHSNXYBHCYWQDHGRVKPFBLSGRZUOBL9DUBCKI9DWSPEJC",
             "timestamp": "1567577007000",
-            "uuid": ""
+            "withdrawalUuid": "SOME UUID"
+            "withdrawalUuid": "SOME UUID"
     } 
     
     ```
