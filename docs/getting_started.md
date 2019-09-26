@@ -35,4 +35,4 @@ You can build a docker image for `RPCHub` via `bazel build -c opt //docker:hub`
 ## Calling client commands
 - The Hub exposes both gRPC (https://grpc.io/docs/tutorials/) and REST apis
 - GRPC: Methods and arguments are available under proto/hub.proto (methods) and proto/messages.proto (request/response types)
-- 
+- REST: [HTTP_REST_API](http_rest_api.md)

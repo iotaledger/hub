@@ -107,5 +107,5 @@ See [Getting Started](docs/getting_started.md) for information on how to use the
 
 ## Useful things
 - Use `protofmt` from `go get -u -v github.com/emicklei/proto-contrib/cmd/protofmt` to format protobuf files
-- Use `grpcc` to test: `grpcc -i -a localhost:50051 -p proto/hub.proto`
+- Use `grpcc` to test: `grpcc -i -a localhost:50051 -p proto/hub.proto` (when `serverType grpc`)
 - Use `https://github.com/pseudomuto/protoc-gen-doc` to generate protobuf documentation
