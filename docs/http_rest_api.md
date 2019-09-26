@@ -209,7 +209,8 @@
     {
             "bundleHash": "LFABJNKAKJVXYH9OPVZ9HJFOPOHDAGKOHZSRWHSNXYBHCYWQDHGRVKPFBLSGRZUOBL9DUBCKI9DWSPEJC",
             "timestamp": "1567577007000",
-            "uuid": ""
+            "withdrawalUuid": "4782e7d5-9ce4-477d-8fd0-32f5f3385db2"
+            "withdrawalUuid": "50485062-f5f0-4cac-bad6-bb0362ae5138"
     } 
     
     ```
@@ -375,6 +376,12 @@
             "bundleHash": "GOHZXSDAFYDJTJ9GZKKCBAFFKDCTFGFIYDXADGUH9SJGFYPGIOWXEOJXOYSIGYANNWXEII9KSKUZZCHGX",
             "timestamp": "1567537470000"
         },
+        "event_3": {
+            "bundleHash": "N9TUFKNNTXITLOXXIHNGUULBKSIXDWHVZZZECPALRYZLZJF9LZZDNUTDJALZLJJPJ9TGTTNLFTGBUQWWW",
+            "timestamp": "1569149768000",
+            "withdrawalUuid": "50485062-f5f0-4cac-bad6-bb0362ae5138"
+        }
+
         
         ...
     }
