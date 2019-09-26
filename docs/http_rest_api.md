@@ -119,7 +119,8 @@
      ```
     
     - Output:
-    ```{
+    ```
+    {
         "event_0": {
             "userID": "SomeUser",
             "timestamp": "1563796442000",
@@ -133,17 +134,18 @@
             "timestamp": "1563796562000",
             "amount": "-1",
             "reason": "WITHDRAWAL",
-            "sweepBundleHash": "4782e7d5-9ce4-477d-8fd0-32f5f3385db2",
-            "withdrawalUUID": ""
+            "sweepBundleHash": "",
+            "withdrawalUUID": "4782e7d5-9ce4-477d-8fd0-32f5f3385db2"
         },
         "event_2": {
             "userID": "SomeUser",
             "timestamp": "1563796604000",
             "amount": "1",
             "reason": "WITHDRAWAL_CANCELED",
-            "sweepBundleHash": "4782e7d5-9ce4-477d-8fd0-32f5f3385db2",
-            "withdrawalUUID": ""
-        }
+            "sweepBundleHash": "",
+            "withdrawalUUID": "4782e7d5-9ce4-477d-8fd0-32f5f3385db2"
+        },
+
     }
     ```
     

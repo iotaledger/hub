@@ -108,7 +108,7 @@ common::cmd::Error BalanceSubscription::doProcess(
     events->emplace_back(UserAccountBalanceEvent{
         .userId = std::move(b.userIdentifier),
         .timestamp = common::timepointToUint64(b.timestamp),
-        .reason = userAccountBalanceEventReasonFromSql(b.type),
+        .reason = userAccountBalanceEventReasonFromSql(b.reason),
         .amount = b.amount,
         .sweepBundleHash = b.sweepBundleHash,
         .withdrawalUUID = b.withdrawalUUID});
