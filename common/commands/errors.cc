@@ -11,8 +11,7 @@ namespace common {
 
 namespace cmd {
 
-
-    static std::unordered_map<Error, std::string> errorToStringMap =
+static std::unordered_map<Error, std::string> errorToStringMap =
     errorToStringMapCreate();
 
 std::unordered_map<Error, std::string> errorToStringMapCreate() {
@@ -45,9 +44,7 @@ std::unordered_map<Error, std::string> errorToStringMapCreate() {
   return map;
 }
 
-std::string getErrorString(Error error){
-    return errorToStringMap.at(error);
-}
+std::string getErrorString(Error error) { return errorToStringMap.at(error); }
 
 grpc::Status errorToGrpcError(Error err) {
   grpc::Status status;

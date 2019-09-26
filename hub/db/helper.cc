@@ -325,21 +325,28 @@ std::vector<UserAccountBalanceEvent> helper<C>::getUserAccountBalances(
         row.occuredAt.value();
     if (row.reason == static_cast<long int>(UserAccountBalanceReason::SWEEP)) {
       balances.emplace_back(UserAccountBalanceEvent{
-          std::move(row.identifier), ts, row.amount,
-          static_cast<UserAccountBalanceReason>((row.reason.value())),
-          row.bundleHash});
+          .userIdentifier = std::move(row.identifier),
+          .timestamp = ts,
+          .amount = row.amount,
+          .reason = static_cast<UserAccountBalanceReason>((row.reason.value())),
+          .sweepBundleHash = row.bundleHash});
     } else if (row.reason == static_cast<long int>(
                                  UserAccountBalanceReason::WITHDRAWAL) ||
                row.reason == static_cast<long int>(
                                  UserAccountBalanceReason::WITHDRAWAL_CANCEL)) {
       balances.emplace_back(UserAccountBalanceEvent{
-          std::move(row.identifier), ts, row.amount,
-          static_cast<UserAccountBalanceReason>((row.reason.value())),
-          row.uuid});
+          .userIdentifier = std::move(row.identifier),
+          .timestamp = ts,
+          .amount = row.amount,
+          .reason = static_cast<UserAccountBalanceReason>((row.reason.value())),
+          .withdrawalUUID = row.uuid});
     } else {
       balances.emplace_back(UserAccountBalanceEvent{
-          std::move(row.identifier), ts, row.amount,
-          static_cast<UserAccountBalanceReason>((row.reason.value()))});
+          .userIdentifier = std::move(row.identifier),
+          .timestamp = ts,
+          .amount = row.amount,
+          .reason =
+              static_cast<UserAccountBalanceReason>((row.reason.value()))});
     }
   }
   return balances;

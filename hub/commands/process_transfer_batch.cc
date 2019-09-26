@@ -70,8 +70,8 @@ boost::property_tree::ptree ProcessTransferBatch::doProcess(
 
     if (userIdKeyValueVec.front().compare("userId") ||
         amountKeyValueVec.front().compare("amount")) {
-      tree.add("error", common::cmd::getErrorString(
-                            common::cmd::WRONG_ARGUMENT_NAME));
+      tree.add("error",
+               common::cmd::getErrorString(common::cmd::WRONG_ARGUMENT_NAME));
       return tree;
     }
 

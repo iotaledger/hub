@@ -36,8 +36,8 @@ boost::property_tree::ptree SweepInfo::doProcess(
       auto maybeWithdrawalUuid =
           request.get_optional<std::string>("withdrawalUuid");
       if (!maybeWithdrawalUuid) {
-        tree.add("error", common::cmd::getErrorString(
-                              common::cmd::MISSING_ARGUMENT));
+        tree.add("error",
+                 common::cmd::getErrorString(common::cmd::MISSING_ARGUMENT));
         return tree;
       } else {
         req.uuid = maybeWithdrawalUuid.value();
@@ -45,8 +45,8 @@ boost::property_tree::ptree SweepInfo::doProcess(
     } else {
       auto maybeBundleHash = request.get_optional<std::string>("bundleHash");
       if (!maybeBundleHash) {
-        tree.add("error", common::cmd::getErrorString(
-                              common::cmd::MISSING_ARGUMENT));
+        tree.add("error",
+                 common::cmd::getErrorString(common::cmd::MISSING_ARGUMENT));
         return tree;
       } else {
         req.bundleHash = maybeBundleHash.value();

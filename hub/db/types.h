@@ -37,7 +37,7 @@ struct UserAccountBalanceEvent {
   std::string userIdentifier;
   std::chrono::system_clock::time_point timestamp;
   int64_t amount;
-  UserAccountBalanceReason type;
+  UserAccountBalanceReason reason;
   std::string sweepBundleHash;
   std::string withdrawalUUID;
 };
