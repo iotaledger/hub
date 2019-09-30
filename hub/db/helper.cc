@@ -325,28 +325,30 @@ std::vector<UserAccountBalanceEvent> helper<C>::getUserAccountBalances(
         row.occuredAt.value();
     if (row.reason == static_cast<long int>(UserAccountBalanceReason::SWEEP)) {
       balances.emplace_back(UserAccountBalanceEvent{
-          .userIdentifier = std::move(row.identifier),
-          .timestamp = ts,
-          .amount = row.amount,
-          .reason = static_cast<UserAccountBalanceReason>((row.reason.value())),
-          .sweepBundleHash = row.bundleHash});
+        userIdentifier : std::move(row.identifier),
+        timestamp : ts,
+        amount : row.amount,
+        reason : static_cast<UserAccountBalanceReason>((row.reason.value())),
+        sweepBundleHash : row.bundleHash
+      });
     } else if (row.reason == static_cast<long int>(
                                  UserAccountBalanceReason::WITHDRAWAL) ||
                row.reason == static_cast<long int>(
                                  UserAccountBalanceReason::WITHDRAWAL_CANCEL)) {
       balances.emplace_back(UserAccountBalanceEvent{
-          .userIdentifier = std::move(row.identifier),
-          .timestamp = ts,
-          .amount = row.amount,
-          .reason = static_cast<UserAccountBalanceReason>((row.reason.value())),
-          .withdrawalUUID = row.uuid});
+        userIdentifier : std::move(row.identifier),
+        timestamp : ts,
+        amount : row.amount,
+        reason : static_cast<UserAccountBalanceReason>((row.reason.value())),
+        withdrawalUUID : row.uuid
+      });
     } else {
       balances.emplace_back(UserAccountBalanceEvent{
-          .userIdentifier = std::move(row.identifier),
-          .timestamp = ts,
-          .amount = row.amount,
-          .reason =
-              static_cast<UserAccountBalanceReason>((row.reason.value()))});
+        userIdentifier : std::move(row.identifier),
+        timestamp : ts,
+        amount : row.amount,
+        reason : static_cast<UserAccountBalanceReason>((row.reason.value()))
+      });
     }
   }
   return balances;
@@ -829,9 +831,12 @@ nonstd::optional<AddressInfo> helper<C>::getAddressInfo(
     return {};
   } else {
     auto& front = result.front();
-    return {AddressInfo{front.id, std::move(front.identifier.value()),
-                        common::crypto::UUID(front.seedUuid.value()),
-                        front.exists}};
+    return {AddressInfo{
+      id : front.id,
+      userId : std::move(front.identifier.value()),
+      uuid : common::crypto::UUID(front.seedUuid.value()),
+      usedForSweep : front.exists
+    }};
   }
 }
 
