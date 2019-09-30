@@ -24,7 +24,8 @@ std::map<uint64_t, int64_t> createBalanceForUsers(std::vector<uint64_t> ids,
   std::vector<hub::db::UserTransfer> transfers;
   std::map<uint64_t, int64_t> idsToBalances;
   for (auto id : ids) {
-    transfers.emplace_back(hub::db::UserTransfer{id, balance});
+    transfers.emplace_back(hub::db::
+                           UserTransfer{userId : id, amount : balance});
     idsToBalances[id] = balance;
   }
 

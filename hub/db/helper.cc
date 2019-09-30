@@ -284,7 +284,7 @@ std::vector<SweepTail> helper<C>::getTailsForSweep(C& connection,
   for (const auto& row : result) {
     std::chrono::time_point<std::chrono::system_clock> ts =
         row.createdAt.value();
-    tails.emplace_back(SweepTail{std::move(row.hash), ts});
+    tails.emplace_back(SweepTail{hash : std::move(row.hash), createdAt : ts});
   }
 
   return tails;
@@ -389,13 +389,23 @@ helper<C>::getAllUsersAccountBalancesSinceTimePoint(
         row.occuredAt.value();
     auto reason = static_cast<UserAccountBalanceReason>(row.reason.value());
     if (reason == UserAccountBalanceReason::SWEEP) {
-      balances.emplace_back(
-          UserAccountBalanceEvent{std::move(row.identifier), ts, row.amount,
-                                  reason, std::move(row.bundleHash), ""});
+      balances.emplace_back(UserAccountBalanceEvent{
+        userIdentifier : std::move(row.identifier),
+        timestamp : ts,
+        amount : row.amount,
+        reason : reason,
+        sweepBundleHash : std::move(row.bundleHash),
+        withdrawalUUID : ""
+      });
     } else {
-      balances.emplace_back(UserAccountBalanceEvent{std::move(row.identifier),
-                                                    ts, row.amount, reason, "",
-                                                    std::move(row.uuid)});
+      balances.emplace_back(UserAccountBalanceEvent{
+        userIdentifier : std::move(row.identifier),
+        timestamp : ts,
+        amount : row.amount,
+        reason : reason,
+        sweepBundleHash : "",
+        withdrawalUUID : std::move(row.uuid)
+      });
     }
   }
 
@@ -434,13 +444,14 @@ helper<C>::getAllUserAddressesBalancesSinceTimePoint(
                            : std::move(row.tailHash.value());
 
     UserAddressBalanceEvent e{
-        std::move(row.identifier),
-        std::move(row.address),
-        row.amount,
-        static_cast<UserAddressBalanceReason>(row.reason.value()),
-        std::move(hash),
-        ts,
-        sqlpp::is_null(row.message) ? "" : row.message.value()};
+      userIdentifier : std::move(row.identifier),
+      userAddress : std::move(row.address),
+      amount : row.amount,
+      reason : static_cast<UserAddressBalanceReason>(row.reason.value()),
+      hash : std::move(hash),
+      timestamp : ts,
+      message : sqlpp::is_null(row.message) ? "" : row.message.value()
+    };
 
     balances.emplace_back(std::move(e));
   }
@@ -471,9 +482,12 @@ helper<C>::getAllHubAddressesBalancesSinceTimePoint(
         row.occuredAt.value();
 
     balances.emplace_back(HubAddressBalanceEvent{
-        std::move(row.address), row.amount,
-        static_cast<HubAddressBalanceReason>(row.reason.value()),
-        std::move(row.bundleHash), ts});
+      hubAddress : std::move(row.address),
+      amount : row.amount,
+      reason : static_cast<HubAddressBalanceReason>(row.reason.value()),
+      sweepBundleHash : std::move(row.bundleHash),
+      timestamp : ts
+    });
   }
 
   return balances;
@@ -502,8 +516,11 @@ std::vector<SweepEvent> helper<C>::getSweeps(
       std::vector<std::string> uuids;
       std::chrono::time_point<std::chrono::system_clock> ts =
           row.createdAt.value();
-      currEvent = &events.emplace_back(
-          SweepEvent{std::move(row.bundleHash), ts, std::move(uuids)});
+      currEvent = &events.emplace_back(SweepEvent{
+        bundleHash : std::move(row.bundleHash),
+        timestamp : ts,
+        withdrawalUUIDs : std::move(uuids)
+      });
     }
 
     if (!std::string{row.uuid}.empty()) {
@@ -595,9 +612,12 @@ WithdrawalInfo helper<C>::getWithdrawalInfoFromUUID(C& connection,
                      .from(tbl)
                      .where(tbl.uuid == uuid));
 
-  return {static_cast<uint64_t>(result.front().id),
-          static_cast<uint64_t>(result.front().userId), result.front().amount,
-          result.front().cancelledAt.is_null() ? false : true};
+  return {
+    id : static_cast<uint64_t>(result.front().id),
+    userId : static_cast<uint64_t>(result.front().userId),
+    amount : result.front().amount,
+    wasCancelled : result.front().cancelledAt.is_null() ? false : true
+  };
 }
 
 template <typename C>
@@ -685,8 +705,11 @@ std::vector<TransferOutput> helper<C>::getWithdrawalsForSweep(
     }
 
     outputs.emplace_back(TransferOutput{
-        row.id, static_cast<uint64_t>(row.amount), std::move(maybeTag),
-        common::crypto::Address(row.payoutAddress.value())});
+      id : row.id,
+      amount : static_cast<uint64_t>(row.amount),
+      tag : std::move(maybeTag),
+      payoutAddress : common::crypto::Address(row.payoutAddress.value())
+    });
   }
 
   return outputs;
@@ -720,10 +743,13 @@ std::vector<TransferInput> helper<C>::getDepositsForSweep(
   std::vector<TransferInput> deposits;
 
   for (const auto& row : result) {
-    TransferInput ti = {row.id, row.userId,
-                        common::crypto::Address(row.address.value()),
-                        common::crypto::UUID(row.seedUuid.value()),
-                        static_cast<uint64_t>(row.balance)};
+    TransferInput ti = {
+      addressId : row.id,
+      userId : row.userId,
+      address : common::crypto::Address(row.address.value()),
+      uuid : common::crypto::UUID(row.seedUuid.value()),
+      amount : static_cast<uint64_t>(row.balance)
+    };
     deposits.push_back(std::move(ti));
   }
 
@@ -754,9 +780,13 @@ std::vector<TransferInput> helper<C>::getHubInputsForSweep(
   for (const auto& row : availableAddressesResult) {
     auto id = row.id;
 
-    TransferInput input = {id, 0, common::crypto::Address(row.address.value()),
-                           common::crypto::UUID(row.seedUuid.value()),
-                           static_cast<uint64_t>(row.balance)};
+    TransferInput input = {
+      addressId : id,
+      userId : 0,
+      address : common::crypto::Address(row.address.value()),
+      uuid : common::crypto::UUID(row.seedUuid.value()),
+      amount : static_cast<uint64_t>(row.balance)
+    };
 
     addressIds.push_back(id);
     availableInputs.emplace_back(std::move(input));
