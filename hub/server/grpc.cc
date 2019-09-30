@@ -219,9 +219,10 @@ grpc::Status HubImpl::ProcessTransferBatch(
   cmd::ProcessTransferBatchRequest request;
   cmd::ProcessTransferBatchReply response;
   for (auto i = 0; i < rpcRequest->transfers_size(); ++i) {
-    request.transfers.emplace_back(
-        cmd::UserTransfer{.userId = rpcRequest->transfers(i).userid(),
-                          .amount = rpcRequest->transfers(i).amount()});
+    request.transfers.emplace_back(cmd::UserTransfer{
+      userId : rpcRequest->transfers(i).userid(),
+      amount : rpcRequest->transfers(i).amount()
+    });
   }
   return common::cmd::errorToGrpcError(cmd.process(&request, &response));
 }

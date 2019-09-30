@@ -118,8 +118,9 @@ common::cmd::Error ProcessTransferBatch::doProcess(
   std::vector<hub::db::UserTransfer> transfers;
   for (auto transfer : request->transfers) {
     transfers.emplace_back(hub::db::UserTransfer{
-        static_cast<uint64_t>(identifierToId[transfer.userId]),
-        transfer.amount});
+      userId : static_cast<uint64_t>(identifierToId[transfer.userId]),
+      amount : transfer.amount
+    });
   }
 
   // Actual transfer insertion to db

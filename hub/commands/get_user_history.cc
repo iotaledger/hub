@@ -84,12 +84,13 @@ common::cmd::Error GetUserHistory::doProcess(
 
     for (const auto& b : balances) {
       response->events.emplace_back(hub::cmd::UserAccountBalanceEvent{
-          .userId = b.userIdentifier,
-          .timestamp = common::timepointToUint64(b.timestamp),
-          .reason = userAccountBalanceEventReasonFromSql(b.reason),
-          .amount = b.amount,
-          .sweepBundleHash = b.sweepBundleHash,
-          .withdrawalUUID = b.withdrawalUUID});
+        userId : b.userIdentifier,
+        timestamp : common::timepointToUint64(b.timestamp),
+        reason : userAccountBalanceEventReasonFromSql(b.reason),
+        amount : b.amount,
+        sweepBundleHash : b.sweepBundleHash,
+        withdrawalUUID : b.withdrawalUUID
+      });
     }
   }
 

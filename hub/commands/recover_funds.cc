@@ -154,16 +154,24 @@ common::cmd::Error RecoverFunds::doProcess(
 
     std::vector<hub::db::TransferInput> deposits;
 
-    hub::db::TransferInput ti = {maybeAddressInfo.value().id, userId,
-                                 address.value(), maybeAddressInfo.value().uuid,
-                                 amount};
+    hub::db::TransferInput ti = {
+      addressId : maybeAddressInfo.value().id,
+      userId : userId,
+      address : address.value(),
+      uuid : maybeAddressInfo.value().uuid,
+      amount : amount
+    };
     deposits.push_back(std::move(ti));
 
     std::vector<hub::db::TransferOutput> outputs;
 
     // Create the "withdrawl"
-    outputs.emplace_back(
-        hub::db::TransferOutput{-1, amount, {}, payoutAddress.value()});
+    outputs.emplace_back(hub::db::TransferOutput{
+      id : -1,
+      amount : amount,
+      tag : {},
+      payoutAddress : payoutAddress.value()
+    });
 
     auto bundle = hub::bundle_utils::createBundle(deposits, {}, outputs, {});
 
