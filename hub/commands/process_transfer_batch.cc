@@ -36,10 +36,25 @@ boost::property_tree::ptree ProcessTransferBatch::doProcess(
   ProcessTransferBatchReply rep;
 
   std::map<std::string, int64_t> userToAmount;
+  auto transfers = request.get_child_optional("transfers");
 
-  for (auto& transfer : request.get_child("transfers")) {
-    userToAmount[transfer.second.get<std::string>("userId")] +=
-        transfer.second.get<int64_t>("amount");
+  if (!transfers) {
+    tree.add("error",
+             common::cmd::getErrorString(common::cmd::MISSING_ARGUMENT));
+    return tree;
+  }
+
+  for (auto& transfer : transfers.value()) {
+    auto currUser = transfer.second.get_optional<std::string>("userId");
+    auto currAmount = transfer.second.get_optional<int64_t>("amount");
+
+    if (!currUser || !currAmount) {
+      tree.add("error",
+               common::cmd::getErrorString(common::cmd::MISSING_ARGUMENT));
+      return tree;
+    }
+
+    userToAmount[currUser.value()] += currAmount.value();
   }
 
   for (auto&& userAmountPair : userToAmount) {
