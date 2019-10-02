@@ -34,9 +34,10 @@ See [Getting Started](docs/getting_started.md) for information on how to use the
     -salt (Salt for local seed provider) type: string default: "" 
     -listenAddress (address to listen on) type: string default: "0.0.0.0:50051"
     -authMode ("credentials to use. can be {none, ssl}") type: string default: "none"
-    -sslKey docs/ssl/server.key (path to SSL certificate key) type: string default: "/dev/null"
-    -sslCert docs/ssl/server.crt (path to SSL certificate) type: string default: "/dev/null"
-    -sslCA docs/ssl/ca.crt (Path to CA root) type: string default: "/dev/null"
+    -sslKey (path to SSL certificate key) type: string default: "/dev/null"
+    -sslCert (path to SSL certificate) type: string default: "/dev/null"
+    -sslCA  (Path to CA root) type: string default: "/dev/null"
+    -sslDH (Path to Diffie Hellman parameters (when using REST)) type: string default: "/dev/null"
     -maxConcurrentArgon2Hash (Max number of concurrent Argon2 Hash processes) type: int default: 4
     -argon2TCost (Time cost of Argon2) type: int default: 4
     -argon2MCost (Memory cost of Argon2 in bytes) type: int default: 1 << 17
