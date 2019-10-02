@@ -29,6 +29,7 @@ DECLARE_uint32(argon2Mode);
 DECLARE_uint32(keySecLevel);
 // Http server
 DECLARE_uint32(numThreadsHttp);
+DECLARE_string(sslDH);
 }  // namespace flags
 }  // namespace common
 

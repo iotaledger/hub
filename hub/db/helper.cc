@@ -340,7 +340,7 @@ std::vector<UserAccountBalanceEvent> helper<C>::getUserAccountBalances(
         timestamp : ts,
         amount : row.amount,
         reason : static_cast<UserAccountBalanceReason>((row.reason.value())),
-        sweepBundleHash: "",
+        sweepBundleHash : "",
         withdrawalUUID : row.uuid
       });
     } else {

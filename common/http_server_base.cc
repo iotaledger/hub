@@ -6,7 +6,7 @@
  */
 
 /// The following implementation is based on:
-///https://www.boost.org/doc/libs/develop/libs/beast/example/advanced/server/advanced_server.cpp
+/// https://www.boost.org/doc/libs/develop/libs/beast/example/advanced/server/advanced_server.cpp
 
 #include <algorithm>
 #include <chrono>
@@ -20,9 +20,10 @@
 #include <boost/make_unique.hpp>
 #include <boost/optional.hpp>
 
-#include "common/http_server_base.h"
+#include "boost/asio/ssl/verify_mode.hpp"
 #include "common/common.h"
-
+#include "common/flags.h"
+#include "common/http_server_base.h"
 
 namespace beast = boost::beast;          // from <boost/beast.hpp>
 namespace http = beast::http;            // from <boost/beast/http.hpp>
@@ -540,7 +541,7 @@ class HttpDetectSession
 
 // Accepts incoming connections and launches the sessions
 class HttpListener : public std::enable_shared_from_this<HttpListener> {
-    HttpServerBase& _server;
+  HttpServerBase& _server;
   net::io_context& _ioc;
   ssl::context& _ctx;
   tcp::acceptor _acceptor;
@@ -608,6 +609,34 @@ class HttpListener : public std::enable_shared_from_this<HttpListener> {
   }
 };
 
+void HttpServerBase::setupCredentials(ssl::context& ctx) {
+  // This holds the self-signed certificate used by the server
+
+  boost::system::error_code ec;
+
+  ctx.set_options(boost::asio::ssl::context::default_workarounds |
+                  boost::asio::ssl::context::no_sslv2 |
+                  boost::asio::ssl::context::single_dh_use);
+
+  ctx.set_verify_mode(ssl::verify_peer);
+
+  ctx.use_certificate_chain_file(common::flags::FLAGS_sslCert, ec);
+  if (ec.failed()) {
+    LOG(FATAL) << "Failed setting certificate chain file with error: "
+               << ec.message();
+  }
+  ctx.use_private_key_file(common::flags::FLAGS_sslKey,
+                           boost::asio::ssl::context::file_format::pem, ec);
+  if (ec.failed()) {
+    LOG(FATAL) << "Failed setting private key file with error: "
+               << ec.message();
+  }
+  ctx.use_tmp_dh_file(common::flags::FLAGS_sslDH, ec);
+  if (ec.failed()) {
+    LOG(FATAL) << "Failed setting DH file with error: " << ec.message();
+  }
+}
+
 void HttpServerBase::runAndWait() {
   auto listenAddress = common::flags::FLAGS_listenAddress;
   try {
@@ -628,10 +657,7 @@ void HttpServerBase::runAndWait() {
     // The SSL context is required, and holds certificates
     ssl::context ctx{ssl::context::tlsv12};
 
-    // This holds the self-signed certificate used by the server
-
-    // TODO
-    // load_server_certificate(ctx);
+    HttpServerBase::setupCredentials(ctx);
 
     // Create and launch a listening port
     std::make_shared<HttpListener>(*this, ioc, ctx,
