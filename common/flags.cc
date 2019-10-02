@@ -9,6 +9,9 @@ DEFINE_string(listenAddress, "0.0.0.0:50051", "address to listen on");
 DEFINE_string(sslCert, "/dev/null", "Path to SSL certificate");
 DEFINE_string(sslKey, "/dev/null", "Path to SSL certificate key");
 DEFINE_string(sslCA, "/dev/null", "Path to CA root");
+DEFINE_string(sslDH, "/dev/null",
+              "Path to Diffie Hellman parameters (when using REST)");
+
 DEFINE_string(authMode, "none", "credentials to use. can be {none, ssl}");
 // Argon2
 DEFINE_uint32(maxConcurrentArgon2Hash, 4,

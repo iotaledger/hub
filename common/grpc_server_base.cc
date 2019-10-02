@@ -7,8 +7,8 @@
 
 #include <glog/logging.h>
 
-#include "common/grpc_server_base.h"
 #include "common/common.h"
+#include "common/grpc_server_base.h"
 
 namespace common {
 
