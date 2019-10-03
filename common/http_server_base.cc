@@ -614,26 +614,32 @@ void HttpServerBase::setupCredentials(ssl::context& ctx) {
 
   boost::system::error_code ec;
 
-  ctx.set_options(boost::asio::ssl::context::default_workarounds |
-                  boost::asio::ssl::context::no_sslv2 |
-                  boost::asio::ssl::context::single_dh_use);
+  if (common::flags::FLAGS_authMode == "none") {
+    return;
+  } else if (common::flags::FLAGS_authMode == "ssl") {
+    ctx.set_options(boost::asio::ssl::context::default_workarounds |
+                    boost::asio::ssl::context::no_sslv2 |
+                    boost::asio::ssl::context::single_dh_use);
 
-  ctx.set_verify_mode(ssl::verify_peer);
+    ctx.set_verify_mode(ssl::verify_peer);
 
-  ctx.use_certificate_chain_file(common::flags::FLAGS_sslCert, ec);
-  if (ec.failed()) {
-    LOG(FATAL) << "Failed setting certificate chain file with error: "
-               << ec.message();
-  }
-  ctx.use_private_key_file(common::flags::FLAGS_sslKey,
-                           boost::asio::ssl::context::file_format::pem, ec);
-  if (ec.failed()) {
-    LOG(FATAL) << "Failed setting private key file with error: "
-               << ec.message();
-  }
-  ctx.use_tmp_dh_file(common::flags::FLAGS_sslDH, ec);
-  if (ec.failed()) {
-    LOG(FATAL) << "Failed setting DH file with error: " << ec.message();
+    ctx.use_certificate_chain_file(common::flags::FLAGS_sslCert, ec);
+    if (ec.failed()) {
+      LOG(FATAL) << "Failed setting certificate chain file with error: "
+                 << ec.message();
+    }
+    ctx.use_private_key_file(common::flags::FLAGS_sslKey,
+                             boost::asio::ssl::context::file_format::pem, ec);
+    if (ec.failed()) {
+      LOG(FATAL) << "Failed setting private key file with error: "
+                 << ec.message();
+    }
+    ctx.use_tmp_dh_file(common::flags::FLAGS_sslDH, ec);
+    if (ec.failed()) {
+      LOG(FATAL) << "Failed setting DH file with error: " << ec.message();
+    }
+  } else {
+    LOG(ERROR) << "Unknown auth mode: " << common::flags::FLAGS_authMode;
   }
 }
 
