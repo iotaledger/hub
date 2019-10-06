@@ -155,7 +155,7 @@ common::cmd::Error RecoverFunds::doProcess(
     std::vector<hub::db::TransferInput> deposits;
 
     hub::db::TransferInput ti = {
-      addressId : maybeAddressInfo.value().id,
+      addressId : static_cast<int64_t>(maybeAddressInfo.value().id),
       userId : userId,
       address : address.value(),
       uuid : maybeAddressInfo.value().uuid,
