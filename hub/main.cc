@@ -24,8 +24,10 @@ int main(int argc, char** argv) {
 
   if (FLAGS_serverType == "http") {
     server.reset(new hub::HubHttpJsonServer());
-  } else {
+  } else if (FLAGS_serverType == "grpc") {
     server.reset(new hub::HubGrpcServer());
+  } else {
+    LOG(FATAL) << "Unknown server type";
   }
 
   server->initialize();
