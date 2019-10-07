@@ -323,7 +323,8 @@ std::vector<UserAccountBalanceEvent> helper<C>::getUserAccountBalances(
   for (auto& row : result) {
     std::chrono::time_point<std::chrono::system_clock> ts =
         row.occuredAt.value();
-    if (row.reason == static_cast<long int>(UserAccountBalanceReason::SWEEP)) {
+    if (static_cast<long int>(row.reason) ==
+        static_cast<long int>(UserAccountBalanceReason::SWEEP)) {
       balances.emplace_back(UserAccountBalanceEvent{
         userIdentifier : std::move(row.identifier),
         timestamp : ts,
@@ -331,10 +332,12 @@ std::vector<UserAccountBalanceEvent> helper<C>::getUserAccountBalances(
         reason : static_cast<UserAccountBalanceReason>((row.reason.value())),
         sweepBundleHash : row.bundleHash
       });
-    } else if (row.reason == static_cast<long int>(
-                                 UserAccountBalanceReason::WITHDRAWAL) ||
-               row.reason == static_cast<long int>(
-                                 UserAccountBalanceReason::WITHDRAWAL_CANCEL)) {
+    } else if (static_cast<long int>(row.reason) ==
+                   static_cast<long int>(
+                       UserAccountBalanceReason::WITHDRAWAL) ||
+               static_cast<long int>(row.reason) ==
+                   static_cast<long int>(
+                       UserAccountBalanceReason::WITHDRAWAL_CANCEL)) {
       balances.emplace_back(UserAccountBalanceEvent{
         userIdentifier : std::move(row.identifier),
         timestamp : ts,
@@ -746,7 +749,7 @@ std::vector<TransferInput> helper<C>::getDepositsForSweep(
   for (const auto& row : result) {
     TransferInput ti = {
       addressId : row.id,
-      userId : row.userId,
+      userId : static_cast<uint64_t>(row.userId),
       address : common::crypto::Address(row.address.value()),
       uuid : common::crypto::UUID(row.seedUuid.value()),
       amount : static_cast<uint64_t>(row.balance)
@@ -863,7 +866,7 @@ nonstd::optional<AddressInfo> helper<C>::getAddressInfo(
   } else {
     auto& front = result.front();
     return {AddressInfo{
-      id : front.id,
+      id : static_cast<uint64_t>(front.id),
       userId : std::move(front.identifier.value()),
       uuid : common::crypto::UUID(front.seedUuid.value()),
       usedForSweep : front.exists
