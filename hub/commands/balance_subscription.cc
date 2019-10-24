@@ -46,7 +46,7 @@ boost::property_tree::ptree BalanceSubscription::doProcess(
               std::get_if<cmd::UserAccountBalanceEvent>(&event.getVariant())) {
         auto eventId = "event_" + std::to_string(i++);
         tree.add(eventId, "");
-        tree.put(".type", "USER_ACCOUNT");
+        tree.put(eventId +  ".type", "USER_ACCOUNT");
         tree.put(eventId + ".reason",
                  userAccountBalanceEventReasonToString(pval->reason));
         tree.put(eventId + ".userId", std::move(pval->userId));
