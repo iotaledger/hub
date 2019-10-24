@@ -46,7 +46,7 @@ boost::property_tree::ptree BalanceSubscription::doProcess(
               std::get_if<cmd::UserAccountBalanceEvent>(&event.getVariant())) {
         auto eventId = "event_" + std::to_string(i++);
         tree.add(eventId, "");
-        tree.put(eventId + ".type", "USER_ACCOUNT");
+        tree.put(eventId +  ".type", "USER_ACCOUNT");
         tree.put(eventId + ".reason",
                  userAccountBalanceEventReasonToString(pval->reason));
         tree.put(eventId + ".userId", std::move(pval->userId));
@@ -56,6 +56,7 @@ boost::property_tree::ptree BalanceSubscription::doProcess(
         tree.put(eventId + ".sweepBundleHash",
                  std::move(pval->sweepBundleHash));
         tree.put(eventId + ".withdrawalUuid", std::move(pval->withdrawalUUID));
+        tree.put(eventId + ".amount", pval->amount);
 
       } else if (auto pval = std::get_if<cmd::UserAddressBalanceEvent>(
                      &event.getVariant())) {
@@ -71,6 +72,7 @@ boost::property_tree::ptree BalanceSubscription::doProcess(
         tree.put(eventId + ".userAddress", std::move(pval->userAddress));
         tree.put(eventId + ".hash", std::move(pval->hash));
         tree.put(eventId + ".message", std::move(pval->message));
+        tree.put(eventId + ".amount", pval->amount);
 
       } else if (auto pval = std::get_if<cmd::HubAddressBalanceEvent>(
                      &event.getVariant())) {
@@ -85,9 +87,9 @@ boost::property_tree::ptree BalanceSubscription::doProcess(
         tree.put(eventId + ".timestamp", ss.str());
         ss.clear();
         ss << pval->amount;
-        tree.put(eventId + ".amount", pval->amount);
         tree.put(eventId + ".sweepBundleHash",
                  std::move(pval->sweepBundleHash));
+        tree.put(eventId + ".amount", pval->amount);
       }
     }
   }
