@@ -107,9 +107,11 @@
 
 - Arguments
 
-|Arg name    |type          |Description                    |
-|------------|--------------|-------------------------------|
-| userId     |string        |  The user's identifier        |
+|Arg name    |type          |Description                                         |
+|------------|--------------|----------------------------------------------------|
+| userId     |string        |  The user's identifier                             |
+| newerThan  |timestamp     | all returned events are newer than given timestamp,|
+|            |              | _timestamp_ _=_ _0_ means everything is retrieved  |
 
 - curl example:
     - Call:
