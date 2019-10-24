@@ -30,7 +30,7 @@
 - `./bazel-bin/signing_server/signing_server --salt abcdefghijklmnopqrstuvwxyz --authMode=ssl  -sslKey docs/ssl/server.key -sslCert docs/ssl/server.crt -sslCA docs/ssl/ca.crt --listenAddress=localhost:50052`
 
 ### Run via Docker
-You can build a docker image for `RPCHub` via `bazel build -c opt //docker:hub`
+You can build a docker image for `RPCHub` via `bazel run -c opt //docker:hub`
 
 ## Calling client commands
 - The Hub exposes both gRPC (https://grpc.io/docs/tutorials/) and REST apis
