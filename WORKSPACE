@@ -163,3 +163,10 @@ load("@io_bazel_rules_go//go:deps.bzl", "go_register_toolchains", "go_rules_depe
 go_rules_dependencies()
 
 go_register_toolchains()
+
+container_pull(
+    name = "ubuntu_base",
+    registry = "index.docker.io",
+    repository = "library/ubuntu",
+    tag = "19.10",
+)
