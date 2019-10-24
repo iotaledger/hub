@@ -513,6 +513,7 @@
             "timestamp": "1563796442000",
             "sweepBundleHash": "EWLCW9FFLSBUGZZOOLFQLTRJFKNGPUVCIOCQYTSDOSZLBCBJIIJZGPALGAKKANBTDYOBVQFOJHA9OVFOY",
             "withdrawalUuid": ""
+            "amount": "1000"
         },
         "event_1": {
             "type": "USER_ACCOUNT",
@@ -521,6 +522,7 @@
             "timestamp": "1563796562000",
             "sweepBundleHash": "",
             "withdrawalUuid": "4782e7d5-9ce4-477d-8fd0-32f5f3385db2"
+            "amount": "-1000"
         },
         "event_2": {
             "type": "USER_ACCOUNT",
@@ -529,6 +531,8 @@
             "timestamp": "1563796604000",
             "sweepBundleHash": "",
             "withdrawalUuid": "4782e7d5-9ce4-477d-8fd0-32f5f3385db2"
+            "amount": "1000"
+
         },
 
         ...
