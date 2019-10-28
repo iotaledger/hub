@@ -167,6 +167,6 @@ go_register_toolchains()
 container_pull(
     name = "ubuntu_base",
     registry = "index.docker.io",
-    repository = "library/ubuntu",
-    tag = "19.10",
+    repository = "iotacafe/ubuntu",
+    tag = "18.04",
 )
