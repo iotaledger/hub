@@ -21,9 +21,6 @@
 #include <boost/uuid/uuid.hpp>
 #include <boost/uuid/uuid_generators.hpp>
 
-#include <iota/models/bundle.hpp>
-#include <iota/models/transaction.hpp>
-
 #include "common/crypto/manager.h"
 #include "common/crypto/provider_base.h"
 #include "common/crypto/types.h"
