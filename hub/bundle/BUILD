@@ -8,6 +8,6 @@ cc_library(
         "//hub/db",
         "@com_github_gflags_gflags//:gflags",
         "@com_github_google_glog//:glog",
-        "@iota_lib_cpp",
+        "@org_iota_entangled//common/model:bundle",
     ],
 )
