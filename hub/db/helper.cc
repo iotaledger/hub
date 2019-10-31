@@ -129,11 +129,11 @@ void helper<C>::createUserAddressBalanceEntry(
     auto messageValue = message.has_value() && !message.value().isNull()
                             ? message.value().str()
                             : "";
-    connection(
-        insert_into(bal).set(bal.userAddress = addressId, bal.amount = amount,
-                             bal.reason = static_cast<int>(reason),
-                             bal.tailHash = std::move(tailHash.value()),
-                             bal.occuredAt = now, bal.message = messageValue));
+    connection(insert_into(bal).set(
+        bal.userAddress = addressId, bal.amount = amount,
+        bal.reason = static_cast<int>(reason),
+        bal.tailHash = tailHash.has_value() ? std::move(tailHash.value()) : "",
+        bal.occuredAt = now, bal.message = messageValue));
   } else {
     connection(
         insert_into(bal).set(bal.userAddress = addressId, bal.amount = amount,

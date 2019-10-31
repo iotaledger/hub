@@ -175,6 +175,15 @@ common::cmd::Error RecoverFunds::doProcess(
 
     auto bundle = hub::bundle_utils::createBundle(deposits, {}, outputs, {});
 
+    // This is different than when we record a deposit when we detect one via
+    // user_address_monitor, here we don't care for the tail or confirmation of
+    // the bundle, all we care for is that a signature was published, and so we
+    // want to record a deposit for that address that will indicate that
+
+    connection.createUserAddressBalanceEntry(
+        maybeAddressInfo->id, amount, nonstd::nullopt,
+        db::UserAddressBalanceReason::DEPOSIT, nonstd::nullopt, {});
+
     connection.createSweep(std::get<0>(bundle), std::get<1>(bundle), 0);
 
   } catch (const std::exception& ex) {

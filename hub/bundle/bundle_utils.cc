@@ -21,6 +21,9 @@
 
 #include "common/model/bundle.h"
 #include "common/model/transaction.h"
+#include "common/trinary/trit_long.h"
+#include "common/trinary/tryte_long.h"
+#include "utils/bundle_miner.h"
 
 #include "common/crypto/manager.h"
 #include "common/crypto/provider_base.h"
@@ -38,12 +41,84 @@ const std::string EMPTY_HASH(81, '9');
 namespace hub {
 namespace bundle_utils {
 
+static void mineBundle(
+    bundle_transactions_t* const bundle,
+    const std::vector<std::string>& alreadySignedBundleHashes,
+    size_t security) {
+  byte_t current_bundle_bytes[NORMALIZED_BUNDLE_LENGTH];
+  byte_t current_already_signed_bytes[NORMALIZED_BUNDLE_LENGTH];
+  byte_t min[NORMALIZED_BUNDLE_LENGTH];
+  size_t const essence_length = 486 * bundle_transactions_size(bundle);
+  trit_t essence[essence_length];
+  flex_trit_t tagFlexTrits[FLEX_TRIT_SIZE_81];
+  trit_t tagTrits[NUM_TRITS_TAG];
+  uint64_t index = 0;
+
+  trit_t current_bundle_trits[HASH_LENGTH_TRIT];
+  trit_t current_already_signed_bundle_trits[HASH_LENGTH_TRIT];
+
+  flex_trits_to_trits(current_bundle_trits, HASH_LENGTH_TRIT,
+                      bundle_transactions_bundle_hash(bundle), HASH_LENGTH_TRIT,
+                      HASH_LENGTH_TRIT);
+
+  normalize_hash(current_bundle_trits, current_bundle_bytes);
+
+  for (auto signedHash : alreadySignedBundleHashes) {
+    memset(current_already_signed_bytes, 0, NORMALIZED_BUNDLE_LENGTH);
+    trytes_to_trits((tryte_t*)signedHash.c_str(),
+                    current_already_signed_bundle_trits, HASH_LENGTH_TRYTE);
+    memset(min, 0, NORMALIZED_BUNDLE_LENGTH);
+    normalize_hash(current_already_signed_bundle_trits,
+                   current_already_signed_bytes);
+    bundle_miner_normalized_bundle_max(current_bundle_bytes,
+                                       current_already_signed_bytes, min,
+                                       NORMALIZED_BUNDLE_LENGTH);
+    memcpy(current_bundle_bytes, min, NORMALIZED_BUNDLE_LENGTH);
+  }
+
+  iota_transaction_t* txIter;
+
+  memset(essence, 0, essence_length);
+
+  BUNDLE_FOREACH(bundle, txIter) {
+    trit_t* curr_pos = essence;
+
+    flex_trits_to_trits(curr_pos, NUM_TRITS_ADDRESS,
+                        transaction_address(txIter), NUM_TRITS_ADDRESS,
+                        NUM_TRITS_ADDRESS);
+    curr_pos = &curr_pos[NUM_TRITS_ADDRESS];
+    long_to_trits(transaction_value(txIter), curr_pos);
+    curr_pos = &curr_pos[NUM_TRITS_VALUE];
+    flex_trits_to_trits(curr_pos, NUM_TRITS_OBSOLETE_TAG,
+                        transaction_obsolete_tag(txIter),
+                        NUM_TRITS_OBSOLETE_TAG, NUM_TRITS_OBSOLETE_TAG);
+    curr_pos = &curr_pos[NUM_TRITS_OBSOLETE_TAG];
+    long_to_trits(transaction_timestamp(txIter), curr_pos);
+    curr_pos = &curr_pos[NUM_TRITS_TIMESTAMP];
+    long_to_trits(transaction_current_index(txIter), curr_pos);
+    curr_pos = &curr_pos[NUM_TRITS_CURRENT_INDEX];
+    long_to_trits(transaction_last_index(txIter), curr_pos);
+  }
+
+  LOG(INFO) << "Mining for secure bundle began";
+  bundle_miner_mine(min, security, essence, essence_length, 1000000, 0, &index);
+  LOG(INFO) << "Mining for secure bundle finished";
+
+  txIter = bundle_at(bundle, 0);
+
+  memset(tagTrits, 0, NUM_TRITS_TAG);
+  long_to_trits(index, tagTrits);
+  flex_trits_from_trits(tagFlexTrits, NUM_TRITS_TAG, tagTrits, NUM_TRITS_TAG,
+                        NUM_TRITS_TAG);
+  transaction_set_obsolete_tag(txIter, tagFlexTrits);
+}
+
 std::tuple<common::crypto::Hash, std::string> createBundle(
     const std::vector<db::TransferInput>& deposits,
     const std::vector<db::TransferInput>& hubInputs,
     const std::vector<db::TransferOutput>& withdrawals,
     const nonstd::optional<db::TransferOutput> hubOutputOptional,
-    bool recoverFunds) {
+    const std::vector<std::string>& alreadySignedBundleHashes) {
   auto& cryptoProvider = common::crypto::CryptoManager::get().provider();
 
   // 5.1. Generate bundle_utils hash & transactions
@@ -152,6 +227,15 @@ std::tuple<common::crypto::Hash, std::string> createBundle(
   bundle_reset_indexes(bundle);
   bundle_finalize(bundle, &kerl);
 
+  if (!alreadySignedBundleHashes.empty()) {
+    // Since mining will only be required from "RecoverFunds", there's only one
+    // deposit that reuses the address
+    auto security = cryptoProvider.securityLevel(deposits.front().uuid).value();
+    mineBundle(bundle, alreadySignedBundleHashes, security);
+    kerl_init(&kerl);
+    bundle_finalize(bundle, &kerl);
+  }
+
   flex_trits_to_trytes((tryte_t*)bundleHashStr, NUM_TRYTES_HASH,
                        bundle_transactions_bundle_hash(bundle), NUM_TRITS_HASH,
                        NUM_TRITS_HASH);
@@ -163,7 +247,7 @@ std::tuple<common::crypto::Hash, std::string> createBundle(
   std::unordered_map<common::crypto::Address, std::string> signaturesForAddress;
 
   for (const auto& in : deposits) {
-    if (recoverFunds) {
+    if (!alreadySignedBundleHashes.empty()) {
       signaturesForAddress[in.address] =
           cryptoProvider.forceGetSignatureForUUID(in.uuid, bundleHash).value();
     } else {
