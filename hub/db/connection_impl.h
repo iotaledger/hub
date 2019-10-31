@@ -271,11 +271,6 @@ class ConnectionImpl : public Connection {
     return db::helper<Conn>::getTotalBalance(*_conn);
   }
 
-  virtual std::vector<std::string> getAllAddressDepositBundleHashes(
-      const common::crypto::Address& address) override {
-    return db::helper<Conn>::getAllAddressDepositBundleHashes(*_conn, address);
-  }
-
   void execute(const std::string& what) override { _conn->execute(what); }
 
  private:

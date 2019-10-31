@@ -174,18 +174,21 @@ common::cmd::Error RecoverFunds::doProcess(
       payoutAddress : payoutAddress.value()
     });
 
-    auto bundle = hub::bundle_utils::createBundle(deposits, {}, outputs, {});
+    std::vector<std::string> alreadySignedBundleHashes;
+    std::unordered_multimap<std::string, cppclient::Bundle>
+        alreadySignedBundles = _api->getConfirmedBundlesForAddresses(
+            {address.value().str()}, false);
 
-    // This is different than when we record a deposit when we detect one via
-    // user_address_monitor, here we don't care for the tail or confirmation of
-    // the bundle, all we care for is that a signature was published, and so we
-    // want to record a deposit for that address that will indicate that
+    for (auto const& [key, bundle] : alreadySignedBundles) {
+      for (auto const& tx : bundle) {
+        if (tx.value < 0) {
+          alreadySignedBundleHashes.emplace_back(tx.bundleHash);
+        }
+      }
+    }
 
-    connection.createUserAddressBalanceEntry(
-        maybeAddressInfo->id, amount, nonstd::nullopt,
-        db::UserAddressBalanceReason::DEPOSIT, nonstd::nullopt, {});
-
-    connection.createSweep(std::get<0>(bundle), std::get<1>(bundle), 0);
+    auto bundle = hub::bundle_utils::createBundle(deposits, {}, outputs, {},
+                                                  alreadySignedBundleHashes);
 
   } catch (const std::exception& ex) {
     return common::cmd::UNKNOWN_ERROR;

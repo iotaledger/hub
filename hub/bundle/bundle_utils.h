@@ -14,9 +14,12 @@
 #include <tuple>
 #include <utility>
 #include <vector>
+#include <gflags/gflags.h>
 
 #include "common/crypto/types.h"
 #include "hub/db/types.h"
+
+DECLARE_uint32(numBundlesToMine);
 
 namespace hub {
 namespace bundle_utils {

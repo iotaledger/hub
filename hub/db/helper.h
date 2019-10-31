@@ -138,9 +138,6 @@ struct helper {
   static bool isSweepConfirmed(C& connection, uint64_t sweepId);
 
   static uint64_t getTotalBalance(C& connection);
-
-  static std::vector<std::string> getAllAddressDepositBundleHashes(
-      C& connection, const common::crypto::Address& address);
 };
 
 }  // namespace db

@@ -11,7 +11,6 @@
 #include <string>
 
 #include "cppclient/api.h"
-
 #include "common/commands/command.h"
 
 DECLARE_bool(RecoverFunds_enabled);

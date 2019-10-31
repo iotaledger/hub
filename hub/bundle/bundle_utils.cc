@@ -31,7 +31,13 @@
 #include "hub/db/db.h"
 #include "hub/db/helper.h"
 
+
+DEFINE_uint32(numBundlesToMine, 5000000,
+"number of different bundles to mine for generating a signature "
+"for already spent addresses");
+
 namespace {
+
 constexpr size_t FRAGMENT_LEN = 2187;
 const std::string EMPTY_FRAG(FRAGMENT_LEN, '9');
 const std::string EMPTY_NONCE(27, '9');
@@ -101,7 +107,8 @@ static void mineBundle(
   }
 
   LOG(INFO) << "Mining for secure bundle began";
-  bundle_miner_mine(min, security, essence, essence_length, 1000000, 0, &index);
+  bundle_miner_mine(min, security, essence, essence_length,
+                    FLAGS_numBundlesToMine, 0, &index);
   LOG(INFO) << "Mining for secure bundle finished";
 
   txIter = bundle_at(bundle, 0);

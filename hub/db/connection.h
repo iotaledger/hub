@@ -305,13 +305,6 @@ class Connection {
   /// @return uint64_t - the total user account balance
   virtual uint64_t getTotalBalance() = 0;
 
-  /// Get a list of all the bundle hashes which used to deposit into a given
-  /// address
-  /// @param[in] address - the address in question
-  /// @return std::vector - a list of bundle hashes
-  virtual std::vector<std::string> getAllAddressDepositBundleHashes(
-      const common::crypto::Address& address) = 0;
-
  private:
   friend class DBManager;
 

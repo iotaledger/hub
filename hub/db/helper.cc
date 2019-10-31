@@ -967,33 +967,6 @@ uint64_t helper<C>::getTotalBalance(C& connection) {
       .sum;
 }
 
-template <typename C>
-std::vector<std::string> helper<C>::getAllAddressDepositBundleHashes(
-    C& connection, const common::crypto::Address& address) {
-  db::sql::UserAddress add;
-  db::sql::UserAddressBalance bal;
-  db::sql::Sweep swp;
-
-  auto result = connection(
-      select(bal.reason, swp.bundleHash)
-          .from(bal.join(add)
-                    .on(bal.userAddress == add.id)
-                    .left_outer_join(swp)
-                    .on(bal.sweep == swp.id))
-          .where(add.address == address.str() &&
-                 bal.reason ==
-                     static_cast<int>(UserAddressBalanceReason::DEPOSIT))
-          .order_by(bal.occuredAt.asc()));
-
-  std::vector<std::string> bundleHashes;
-
-  for (auto& row : result) {
-    bundleHashes.emplace_back(std::move(row.bundleHash));
-  }
-
-  return bundleHashes;
-}
-
 template struct helper<sqlpp::mysql::connection>;
 template struct helper<sqlpp::sqlite3::connection>;
 
