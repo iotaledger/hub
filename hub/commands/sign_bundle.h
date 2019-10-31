@@ -36,7 +36,8 @@ class SignBundle : public common::Command<SignBundleRequest, SignBundleReply> {
   using Command<SignBundleRequest, SignBundleReply>::Command;
 
   static std::shared_ptr<common::ICommand> create() {
-    return std::shared_ptr<common::ICommand>(new SignBundle());
+    return std::shared_ptr<common::ICommand>(
+        new SignBundle(std::make_shared<common::ClientSession>()));
   }
 
   static const std::string name() { return "SignBundle"; }

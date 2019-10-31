@@ -31,7 +31,8 @@ class GetDepositAddress
   using Command<GetDepositAddressRequest, GetDepositAddressReply>::Command;
 
   static std::shared_ptr<common::ICommand> create() {
-    return std::shared_ptr<common::ICommand>(new GetDepositAddress());
+    return std::shared_ptr<common::ICommand>(
+        new GetDepositAddress(std::make_shared<common::ClientSession>()));
   }
 
   static const std::string name() { return "GetDepositAddress"; }

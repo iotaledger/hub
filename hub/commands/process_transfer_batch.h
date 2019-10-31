@@ -40,7 +40,8 @@ class ProcessTransferBatch : public common::Command<ProcessTransferBatchRequest,
                 ProcessTransferBatchReply>::Command;
 
   static std::shared_ptr<common::ICommand> create() {
-    return std::shared_ptr<common::ICommand>(new ProcessTransferBatch());
+    return std::shared_ptr<common::ICommand>(
+        new ProcessTransferBatch(std::make_shared<common::ClientSession>()));
   }
 
   static const std::string name() { return "ProcessTransferBatch"; }

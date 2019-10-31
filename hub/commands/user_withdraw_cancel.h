@@ -33,7 +33,8 @@ class UserWithdrawCancel : public common::Command<UserWithdrawCancelRequest,
   using Command<UserWithdrawCancelRequest, UserWithdrawCancelReply>::Command;
 
   static std::shared_ptr<common::ICommand> create() {
-    return std::shared_ptr<common::ICommand>(new UserWithdrawCancel());
+    return std::shared_ptr<common::ICommand>(
+        new UserWithdrawCancel(std::make_shared<common::ClientSession>()));
   }
 
   static const std::string name() { return "UserWithdrawCancel"; }

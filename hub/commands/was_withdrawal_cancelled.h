@@ -34,7 +34,8 @@ class WasWithdrawalCancelled
                 WasWithdrawalCancelledReply>::Command;
 
   static std::shared_ptr<common::ICommand> create() {
-    return std::shared_ptr<common::ICommand>(new WasWithdrawalCancelled());
+    return std::shared_ptr<common::ICommand>(
+        new WasWithdrawalCancelled(std::make_shared<common::ClientSession>()));
   }
 
   static const std::string name() { return "WasWithdrawalCancelled"; }

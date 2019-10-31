@@ -35,7 +35,8 @@ class SweepDetail
   using Command<SweepDetailRequest, SweepDetailReply>::Command;
 
   static std::shared_ptr<common::ICommand> create() {
-    return std::shared_ptr<common::ICommand>(new SweepDetail());
+    return std::shared_ptr<common::ICommand>(
+        new SweepDetail(std::make_shared<common::ClientSession>()));
   }
 
   static const std::string name() { return "SweepDetail"; }

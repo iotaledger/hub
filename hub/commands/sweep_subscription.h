@@ -24,7 +24,8 @@ class SweepSubscription : public common::Command<SweepSubscriptionRequest,
   using Command<SweepSubscriptionRequest, std::vector<SweepEvent>>::Command;
 
   static std::shared_ptr<common::ICommand> create() {
-    return std::shared_ptr<common::ICommand>(new SweepSubscription());
+    return std::shared_ptr<common::ICommand>(
+        new SweepSubscription(std::make_shared<common::ClientSession>()));
   }
 
   common::cmd::Error doProcess(

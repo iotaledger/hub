@@ -33,7 +33,8 @@ class CreateUser : public common::Command<CreateUserRequest, CreateUserReply> {
   using Command<CreateUserRequest, CreateUserReply>::Command;
 
   static std::shared_ptr<ICommand> create() {
-    return std::shared_ptr<common::ICommand>(new CreateUser());
+    return std::shared_ptr<common::ICommand>(
+        new CreateUser(std::make_shared<common::ClientSession>()));
   }
 
   static const std::string name() { return "CreateUser"; }

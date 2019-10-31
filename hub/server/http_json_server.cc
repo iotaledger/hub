@@ -66,7 +66,7 @@ common::HttpServerBase::ErrorCode HubHttpJsonServer::handleRequestImpl(
 
   auto command = requestTree.get<std::string>("command");
 
-  auto cmd = cmd::CommandFactory::get()->create(command);
+  auto cmd = cmd::CommandFactory::get()->create(command, _api);
   if (cmd == nullptr) {
     LOG(ERROR) << "Unknown command";
     responseTree.add("result", "Unknown command");

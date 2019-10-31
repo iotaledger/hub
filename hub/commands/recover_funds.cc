@@ -34,6 +34,7 @@ boost::property_tree::ptree RecoverFunds::doProcess(
   if (!FLAGS_RecoverFunds_enabled) {
     LOG(ERROR) << session() << ": Recover funds is disabled";
     tree.add("error", common::cmd::getErrorString(common::cmd::CANCELLED));
+    return tree;
   }
 
   RecoverFundsRequest req;
@@ -58,7 +59,7 @@ boost::property_tree::ptree RecoverFunds::doProcess(
   req.address = maybeAddress.value();
 
   auto maybePayoutAddress = request.get_optional<std::string>("payoutAddress");
-  if (maybePayoutAddress) {
+  if (!maybePayoutAddress) {
     tree.add("error",
              common::cmd::getErrorString(common::cmd::MISSING_ARGUMENT));
     return tree;
