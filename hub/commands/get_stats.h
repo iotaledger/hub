@@ -30,7 +30,8 @@ class GetStats : public common::Command<GetStatsRequest, GetStatsReply> {
   using Command<GetStatsRequest, GetStatsReply>::Command;
 
   static std::shared_ptr<common::ICommand> create() {
-    return std::shared_ptr<common::ICommand>(new GetStats());
+    return std::shared_ptr<common::ICommand>(
+        new GetStats(std::make_shared<common::ClientSession>()));
   }
 
   static const std::string name() { return "GetStats"; }

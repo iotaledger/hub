@@ -37,7 +37,8 @@ class UserWithdraw
   using Command<UserWithdrawRequest, UserWithdrawReply>::Command;
 
   static std::shared_ptr<common::ICommand> create() {
-    return std::shared_ptr<common::ICommand>(new UserWithdraw());
+    return std::shared_ptr<common::ICommand>(
+        new UserWithdraw(std::make_shared<common::ClientSession>()));
   }
 
   explicit UserWithdraw(std::shared_ptr<common::ClientSession> session,
@@ -51,6 +52,10 @@ class UserWithdraw
 
   boost::property_tree::ptree doProcess(
       const boost::property_tree::ptree& request) noexcept override;
+
+  virtual bool needApi() const override { return true; }
+
+  virtual void setApi(std::shared_ptr<cppclient::IotaAPI> api) { _api = api; }
 
  private:
   std::shared_ptr<cppclient::IotaAPI> _api;

@@ -36,7 +36,8 @@ class GetUserHistory
   using Command<GetUserHistoryRequest, GetUserHistoryReply>::Command;
 
   static std::shared_ptr<common::ICommand> create() {
-    return std::shared_ptr<common::ICommand>(new GetUserHistory());
+    return std::shared_ptr<common::ICommand>(
+        new GetUserHistory(std::make_shared<common::ClientSession>()));
   }
 
   static const std::string name() { return "GetUserHistory"; }

@@ -90,6 +90,8 @@ See [Getting Started](docs/getting_started.md) for information on how to use the
     -useHttpsIRI (Determines if the connection with IRI should be over HTTPS (make sure `apiAddress` supports https)) 
      type: bool (--useHttpsIRI or --nouseHttpsIRI)
     -serverType (Which API should server expose {grpc (default), http)
+    -numBundlesToMine: (number of different bundles to mine for generating a signature for already spent addresses) 
+     type: uint32 default: 5000000
 
   Flags from hub/service/sweep_service.cc:
     -sweep_max_deposit (Maximum number of user deposits to process per sweep.)

@@ -11,7 +11,6 @@
 #include <string>
 
 #include "cppclient/api.h"
-
 #include "common/commands/command.h"
 
 DECLARE_bool(RecoverFunds_enabled);
@@ -37,7 +36,8 @@ class RecoverFunds
   using Command<RecoverFundsRequest, RecoverFundsReply>::Command;
 
   static std::shared_ptr<common::ICommand> create() {
-    return std::shared_ptr<common::ICommand>(new RecoverFunds());
+    return std::shared_ptr<common::ICommand>(
+        new RecoverFunds(std::make_shared<common::ClientSession>()));
   }
 
   explicit RecoverFunds(std::shared_ptr<common::ClientSession> session,
@@ -51,6 +51,10 @@ class RecoverFunds
 
   boost::property_tree::ptree doProcess(
       const boost::property_tree::ptree& request) noexcept override;
+
+  virtual bool needApi() const override { return true; }
+
+  virtual void setApi(std::shared_ptr<cppclient::IotaAPI> api) { _api = api; }
 
  private:
   std::shared_ptr<cppclient::IotaAPI> _api;

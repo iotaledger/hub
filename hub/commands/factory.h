@@ -13,6 +13,7 @@
 #include <string_view>
 
 #include "common/commands/command.h"
+#include "cppclient/api.h"
 
 namespace hub {
 
@@ -22,11 +23,15 @@ typedef std::shared_ptr<common::ICommand> (*CreateCommandFn)(void);
 
 class CommandFactory {
  public:
-  static std::shared_ptr<common::ICommand> create(std::string_view name) {
+  static std::shared_ptr<common::ICommand> create(
+      std::string_view name, std::shared_ptr<cppclient::IotaAPI> api) {
     std::shared_ptr<common::ICommand> cmd;
     try {
       auto creator = get()->_factoryMap.at(name.data());
       cmd = creator();
+      if (cmd->needApi()) {
+        cmd->setApi(api);
+      }
     } catch (const std::out_of_range &e) {
       LOG(ERROR) << name << " is an unknown command\n";
     }

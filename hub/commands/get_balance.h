@@ -32,7 +32,8 @@ class GetBalance : public common::Command<GetBalanceRequest, GetBalanceReply> {
   using Command<GetBalanceRequest, GetBalanceReply>::Command;
 
   static std::shared_ptr<common::ICommand> create() {
-    return std::shared_ptr<common::ICommand>(new GetBalance());
+    return std::shared_ptr<common::ICommand>(
+        new GetBalance(std::make_shared<common::ClientSession>()));
   }
 
   static const std::string name() { return "GetBalance"; }

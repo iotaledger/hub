@@ -35,7 +35,8 @@ class BalanceSubscription : public common::Command<BalanceSubscriptionRequest,
   static const std::string name() { return "BalanceSubscription"; }
 
   static std::shared_ptr<ICommand> create() {
-    return std::shared_ptr<common::ICommand>(new BalanceSubscription());
+    return std::shared_ptr<common::ICommand>(
+        new BalanceSubscription(std::make_shared<common::ClientSession>()));
   }
 
   virtual std::vector<db::UserAccountBalanceEvent>

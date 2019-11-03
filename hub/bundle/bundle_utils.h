@@ -14,9 +14,12 @@
 #include <tuple>
 #include <utility>
 #include <vector>
+#include <gflags/gflags.h>
 
 #include "common/crypto/types.h"
 #include "hub/db/types.h"
+
+DECLARE_uint32(numBundlesToMine);
 
 namespace hub {
 namespace bundle_utils {
@@ -27,8 +30,8 @@ namespace bundle_utils {
 /// @param[in] hubInputs - a list of internal transfers
 /// @param[in] withdrawals - a list of withdrawal transactions
 /// @param[in] hubOutput - a list of db::TransferOutput structures
-/// @param[in] recoverFunds - if true, this means we should force signature over
-/// an already spent address
+/// @param[in] alreadySignedBundleHashes - if not empty, this means we should
+/// force signature and mine for a bundle an already spent address
 /// @return a std::tuple containing
 /// - the bundle hash
 /// - the serialized bundle
@@ -37,7 +40,7 @@ std::tuple<common::crypto::Hash, std::string> createBundle(
     const std::vector<db::TransferInput>& hubInputs,
     const std::vector<db::TransferOutput>& withdrawals,
     const nonstd::optional<db::TransferOutput> hubOutputOptional,
-    bool recoverFunds = false);
+    const std::vector<std::string>& alreadySignedBundleHashes = {});
 
 }  // namespace bundle_utils
 }  // namespace hub

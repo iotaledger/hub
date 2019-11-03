@@ -31,7 +31,8 @@ class SweepInfo : public common::Command<SweepInfoRequest, SweepEvent> {
   using Command<SweepInfoRequest, SweepEvent>::Command;
 
   static std::shared_ptr<common::ICommand> create() {
-    return std::shared_ptr<common::ICommand>(new SweepInfo());
+    return std::shared_ptr<common::ICommand>(
+        new SweepInfo(std::make_shared<common::ClientSession>()));
   }
 
   static const std::string name() { return "SweepInfo"; }

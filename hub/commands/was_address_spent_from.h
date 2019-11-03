@@ -36,7 +36,8 @@ class WasAddressSpentFrom : public common::Command<WasAddressSpentFromRequest,
   using Command<WasAddressSpentFromRequest, WasAddressSpentFromReply>::Command;
 
   static std::shared_ptr<ICommand> create() {
-    return std::shared_ptr<common::ICommand>(new WasAddressSpentFrom());
+    return std::shared_ptr<common::ICommand>(
+        new WasAddressSpentFrom(std::make_shared<common::ClientSession>()));
   }
 
   explicit WasAddressSpentFrom(std::shared_ptr<common::ClientSession> session,
@@ -51,6 +52,10 @@ class WasAddressSpentFrom : public common::Command<WasAddressSpentFromRequest,
 
   boost::property_tree::ptree doProcess(
       const boost::property_tree::ptree& request) noexcept override;
+
+  virtual bool needApi() const override { return true; }
+
+  virtual void setApi(std::shared_ptr<cppclient::IotaAPI> api) { _api = api; }
 
  private:
   std::shared_ptr<cppclient::IotaAPI> _api;

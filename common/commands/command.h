@@ -14,6 +14,7 @@
 
 #include "common/commands/errors.h"
 #include "common/stats/session.h"
+#include "cppclient/api.h"
 
 namespace common {
 class ClientSession;
@@ -25,6 +26,10 @@ class ICommand {
   void setClientSession(std::shared_ptr<ClientSession> session) {
     _clientSession = std::move(session);
   }
+
+  virtual bool needApi() const { return false; }
+
+  virtual void setApi(std::shared_ptr<cppclient::IotaAPI> api){};
 
   /// constructor
   /// @param[in] session - the current client session

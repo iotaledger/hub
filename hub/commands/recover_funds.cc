@@ -34,6 +34,7 @@ boost::property_tree::ptree RecoverFunds::doProcess(
   if (!FLAGS_RecoverFunds_enabled) {
     LOG(ERROR) << session() << ": Recover funds is disabled";
     tree.add("error", common::cmd::getErrorString(common::cmd::CANCELLED));
+    return tree;
   }
 
   RecoverFundsRequest req;
@@ -58,7 +59,7 @@ boost::property_tree::ptree RecoverFunds::doProcess(
   req.address = maybeAddress.value();
 
   auto maybePayoutAddress = request.get_optional<std::string>("payoutAddress");
-  if (maybePayoutAddress) {
+  if (!maybePayoutAddress) {
     tree.add("error",
              common::cmd::getErrorString(common::cmd::MISSING_ARGUMENT));
     return tree;
@@ -173,9 +174,21 @@ common::cmd::Error RecoverFunds::doProcess(
       payoutAddress : payoutAddress.value()
     });
 
-    auto bundle = hub::bundle_utils::createBundle(deposits, {}, outputs, {});
+    std::vector<std::string> alreadySignedBundleHashes;
+    std::unordered_multimap<std::string, cppclient::Bundle>
+        alreadySignedBundles = _api->getConfirmedBundlesForAddresses(
+            {address.value().str()}, false);
 
-    connection.createSweep(std::get<0>(bundle), std::get<1>(bundle), 0);
+    for (auto const& [key, bundle] : alreadySignedBundles) {
+      for (auto const& tx : bundle) {
+        if (tx.value < 0) {
+          alreadySignedBundleHashes.emplace_back(tx.bundleHash);
+        }
+      }
+    }
+
+    auto bundle = hub::bundle_utils::createBundle(deposits, {}, outputs, {},
+                                                  alreadySignedBundleHashes);
 
   } catch (const std::exception& ex) {
     return common::cmd::UNKNOWN_ERROR;
