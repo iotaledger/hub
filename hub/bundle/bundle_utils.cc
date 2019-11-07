@@ -31,10 +31,9 @@
 #include "hub/db/db.h"
 #include "hub/db/helper.h"
 
-
 DEFINE_uint32(numBundlesToMine, 5000000,
-"number of different bundles to mine for generating a signature "
-"for already spent addresses");
+              "number of different bundles to mine for generating a signature "
+              "for already spent addresses");
 
 namespace {
 

@@ -8,13 +8,13 @@
 #ifndef HUB_BUNDLE_CREATE_BUNDLE_H_
 #define HUB_BUNDLE_CREATE_BUNDLE_H_
 
+#include <gflags/gflags.h>
 #include <cstdint>
 #include <memory>
 #include <string>
 #include <tuple>
 #include <utility>
 #include <vector>
-#include <gflags/gflags.h>
 
 #include "common/crypto/types.h"
 #include "hub/db/types.h"

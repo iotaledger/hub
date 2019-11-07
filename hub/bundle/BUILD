@@ -9,6 +9,7 @@ cc_library(
         "@com_github_gflags_gflags//:gflags",
         "@com_github_google_glog//:glog",
         "@org_iota_entangled//common/model:bundle",
+        "@org_iota_entangled//common/trinary:flex_trit",
         "@org_iota_entangled//utils:bundle_miner",
     ],
 )

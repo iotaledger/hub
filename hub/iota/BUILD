@@ -13,6 +13,7 @@ cc_library(
     deps = [
         ":pow",
         "@org_iota_entangled//common/helpers:pow",
+        "@org_iota_entangled//common/model:bundle",
         "@org_iota_entangled//common/trinary:tryte_long",
     ],
 )
