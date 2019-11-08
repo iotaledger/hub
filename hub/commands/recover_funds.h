@@ -10,8 +10,8 @@
 
 #include <string>
 
-#include "cppclient/api.h"
 #include "common/commands/command.h"
+#include "cppclient/api.h"
 
 DECLARE_bool(RecoverFunds_enabled);
 

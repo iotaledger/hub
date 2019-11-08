@@ -43,6 +43,7 @@ class POWProvider {
       LOG(ERROR) << "Failed to get attachment point";
       return {};
     }
+
     auto location = maybeLocation.value();
     return doPOW(trytes, location.trunkTransaction, location.branchTransaction);
   }
