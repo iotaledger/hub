@@ -1,5 +1,5 @@
 load(
-    "@io_bazel_rules_python//python:python.bzl",
+    "@rules_python//python:python.bzl",
     "py_binary",
 )
 load(
