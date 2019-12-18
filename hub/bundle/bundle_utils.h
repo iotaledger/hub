@@ -56,6 +56,15 @@ void persistToDatabase(std::tuple<common::crypto::Hash, std::string> bundle,
                        const std::vector<db::TransferOutput>& withdrawals,
                        const nonstd::optional<db::TransferOutput> hubOutput);
 
+/// Creates a new hub address to which funds that remain after a transfer
+/// can be moved.
+/// @param[in] remainder
+/// @return a db::TransferOutput structure containing
+/// - the new hub address
+/// - the id of the new hub address
+/// - the remainder
+hub::db::TransferOutput getHubOutput(uint64_t remainder);
+
 }  // namespace bundle_utils
 }  // namespace hub
 

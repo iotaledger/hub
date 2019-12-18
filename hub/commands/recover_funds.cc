@@ -190,7 +190,9 @@ common::cmd::Error RecoverFunds::doProcess(
     auto bundle = hub::bundle_utils::createBundle(deposits, {}, outputs, {},
                                                   alreadySignedBundleHashes);
 
-    hub::bundle_utils::persistToDatabase(bundle, deposits, {}, outputs, {});
+    auto hubOutput = hub::bundle_utils::getHubOutput(0);
+    hub::bundle_utils::persistToDatabase(bundle, deposits, {}, outputs,
+                                         {hubOutput});
 
   } catch (const std::exception& ex) {
     return common::cmd::UNKNOWN_ERROR;

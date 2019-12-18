@@ -129,7 +129,7 @@ bool SweepService::doTick() {
 
     // 4. Determine Hub output address
     auto remainder = (hubInputTotal + depositsTotal) - requiredOutput;
-    auto hubOutput = getHubOutput(remainder);
+    auto hubOutput = hub::bundle_utils::getHubOutput(remainder);
 
     LOG(INFO) << "Will move " << remainder
               << " into new Hub address: " << hubOutput.payoutAddress.str();
@@ -156,19 +156,6 @@ bool SweepService::doTick() {
   // PoW is handled by attachment service
 
   return true;
-}
-
-db::TransferOutput SweepService::getHubOutput(uint64_t remainder) {
-  auto& dbConnection = db::DBManager::get().connection();
-  auto& cryptoProvider = common::crypto::CryptoManager::get().provider();
-
-  common::crypto::UUID hubOutputUUID;
-  auto address = cryptoProvider.getAddressForUUID(hubOutputUUID).value();
-
-  return {dbConnection.createHubAddress(hubOutputUUID, address),
-          remainder,
-          {},
-          std::move(address)};
 }
 
 }  // namespace service

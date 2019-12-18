@@ -46,6 +46,19 @@ const std::string EMPTY_HASH(81, '9');
 namespace hub {
 namespace bundle_utils {
 
+db::TransferOutput getHubOutput(uint64_t remainder) {
+  auto& dbConnection = db::DBManager::get().connection();
+  auto& cryptoProvider = common::crypto::CryptoManager::get().provider();
+
+  common::crypto::UUID hubOutputUUID;
+  auto address = cryptoProvider.getAddressForUUID(hubOutputUUID).value();
+
+  return {dbConnection.createHubAddress(hubOutputUUID, address),
+          remainder,
+          {},
+          std::move(address)};
+}
+
 void persistToDatabase(std::tuple<common::crypto::Hash, std::string> bundle,
                        const std::vector<db::TransferInput>& deposits,
                        const std::vector<db::TransferInput>& hubInputs,
@@ -56,6 +69,8 @@ void persistToDatabase(std::tuple<common::crypto::Hash, std::string> bundle,
   // 6.1. Insert sweep.
   auto hubOutputId = hubOutput.has_value() ? hubOutput.value().id : 0;
   auto hubOutputAmount = hubOutput.has_value() ? hubOutput.value().amount : 0;
+  auto hash = std::get<0>(bundle);
+  auto trytes = std::get<1>(bundle);
   auto sweepId = dbConnection.createSweep(std::get<0>(bundle),
                                           std::get<1>(bundle), hubOutputId);
 
@@ -329,15 +344,10 @@ std::tuple<common::crypto::Hash, std::string> createBundle(
       transaction_set_signature(txIter, sigFlexTrits);
       signature.remove_prefix(FRAGMENT_LEN);
 
-      txIter = (iota_transaction_t*)utarray_next(bundle, txIter);
+      if (!signature.empty()) {
+        txIter = (iota_transaction_t*)utarray_next(bundle, txIter);
+      }
     }
-  }
-
-  ret = bundle_validate(bundle, &bundleStatus);
-  if (ret != RC_OK || bundleStatus != BUNDLE_VALID) {
-    // This should never happen but it's here for debugging purposes
-    bundle_transactions_free(&bundle);
-    LOG(FATAL) << "Created bundle is not valid, status:" << bundleStatus;
   }
 
   std::ostringstream bundleTrytesOS;
