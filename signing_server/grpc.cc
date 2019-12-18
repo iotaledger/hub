@@ -10,7 +10,6 @@
 #include "common/stats/session.h"
 #include "signing_server/commands/get_address_for_uuid.h"
 #include "signing_server/commands/get_security_level.h"
-#include "signing_server/commands/get_signature_for_uuid.h"
 
 #include <memory>
 #include <string>
@@ -41,6 +40,15 @@ grpc::Status SigningServerImpl::GetSecurityLevel(
   auto clientSession = std::make_shared<common::ClientSession>();
   cmd::GetSecurityLevel cmd(clientSession);
   return common::cmd::errorToGrpcError(cmd.process(request, response));
+}
+
+    grpc::Status SigningServerImpl::GetSeedForUuid(
+            grpc::ServerContext* context,
+            const GetSeedForAddressRequest* request,
+            GetSeedForAddressReply* response){
+        auto clientSession = std::make_shared<common::ClientSession>();
+        cmd::GetSeedForAddress cmd(clientSession);
+        return common::cmd::errorToGrpcError(cmd.process(request, response));
 }
 
 }  // namespace rpc

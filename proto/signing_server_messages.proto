@@ -63,3 +63,15 @@ message GetSecurityLevelRequest {
 message GetSecurityLevelReply {
     uint32 securityLevel = 1;
 }
+
+
+message GetSeedForUUIDRequest{
+    //The uuid
+    string uuid = 1;
+}
+
+message GetSeedForUUIDReply{
+    //The seed
+    string seed = 1;
+}
+

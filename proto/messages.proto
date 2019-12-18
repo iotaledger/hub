@@ -359,3 +359,16 @@ message RecoverFundsRequest {
 
 message RecoverFundsReply {}
 
+message GetSeedForAddressRequest{
+    //The user id
+    string userId = 1;
+    //The address in question
+    string address = 2;
+}
+
+message GetSeedForAddressReply{
+    //The seed
+    string seed = 1;
+}
+
+

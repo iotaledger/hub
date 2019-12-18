@@ -97,5 +97,20 @@ nonstd::optional<std::string> RemoteSigningProvider::doGetSignatureForUUID(
   return {response.signature()};
 }
 
+std::string RemoteSigningProvider::getSeedFromUUID(
+    const common::crypto::UUID& uuid) const {
+  ClientContext context;
+  signing::rpc::GetSeedForUUIDRequest request;
+  request.set_uuid(uuid.str());
+  signing::rpc::GetSeedForUUIDReply response;
+
+  Status status = _stub->GetSeedForUUID(&context, request, &response);
+  if (!status.ok()) {
+    LOG(ERROR) << "GetSeedForUUID rpc failed:" << status.error_message();
+    return {};
+  }
+  return {response.seed()};
+}
+
 }  // namespace crypto
 }  // namespace hub

@@ -36,6 +36,13 @@ class Argon2Provider : public CryptoProviderBase {
   nonstd::optional<size_t> securityLevel(
       const common::crypto::UUID& uuid) const override;
 
+  /// Calculate the seed for a UUID.
+  /// param[in] UUID - a UUID
+  /// @return string - the seed
+
+  virtual std::string getSeedFromUUID(
+      const common::crypto::UUID& uuid) const override;
+
  protected:
   /// Calculate the signature for a UUID and a bundle hash
   /// param[in] UUID - a UUID

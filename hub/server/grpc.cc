@@ -22,6 +22,7 @@
 #include "hub/commands/get_address_info.h"
 #include "hub/commands/get_balance.h"
 #include "hub/commands/get_deposit_address.h"
+#include "hub/commands/get_seed_for_address.h"
 #include "hub/commands/get_stats.h"
 #include "hub/commands/get_user_history.h"
 #include "hub/commands/process_transfer_batch.h"
@@ -409,6 +410,23 @@ grpc::Status HubImpl::RecoverFunds(
   request.validateChecksum = rpcRequest->validatechecksum();
   request.address = rpcRequest->address();
   return common::cmd::errorToGrpcError(cmd.process(&request, &response));
+}
+
+grpc::Status HubImpl::GetSeedForAddress(
+    grpc::ServerContext* context,
+    const hub::rpc::GetSeedForAddressRequest* rpcRequest,
+    hub::rpc::GetSeedForAddressReply* rpcResponse) {
+  auto clientSession = std::make_shared<common::ClientSession>();
+  cmd::GetSeedForAddress cmd(clientSession);
+  cmd::GetSeedForAddressRequest request;
+  cmd::GetSeedForAddressReply response;
+  request.userId = rpcRequest->userid();
+  request.address = rpcRequest->address();
+  auto status = common::cmd::errorToGrpcError(cmd.process(&request, &response));
+  if (status.ok()) {
+    rpcResponse->set_seed(response.seed);
+  }
+  return status;
 }
 
 }  // namespace hub
