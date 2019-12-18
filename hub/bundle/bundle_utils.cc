@@ -46,6 +46,47 @@ const std::string EMPTY_HASH(81, '9');
 namespace hub {
 namespace bundle_utils {
 
+void persistToDatabase(std::tuple<common::crypto::Hash, std::string> bundle,
+                       const std::vector<db::TransferInput>& deposits,
+                       const std::vector<db::TransferInput>& hubInputs,
+                       const std::vector<db::TransferOutput>& withdrawals,
+                       const nonstd::optional<db::TransferOutput> hubOutput) {
+  auto& dbConnection = db::DBManager::get().connection();
+
+  // 6.1. Insert sweep.
+  auto hubOutputId = hubOutput.has_value() ? hubOutput.value().id : 0;
+  auto hubOutputAmount = hubOutput.has_value() ? hubOutput.value().amount : 0;
+  auto sweepId = dbConnection.createSweep(std::get<0>(bundle),
+                                          std::get<1>(bundle), hubOutputId);
+
+  // 6.2. Change Hub address balances
+
+  dbConnection.createHubAddressBalanceEntry(
+      hubOutputId, hubOutputAmount, db::HubAddressBalanceReason::INBOUND,
+      sweepId);
+  for (const auto& input : hubInputs) {
+    dbConnection.createHubAddressBalanceEntry(
+        input.addressId, -input.amount, db::HubAddressBalanceReason::OUTBOUND,
+        sweepId);
+  }
+
+  // 6.3. Update withdrawal sweep id
+  for (const auto& withdrawal : withdrawals) {
+    dbConnection.setWithdrawalSweep(withdrawal.id, sweepId);
+  }
+
+  // 6.4. Change User address balances
+  for (const auto& input : deposits) {
+    dbConnection.createUserAddressBalanceEntry(
+        input.addressId, -input.amount, nonstd::nullopt,
+        db::UserAddressBalanceReason::SWEEP, {}, sweepId);
+
+    dbConnection.createUserAccountBalanceEntry(
+        input.userId, input.amount, db::UserAccountBalanceReason::SWEEP,
+        sweepId);
+  }
+}
+
 static void mineBundle(
     bundle_transactions_t* const bundle,
     const std::vector<std::string>& alreadySignedBundleHashes,
@@ -107,7 +148,7 @@ static void mineBundle(
 
   LOG(INFO) << "Mining for secure bundle began";
   bundle_miner_mine(min, security, essence, essence_length,
-                    FLAGS_numBundlesToMine, 0, &index);
+                    FLAGS_numBundlesToMine, 0, UINT32_MAX, &index);
   LOG(INFO) << "Mining for secure bundle finished";
 
   txIter = bundle_at(bundle, 0);
@@ -137,6 +178,8 @@ std::tuple<common::crypto::Hash, std::string> createBundle(
 
   char bundleHashStr[NUM_TRYTES_HASH + 1];
   char addressStr[NUM_TRYTES_ADDRESS + 1];
+  bundle_status_t bundleStatus;
+  retcode_t ret;
 
   Kerl kerl;
   kerl_init(&kerl);
@@ -288,6 +331,13 @@ std::tuple<common::crypto::Hash, std::string> createBundle(
 
       txIter = (iota_transaction_t*)utarray_next(bundle, txIter);
     }
+  }
+
+  ret = bundle_validate(bundle, &bundleStatus);
+  if (ret != RC_OK || bundleStatus != BUNDLE_VALID) {
+    // This should never happen but it's here for debugging purposes
+    bundle_transactions_free(&bundle);
+    LOG(FATAL) << "Created bundle is not valid, status:" << bundleStatus;
   }
 
   std::ostringstream bundleTrytesOS;

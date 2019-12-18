@@ -138,7 +138,8 @@ bool SweepService::doTick() {
                                              {hubOutput});
 
     // 6. Commit to DB
-    persistToDatabase(bundle, deposits, hubInputs, withdrawals, hubOutput);
+    hub::bundle_utils::persistToDatabase(bundle, deposits, hubInputs,
+                                         withdrawals, {hubOutput});
 
     transaction->commit();
     LOG(INFO) << "Sweep complete.";
@@ -155,46 +156,6 @@ bool SweepService::doTick() {
   // PoW is handled by attachment service
 
   return true;
-}
-
-void SweepService::persistToDatabase(
-    std::tuple<common::crypto::Hash, std::string> bundle,
-    const std::vector<db::TransferInput>& deposits,
-    const std::vector<db::TransferInput>& hubInputs,
-    const std::vector<db::TransferOutput>& withdrawals,
-    const db::TransferOutput& hubOutput) {
-  auto& dbConnection = db::DBManager::get().connection();
-
-  // 6.1. Insert sweep.
-  auto sweepId = dbConnection.createSweep(std::get<0>(bundle),
-                                          std::get<1>(bundle), hubOutput.id);
-
-  // 6.2. Change Hub address balances
-
-  dbConnection.createHubAddressBalanceEntry(
-      hubOutput.id, hubOutput.amount, db::HubAddressBalanceReason::INBOUND,
-      sweepId);
-  for (const auto& input : hubInputs) {
-    dbConnection.createHubAddressBalanceEntry(
-        input.addressId, -input.amount, db::HubAddressBalanceReason::OUTBOUND,
-        sweepId);
-  }
-
-  // 6.3. Update withdrawal sweep id
-  for (const auto& withdrawal : withdrawals) {
-    dbConnection.setWithdrawalSweep(withdrawal.id, sweepId);
-  }
-
-  // 6.4. Change User address balances
-  for (const auto& input : deposits) {
-    dbConnection.createUserAddressBalanceEntry(
-        input.addressId, -input.amount, nonstd::nullopt,
-        db::UserAddressBalanceReason::SWEEP, {}, sweepId);
-
-    dbConnection.createUserAccountBalanceEntry(
-        input.userId, input.amount, db::UserAccountBalanceReason::SWEEP,
-        sweepId);
-  }
 }
 
 db::TransferOutput SweepService::getHubOutput(uint64_t remainder) {
