@@ -107,9 +107,10 @@ TEST_F(LocalPOWTests, CorrectDigest) {
   std::string prev = digest;
   for (uint32_t i = 1; i < powedTxs.size(); ++i) {
     free(digest);
-  /* EXPECT_EQ(powedTxs[i].substr(hub::iota::LocalPOW::BRANCH_OFFSET, 81),
-              resp.trunkTransaction);*/
-  /*  EXPECT_EQ(powedTxs[i].substr(hub::iota::LocalPOW::TRUNK_OFFSET, 81), prev);*/
+    /* EXPECT_EQ(powedTxs[i].substr(hub::iota::LocalPOW::BRANCH_OFFSET, 81),
+                resp.trunkTransaction);*/
+    /*  EXPECT_EQ(powedTxs[i].substr(hub::iota::LocalPOW::TRUNK_OFFSET, 81),
+     * prev);*/
     digest = iota_digest(powedTxs[i].c_str());
     prev = digest;
   }
