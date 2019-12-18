@@ -2,7 +2,7 @@
 
 set -e
 
-BAZEL_VERSION=0.12.0
+BAZEL_VERSION=1.2.1
 BAZEL_INSTALLER=${PWD}/bazel-installer/install.sh
 INSTALLER_PLATFORM=linux-x86_64
 BASE="${PWD}/bazel-install"

@@ -46,6 +46,62 @@ const std::string EMPTY_HASH(81, '9');
 namespace hub {
 namespace bundle_utils {
 
+db::TransferOutput getHubOutput(uint64_t remainder) {
+  auto& dbConnection = db::DBManager::get().connection();
+  auto& cryptoProvider = common::crypto::CryptoManager::get().provider();
+
+  common::crypto::UUID hubOutputUUID;
+  auto address = cryptoProvider.getAddressForUUID(hubOutputUUID).value();
+
+  return {dbConnection.createHubAddress(hubOutputUUID, address),
+          remainder,
+          {},
+          std::move(address)};
+}
+
+void persistToDatabase(std::tuple<common::crypto::Hash, std::string> bundle,
+                       const std::vector<db::TransferInput>& deposits,
+                       const std::vector<db::TransferInput>& hubInputs,
+                       const std::vector<db::TransferOutput>& withdrawals,
+                       const nonstd::optional<db::TransferOutput> hubOutput) {
+  auto& dbConnection = db::DBManager::get().connection();
+
+  // 6.1. Insert sweep.
+  auto hubOutputId = hubOutput.has_value() ? hubOutput.value().id : 0;
+  auto hubOutputAmount = hubOutput.has_value() ? hubOutput.value().amount : 0;
+  auto hash = std::get<0>(bundle);
+  auto trytes = std::get<1>(bundle);
+  auto sweepId = dbConnection.createSweep(std::get<0>(bundle),
+                                          std::get<1>(bundle), hubOutputId);
+
+  // 6.2. Change Hub address balances
+
+  dbConnection.createHubAddressBalanceEntry(
+      hubOutputId, hubOutputAmount, db::HubAddressBalanceReason::INBOUND,
+      sweepId);
+  for (const auto& input : hubInputs) {
+    dbConnection.createHubAddressBalanceEntry(
+        input.addressId, -input.amount, db::HubAddressBalanceReason::OUTBOUND,
+        sweepId);
+  }
+
+  // 6.3. Update withdrawal sweep id
+  for (const auto& withdrawal : withdrawals) {
+    dbConnection.setWithdrawalSweep(withdrawal.id, sweepId);
+  }
+
+  // 6.4. Change User address balances
+  for (const auto& input : deposits) {
+    dbConnection.createUserAddressBalanceEntry(
+        input.addressId, -input.amount, nonstd::nullopt,
+        db::UserAddressBalanceReason::SWEEP, {}, sweepId);
+
+    dbConnection.createUserAccountBalanceEntry(
+        input.userId, input.amount, db::UserAccountBalanceReason::SWEEP,
+        sweepId);
+  }
+}
+
 static void mineBundle(
     bundle_transactions_t* const bundle,
     const std::vector<std::string>& alreadySignedBundleHashes,
@@ -107,7 +163,7 @@ static void mineBundle(
 
   LOG(INFO) << "Mining for secure bundle began";
   bundle_miner_mine(min, security, essence, essence_length,
-                    FLAGS_numBundlesToMine, 0, &index);
+                    FLAGS_numBundlesToMine, 0, UINT32_MAX, &index);
   LOG(INFO) << "Mining for secure bundle finished";
 
   txIter = bundle_at(bundle, 0);
@@ -137,6 +193,8 @@ std::tuple<common::crypto::Hash, std::string> createBundle(
 
   char bundleHashStr[NUM_TRYTES_HASH + 1];
   char addressStr[NUM_TRYTES_ADDRESS + 1];
+  bundle_status_t bundleStatus;
+  retcode_t ret;
 
   Kerl kerl;
   kerl_init(&kerl);
@@ -286,7 +344,9 @@ std::tuple<common::crypto::Hash, std::string> createBundle(
       transaction_set_signature(txIter, sigFlexTrits);
       signature.remove_prefix(FRAGMENT_LEN);
 
-      txIter = (iota_transaction_t*)utarray_next(bundle, txIter);
+      if (!signature.empty()) {
+        txIter = (iota_transaction_t*)utarray_next(bundle, txIter);
+      }
     }
   }
 
