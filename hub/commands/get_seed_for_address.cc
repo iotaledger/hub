@@ -72,14 +72,6 @@ common::cmd::Error GetSeedForAddress::doProcess(
     userId = maybeUserId.value();
   }
 
-  common::crypto::UUID uuid;
-  auto maybeAddress =
-      common::crypto::CryptoManager::get().provider().getAddressForUUID(uuid);
-  if (!maybeAddress.has_value()) {
-    LOG(ERROR) << session() << " Failed in getAddressForUUID from provider.";
-    return common::cmd::GET_ADDRESS_FAILED;
-  }
-
   nonstd::optional<common::crypto::Address> maybeTrinaryAddress =
       nonstd::nullopt;
 
