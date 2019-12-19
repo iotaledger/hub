@@ -106,6 +106,9 @@ See [Getting Started](docs/getting_started.md) for information on how to use the
     -RecoverFunds_enabled (Whether the RecoverFunds API call should be available) 
       type: bool (--RecoverFunds_enabled or --noRecoverFunds_enabled)
       
+    -GetSeedForAddress_enabled (Whether the GetAddressForAddress API call should be available) 
+    type: bool (--GetSeedForAddress_enabled or --noGetSeedForAddress_enabled)
+      
 ```
 
 ## Useful things

@@ -19,14 +19,23 @@
 namespace hub {
 namespace cmd {
 
+DEFINE_bool(GetSeedForAddress_enabled, false,
+            "Whether the RecoverFunds API call should be available");
+
 static CommandFactoryRegistrator<GetSeedForAddress> registrator;
 
 boost::property_tree::ptree GetSeedForAddress::doProcess(
     const boost::property_tree::ptree& request) noexcept {
   boost::property_tree::ptree tree;
-
   GetSeedForAddressRequest req;
   GetSeedForAddressReply rep;
+
+  if (!FLAGS_GetSeedForAddress_enabled) {
+    LOG(ERROR) << session() << ": GetSeedForAddress is disabled";
+    tree.add("error", common::cmd::getErrorString(common::cmd::CANCELLED));
+    return tree;
+  }
+
   auto maybeUserId = request.get_optional<std::string>("userId");
   if (!maybeUserId) {
     tree.add("error",
@@ -58,7 +67,10 @@ boost::property_tree::ptree GetSeedForAddress::doProcess(
 common::cmd::Error GetSeedForAddress::doProcess(
     const GetSeedForAddressRequest* request,
     GetSeedForAddressReply* response) noexcept {
-  uint64_t userId;
+  if (!FLAGS_GetSeedForAddress_enabled) {
+    LOG(ERROR) << session() << ": GetSeedForAddress is disabled";
+    return common::cmd::CANCELLED;
+  }
 
   auto& connection = db::DBManager::get().connection();
 
@@ -68,8 +80,6 @@ common::cmd::Error GetSeedForAddress::doProcess(
     if (!maybeUserId) {
       return common::cmd::USER_DOES_NOT_EXIST;
     }
-
-    userId = maybeUserId.value();
   }
 
   nonstd::optional<common::crypto::Address> maybeTrinaryAddress =
