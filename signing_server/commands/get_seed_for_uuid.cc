@@ -27,9 +27,9 @@ namespace signing {
                 common::crypto::UUID uuid(request->uuid());
                 auto seed = common::crypto::CryptoManager::get()
                         .provider()
-                        .getSeedFromUUID(uuid)
-                        .value();
-                response->set_seed(seed.str());
+                        .getSeedFromUUID(uuid);
+
+                response->set_seed(seed);
             } catch (const std::runtime_error& ex) {
                 LOG(ERROR) << session() << "Failed: " << ex.what();
 

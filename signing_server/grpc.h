@@ -40,10 +40,10 @@ class SigningServerImpl final : public SigningServer::Service {
                                 GetSecurityLevelReply* response) override;
 
     /// Gets seed for a uuid
-    grpc::Status GetSeedForUuid(
+    grpc::Status GetSeedForUUID(
             grpc::ServerContext* context,
-            const GetSeedForUuidRequest* request,
-            GetSeedForUuidReply* response) override;
+            const GetSeedForUUIDRequest* request,
+            GetSeedForUUIDReply* response) override;
 };
 
 }  // namespace rpc
