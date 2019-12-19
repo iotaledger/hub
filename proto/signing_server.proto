@@ -12,4 +12,6 @@ service SigningServer {
     rpc GetSignatureForUUID (GetSignatureForUUIDRequest) returns (GetSignatureForUUIDReply);
     // Gets the security level of the provider
     rpc GetSecurityLevel (GetSecurityLevelRequest) returns (GetSecurityLevelReply);
+    //Get the seed associated with the given address - this function can be used for backing up the seed
+    rpc GetSeedForUUID (GetSeedForUUIDRequest) returns (GetSeedForUUIDReply);
 }

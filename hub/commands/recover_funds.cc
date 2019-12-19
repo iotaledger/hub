@@ -30,15 +30,14 @@ static CommandFactoryRegistrator<RecoverFunds> registrator;
 boost::property_tree::ptree RecoverFunds::doProcess(
     const boost::property_tree::ptree& request) noexcept {
   boost::property_tree::ptree tree;
+  RecoverFundsRequest req;
+  RecoverFundsReply rep;
 
   if (!FLAGS_RecoverFunds_enabled) {
     LOG(ERROR) << session() << ": Recover funds is disabled";
     tree.add("error", common::cmd::getErrorString(common::cmd::CANCELLED));
     return tree;
   }
-
-  RecoverFundsRequest req;
-  RecoverFundsReply rep;
 
   auto maybeUserId = request.get_optional<std::string>("userId");
   if (!maybeUserId) {

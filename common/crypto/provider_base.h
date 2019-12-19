@@ -61,6 +61,13 @@ class CryptoProviderBase {
     return doGetSignatureForUUID(uuid, bundleHash);
   }
 
+  /// Calculate the seed for a UUID.
+  /// param[in] UUID - a UUID
+  /// @return string - the seed
+
+  virtual std::string getSeedFromUUID(
+      const common::crypto::UUID& uuid) const = 0;
+
  protected:
   /// Calculate the signature for a UUID and a bundle hash
   /// param[in] UUID - a UUID

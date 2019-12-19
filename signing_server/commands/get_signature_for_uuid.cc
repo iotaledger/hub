@@ -1,3 +1,10 @@
+/*
+ * Copyright (c) 2019 IOTA Stiftung
+ * https://github.com/iotaledger/hub
+ *
+ * Refer to the LICENSE file for licensing information
+ */
+
 #include "get_signature_for_uuid.h"
 
 #include "common/crypto/manager.h"

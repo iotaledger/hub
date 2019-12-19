@@ -171,6 +171,17 @@ class HubImpl final : public hub::rpc::Hub::Service {
                             const hub::rpc::RecoverFundsRequest* request,
                             hub::rpc::RecoverFundsReply* response) override;
 
+  /// Gets the seed for a given address
+  /// @param[in] context - server context
+  /// @param[in] request - a rpc::RecoverFundsRequest request
+  /// @param[in] response - a rpc::RecoverFundsReply response
+  /// @return grpc::Status
+
+  grpc::Status GetSeedForAddress(
+      grpc::ServerContext* context,
+      const hub::rpc::GetSeedForAddressRequest* request,
+      hub::rpc::GetSeedForAddressReply* response) override;
+
  private:
   std::shared_ptr<cppclient::IotaAPI> _api;
 };
