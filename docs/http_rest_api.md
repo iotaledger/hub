@@ -540,6 +540,42 @@
         ...
     }
     ```
+    
+    
+### GetSeedForAddress
+
+- Return the seed that is associated with an address,
+  There's no need for Hub operators to know seeds
+  since signature is derived internally using the address's uuid,
+  but some would like to store the seed in case where db is crashed
+  before it was backuped, then user can use the seed to generate a signature 
+  and recover any locked funds if somehow the db record is lost 
+
+- Arguments
+
+
+|Arg name            |type                 |Description                                                    |
+|--------------------|---------------------|---------------------------------------------------------------|
+| userId             |string               | The user's identifier
+| address            |string (81 trytes)   | The address
+
+
+- curl example:
+    - Call:
+        
+    ``` 
+    curl  http://localhost:50051  -X POST   -H 'Content-Type: application/json'   -H 'X-IOTA-API-Version:  1'   -d '{"command": "GetSeedForAddress", "userId": "SomeUser"  , "address" : "LFABJNKAKJVXYH9OPVZ9HJFOPOHDAGKOHZSRWHSNXYBHCYWQDHGRVKPFBLSGRZUOBL9DUBCKI9DWSPEJA"}'  
+    ```
+    
+    - Output:
+
+    ```
+    {
+        "seed": "AUVEOUEVFHKZBKCSVWDQ9PJPDJZPZ9APNBLYCFLFLEBHMJUJYXEBSZFGTFDASHHGEKOHHEHIMUXKZWUTD"
+    }
+
+       
+    ```
 
 
     
