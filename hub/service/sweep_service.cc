@@ -74,7 +74,7 @@ void SweepService::backupUnsweptHubAddresses() const {
     auto allHubInputs =
         dbConnection.getAllHubInputs(std::chrono::system_clock::now());
 
-    for (auto&& inp : allHubInputs) {
+    for (const auto& inp : allHubInputs) {
       outputFile << inp.address.str() << ";" << inp.uuid.str() << ";"
                  << inp.amount << "\n";
     }
