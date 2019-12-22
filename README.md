@@ -99,6 +99,8 @@ See [Getting Started](docs/getting_started.md) for information on how to use the
     -sweep_max_withdraw (Maximum number of withdraw requests to service per
       sweep.) type: uint32 default: 7
       
+    -hubAdressesBackupPath (Path to file used for backing up hub unswept hub addresses) type: string default: ""
+      
   Flags from hub/server/grpc.cc:
     -SignBundle_enabled (Whether the SignBundle API call should be available) 
       type: bool (--SignBundle_enabled or --noSignBundle_enabled)

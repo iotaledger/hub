@@ -8,6 +8,9 @@
 #include "hub/service/sweep_service.h"
 
 #include <chrono>
+#include <filesystem>
+#include <fstream>
+#include <iostream>
 #include <numeric>
 #include <sstream>
 #include <string>
@@ -16,7 +19,6 @@
 #include <utility>
 #include <vector>
 
-#include <gflags/gflags.h>
 #include <glog/logging.h>
 #include <boost/uuid/uuid.hpp>
 #include <boost/uuid/uuid_generators.hpp>
@@ -39,10 +41,70 @@ DEFINE_uint32(sweep_max_withdraw, 7,
 DEFINE_uint32(sweep_max_deposit, 5,
               "Maximum number of user deposits to process per sweep.");
 
+// Hub unswept addresses backup
+DEFINE_string(hubAdressesBackupPath, "",
+              "Path for file that will be used to backup unswep hub addresses");
+
 }  // namespace
 
 namespace hub {
 namespace service {
+
+void SweepService::backupUnsweptHubAddresses() const {
+  namespace fs = std::filesystem;
+  if (FLAGS_hubAdressesBackupPath.empty()) {
+    return;
+  }
+
+  std::string tmpFilePath = FLAGS_hubAdressesBackupPath;
+  bool replace = false;
+  auto& dbConnection = db::DBManager::get().connection();
+
+  if (fs::exists(FLAGS_hubAdressesBackupPath)) {
+    tmpFilePath += "_tmp";
+    replace = true;
+  }
+
+  std::ofstream outputFile;
+  // enable exceptions
+  outputFile.exceptions(std::ifstream::failbit | std::ifstream::badbit);
+
+  try {
+    outputFile.open(tmpFilePath);
+    auto allHubInputs =
+        dbConnection.getAllHubInputs(std::chrono::system_clock::now());
+
+    for (auto&& inp : allHubInputs) {
+      outputFile << inp.address.str() << ";" << inp.uuid.str() << ";"
+                 << inp.amount << "\n";
+    }
+  } catch (std::ifstream::failure e) {
+    outputFile.close();
+    if (fs::exists(tmpFilePath)) {
+      fs::remove(tmpFilePath);
+    }
+    LOG(ERROR) << "Failed backing up hub addresses";
+    return;
+  }
+
+  outputFile.close();
+
+  if (replace) {
+    std::string pathToDelete = FLAGS_hubAdressesBackupPath + "_to_delete";
+
+    try {
+      fs::rename(FLAGS_hubAdressesBackupPath, pathToDelete);
+    } catch (fs::filesystem_error& e) {
+      fs::remove(tmpFilePath);
+      LOG(ERROR) << "Failed renaming old hub addresses backup file";
+      return;
+    }
+    fs::remove(pathToDelete);
+    // If we are here, this means both path are ok and there can't be an
+    // exception thrown
+    fs::rename(tmpFilePath, FLAGS_hubAdressesBackupPath);
+  }
+}
 
 bool SweepService::doTick() {
   LOG(INFO) << "Starting sweep.";
@@ -140,6 +202,10 @@ bool SweepService::doTick() {
     // 6. Commit to DB
     hub::bundle_utils::persistToDatabase(bundle, deposits, hubInputs,
                                          withdrawals, {hubOutput});
+
+    if (remainder > 0) {
+      backupUnsweptHubAddresses();
+    }
 
     transaction->commit();
     LOG(INFO) << "Sweep complete.";

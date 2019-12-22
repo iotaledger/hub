@@ -56,6 +56,9 @@ class SweepService : public ScheduledService {
   bool doTick() override;
   /// an cppclient::IotaAPI compliant API provider
   const std::shared_ptr<cppclient::IotaAPI> _api;
+
+ private:
+  void backupUnsweptHubAddresses() const;
 };
 
 }  // namespace service
