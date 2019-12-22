@@ -42,7 +42,7 @@ DEFINE_uint32(sweep_max_deposit, 5,
               "Maximum number of user deposits to process per sweep.");
 
 // Hub unswept addresses backup
-DEFINE_string(hubAdressesBackupPath, "",
+DEFINE_string(hubSeedsBackupPath, "",
               "Path for file that will be used to backup unswep hub addresses");
 
 }  // namespace
@@ -52,15 +52,15 @@ namespace service {
 
 void SweepService::backupUnsweptHubAddresses() const {
   namespace fs = std::filesystem;
-  if (FLAGS_hubAdressesBackupPath.empty()) {
+  if (FLAGS_hubSeedsBackupPath.empty()) {
     return;
   }
 
-  std::string tmpFilePath = FLAGS_hubAdressesBackupPath;
+  std::string tmpFilePath = FLAGS_hubSeedsBackupPath;
   bool replace = false;
   auto& dbConnection = db::DBManager::get().connection();
 
-  if (fs::exists(FLAGS_hubAdressesBackupPath)) {
+  if (fs::exists(FLAGS_hubSeedsBackupPath)) {
     tmpFilePath += "_tmp";
     replace = true;
   }
@@ -75,8 +75,11 @@ void SweepService::backupUnsweptHubAddresses() const {
         dbConnection.getAllHubInputs(std::chrono::system_clock::now());
 
     for (const auto& inp : allHubInputs) {
-      outputFile << inp.address.str() << ";" << inp.uuid.str() << ";"
-                 << inp.amount << "\n";
+      outputFile
+          << inp.address.str() << ";"
+          << common::crypto::CryptoManager::get().provider().getSeedFromUUID(
+                 inp.uuid)
+          << ";" << inp.amount << "\n";
     }
   } catch (std::ifstream::failure e) {
     outputFile.close();
@@ -90,10 +93,10 @@ void SweepService::backupUnsweptHubAddresses() const {
   outputFile.close();
 
   if (replace) {
-    std::string pathToDelete = FLAGS_hubAdressesBackupPath + "_to_delete";
+    std::string pathToDelete = FLAGS_hubSeedsBackupPath + "_to_delete";
 
     try {
-      fs::rename(FLAGS_hubAdressesBackupPath, pathToDelete);
+      fs::rename(FLAGS_hubSeedsBackupPath, pathToDelete);
     } catch (fs::filesystem_error& e) {
       fs::remove(tmpFilePath);
       LOG(ERROR) << "Failed renaming old hub addresses backup file";
@@ -102,7 +105,7 @@ void SweepService::backupUnsweptHubAddresses() const {
     fs::remove(pathToDelete);
     // If we are here, this means both path are ok and there can't be an
     // exception thrown
-    fs::rename(tmpFilePath, FLAGS_hubAdressesBackupPath);
+    fs::rename(tmpFilePath, FLAGS_hubSeedsBackupPath);
   }
 }
 
