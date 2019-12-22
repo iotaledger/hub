@@ -132,6 +132,9 @@ struct helper {
       C& connection, uint64_t requiredAmount,
       const std::chrono::system_clock::time_point& olderThan);
 
+  static std::vector<TransferInput> getAllHubInputs(
+      C& connection, const std::chrono::system_clock::time_point& olderThan);
+
   static nonstd::optional<AddressInfo> getAddressInfo(
       C& connection, const common::crypto::Address& address);
 
