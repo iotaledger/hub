@@ -94,9 +94,6 @@ void SweepService::backupUnsweptHubAddresses() const {
 
   if (replace) {
     try {
-        fs::remove(FLAGS_hubSeedsBackupPath);
-        // If we are here, this means both path are ok and there can't be an
-        // exception thrown
         fs::rename(tmpFilePath, FLAGS_hubSeedsBackupPath);
     } catch (fs::filesystem_error& e) {
       LOG(ERROR) << "Failed renaming old hub addresses backup file";
