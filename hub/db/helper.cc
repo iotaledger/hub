@@ -761,9 +761,8 @@ std::vector<TransferInput> helper<C>::getDepositsForSweep(
 }
 
 template <typename C>
-std::vector<TransferInput> helper<C>::getHubInputsForSweep(
-    C& connection, uint64_t requiredAmount,
-    const std::chrono::system_clock::time_point& olderThan) {
+std::vector<TransferInput> helper<C>::getAllHubInputs(
+    C& connection, const std::chrono::system_clock::time_point& olderThan) {
   db::sql::HubAddress add;
   db::sql::HubAddressBalance bal;
   db::sql::Sweep swp;
@@ -780,7 +779,6 @@ std::vector<TransferInput> helper<C>::getHubInputsForSweep(
                                        HubAddressBalanceReason::OUTBOUND)))));
 
   std::vector<TransferInput> availableInputs;
-  std::vector<int64_t> addressIds;
   for (const auto& row : availableAddressesResult) {
     auto id = row.id;
 
@@ -792,8 +790,26 @@ std::vector<TransferInput> helper<C>::getHubInputsForSweep(
       amount : static_cast<uint64_t>(row.balance)
     };
 
-    addressIds.push_back(id);
     availableInputs.emplace_back(std::move(input));
+  }
+
+  return availableInputs;
+}
+
+template <typename C>
+std::vector<TransferInput> helper<C>::getHubInputsForSweep(
+    C& connection, uint64_t requiredAmount,
+    const std::chrono::system_clock::time_point& olderThan) {
+  db::sql::HubAddress add;
+  db::sql::HubAddressBalance bal;
+  db::sql::Sweep swp;
+
+  std::vector<int64_t> addressIds;
+
+  auto availableInputs = getAllHubInputs(connection, olderThan);
+
+  for (auto inp : availableInputs) {
+    addressIds.push_back(inp.addressId);
   }
 
   // 2. Only select those with all INBOUND sweeps confirmed

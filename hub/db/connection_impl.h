@@ -243,6 +243,11 @@ class ConnectionImpl : public Connection {
                                                   olderThan);
   }
 
+  std::vector<TransferInput> getAllHubInputs(
+      const std::chrono::system_clock::time_point& olderThan) override {
+    return db::helper<Conn>::getAllHubInputs(*_conn, olderThan);
+  }
+
   bool isSweepConfirmed(uint64_t sweepId) override {
     return db::helper<Conn>::isSweepConfirmed(*_conn, sweepId);
   }
