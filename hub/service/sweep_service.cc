@@ -93,19 +93,16 @@ void SweepService::backupUnsweptHubAddresses() const {
   outputFile.close();
 
   if (replace) {
-    std::string pathToDelete = FLAGS_hubSeedsBackupPath + "_to_delete";
-
     try {
-      fs::rename(FLAGS_hubSeedsBackupPath, pathToDelete);
+        fs::remove(FLAGS_hubSeedsBackupPath);
+        // If we are here, this means both path are ok and there can't be an
+        // exception thrown
+        fs::rename(tmpFilePath, FLAGS_hubSeedsBackupPath);
     } catch (fs::filesystem_error& e) {
-      fs::remove(tmpFilePath);
       LOG(ERROR) << "Failed renaming old hub addresses backup file";
       return;
     }
-    fs::remove(pathToDelete);
-    // If we are here, this means both path are ok and there can't be an
-    // exception thrown
-    fs::rename(tmpFilePath, FLAGS_hubSeedsBackupPath);
+
   }
 }
 
