@@ -6,10 +6,10 @@ load("@bazel_tools//tools/build_defs/repo:http.bzl", "http_archive")
 # EXTERNAL RULES
 http_archive(
     name = "com_github_grpc_grpc",
-    sha256 = "d6af0859d3ae4693b1955e972aa2e590d6f4d44baaa82651467c6beea453e30e",
-    strip_prefix = "grpc-1.26.0-pre1",
+    sha256 = "2fcb7f1ab160d6fd3aaade64520be3e5446fc4c6fa7ba6581afdc4e26094bd81",
+    strip_prefix = "grpc-1.26.0",
     urls = [
-        "https://github.com/grpc/grpc/archive/v1.26.0-pre1.tar.gz",
+        "https://github.com/grpc/grpc/archive/v1.26.0.tar.gz",
     ],
 )
 
