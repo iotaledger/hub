@@ -1,6 +1,6 @@
 /*
  * Copyright (c) 2018 IOTA Stiftung
- * https://github.com/iotaledger/rpchub
+ * https://github.com/iotaledger/hub
  *
  * Refer to the LICENSE file for licensing information
  */
@@ -43,6 +43,7 @@ class POWProvider {
       LOG(ERROR) << "Failed to get attachment point";
       return {};
     }
+
     auto location = maybeLocation.value();
     return doPOW(trytes, location.trunkTransaction, location.branchTransaction);
   }

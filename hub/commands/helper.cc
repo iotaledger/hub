@@ -1,16 +1,14 @@
 /*
  * Copyright (c) 2018 IOTA Stiftung
- * https://github.com/iotaledger/rpchub
+ * https://github.com/iotaledger/hub
  *
  * Refer to the LICENSE file for licensing information
  */
 
-#include "hub/commands/helper.h"
-
 #include <sstream>
 #include <string>
 
-#include "proto/hub.pb.h"
+#include "hub/commands/helper.h"
 
 namespace hub {
 namespace cmd {
@@ -42,5 +40,6 @@ bool isAddressValid(std::string_view sv) {
   }
   return is_valid;
 }
+
 }  // namespace cmd
 }  // namespace hub

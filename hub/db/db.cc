@@ -1,11 +1,9 @@
 /*
  * Copyright (c) 2018 IOTA Stiftung
- * https://github.com/iotaledger/rpchub
+ * https://github.com/iotaledger/hub
  *
  * Refer to the LICENSE file for licensing information
  */
-
-#include "hub/db/db.h"
 
 #include <fstream>
 #include <utility>
@@ -16,6 +14,8 @@
 #include "hub/db/connection.h"
 #include "hub/db/mariadb.h"
 #include "hub/db/sqlite3.h"
+
+#include "hub/db/db.h"
 
 namespace {
 thread_local static std::unique_ptr<hub::db::Connection> tl_connection;

@@ -1,54 +1,74 @@
 // Copyright 2018 IOTA Foundation
 
-#include "hub/commands/sweep_subscription.h"
-
-#include <chrono>
-#include <functional>
 #include <iostream>
 #include <thread>
-#include <utility>
 
-#include "common/stats/session.h"
+#include "common/converter.h"
+#include "hub/commands/converter.h"
+#include "hub/commands/factory.h"
 #include "hub/commands/helper.h"
-#include "hub/commands/proto_sql_converter.h"
-#include "hub/db/db.h"
 #include "hub/db/helper.h"
-#include "proto/hub.grpc.pb.h"
-#include "proto/hub.pb.h"
-#include "schema/schema.h"
+
+#include "hub/commands/sweep_subscription.h"
 
 namespace hub {
 namespace cmd {
 
-grpc::Status SweepSubscription::doProcess(
-    const hub::rpc::SweepSubscriptionRequest* request,
-    grpc::ServerWriterInterface<hub::rpc::SweepEvent>* writer) noexcept {
-  std::chrono::milliseconds dur(request->newerthan());
+static CommandFactoryRegistrator<SweepSubscription> registrator;
+
+boost::property_tree::ptree SweepSubscription::doProcess(
+    const boost::property_tree::ptree& request) noexcept {
+  boost::property_tree::ptree tree;
+  SweepSubscriptionRequest req;
+  std::vector<SweepEvent> rep;
+
+  auto maybeNewerThan = request.get_optional<std::string>("newerThan");
+  if (maybeNewerThan) {
+    std::istringstream iss(maybeNewerThan.value());
+    iss >> req.newerThan;
+  }
+
+  auto status = doProcess(&req, &rep);
+
+  if (status != common::cmd::OK) {
+    tree.add("error", common::cmd::getErrorString(status));
+  } else {
+    int i = 0;
+    for (auto event : rep) {
+      auto eventId = "event_" + std::to_string(i++);
+      tree.add(eventId, "");
+      tree.put(eventId + ".bundleHash", event.bundleHash);
+      tree.put(eventId + ".timestamp", event.timestamp);
+
+      for (auto uuid : event.uuids) {
+        tree.add(eventId + ".withdrawalUuid", uuid);
+      }
+    }
+  }
+
+  return tree;
+}
+
+common::cmd::Error SweepSubscription::doProcess(
+    const SweepSubscriptionRequest* request,
+    std::vector<SweepEvent>* events) noexcept {
+  std::chrono::milliseconds dur(request->newerThan);
   std::chrono::time_point<std::chrono::system_clock> newerThan(dur);
 
   auto sweeps = getSweeps(newerThan);
-  bool cancelled = false;
   for (auto& s : sweeps) {
-    hub::rpc::SweepEvent event;
-    event.set_bundlehash(std::move(s.bundleHash));
-    event.set_timestamp(std::chrono::duration_cast<std::chrono::milliseconds>(
-                            s.timestamp.time_since_epoch())
-                            .count());
+    SweepEvent event;
+    event.bundleHash = std::move(s.bundleHash);
+    event.timestamp = common::timepointToUint64(s.timestamp);
     auto& uuids = s.withdrawalUUIDs;
 
     std::for_each(uuids.begin(), uuids.end(), [&](std::string& uuid) {
-      event.add_withdrawaluuid(std::move(uuid));
+      event.uuids.emplace_back(std::move(uuid));
     });
 
-    if (!writer->Write(std::move(event))) {
-      cancelled = true;
-      break;
-    }
+    events->emplace_back(std::move(event));
   }
-  if (cancelled) {
-    return grpc::Status::CANCELLED;
-  }
-  return grpc::Status::OK;
+  return common::cmd::OK;
 }
 
 std::vector<db::SweepEvent> SweepSubscription::getSweeps(

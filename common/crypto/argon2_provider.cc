@@ -1,6 +1,6 @@
 /*
  * Copyright (c) 2018 IOTA Stiftung
- * https://github.com/iotaledger/rpchub
+ * https://github.com/iotaledger/hub
  *
  * Refer to the LICENSE file for licensing information
  */
@@ -43,8 +43,8 @@ using TryteSeed = std::array<tryte_t, TRYTE_LEN + 1>;
 using TryteSeedPtr =
     std::unique_ptr<TryteSeed, std::function<void(TryteSeed*)>>;
 
-TryteSeedPtr seedFromUUID(const common::crypto::UUID& uuid,
-                          const std::string& _salt) {
+TryteSeedPtr seedFromUUIDInternal(const common::crypto::UUID& uuid,
+                                  const std::string& _salt) {
   static boost::interprocess::interprocess_semaphore argon_semaphore(
       common::flags::FLAGS_maxConcurrentArgon2Hash);
 
@@ -104,11 +104,17 @@ Argon2Provider::Argon2Provider(std::string salt) : _salt(std::move(salt)) {
   }
 }
 
+std::string Argon2Provider::getSeedFromUUID(
+    const common::crypto::UUID& uuid) const {
+  auto seedPtr = seedFromUUIDInternal(uuid, _salt);
+  return std::string((char*)seedPtr->data());
+}
+
 nonstd::optional<common::crypto::Address> Argon2Provider::getAddressForUUID(
     const common::crypto::UUID& uuid) const {
   LOG(INFO) << "Generating address for: " << uuid.str().substr(0, 16);
 
-  auto seed = seedFromUUID(uuid, _salt);
+  auto seed = seedFromUUIDInternal(uuid, _salt);
   if (!securityLevel(uuid).has_value()) {
     LOG(INFO) << "Failed in getting the security level.";
     return {};
@@ -131,7 +137,7 @@ nonstd::optional<std::string> Argon2Provider::doGetSignatureForUUID(
   LOG(INFO) << "Generating signature for: " << uuid.str().substr(0, 16)
             << ", bundle: " << bundleHash.str_view();
 
-  auto seed = seedFromUUID(uuid, _salt);
+  auto seed = seedFromUUIDInternal(uuid, _salt);
 
   IOTA::Models::Bundle bundle;
   auto normalized = bundle.normalizedBundle(bundleHash.str());

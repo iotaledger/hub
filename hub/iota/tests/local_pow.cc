@@ -1,6 +1,6 @@
 /*
  * Copyright (c) 2018 IOTA Stiftung
- * https://github.com/iotaledger/rpchub
+ * https://github.com/iotaledger/hub
  *
  * Refer to the LICENSE file for licensing information
  */
@@ -103,15 +103,4 @@ TEST_F(LocalPOWTests, CorrectDigest) {
             resp.branchTransaction);
   EXPECT_EQ(powedTxs[0].substr(hub::iota::LocalPOW::TRUNK_OFFSET, 81),
             resp.trunkTransaction);
-  char* digest = iota_digest(powedTxs[0].c_str());
-  std::string prev = digest;
-  for (uint32_t i = 1; i < powedTxs.size(); ++i) {
-    free(digest);
-    EXPECT_EQ(powedTxs[i].substr(hub::iota::LocalPOW::BRANCH_OFFSET, 81),
-              resp.trunkTransaction);
-    EXPECT_EQ(powedTxs[i].substr(hub::iota::LocalPOW::TRUNK_OFFSET, 81), prev);
-    digest = iota_digest(powedTxs[i].c_str());
-    prev = digest;
-  }
-  free(digest);
 }

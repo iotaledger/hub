@@ -1,6 +1,6 @@
 /*
  * Copyright (c) 2018 IOTA Stiftung
- * https://github.com/iotaledger/rpchub
+ * https://github.com/iotaledger/hub
  *
  * Refer to the LICENSE file for licensing information
  */
@@ -77,13 +77,13 @@ class HubImpl final : public hub::rpc::Hub::Service {
 
   /// Cancels a previous withdrawal request (if not processed)
   /// @param[in] context - server context
-  /// @param[in] request - a rpc::UserWithdrawCancelRequest request
-  /// @param[in] response - a rpc::UserWithdrawCancelReply response
+  /// @param[in] rpcRequest - a rpc::UserWithdrawCancelRequest request
+  /// @param[in] rpcResponse - a rpc::UserWithdrawCancelReply response
   /// @return grpc::Status
   grpc::Status UserWithdrawCancel(
       grpc::ServerContext* context,
-      const hub::rpc::UserWithdrawCancelRequest* request,
-      hub::rpc::UserWithdrawCancelReply* response) override;
+      const hub::rpc::UserWithdrawCancelRequest* rpcRequest,
+      hub::rpc::UserWithdrawCancelReply* rpcResponse) override;
 
   /// Get the history for a user
   /// @param[in] context - server context
@@ -170,6 +170,17 @@ class HubImpl final : public hub::rpc::Hub::Service {
   grpc::Status RecoverFunds(grpc::ServerContext* context,
                             const hub::rpc::RecoverFundsRequest* request,
                             hub::rpc::RecoverFundsReply* response) override;
+
+  /// Gets the seed for a given address
+  /// @param[in] context - server context
+  /// @param[in] request - a rpc::RecoverFundsRequest request
+  /// @param[in] response - a rpc::RecoverFundsReply response
+  /// @return grpc::Status
+
+  grpc::Status GetSeedForAddress(
+      grpc::ServerContext* context,
+      const hub::rpc::GetSeedForAddressRequest* request,
+      hub::rpc::GetSeedForAddressReply* response) override;
 
  private:
   std::shared_ptr<cppclient::IotaAPI> _api;

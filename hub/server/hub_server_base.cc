@@ -1,17 +1,14 @@
 /*
- * Copyright (c) 2018 IOTA Stiftung
- * https://github.com/iotaledger/rpchub
+ * Copyright (c) 2019 IOTA Stiftung
+ * https://github.com/iotaledger/hub
  *
  * Refer to the LICENSE file for licensing information
  */
 
-#include "hub/server/server.h"
+#include "hub/server/hub_server_base.h"
 
-#include <chrono>
-
-#include <gflags/gflags.h>
 #include <glog/logging.h>
-#include <grpc++/grpc++.h>
+#include <chrono>
 #include "common/common.h"
 #include "common/crypto/argon2_provider.h"
 #include "common/crypto/manager.h"
@@ -69,13 +66,13 @@ DEFINE_bool(fetchTransactionMessages, false,
 DEFINE_bool(useHttpsIRI, false,
             "Whether or not should hub connect with IRI over Https connection");
 
-using grpc::Server;
-using grpc::ServerBuilder;
+// GRPC/Http Rest
+DEFINE_string(serverType, "grpc", "Server type to use {grpc,http}");
 
 namespace hub {
-HubServer::HubServer() {}
+HubServerBase::HubServerBase() {}
 
-void HubServer::initialise() {
+void HubServerBase::initialize_services() {
   if (FLAGS_signingMode == "remote") {
     common::crypto::CryptoManager::get().setProvider(
         std::make_unique<crypto::RemoteSigningProvider>(
@@ -121,7 +118,6 @@ void HubServer::initialise() {
 
     _api = std::make_shared<cppclient::BeastIotaAPI>(host, port,
                                                      FLAGS_useHttpsIRI);
-    _service.setApi(_api);
   }
 
   if (FLAGS_powMode == "remote") {
@@ -143,24 +139,12 @@ void HubServer::initialise() {
   _sweepService = std::make_unique<service::SweepService>(
       _api, std::chrono::milliseconds(FLAGS_sweepInterval));
 
-  ServerBuilder builder;
-
-  builder.AddListeningPort(
-      common::flags::FLAGS_listenAddress,
-      makeCredentials(common::flags::FLAGS_authMode,
-                      common::flags::FLAGS_sslCert, common::flags::FLAGS_sslKey,
-                      common::flags::FLAGS_sslCA));
-  builder.RegisterService(&_service);
-
-  _server = builder.BuildAndStart();
   _userAddressMonitor->start();
   _attachmentService->start();
   _sweepService->start();
-
-  LOG(INFO) << "Server listening on " << common::flags::FLAGS_listenAddress;
 }
 
-bool HubServer::authenticateSalt() const {
+bool HubServerBase::authenticateSalt() const {
   auto& connection = db::DBManager::get().connection();
   auto addAndUuidRes = connection.selectFirstUserAddress();
 
@@ -179,7 +163,7 @@ bool HubServer::authenticateSalt() const {
   return address.str_view() == existantAddress;
 }
 
-void HubServer::initialiseAuthProvider() const {
+void HubServerBase::initialiseAuthProvider() const {
   if (FLAGS_authProvider == "none") {
     auth::AuthManager::get().setProvider(
         std::make_unique<auth::DummyProvider>());

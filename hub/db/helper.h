@@ -1,6 +1,6 @@
 /*
  * Copyright (c) 2018 IOTA Stiftung
- * https://github.com/iotaledger/rpchub
+ * https://github.com/iotaledger/hub
  *
  * Refer to the LICENSE file for licensing information
  */
@@ -131,6 +131,9 @@ struct helper {
   static std::vector<TransferInput> getHubInputsForSweep(
       C& connection, uint64_t requiredAmount,
       const std::chrono::system_clock::time_point& olderThan);
+
+  static std::vector<TransferInput> getAllHubInputs(
+      C& connection, const std::chrono::system_clock::time_point& olderThan);
 
   static nonstd::optional<AddressInfo> getAddressInfo(
       C& connection, const common::crypto::Address& address);

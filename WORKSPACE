@@ -6,103 +6,93 @@ load("@bazel_tools//tools/build_defs/repo:http.bzl", "http_archive")
 # EXTERNAL RULES
 http_archive(
     name = "com_github_grpc_grpc",
-    strip_prefix = "grpc-1.22.0",
+    sha256 = "2fcb7f1ab160d6fd3aaade64520be3e5446fc4c6fa7ba6581afdc4e26094bd81",
+    strip_prefix = "grpc-1.26.0",
     urls = [
-        "https://github.com/grpc/grpc/archive/v1.22.0.tar.gz",
+        "https://github.com/grpc/grpc/archive/v1.26.0.tar.gz",
     ],
 )
 
 git_repository(
-    name = "io_bazel_rules_python",
-    commit = "fdbb17a4118a1728d19e638a5291b4c4266ea5b8",
+    name = "rules_python",
+    commit = "38f86fb55b698c51e8510c807489c9f4e047480e",
     remote = "https://github.com/bazelbuild/rules_python.git",
 )
 
 git_repository(
     name = "rules_iota",
-    commit = "739a65952c3cf455d00e3944cf68e42720d938ce",
+    commit = "e08b0038f376d6c82b80f5283bb0a86648bb58dc",
     remote = "https://github.com/iotaledger/rules_iota.git",
 )
 
 git_repository(
     name = "iota_toolchains",
-    commit = "4db38d66f8ce719f7b88728abd1271b8d380bf43",
+    commit = "700904f445d15ef948d112bf0bccf7dd3814ae5c",
     remote = "https://github.com/iotaledger/toolchains.git",
 )
 
 git_repository(
     name = "bazel_toolchains",
-    commit = "b6875a7bb09b4fa1db8ea347852c0dc9ccae74ab",
+    commit = "6e25ae44ec4a3b14fea9506633f3f820f3b76224",
     remote = "https://github.com/th0br0/bazel-toolchains.git",
 )
 
 http_archive(
     name = "io_bazel_rules_go",
-    sha256 = "a82a352bffae6bee4e95f68a8d80a70e87f42c4741e6a448bec11998fcc82329",
-    url =
-        "https://github.com/bazelbuild/rules_go/releases/download/0.18.5/rules_go-0.18.5.tar.gz",
+    sha256 = "e88471aea3a3a4f19ec1310a55ba94772d087e9ce46e41ae38ecebe17935de7b",
+    urls = [
+        "https://storage.googleapis.com/bazel-mirror/github.com/bazelbuild/rules_go/releases/download/v0.20.3/rules_go-v0.20.3.tar.gz",
+        "https://github.com/bazelbuild/rules_go/releases/download/v0.20.3/rules_go-v0.20.3.tar.gz",
+    ],
 )
 
-git_repository(
-    name = "bazel_skylib",
-    remote = "https://github.com/bazelbuild/bazel-skylib.git",
-    tag = "0.8.0",
-)
-
-# DEPENDENCIES
 http_archive(
     name = "com_google_protobuf",
-    strip_prefix = "protobuf-b4f193788c9f0f05d7e0879ea96cd738630e5d51",
-    url = "https://github.com/google/protobuf/archive/b4f193788c9f0f05d7e0879ea96cd738630e5d51.tar.gz",
+    sha256 = "3bf61fcb22475b797aa2081512fbdcc59b786a2ca3d53b6d17d68c8e1e496bb5",
+    strip_prefix = "protobuf-04a11fc91668884d1793bff2a0f72ee6ce4f5edd",
+    url = "https://github.com/google/protobuf/archive/04a11fc91668884d1793bff2a0f72ee6ce4f5edd.tar.gz",
 )
 
 http_archive(
     name = "io_bazel_rules_docker",
-    sha256 = "aed1c249d4ec8f703edddf35cbe9dfaca0b5f5ea6e4cd9e83e99f3b0d1136c3d",
-    strip_prefix = "rules_docker-0.7.0",
-    urls = ["https://github.com/bazelbuild/rules_docker/archive/v0.7.0.tar.gz"],
+    sha256 = "413bb1ec0895a8d3249a01edf24b82fd06af3c8633c9fb833a0cb1d4b234d46d",
+    strip_prefix = "rules_docker-0.12.0",
+    urls = ["https://github.com/bazelbuild/rules_docker/archive/v0.12.0.tar.gz"],
 )
 
 new_git_repository(
     name = "hinnant_date",
     build_file = "//:third-party/date/BUILD.bzl",
-    commit = "e5c69d84ab5db3e06170b8eedec1d87841c7fb22",
+    commit = "48433b9892ac5741f8d4d8753beb76e49c57f7c8",
     remote = "https://github.com/HowardHinnant/date.git",
 )
 
 new_git_repository(
     name = "sqlpp11",
     build_file = "//:third-party/sqlpp11/BUILD.bzl",
-    commit = "4f9f001fbd692d3b1c045280f309b61d046e7783",
+    commit = "c021c49b0b1eeafc09718c7d3facb3b713eb47e4",
     remote = "https://github.com/rbock/sqlpp11.git",
 )
 
 new_git_repository(
     name = "sqlpp11sqlite",
     build_file = "//:third-party/sqlpp11sqlite/BUILD.bzl",
-    commit = "192c593f8862ee6a63a60538fbf87794bfa9464e",
+    commit = "dff49e0347e45a11d13b70b741ac81978d85190d",
     remote = "https://github.com/rbock/sqlpp11-connector-sqlite3.git",
 )
 
 new_git_repository(
     name = "sqlpp11mysql",
     build_file = "//:third-party/sqlpp11mysql/BUILD.bzl",
-    commit = "5e0913c843e0cf7ede439f05373033ceb2f39d11",
+    commit = "243096a1d2619d409a4be8d869ff9d3d3f8e6ccb",
     remote = "https://github.com/rbock/sqlpp11-connector-mysql.git",
 )
 
 http_archive(
     name = "org_iota_entangled",
-    sha256 = "44acf23ebe05da0a748ba211ddaa4208db36e758e09a283fad05e457b32ee0a0",
-    strip_prefix = "entangled-22059fa56d353bd9bc5af4614737fd820dc08eac",
-    url = "https://github.com/iotaledger/entangled/archive/22059fa56d353bd9bc5af4614737fd820dc08eac.zip",
-)
-
-new_git_repository(
-    name = "iota_lib_cpp",
-    build_file = "//:third-party/iota_lib_cpp/BUILD.bzl",
-    commit = "9971c832e6a38972803a4d1506a78c36451c3df3",
-    remote = "https://github.com/th0br0/iota.lib.cpp.git",
+    sha256 = "d61c57ddd5d63e8e16d41f77bca42107081c68923f7b3d66c0e706e957152af2",
+    strip_prefix = "entangled-67cd6b64e44daf383106f252e9585e161663c5d5",
+    url = "https://github.com/iotaledger/entangled/archive/67cd6b64e44daf383106f252e9585e161663c5d5.zip",
 )
 
 new_git_repository(
@@ -135,13 +125,17 @@ load("@com_google_protobuf//:protobuf_deps.bzl", "protobuf_deps")
 
 protobuf_deps()
 
-load("@io_bazel_rules_python//python:pip.bzl", "pip_import", "pip_repositories")
+load("@rules_python//python:pip.bzl", "pip_import", "pip_repositories")
 
 pip_repositories()
 
 load("@com_github_grpc_grpc//bazel:grpc_deps.bzl", "grpc_deps")
 
 grpc_deps()
+
+load("@com_github_grpc_grpc//bazel:grpc_extra_deps.bzl", "grpc_extra_deps")
+
+grpc_extra_deps()
 
 load("@iota_toolchains//:toolchains.bzl", "setup_toolchains")
 
@@ -163,3 +157,10 @@ load("@io_bazel_rules_go//go:deps.bzl", "go_register_toolchains", "go_rules_depe
 go_rules_dependencies()
 
 go_register_toolchains()
+
+container_pull(
+    name = "ubuntu_base",
+    registry = "index.docker.io",
+    repository = "iotacafe/ubuntu",
+    tag = "18.04",
+)

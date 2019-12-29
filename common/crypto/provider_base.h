@@ -1,6 +1,6 @@
 /*
  * Copyright (c) 2018 IOTA Stiftung
- * https://github.com/iotaledger/rpchub
+ * https://github.com/iotaledger/hub
  *
  * Refer to the LICENSE file for licensing information
  */
@@ -60,6 +60,13 @@ class CryptoProviderBase {
       const common::crypto::Hash& bundleHash) const {
     return doGetSignatureForUUID(uuid, bundleHash);
   }
+
+  /// Calculate the seed for a UUID.
+  /// param[in] UUID - a UUID
+  /// @return string - the seed
+
+  virtual std::string getSeedFromUUID(
+      const common::crypto::UUID& uuid) const = 0;
 
  protected:
   /// Calculate the signature for a UUID and a bundle hash

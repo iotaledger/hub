@@ -1,6 +1,6 @@
 /*
  * Copyright (c) 2018 IOTA Stiftung
- * https://github.com/iotaledger/rpchub
+ * https://github.com/iotaledger/hub
  *
  * Refer to the LICENSE file for licensing information
  */
@@ -12,7 +12,6 @@
 
 #include "common/crypto/argon2_provider.h"
 #include "common/crypto/types.h"
-#include "hub/db/db.h"
 #include "hub/db/helper.h"
 
 namespace hub {

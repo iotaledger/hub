@@ -1,6 +1,6 @@
 /*
  * Copyright (c) 2018 IOTA Stiftung
- * https://github.com/iotaledger/rpchub
+ * https://github.com/iotaledger/hub
  *
  * Refer to the LICENSE file for licensing information
  */
@@ -17,10 +17,10 @@ int main(int argc, char** argv) {
   google::InitGoogleLogging(programName);
   gflags::ParseCommandLineFlags(&argc, &argv, true);
 
-  LOG(INFO) << "Crypto provider starting up.";
+  LOG(INFO) << "Signing server starting up.";
 
   signing::crypto::SigningServer server;
 
-  server.initialise();
+  server.initialize();
   server.runAndWait();
 }

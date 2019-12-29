@@ -1,6 +1,6 @@
 /*
  * Copyright (c) 2018 IOTA Stiftung
- * https://github.com/iotaledger/rpchub
+ * https://github.com/iotaledger/hub
  *
  * Refer to the LICENSE file for licensing information
  */
@@ -11,32 +11,33 @@
 #include <string>
 #include <vector>
 
-#include <grpc++/support/sync_stream.h>
-
-#include "common/command.h"
+#include "common/commands/command.h"
+#include "events.h"
 #include "hub/db/helper.h"
 
 namespace hub {
-namespace rpc {
-class BalanceSubscriptionRequest;
-class BalanceEvent;
-}  // namespace rpc
 
 namespace cmd {
 
-/// @param[in] hub::rpc::BalanceSubscriptionRequest
-/// @param[in] hub::rpc::ServerWriterInterface
+typedef struct BalanceSubscriptionRequest {
+  uint64_t newerThan;
+} BalanceSubscriptionRequest;
+
+/// @param[in] BalanceSubscriptionRequest
+/// @param[out] std::vector<BalanceEvent> events
 /// Collects records about balance actions to and from user addresses
 /// and hub's addresses as well (Depsoits/Withdrawals/Hub address actions)
-class BalanceSubscription
-    : public common::Command<
-          hub::rpc::BalanceSubscriptionRequest,
-          grpc::ServerWriterInterface<hub::rpc::BalanceEvent>> {
+class BalanceSubscription : public common::Command<BalanceSubscriptionRequest,
+                                                   std::vector<BalanceEvent>> {
  public:
-  using Command<hub::rpc::BalanceSubscriptionRequest,
-                grpc::ServerWriterInterface<hub::rpc::BalanceEvent>>::Command;
+  using Command<BalanceSubscriptionRequest, std::vector<BalanceEvent>>::Command;
 
-  const std::string name() override { return "BalanceSubscription"; }
+  static const std::string name() { return "BalanceSubscription"; }
+
+  static std::shared_ptr<ICommand> create() {
+    return std::shared_ptr<common::ICommand>(
+        new BalanceSubscription(std::make_shared<common::ClientSession>()));
+  }
 
   virtual std::vector<db::UserAccountBalanceEvent>
   getAllUsersAccountBalancesSinceTimePoint(
@@ -50,9 +51,12 @@ class BalanceSubscription
   getAllHubAddressesBalancesSinceTimePoint(
       std::chrono::system_clock::time_point lastCheck);
 
-  grpc::Status doProcess(const hub::rpc::BalanceSubscriptionRequest* request,
-                         grpc::ServerWriterInterface<hub::rpc::BalanceEvent>*
-                             writer) noexcept override;
+  common::cmd::Error doProcess(
+      const BalanceSubscriptionRequest* request,
+      std::vector<BalanceEvent>* events) noexcept override;
+
+  boost::property_tree::ptree doProcess(
+      const boost::property_tree::ptree& request) noexcept override;
 };
 }  // namespace cmd
 }  // namespace hub

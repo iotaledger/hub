@@ -1,3 +1,10 @@
+/*
+ * Copyright (c) 2019 IOTA Stiftung
+ * https://github.com/iotaledger/hub
+ *
+ * Refer to the LICENSE file for licensing information
+ */
+
 #include "get_security_level.h"
 
 #include "common/crypto/manager.h"
@@ -9,7 +16,7 @@
 namespace signing {
 namespace cmd {
 
-grpc::Status GetSecurityLevel::doProcess(
+    common::cmd::Error GetSecurityLevel::doProcess(
     const signing::rpc::GetSecurityLevelRequest* request,
     signing::rpc::GetSecurityLevelReply* response) noexcept {
   try {
@@ -23,10 +30,10 @@ grpc::Status GetSecurityLevel::doProcess(
   } catch (const std::runtime_error& ex) {
     LOG(ERROR) << session() << "Failed: " << ex.what();
 
-    return grpc::Status(grpc::StatusCode::FAILED_PRECONDITION, "", "");
+    return common::cmd::UNKNOWN_ERROR;
   }
 
-  return grpc::Status::OK;
+  return common::cmd::OK;
 }
 
 }  // namespace cmd

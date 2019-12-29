@@ -1,13 +1,9 @@
 /*
  * Copyright (c) 2018 IOTA Stiftung
- * https://github.com/iotaledger/rpchub
+ * https://github.com/iotaledger/hub
  *
  * Refer to the LICENSE file for licensing information
  */
-
-#include "hub/crypto/remote_signing_provider.h"
-
-#include <utility>
 
 #include <glog/logging.h>
 #include <grpc/grpc.h>
@@ -17,6 +13,8 @@
 #include <grpcpp/security/credentials.h>
 
 #include "common/common.h"
+
+#include "hub/crypto/remote_signing_provider.h"
 
 using grpc::Channel;
 using grpc::ClientContext;
@@ -97,6 +95,21 @@ nonstd::optional<std::string> RemoteSigningProvider::doGetSignatureForUUID(
     return {};
   }
   return {response.signature()};
+}
+
+std::string RemoteSigningProvider::getSeedFromUUID(
+    const common::crypto::UUID& uuid) const {
+  ClientContext context;
+  signing::rpc::GetSeedForUUIDRequest request;
+  request.set_uuid(uuid.str());
+  signing::rpc::GetSeedForUUIDReply response;
+
+  Status status = _stub->GetSeedForUUID(&context, request, &response);
+  if (!status.ok()) {
+    LOG(ERROR) << "GetSeedForUUID rpc failed:" << status.error_message();
+    return {};
+  }
+  return {response.seed()};
 }
 
 }  // namespace crypto

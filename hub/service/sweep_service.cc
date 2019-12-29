@@ -1,6 +1,6 @@
 /*
  * Copyright (c) 2018 IOTA Stiftung
- * https://github.com/iotaledger/rpchub
+ * https://github.com/iotaledger/hub
  *
  * Refer to the LICENSE file for licensing information
  */
@@ -8,6 +8,9 @@
 #include "hub/service/sweep_service.h"
 
 #include <chrono>
+#include <filesystem>
+#include <fstream>
+#include <iostream>
 #include <numeric>
 #include <sstream>
 #include <string>
@@ -16,13 +19,9 @@
 #include <utility>
 #include <vector>
 
-#include <gflags/gflags.h>
 #include <glog/logging.h>
 #include <boost/uuid/uuid.hpp>
 #include <boost/uuid/uuid_generators.hpp>
-
-#include <iota/models/bundle.hpp>
-#include <iota/models/transaction.hpp>
 
 #include "common/crypto/manager.h"
 #include "common/crypto/provider_base.h"
@@ -42,10 +41,67 @@ DEFINE_uint32(sweep_max_withdraw, 7,
 DEFINE_uint32(sweep_max_deposit, 5,
               "Maximum number of user deposits to process per sweep.");
 
+// Hub unswept addresses backup
+DEFINE_string(hubSeedsBackupPath, "",
+              "Path for file that will be used to backup unswep hub addresses");
+
 }  // namespace
 
 namespace hub {
 namespace service {
+
+void SweepService::backupUnsweptHubAddresses() const {
+  namespace fs = std::filesystem;
+  if (FLAGS_hubSeedsBackupPath.empty()) {
+    return;
+  }
+
+  std::string tmpFilePath = FLAGS_hubSeedsBackupPath;
+  bool replace = false;
+  auto& dbConnection = db::DBManager::get().connection();
+
+  if (fs::exists(FLAGS_hubSeedsBackupPath)) {
+    tmpFilePath += "_tmp";
+    replace = true;
+  }
+
+  std::ofstream outputFile;
+  // enable exceptions
+  outputFile.exceptions(std::ifstream::failbit | std::ifstream::badbit);
+
+  try {
+    outputFile.open(tmpFilePath);
+    auto allHubInputs =
+        dbConnection.getAllHubInputs(std::chrono::system_clock::now());
+
+    for (const auto& inp : allHubInputs) {
+      outputFile
+          << inp.address.str() << ";"
+          << common::crypto::CryptoManager::get().provider().getSeedFromUUID(
+                 inp.uuid)
+          << ";" << inp.amount << "\n";
+    }
+  } catch (std::ifstream::failure e) {
+    outputFile.close();
+    if (fs::exists(tmpFilePath)) {
+      fs::remove(tmpFilePath);
+    }
+    LOG(ERROR) << "Failed backing up hub addresses";
+    return;
+  }
+
+  outputFile.close();
+
+  if (replace) {
+    try {
+        fs::rename(tmpFilePath, FLAGS_hubSeedsBackupPath);
+    } catch (fs::filesystem_error& e) {
+      LOG(ERROR) << "Failed renaming old hub addresses backup file";
+      return;
+    }
+
+  }
+}
 
 bool SweepService::doTick() {
   LOG(INFO) << "Starting sweep.";
@@ -132,7 +188,7 @@ bool SweepService::doTick() {
 
     // 4. Determine Hub output address
     auto remainder = (hubInputTotal + depositsTotal) - requiredOutput;
-    auto hubOutput = getHubOutput(remainder);
+    auto hubOutput = hub::bundle_utils::getHubOutput(remainder);
 
     LOG(INFO) << "Will move " << remainder
               << " into new Hub address: " << hubOutput.payoutAddress.str();
@@ -141,7 +197,12 @@ bool SweepService::doTick() {
                                              {hubOutput});
 
     // 6. Commit to DB
-    persistToDatabase(bundle, deposits, hubInputs, withdrawals, hubOutput);
+    hub::bundle_utils::persistToDatabase(bundle, deposits, hubInputs,
+                                         withdrawals, {hubOutput});
+
+    if (remainder > 0) {
+      backupUnsweptHubAddresses();
+    }
 
     transaction->commit();
     LOG(INFO) << "Sweep complete.";
@@ -158,59 +219,6 @@ bool SweepService::doTick() {
   // PoW is handled by attachment service
 
   return true;
-}
-
-void SweepService::persistToDatabase(
-    std::tuple<common::crypto::Hash, std::string> bundle,
-    const std::vector<db::TransferInput>& deposits,
-    const std::vector<db::TransferInput>& hubInputs,
-    const std::vector<db::TransferOutput>& withdrawals,
-    const db::TransferOutput& hubOutput) {
-  auto& dbConnection = db::DBManager::get().connection();
-
-  // 6.1. Insert sweep.
-  auto sweepId = dbConnection.createSweep(std::get<0>(bundle),
-                                          std::get<1>(bundle), hubOutput.id);
-
-  // 6.2. Change Hub address balances
-
-  dbConnection.createHubAddressBalanceEntry(
-      hubOutput.id, hubOutput.amount, db::HubAddressBalanceReason::INBOUND,
-      sweepId);
-  for (const auto& input : hubInputs) {
-    dbConnection.createHubAddressBalanceEntry(
-        input.addressId, -input.amount, db::HubAddressBalanceReason::OUTBOUND,
-        sweepId);
-  }
-
-  // 6.3. Update withdrawal sweep id
-  for (const auto& withdrawal : withdrawals) {
-    dbConnection.setWithdrawalSweep(withdrawal.id, sweepId);
-  }
-
-  // 6.4. Change User address balances
-  for (const auto& input : deposits) {
-    dbConnection.createUserAddressBalanceEntry(
-        input.addressId, -input.amount, nonstd::nullopt,
-        db::UserAddressBalanceReason::SWEEP, {}, sweepId);
-
-    dbConnection.createUserAccountBalanceEntry(
-        input.userId, input.amount, db::UserAccountBalanceReason::SWEEP,
-        sweepId);
-  }
-}
-
-db::TransferOutput SweepService::getHubOutput(uint64_t remainder) {
-  auto& dbConnection = db::DBManager::get().connection();
-  auto& cryptoProvider = common::crypto::CryptoManager::get().provider();
-
-  common::crypto::UUID hubOutputUUID;
-  auto address = cryptoProvider.getAddressForUUID(hubOutputUUID).value();
-
-  return {dbConnection.createHubAddress(hubOutputUUID, address),
-          remainder,
-          {},
-          std::move(address)};
 }
 
 }  // namespace service

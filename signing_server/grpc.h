@@ -1,6 +1,6 @@
 /*
  * Copyright (c) 2018 IOTA Stiftung
- * https://github.com/iotaledger/rpchub
+ * https://github.com/iotaledger/hub
  *
  * Refer to the LICENSE file for licensing information
  */
@@ -38,6 +38,12 @@ class SigningServerImpl final : public SigningServer::Service {
   grpc::Status GetSecurityLevel(::grpc::ServerContext* context,
                                 const GetSecurityLevelRequest* request,
                                 GetSecurityLevelReply* response) override;
+
+    /// Gets seed for a uuid
+    grpc::Status GetSeedForUUID(
+            grpc::ServerContext* context,
+            const GetSeedForUUIDRequest* request,
+            GetSeedForUUIDReply* response) override;
 };
 
 }  // namespace rpc

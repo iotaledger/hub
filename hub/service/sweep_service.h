@@ -1,6 +1,6 @@
 /*
  * Copyright (c) 2018 IOTA Stiftung
- * https://github.com/iotaledger/rpchub
+ * https://github.com/iotaledger/hub
  *
  * Refer to the LICENSE file for licensing information
  */
@@ -41,20 +41,6 @@ class SweepService : public ScheduledService {
   /// @return string - the descriptive name of the service
   const std::string name() const override { return "SweepService"; }
 
-  /// Persist the bundle data to database
-  /// identified during the sweep.
-  /// @param[in] bundle - the bundle hash and its serialized value
-  /// @param[in] deposits - a list of deposit transactions
-  /// @param[in] hubInputs - a list of internal transfers
-  /// @param[in] withdrawals - a list of withdrawal transactions
-  /// @param[in] hubOutput - the hub address into which the remainder is
-  /// deposited
-  void persistToDatabase(std::tuple<common::crypto::Hash, std::string> bundle,
-                         const std::vector<db::TransferInput>& deposits,
-                         const std::vector<db::TransferInput>& hubInputs,
-                         const std::vector<db::TransferOutput>& withdrawals,
-                         const db::TransferOutput& hubOutput);
-
   /// Creates a new hub address to which funds that remain after a transfer
   /// can be moved.
   /// @param[in] remainder
@@ -70,6 +56,9 @@ class SweepService : public ScheduledService {
   bool doTick() override;
   /// an cppclient::IotaAPI compliant API provider
   const std::shared_ptr<cppclient::IotaAPI> _api;
+
+ private:
+  void backupUnsweptHubAddresses() const;
 };
 
 }  // namespace service

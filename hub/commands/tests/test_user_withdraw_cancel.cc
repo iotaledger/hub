@@ -2,14 +2,10 @@
 
 #include <gtest/gtest.h>
 
-#include "proto/hub.pb.h"
-#include "schema/schema.h"
-
 #include "hub/commands/get_balance.h"
 #include "hub/commands/tests/helper.h"
 #include "hub/commands/user_withdraw.h"
 #include "hub/commands/user_withdraw_cancel.h"
-#include "hub/db/db.h"
 
 #include "runner.h"
 
@@ -27,8 +23,8 @@ namespace {
 class UserWithdrawCancelTest : public CommandTest {};
 
 TEST_F(UserWithdrawCancelTest, WithdrawalCancelUpdatesUserBalance) {
-  rpc::UserWithdrawRequest withdrawRequest;
-  rpc::UserWithdrawReply withdrawReply;
+  cmd::UserWithdrawRequest withdrawRequest;
+  cmd::UserWithdrawReply withdrawReply;
   cmd::UserWithdraw withdrawCmd(session(), nullptr);
 
   constexpr auto username = "User1";
@@ -36,45 +32,43 @@ TEST_F(UserWithdrawCancelTest, WithdrawalCancelUpdatesUserBalance) {
 
   createUser(session(), username);
 
-  withdrawRequest.set_userid(username);
+  withdrawRequest.userId = username;
   createBalanceForUsers({1}, USER_BALANCE);
-  withdrawRequest.set_amount(toWithdraw);
-  withdrawRequest.set_payoutaddress(
+  withdrawRequest.amount = toWithdraw;
+  withdrawRequest.payoutAddress =
       "WLVZXWARPSYCWJMBZJGXHUOVYBVCEKMNQDMXHCAEJZFLFLMHFYYQQSSLVYWAZWESKXZOROLU"
-      "9OQFRVDEWCHKKXPWGY");
-  withdrawRequest.set_validatechecksum(true);
+      "9OQFRVDEWCHKKXPWGY";
+  withdrawRequest.validateChecksum = true;
 
   auto status = withdrawCmd.doProcess(&withdrawRequest, &withdrawReply);
 
-  ASSERT_TRUE(status.ok());
+  ASSERT_EQ(status, common::cmd::OK);
 
-  rpc::GetBalanceRequest balReq;
-  rpc::GetBalanceReply balRep;
-  rpc::Error err;
+  cmd::GetBalanceRequest balReq = {.userId = username};
+  cmd::GetBalanceReply balRep;
 
-  balReq.set_userid(username);
   cmd::GetBalance balCommand(session());
 
-  ASSERT_TRUE(balCommand.doProcess(&balReq, &balRep).ok());
+  ASSERT_EQ(balCommand.doProcess(&balReq, &balRep), common::cmd::OK);
 
-  ASSERT_EQ(USER_BALANCE - toWithdraw, balRep.available());
+  ASSERT_EQ(USER_BALANCE - toWithdraw, balRep.available);
 
-  rpc::UserWithdrawCancelRequest req;
-  rpc::UserWithdrawCancelReply rep;
+  cmd::UserWithdrawCancelRequest req;
+  cmd::UserWithdrawCancelReply rep;
   cmd::UserWithdrawCancel cmd(session());
 
-  std::string uu = withdrawReply.uuid();
-  req.set_uuid(withdrawReply.uuid());
-  ASSERT_TRUE(cmd.doProcess(&req, &rep).ok());
+  std::string uu = withdrawReply.uuid;
+  req.uuid = withdrawReply.uuid;
+  ASSERT_EQ(cmd.doProcess(&req, &rep), common::cmd::OK);
 
-  ASSERT_TRUE(balCommand.doProcess(&balReq, &balRep).ok());
+  ASSERT_EQ(balCommand.doProcess(&balReq, &balRep), common::cmd::OK);
 
-  ASSERT_EQ(USER_BALANCE, balRep.available());
+  ASSERT_EQ(USER_BALANCE, balRep.available);
 }
 
 TEST_F(UserWithdrawCancelTest, WithdrawalCancelOnlyOnce) {
-  rpc::UserWithdrawRequest withdrawRequest;
-  rpc::UserWithdrawReply withdrawReply;
+  cmd::UserWithdrawRequest withdrawRequest;
+  cmd::UserWithdrawReply withdrawReply;
   cmd::UserWithdraw withdrawCmd(session(), nullptr);
 
   constexpr auto username = "User1";
@@ -82,44 +76,42 @@ TEST_F(UserWithdrawCancelTest, WithdrawalCancelOnlyOnce) {
 
   createUser(session(), username);
 
-  withdrawRequest.set_userid(username);
+  withdrawRequest.userId = username;
   createBalanceForUsers({1}, USER_BALANCE);
-  withdrawRequest.set_amount(toWithdraw);
-  withdrawRequest.set_payoutaddress(
+  withdrawRequest.amount = toWithdraw;
+  withdrawRequest.payoutAddress =
       "WLVZXWARPSYCWJMBZJGXHUOVYBVCEKMNQDMXHCAEJZFLFLMHFYYQQSSLVYWAZWESKXZOROLU"
-      "9OQFRVDEWCHKKXPWGY");
-  withdrawRequest.set_validatechecksum(true);
+      "9OQFRVDEWCHKKXPWGY";
+  withdrawRequest.validateChecksum = true;
 
   auto status = withdrawCmd.doProcess(&withdrawRequest, &withdrawReply);
 
-  ASSERT_TRUE(status.ok());
+  ASSERT_EQ(status, common::cmd::OK);
 
-  rpc::GetBalanceRequest balReq;
-  rpc::GetBalanceReply balRep;
-  rpc::Error err;
+  cmd::GetBalanceRequest balReq = {.userId = username};
+  cmd::GetBalanceReply balRep;
 
-  balReq.set_userid(username);
   cmd::GetBalance balCommand(session());
 
-  ASSERT_TRUE(balCommand.doProcess(&balReq, &balRep).ok());
+  ASSERT_EQ(balCommand.doProcess(&balReq, &balRep), common::cmd::OK);
 
-  ASSERT_EQ(USER_BALANCE - toWithdraw, balRep.available());
+  ASSERT_EQ(USER_BALANCE - toWithdraw, balRep.available);
 
-  rpc::UserWithdrawCancelRequest req;
-  rpc::UserWithdrawCancelReply rep;
+  cmd::UserWithdrawCancelRequest req;
+  cmd::UserWithdrawCancelReply rep;
   cmd::UserWithdrawCancel cmd(session());
 
-  std::string uu = withdrawReply.uuid();
-  req.set_uuid(withdrawReply.uuid());
-  ASSERT_TRUE(cmd.doProcess(&req, &rep).ok());
+  std::string uu = withdrawReply.uuid;
+  req.uuid = withdrawReply.uuid;
+  ASSERT_EQ(cmd.doProcess(&req, &rep), common::cmd::OK);
 
-  ASSERT_TRUE(balCommand.doProcess(&balReq, &balRep).ok());
+  ASSERT_EQ(balCommand.doProcess(&balReq, &balRep), common::cmd::OK);
 
-  ASSERT_EQ(USER_BALANCE, balRep.available());
+  ASSERT_EQ(USER_BALANCE, balRep.available);
 
-  ASSERT_FALSE(cmd.doProcess(&req, &rep).ok());
+  ASSERT_NE(cmd.doProcess(&req, &rep), common::cmd::OK);
 
-  ASSERT_EQ(USER_BALANCE, balRep.available());
+  ASSERT_EQ(USER_BALANCE, balRep.available);
 }
 
 };  // namespace

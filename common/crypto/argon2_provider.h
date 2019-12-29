@@ -1,6 +1,6 @@
 /*
  * Copyright (c) 2018 IOTA Stiftung
- * https://github.com/iotaledger/rpchub
+ * https://github.com/iotaledger/hub
  *
  * Refer to the LICENSE file for licensing information
  */
@@ -34,6 +34,13 @@ class Argon2Provider : public CryptoProviderBase {
   /// The current security level
   /// @return size_t - the security level (1 - 3)
   nonstd::optional<size_t> securityLevel(
+      const common::crypto::UUID& uuid) const override;
+
+  /// Calculate the seed for a UUID.
+  /// param[in] UUID - a UUID
+  /// @return string - the seed
+
+  virtual std::string getSeedFromUUID(
       const common::crypto::UUID& uuid) const override;
 
  protected:

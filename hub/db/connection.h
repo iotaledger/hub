@@ -1,6 +1,6 @@
 /*
  * Copyright (c) 2018 IOTA Stiftung
- * https://github.com/iotaledger/rpchub
+ * https://github.com/iotaledger/hub
  *
  * Refer to the LICENSE file for licensing information
  */
@@ -11,17 +11,15 @@
 #include <chrono>
 #include <cstdint>
 #include <map>
-#include <memory>
-#include <nonstd/optional.hpp>
 #include <set>
 #include <string>
 #include <tuple>
 #include <unordered_map>
-#include <utility>
 #include <vector>
 
+#include <nonstd/optional.hpp>
+
 #include "common/crypto/types.h"
-#include "hub/db/db.h"
 #include "hub/db/helper.h"
 #include "hub/db/types.h"
 
@@ -267,12 +265,19 @@ class Connection {
   virtual std::vector<TransferInput> getDepositsForSweep(
       size_t max, const std::chrono::system_clock::time_point& olderThan) = 0;
 
-  /// Return a list of hub inputs up to a point in time
+  /// Return a list of hub inputs up to a point in time (confirmed)
   /// @param[in] requiredAmount - the required total amount to obtain
   /// @param[in] olderThan - the cutoff point in time
   /// @return std::vector - a list of TransferInput
   virtual std::vector<TransferInput> getHubInputsForSweep(
       uint64_t requiredAmount,
+      const std::chrono::system_clock::time_point& olderThan) = 0;
+
+  /// Return a list of hub inputs up to a point in time
+  /// @param[in] requiredAmount - the required total amount to obtain
+  /// @param[in] olderThan - the cutoff point in time
+  /// @return std::vector - a list of TransferInput
+  virtual std::vector<TransferInput> getAllHubInputs(
       const std::chrono::system_clock::time_point& olderThan) = 0;
 
   /// @param[in] sweepId - the sweepId if the creation results from a sweep

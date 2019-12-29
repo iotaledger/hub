@@ -6,30 +6,21 @@
 #include <gtest/gtest.h>
 
 #include "common/crypto/manager.h"
-#include "common/stats/session.h"
 #include "hub/commands/create_user.h"
 #include "hub/db/db.h"
 #include "hub/tests/runner.h"
-#include "proto/hub.pb.h"
 
 namespace hub {
 class CommandTest : public hub::Test {
  public:
-  grpc::Status createUser(std::shared_ptr<common::ClientSession> session,
-                          std::string username) {
-    rpc::CreateUserRequest req;
-    rpc::CreateUserReply res;
+  common::cmd::Error createUser(std::shared_ptr<common::ClientSession> session,
+                                std::string username) {
+    cmd::CreateUserRequest req;
+    cmd::CreateUserReply res;
 
-    req.set_userid(std::move(username));
+    req.userId = std::move(username);
     cmd::CreateUser command(std::move(session));
     return command.process(&req, &res);
-  }
-
-  rpc::Error errorFromStatus(grpc::Status& status) {
-    rpc::Error err;
-    err.ParseFromString(status.error_details());
-
-    return err;
   }
 };
 

@@ -1,6 +1,6 @@
 /*
  * Copyright (c) 2018 IOTA Stiftung
- * https://github.com/iotaledger/rpchub
+ * https://github.com/iotaledger/hub
  *
  * Refer to the LICENSE file for licensing information
  */
@@ -10,7 +10,7 @@
 
 #include <string>
 
-#include "common/command.h"
+#include "common/commands/command.h"
 
 namespace signing {
 namespace rpc {
@@ -30,11 +30,14 @@ class GetSignatureForUUID
   using common::Command<signing::rpc::GetSignatureForUUIDRequest,
                         signing::rpc::GetSignatureForUUIDReply>::Command;
 
-  const std::string name() override { return "GetSignatureForUUID"; }
+  static const std::string name() { return "GetSignatureForUUID"; }
 
-  grpc::Status doProcess(
+    common::cmd::Error doProcess(
       const signing::rpc::GetSignatureForUUIDRequest* request,
       signing::rpc::GetSignatureForUUIDReply* response) noexcept override;
+
+    boost::property_tree::ptree doProcess(
+            const boost::property_tree::ptree& request) noexcept override {return boost::property_tree::ptree();};
 };
 }  // namespace cmd
 }  // namespace signing

@@ -1,6 +1,6 @@
 /*
  * Copyright (c) 2018 IOTA Stiftung
- * https://github.com/iotaledger/rpchub
+ * https://github.com/iotaledger/hub
  *
  * Refer to the LICENSE file for licensing information
  */
@@ -241,6 +241,11 @@ class ConnectionImpl : public Connection {
       const std::chrono::system_clock::time_point& olderThan) override {
     return db::helper<Conn>::getHubInputsForSweep(*_conn, requiredAmount,
                                                   olderThan);
+  }
+
+  std::vector<TransferInput> getAllHubInputs(
+      const std::chrono::system_clock::time_point& olderThan) override {
+    return db::helper<Conn>::getAllHubInputs(*_conn, olderThan);
   }
 
   bool isSweepConfirmed(uint64_t sweepId) override {

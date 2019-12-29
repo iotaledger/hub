@@ -1,3 +1,11 @@
+/*
+ * Copyright (c) 2019 IOTA Stiftung
+ * https://github.com/iotaledger/hub
+ *
+ * Refer to the LICENSE file for licensing information
+ */
+
+
 #include "get_address_for_uuid.h"
 
 #include "common/crypto/manager.h"
@@ -11,7 +19,7 @@
 namespace signing {
 namespace cmd {
 
-grpc::Status GetAddressForUUID::doProcess(
+    common::cmd::Error GetAddressForUUID::doProcess(
     const signing::rpc::GetAddressForUUIDRequest* request,
     signing::rpc::GetAddressForUUIDReply* response) noexcept {
   try {
@@ -26,11 +34,10 @@ grpc::Status GetAddressForUUID::doProcess(
   } catch (const std::runtime_error& ex) {
     LOG(ERROR) << session() << "Failed: " << ex.what();
 
-    return grpc::Status(grpc::StatusCode::FAILED_PRECONDITION, "",
-                        errorToString(signing::rpc::ErrorCode::EC_UNKNOWN));
+    return common::cmd::UNKNOWN_ERROR;
   }
 
-  return grpc::Status::OK;
+  return common::cmd::OK;
 }
 
 }  // namespace cmd
