@@ -8,7 +8,7 @@
 #include "hub/service/sweep_service.h"
 
 #include <chrono>
-#include <filesystem>
+#include <cstdio>
 #include <fstream>
 #include <iostream>
 #include <numeric>
@@ -51,7 +51,6 @@ namespace hub {
 namespace service {
 
 void SweepService::backupUnsweptHubAddresses() const {
-  namespace fs = std::filesystem;
   if (FLAGS_hubSeedsBackupPath.empty()) {
     return;
   }
@@ -60,7 +59,7 @@ void SweepService::backupUnsweptHubAddresses() const {
   bool replace = false;
   auto& dbConnection = db::DBManager::get().connection();
 
-  if (fs::exists(FLAGS_hubSeedsBackupPath)) {
+  if (std::ifstream(FLAGS_hubSeedsBackupPath).good()) {
     tmpFilePath += "_tmp";
     replace = true;
   }
@@ -83,8 +82,8 @@ void SweepService::backupUnsweptHubAddresses() const {
     }
   } catch (std::ifstream::failure e) {
     outputFile.close();
-    if (fs::exists(tmpFilePath)) {
-      fs::remove(tmpFilePath);
+    if (std::ifstream(tmpFilePath).good()) {
+      std::remove(tmpFilePath.c_str());
     }
     LOG(ERROR) << "Failed backing up hub addresses";
     return;
@@ -93,13 +92,10 @@ void SweepService::backupUnsweptHubAddresses() const {
   outputFile.close();
 
   if (replace) {
-    try {
-        fs::rename(tmpFilePath, FLAGS_hubSeedsBackupPath);
-    } catch (fs::filesystem_error& e) {
+    if (std::rename(tmpFilePath.c_str(), FLAGS_hubSeedsBackupPath.c_str()) !=
+        0) {
       LOG(ERROR) << "Failed renaming old hub addresses backup file";
-      return;
     }
-
   }
 }
 
