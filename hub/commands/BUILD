@@ -17,7 +17,7 @@ cc_library(
         "//hub/db",
         "@boost//:range",
         "@com_github_google_glog//:glog",
-        "@org_iota_entangled//cppclient:beast",
+        "@TangleScope//cppclient:beast",
     ],
 )
 

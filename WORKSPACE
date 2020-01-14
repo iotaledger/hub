@@ -88,11 +88,16 @@ new_git_repository(
     remote = "https://github.com/rbock/sqlpp11-connector-mysql.git",
 )
 
-http_archive(
-    name = "org_iota_entangled",
-    sha256 = "d61c57ddd5d63e8e16d41f77bca42107081c68923f7b3d66c0e706e957152af2",
-    strip_prefix = "entangled-67cd6b64e44daf383106f252e9585e161663c5d5",
-    url = "https://github.com/iotaledger/entangled/archive/67cd6b64e44daf383106f252e9585e161663c5d5.zip",
+git_repository(
+    name = "org_iota_common",
+    commit = "e81a376447bce598a3d8a2aecb93e3b2bf2dcef9",
+    remote = "https://github.com/iotaledger/iota_common.git",
+)
+
+git_repository(
+    name = "TangleScope",
+    commit = "d928607115bf554fbbe9009fdc696116a703d8b1",
+    remote = "https://github.com/iotaledger/TangleScope.git",
 )
 
 new_git_repository(

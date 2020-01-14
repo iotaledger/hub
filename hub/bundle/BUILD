@@ -8,8 +8,8 @@ cc_library(
         "//hub/db",
         "@com_github_gflags_gflags//:gflags",
         "@com_github_google_glog//:glog",
-        "@org_iota_entangled//common/model:bundle",
-        "@org_iota_entangled//common/trinary:flex_trit",
-        "@org_iota_entangled//utils:bundle_miner",
+        "@org_iota_common//common/model:bundle",
+        "@org_iota_common//common/trinary:flex_trit",
+        "@org_iota_common//utils:bundle_miner",
     ],
 )

@@ -22,8 +22,8 @@ cc_library(
         "@boost//:range",
         "@com_github_google_glog//:glog",
         "@iota_lib_cpp",
-        "@org_iota_entangled//common/helpers:digest",
-        "@org_iota_entangled//cppclient:beast",
+        "@org_iota_common//common/helpers:digest",
+        "@TangleScope//cppclient:beast",
     ],
 )
 
@@ -37,7 +37,7 @@ cc_library(
         "//hub/bundle:bundle_utils",
         "@boost//:range",
         "@boost//:uuid",
-        "@org_iota_entangled//cppclient:beast",
+        "@TangleScope//cppclient:beast",
     ],
 )
 
@@ -49,7 +49,7 @@ cc_library(
     deps = [
         ":scheduled_service",
         "@com_github_google_glog//:glog",
-        "@org_iota_entangled//cppclient:beast",
+        "@TangleScope//cppclient:beast",
     ],
 )
 
