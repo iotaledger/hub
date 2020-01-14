@@ -13,7 +13,7 @@ cc_library(
         ":types",
         "//proto:signing_server_grpc_cc",
         "@optional_lite",
-        "@org_iota_entangled//common/helpers:checksum",
+        "@org_iota_common//common/helpers:checksum",
     ],
 )
 
@@ -42,10 +42,10 @@ cc_library(
         "@boost//:interprocess",
         "@com_github_google_glog//:glog",
         "@iota_lib_cpp",
-        "@org_iota_entangled//common/crypto/iss/v1:iss_kerl",
-        "@org_iota_entangled//common/crypto/kerl:converter",
-        "@org_iota_entangled//common/helpers:sign",
-        "@org_iota_entangled//common/trinary:trit_tryte",
+        "@org_iota_common//common/crypto/iss/v1:iss_kerl",
+        "@org_iota_common//common/crypto/kerl:converter",
+        "@org_iota_common//common/helpers:sign",
+        "@org_iota_common//common/trinary:trit_tryte",
     ],
 )
 

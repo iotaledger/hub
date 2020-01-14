@@ -12,9 +12,9 @@ cc_library(
     visibility = ["//visibility:public"],
     deps = [
         ":pow",
-        "@org_iota_entangled//common/helpers:pow",
-        "@org_iota_entangled//common/model:bundle",
-        "@org_iota_entangled//common/trinary:tryte_long",
+        "@org_iota_common//common/helpers:pow",
+        "@org_iota_common//common/model:bundle",
+        "@org_iota_common//common/trinary:tryte_long",
     ],
 )
 
@@ -23,7 +23,7 @@ cc_library(
     srcs = ["pow.cc"],
     hdrs = ["pow.h"],
     visibility = ["//visibility:public"],
-    deps = ["@org_iota_entangled//cppclient:beast"],
+    deps = ["@TangleScope//cppclient:beast"],
 )
 
 cc_test(
