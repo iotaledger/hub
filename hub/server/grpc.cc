@@ -168,8 +168,7 @@ grpc::Status HubImpl::BalanceSubscription(
 
   if (status.ok()) {
     hub::rpc::BalanceEvent rpcBalanceEvent;
-    for (auto event : events)
-
+    for (auto event : events) {
       if (auto pval =
               std::get_if<cmd::UserAccountBalanceEvent>(&event.getVariant())) {
         auto rpcEvent = new hub::rpc::UserAccountBalanceEvent();
@@ -203,8 +202,9 @@ grpc::Status HubImpl::BalanceSubscription(
         rpcEvent->set_hubaddress(std::move(pval->hubAddress));
         rpcBalanceEvent.set_allocated_hubaddressevent(rpcEvent);
       }
-    if (!writer->Write(rpcBalanceEvent)) {
-      return grpc::Status::CANCELLED;
+      if (!writer->Write(rpcBalanceEvent)) {
+        return grpc::Status::CANCELLED;
+      }
     }
   }
 
