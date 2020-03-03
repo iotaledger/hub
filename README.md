@@ -12,7 +12,7 @@
 <p align="center">
   <a href="https://discord.iota.org/" style="text-decoration:none;"><img src="https://img.shields.io/badge/Discord-9cf.svg?logo=discord" alt="Discord"></a>
     <a href="https://iota.stackexchange.com/" style="text-decoration:none;"><img src="https://img.shields.io/badge/StackExchange-9cf.svg?logo=stackexchange" alt="StackExchange"></a>
-    <a href="https://raw.githubusercontent.com/iotaledger/iota.lib.js/master/LICENSE" style="text-decoration:none;"><img src="https://img.shields.io/github/license/iotaledger/hub.svg" alt="Apache 2.0 license"></a>
+    <a href="https://raw.githubusercontent.com/iotaledger/hub/master/LICENSE" style="text-decoration:none;"><img src="https://img.shields.io/github/license/iotaledger/hub.svg" alt="Apache 2.0 license"></a>
     <a href="https://buildkite.com/iota-foundation/hub" style="text-decoration:none;"><img src="https://badge.buildkite.com/9c05b4a87f2242c78d62709136ca54a6d63fd48aa9b764f3e1.svg" alt="Build status"></a>
 </p>
       
