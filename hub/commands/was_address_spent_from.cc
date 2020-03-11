@@ -93,7 +93,7 @@ common::cmd::Error WasAddressSpentFrom::doProcess(
         return common::cmd::IOTA_NODE_UNAVAILABLE;
       } else if (res.value().states.front()) {
         response->wasAddressSpentFrom = true;
-        return common::cmd::ADDRESS_WAS_SPENT;
+        return common::cmd::OK;
       }
     }
 
