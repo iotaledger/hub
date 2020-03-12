@@ -18,12 +18,12 @@ cc_library(
         ":scheduled_service",
         "//hub/db",
         "//hub/iota:pow",
+        "@TangleScope//cppclient:beast",
         "@boost//:functional",
         "@boost//:range",
         "@com_github_google_glog//:glog",
-        "@iota_lib_cpp",
         "@org_iota_common//common/helpers:digest",
-        "@TangleScope//cppclient:beast",
+        "@org_iota_common//common/model:bundle",
     ],
 )
 
@@ -35,9 +35,9 @@ cc_library(
     deps = [
         ":scheduled_service",
         "//hub/bundle:bundle_utils",
+        "@TangleScope//cppclient:beast",
         "@boost//:range",
         "@boost//:uuid",
-        "@TangleScope//cppclient:beast",
     ],
 )
 
@@ -48,8 +48,8 @@ cc_library(
     visibility = ["//visibility:public"],
     deps = [
         ":scheduled_service",
-        "@com_github_google_glog//:glog",
         "@TangleScope//cppclient:beast",
+        "@com_github_google_glog//:glog",
     ],
 )
 
