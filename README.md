@@ -1,121 +1,106 @@
-# IOTA Hub
-[![Build status](https://badge.buildkite.com/9c05b4a87f2242c78d62709136ca54a6d63fd48aa9b764f3e1.svg)](https://buildkite.com/iota-foundation/rpchub)
+<h1 align="center">
+  <br>
+  <a href="https://docs.iota.org/docs/wallets/0.1/hub/introduction/overview"><img src="hub.png"></a>
+</h1>
 
-See [Getting Started](docs/getting_started.md) for information on how to use the Hub!
+<h2 align="center">A wallet management system for cryptocurrency exchanges and custodians</h2>
 
-## Dependencies
-- Modern GCC or Clang (or use a provided toolchain from `@iota_toolchains`)
-- [bazel](https://github.com/bazelbuild/bazel/releases)
-- pyparsing (`pip install pyparsing`)
+<p align="center">
+    <a href="https://docs.iota.org/docs/wallets/0.1/hub/introduction/overview" style="text-decoration:none;">
+    <img src="https://img.shields.io/badge/Documentation%20portal-blue.svg?style=for-the-badge" alt="Developer documentation portal">
+</p>
+<p align="center">
+  <a href="https://discord.iota.org/" style="text-decoration:none;"><img src="https://img.shields.io/badge/Discord-9cf.svg?logo=discord" alt="Discord"></a>
+    <a href="https://iota.stackexchange.com/" style="text-decoration:none;"><img src="https://img.shields.io/badge/StackExchange-9cf.svg?logo=stackexchange" alt="StackExchange"></a>
+    <a href="https://raw.githubusercontent.com/iotaledger/hub/master/LICENSE" style="text-decoration:none;"><img src="https://img.shields.io/github/license/iotaledger/hub.svg" alt="Apache 2.0 license"></a>
+    <a href="https://buildkite.com/iota-foundation/hub" style="text-decoration:none;"><img src="https://badge.buildkite.com/9c05b4a87f2242c78d62709136ca54a6d63fd48aa9b764f3e1.svg" alt="Build status"></a>
+</p>
 
-## Supported database systems
-- MariaDB. **DO NOT USE MySQL**. MySQL does not support CHECK constraints for data integrity. *We only test against MariaDB.*
-  Please ensure that your MariaDB version is **>= 10.2.1** as this is the first version supporting [CHECK constraints](https://mariadb.com/kb/en/library/constraint/#check-constraints)
-  
-- Source the _delta.xxx.sql_ file if you are updating Hub's version to get all schema changes
+<p align="center">
+  <a href="#about">About</a> ◈
+  <a href="#prerequisites">Prerequisites</a> ◈
+  <a href="#installation">Installation</a> ◈
+  <a href="#getting-started">Getting started</a> ◈
+  <a href="#api-reference">API reference</a> ◈
+  <a href="#supporting-the-project">Supporting the project</a> ◈
+  <a href="#joining-the-discussion">Joining the discussion</a> 
+</p>
 
-## Developing RPCHub
-- Make sure that `buildifier` and `clang-format` are available on your `PATH`: (`go get -u github.com/bazelbuild/buildtools/buildifier`)
-- Be sure to run `./hooks/autohook.sh install` after checkout!
-- Pass `-c dbg` for building with debug symbols.
+---
 
-## How to build and run 
-- see `docs/getting_started.md`
+## About
 
-## Configuration
-- If running on mainnet, set `-minWeightMagnitude` to at least 14
-- You *MUST* pass a `-salt` parameter.
-- Run your own IRI node and specify endpoint via `-apiAddress`
+Hub is a wallet management system for cryptocurrency exchanges and custodians. Through its application programming interfaces (APIs), Hub offers you an easy way to integrate IOTA into your application by allowing you to do the following:
 
-## Command Line Arguments
+- Create user accounts
+- Manage users' [IOTA tokens](root://getting-started/0.1/clients/token.md)
+- Keep a record of users' [addresses](root://getting-started/0.1/clients/addresses.md)
+- Keep a record of users' [transactions](root://getting-started/0.1/transactions/transactions.md)
+
+This is beta software, so there may be performance and stability issues.
+Please report any issues in our [issue tracker](https://github.com/iotaledger/hub/issues/new).
+
+## Prerequisites
+
+To install Hub, you need one of the following:
+
+- Docker
+- A Linux operating system
+
+## Installation
+
+For installation instructions, see the [documentation portal](https://docs.iota.org/docs/wallets/0.1/hub/how-to-guides/install-hub).
+
+## Getting started
+
+Depending on how you configured Hub, you can use either its gRPC or REST API to start creating new users.
+For a guide on using the gRPC API, see the [documentation portal](https://docs.iota.org/docs/wallets/0.1/hub/how-to-guides/get-started-with-grpc-api).
+
+### Getting started with the RESTful API
+
+To create a new user, do the following:
+
+```bash
+curl http://localhost:50051 \
+-X POST \
+-H 'Content-Type: application/json' \
+-H 'X-IOTA-API-Version: 1' \
+-d '{
+  "command": "CreateUser",
+  "userId": "Jake"
+}'
 ```
-  Flags from common/flags/flags.h (used for both hub/signing_server binaries):
-  
-    -salt (Salt for local seed provider) type: string default: "" 
-    -listenAddress (address to listen on) type: string default: "0.0.0.0:50051"
-    -authMode ("credentials to use. can be {none, ssl}") type: string default: "none"
-    -sslKey (path to SSL certificate key) type: string default: "/dev/null"
-    -sslCert (path to SSL certificate) type: string default: "/dev/null"
-    -sslCA  (Path to CA root) type: string default: "/dev/null"
-    -sslDH (Path to Diffie Hellman parameters (when using REST)) type: string default: "/dev/null"
-    -maxConcurrentArgon2Hash (Max number of concurrent Argon2 Hash processes) type: int default: 4
-    -argon2TCost (Time cost of Argon2) type: int default: 4
-    -argon2MCost (Memory cost of Argon2 in bytes) type: int default: 1 << 17
-    -argon2Parallelism (Number of threads to use in parallel for Argon2) type: int default: 1
-    -argon2Mode (Argon2 mode to use: 1=argon2i;2,else=argon2id) type: int default: 2
-    -keySecLevel (security level to use for IOTA signatures) type:int default: 2
-    
-  HUB -
+To generate a new deposit address for the user, do the following:
 
-  Flags from hub/db/db.cc:
-    -db (Database name) type: string default: "hub"
-    -dbDebug (Enable debug mode for database connection) type: bool
-      default: false
-    -dbHost (Database server host) type: string default: "127.0.0.1"
-    -dbPassword (Database user password) type: string default: "password"
-    -dbPort (Database server port) type: uint32 default: 3306
-    -dbType (Type of DB) type: string default: "mariadb"
-    -dbUser (Database user) type: string default: "user"
+```bash
+curl http://localhost:50051 \
+-X POST \
+-H 'Content-Type: application/json' \
+-H 'X-IOTA-API-Version: 1' \
+-d '{
+  "command": "GetDepositAddress",
+  "userId": "Jake",
+  "includeChecksum": "true"
+}'
+```
+In the output, you should see a 90-tryte deposit address:
 
-  Flags from hub/server/hub_server_base.cc:
-    -apiAddress (IRI node api to listen on. Format [host:port]) type: string
-      default: "127.0.0.1:14265"
-    -attachmentInterval (Attachment service check interval (0=disabled) [ms])
-      type: uint32 default: 240000
-    -authProvider (provider to use. can be {none, hmac}) type: string
-      default: "none"
-    -depth (Value for getTransacationToApprove depth parameter) type: uint32
-      default: 3
-    -hmacKeyPath (path to key used for HMAC encyption) type: string
-      default: "/dev/null"
-    -minWeightMagnitude (Minimum weight magnitude for POW) type: uint32
-      default: 9
-    -monitorInterval (Address monitor check interval (0=disabled) [ms])
-      type: uint32 default: 60000
-    -signingMode (crypto method to use {local,remote}) type: string
-      default: "local"
-    -signingProviderAddress (crypto provider address, should be provided if
-      signingMode=remote) type: string default: "0.0.0.0:50052"
-    -signingServerChainCert (Path to SSL certificate chain (server.crt))
-      type: string default: "/dev/null"
-    -signingServerKeyCert (Path to SSL certificate key (server.key))
-      type: string default: "/dev/null"
-    -signingServerSslCert (Path to SSL certificate (ca.cert)) type: string
-      default: "/dev/null"
-    -sweepInterval (Sweep interval (0=disabled) [ms]) type: uint32
-      default: 600000
-    -powMode (Proof of work mode, local or remote)
-    -fetchTransactionMessages (Determines if Should store deposit transaction's message) 
-      type: bool (--fetchTransactionMessages or --nofetchTransactionMessages)
-    -useHttpsIRI (Determines if the connection with IRI should be over HTTPS (make sure `apiAddress` supports https)) 
-     type: bool (--useHttpsIRI or --nouseHttpsIRI)
-    -serverType (Which API should server expose {grpc (default), http)
-    -numBundlesToMine: (number of different bundles to mine for generating a signature for already spent addresses) 
-     type: uint32 default: 5000000
-
-  Flags from hub/service/sweep_service.cc:
-    -sweep_max_deposit (Maximum number of user deposits to process per sweep.)
-      type: uint32 default: 5
-    -sweep_max_withdraw (Maximum number of withdraw requests to service per
-      sweep.) type: uint32 default: 7
-      
-    -hubSeedsBackupPath (Path to file used for backing up hub unswept hub addresses and seeds [address;seed;amount]) 
-        type: string default: ""
-    
-      
-  Flags from hub/server/grpc.cc:
-    -SignBundle_enabled (Whether the SignBundle API call should be available) 
-      type: bool (--SignBundle_enabled or --noSignBundle_enabled)
-       
-    -RecoverFunds_enabled (Whether the RecoverFunds API call should be available) 
-      type: bool (--RecoverFunds_enabled or --noRecoverFunds_enabled)
-      
-    -GetSeedForAddress_enabled (Whether the GetAddressForAddress API call should be available) 
-    type: bool (--GetSeedForAddress_enabled or --noGetSeedForAddress_enabled)
-      
+```
+"address": "RDZVDZKRBX9T9L9XXONXDVJDRKYPAABWMQLORGCDCWHDDTSOPRZPCQB9AIZZWZAQ9NBZNVUUUSPQHRGWDYZUVP9WSC"
 ```
 
-## Useful things
-- Use `protofmt` from `go get -u -v github.com/emicklei/proto-contrib/cmd/protofmt` to format protobuf files
-- Use `grpcc` to test: `grpcc -i -a localhost:50051 -p proto/hub.proto` (when `serverType grpc`)
-- Use `https://github.com/pseudomuto/protoc-gen-doc` to generate protobuf documentation
+**Note:** In the database, addresses are always saved without the checksum.
+
+## API reference
+
+For details on all available API methods, see the [documentation portal](https://docs.iota.works/docs/wallets/0.1/hub/references/restful-api-reference).
+
+## Supporting the project
+
+If you want to contribute to Hub, consider posting a [bug report](https://github.com/iotaledger/hub/issues/new), [feature request](https://github.com/iotaledger/hub/issues/new) or a [pull request](https://github.com/iotaledger/hub/pulls/).
+
+See the [contributing guidelines](CONTRIBUTING.md) for more information.
+
+## Joining the discussion
+
+If you want to get involved in the community, need help with getting setup, have any issues related with the library or just want to discuss IOTA, Distributed Registry Technology (DRT) and IoT with other people, feel free to join our [Discord](https://discord.iota.org/).
