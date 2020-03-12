@@ -4,10 +4,6 @@
 - Hub is not an IOTA node, it is a tool for managing transfers from/to addresses in a simple and secure manner
 - User should send tokens to a deposit address only once, since deposit addresses are swept and aren't reusable
 - In case user sent tokens to a deposit address that has been swept, we offer a mechanism to recover the funds (see docs/hip/001-sign_bundle.md)
-- To facilitate toolchain / build environment setup we have provided toolchain configurations to build the Hub against. 
-  To use these, see the [toolchains repository](https://github.com/iotaledger/toolchains) for more details. 
-  As an example, to use the provided `x86-64-core-i7` toolchain, you'd build the signing server like this: 
-  `bazel build -c opt --crosstool_top='@iota_toolchains//tools/x86-64-core-i7--glibc--bleeding-edge-2018.07-1:toolchain' --cpu=x86_64 --host_crosstool_top=@bazel_tools//tools/cpp:toolchain //signing_server/...`
 
 ## Building the hub
 - `bazel build -c opt //hub:hub`
