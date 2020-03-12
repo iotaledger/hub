@@ -16,8 +16,8 @@
 #include <gflags/gflags.h>
 #include <glog/logging.h>
 #include <boost/functional/hash.hpp>
-#include <iota/models/bundle.hpp>
-#include <iota/models/transaction.hpp>
+#include "common/model/bundle.h"
+#include "common/model/transaction.h"
 
 #include "common/helpers/digest.h"
 #include "hub/db/helper.h"
@@ -174,23 +174,42 @@ void AttachmentService::promoteSweep(db::Connection& connection,
                        std::chrono::system_clock::now().time_since_epoch())
                        .count();
 
-  IOTA::Models::Bundle bundle;
-  IOTA::Models::Transaction otx;
+  Kerl kerl;
+  kerl_init(&kerl);
 
-  otx.setAddress(
-      "SOME9RANDOM9HUB9BEING9REATTACHED9999999999999999999999999999999999999999"
-      "999999999");
-  otx.setValue(0);
-  otx.setTimestamp(timestamp);
+  bundle_transactions_t* bundle = NULL;
+  iota_transaction_t txE;
+  bundle_transactions_new(&bundle);
 
-  bundle.addTransaction(otx, 1);
-  bundle.addTrytes({""});
-  bundle.finalize();
+  transaction_reset(&txE);
 
-  const auto& tx = bundle.getTransactions()[0];
+  flex_trit_t addressFlexTrits[FLEX_TRIT_SIZE_243];
+  flex_trits_from_trytes(addressFlexTrits, NUM_TRITS_ADDRESS,
+                       (tryte_t*)      "SOME9RANDOM9HUB9BEING9REATTACHED9999999999999999999999999999999999999999"
+                                       "999999999",
+                       NUM_TRYTES_ADDRESS, NUM_TRYTES_ADDRESS);
+
+  transaction_set_address(&txE, addressFlexTrits);
+  transaction_set_value(&txE, 0uLL);
+  transaction_set_timestamp(&txE, timestamp);
+
+  txE.loaded_columns_mask.attachment |= MASK_ATTACHMENT_TAG;
+  txE.loaded_columns_mask.essence |= MASK_ESSENCE_OBSOLETE_TAG;
+
+  bundle_transactions_add(bundle, &txE);
+  bundle_reset_indexes(bundle);
+  bundle_finalize(bundle, &kerl);
+
+  flex_trit_t txFlexTrits[FLEX_TRIT_SIZE_8019];
+  char txTrytesStr[NUM_TRYTES_SERIALIZED_TRANSACTION + 1];
+  transaction_serialize_on_flex_trits(&txE, txFlexTrits);
+  flex_trits_to_trytes((tryte_t*)txTrytesStr, NUM_TRYTES_SERIALIZED_TRANSACTION,
+                       txFlexTrits, NUM_TRITS_SERIALIZED_TRANSACTION,
+                       NUM_TRITS_SERIALIZED_TRANSACTION);
+  txTrytesStr[NUM_TRYTES_SERIALIZED_TRANSACTION] = 0;
 
   auto attachedTrytes = powProvider.doPOW(
-      {tx.toTrytes()}, toApprove.trunkTransaction, toApprove.branchTransaction);
+      {txTrytesStr}, toApprove.trunkTransaction, toApprove.branchTransaction);
 
   _api->storeTransactions(attachedTrytes);
   _api->broadcastTransactions(attachedTrytes);
