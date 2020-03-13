@@ -9,7 +9,7 @@ labels: T-Bug
 
 Briefly describe the bug.
 
-## IRI version
+## Hub version
 
 Which version of Hub are you running?
 
