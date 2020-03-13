@@ -99,7 +99,7 @@ For details on all available API methods, see the [documentation portal](https:/
 
 If you want to contribute to Hub, consider posting a [bug report](https://github.com/iotaledger/hub/issues/new), [feature request](https://github.com/iotaledger/hub/issues/new) or a [pull request](https://github.com/iotaledger/hub/pulls/).
 
-See the [contributing guidelines](CONTRIBUTING.md) for more information.
+See the [contributing guidelines](.github/CONTRIBUTING.md) for more information.
 
 ## Joining the discussion
 
