@@ -44,7 +44,7 @@ This section guides you through reporting a bug. Following these guidelines help
 
 Please check the following list:
 
-- **Do not open a GitHub issue for [security vulnerabilities](.github/SECURITY.md)**, instead, please contact us at [security@iota.org](mailto:security@iota.org).
+- **Do not open a GitHub issue for [security vulnerabilities](SECURITY.md)**, instead, please contact us at [security@iota.org](mailto:security@iota.org).
 
 - **Ensure the bug was not already reported** by searching on GitHub under [**Issues**](https://github.com/iotaledger/hub/issues). If the bug has already been reported **and the issue is still open**, add a comment to the existing issue instead of opening a new one. You can also find related issues by their [label](https://github.com/iotaledger/hub/labels?page=1&sort=name-asc). For example, if your issue is database related, filter issues based on the `C-db` label to look for related ones. `C` stands for component.
 
@@ -151,4 +151,4 @@ If all [status checks](https://help.github.com/articles/about-status-checks/) pa
 <summary>Code of Conduct :clipboard:</summary>
 <br>
 
-This project and everyone participating in it is governed by the [IOTA Code of Conduct](.github/CODE_OF_CONDUCT.md).
+This project and everyone participating in it is governed by the [IOTA Code of Conduct](CODE_OF_CONDUCT.md).
