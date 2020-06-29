@@ -1,0 +1,23 @@
+name: Test
+
+on:
+  push:
+    branches: [ master ]
+  pull_request:
+    branches: [ master ]
+
+jobs:
+  test:
+    runs-on: ubuntu-20.04
+
+    steps:
+    - uses: actions/checkout@v2
+
+    - name: Bazel test opt
+      run: bazel test -c opt --test_output=all //...
+
+    - name: Bazel test debug
+      run: bazel test -c dbg --test_output=all //...
+
+#    - name: Bazel test bootlin x86_64 toolchains
+#      run: bazel test --crosstool_top=@iota_toolchains//tools/x86-64-core-i7--glibc--bleeding-edge-2018.07-1:toolchain --cpu=x86_64 --host_crosstool_top=@bazel_tools//tools/cpp:toolchain  //...
