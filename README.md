@@ -54,6 +54,7 @@ For installation instructions, see the [documentation portal](https://docs.iota.
 ## Getting started
 
 Depending on how you configured Hub, you can use either its gRPC or REST API to start creating new users.
+
 For a guide on using the gRPC API, see the [documentation portal](https://docs.iota.org/docs/wallets/0.1/hub/how-to-guides/get-started-with-the-grpc-api).
 
 ### Getting started with the RESTful API
@@ -99,7 +100,7 @@ For details on all available API methods, see the [documentation portal](https:/
 
 If you want to contribute to Hub, consider posting a [bug report](https://github.com/iotaledger/hub/issues/new), [feature request](https://github.com/iotaledger/hub/issues/new) or a [pull request](https://github.com/iotaledger/hub/pulls/).
 
-See the [contributing guidelines](.github/CONTRIBUTING.md) for more information.
+See the [contributing guidelines](CONTRIBUTING.md) for more information.
 
 ## Joining the discussion
 

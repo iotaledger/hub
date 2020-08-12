@@ -96,7 +96,7 @@ git_repository(
 
 git_repository(
     name = "TangleScope",
-    commit = "d928607115bf554fbbe9009fdc696116a703d8b1",
+    commit = "331f0ed48a383c940db76cfb44f8dd07f5eca5b1",
     remote = "https://github.com/iotaledger/TangleScope.git",
 )
 
