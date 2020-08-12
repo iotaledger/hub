@@ -15,9 +15,13 @@ jobs:
 
     - name: Bazel test opt
       run: bazel test -c opt --test_output=all //...
-
+      env:
+        USE_BAZEL_VERSION: 3.3.1
+        
     - name: Bazel test debug
       run: bazel test -c dbg --test_output=all //...
+      env:
+        USE_BAZEL_VERSION: 3.3.1
 
 #    - name: Bazel test bootlin x86_64 toolchains
 #      run: bazel test --crosstool_top=@iota_toolchains//tools/x86-64-core-i7--glibc--bleeding-edge-2018.07-1:toolchain --cpu=x86_64 --host_crosstool_top=@bazel_tools//tools/cpp:toolchain  //...
