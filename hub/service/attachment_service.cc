@@ -25,7 +25,7 @@
 
 namespace {
 DEFINE_uint32(
-    max_promotion_age, 30,
+    max_promotion_age, 3,
     "Maximum age [minutes] for a sweep's tail which allows promotion, (i.e - a "
     "tail that's older than that will not be promoted, rather sweep "
     "will be reattached)");
