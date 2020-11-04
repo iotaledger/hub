@@ -55,7 +55,7 @@ boost::property_tree::ptree SignBundle::doProcess(
   }
 
   auto maybeBundleHash = request.get_optional<std::string>("bundleHash");
-  if (maybeBundleHash) {
+  if (!maybeBundleHash) {
     tree.add("error",
              common::cmd::getErrorString(common::cmd::MISSING_ARGUMENT));
     return tree;
