@@ -54,7 +54,8 @@ For installation instructions, see the [documentation portal](https://docs.iota.
 ## Getting started
 
 Depending on how you configured Hub, you can use either its gRPC or REST API to start creating new users.
-For a guide on using the gRPC API, see the [documentation portal](https://docs.iota.org/docs/wallets/0.1/hub/how-to-guides/get-started-with-grpc-api).
+
+For a guide on using the gRPC API, see the [documentation portal](https://docs.iota.org/docs/wallets/0.1/hub/how-to-guides/get-started-with-the-grpc-api).
 
 ### Getting started with the RESTful API
 
