@@ -585,9 +585,9 @@
 - Arguments
 
 
-| Arg name | type   | Description                                |
-| -------- | ------ | ------------------------------------------ |
-| uuid     | string | The seed_uuid's in the hub_addresses table |
+| Arg name | type   | Description                              |
+| -------- | ------ | ---------------------------------------- |
+| uuid     | string | The seed_uuid in the hub_addresses table |
 
 - curl example:
     - Call:
