@@ -10,7 +10,6 @@
 #include "common/crypto/manager.h"
 #include "hub/commands/factory.h"
 #include "hub/commands/helper.h"
-#include "hub/db/helper.h"
 
 #include "hub/commands/get_seed_for_uuid.h"
 
@@ -25,14 +24,14 @@ boost::property_tree::ptree GetSeedForUUID::doProcess(
   GetSeedForUUIDRequest req;
   GetSeedForUUIDReply rep;
 
-  auto maybeUserId = request.get_optional<std::string>("userId");
-  if (!maybeUserId) {
+  auto maybeUUID = request.get_optional<std::string>("uuid");
+  if (!maybeUUID) {
     tree.add("error",
              common::cmd::getErrorString(common::cmd::MISSING_ARGUMENT));
     return tree;
   }
 
-  req.userId = maybeUserId.value();
+  req.uuid = maybeUUID.value();
 
   auto status = doProcess(&req, &rep);
 
@@ -47,19 +46,10 @@ boost::property_tree::ptree GetSeedForUUID::doProcess(
 common::cmd::Error GetSeedForUUID::doProcess(
     const GetSeedForUUIDRequest* request,
     GetSeedForUUIDReply* response) noexcept {
-  auto& connection = db::DBManager::get().connection();
-
-  // Get userId for identifier
-  {
-    auto maybeUserId = connection.userIdFromIdentifier(request->userId);
-    if (!maybeUserId) {
-      return common::cmd::USER_DOES_NOT_EXIST;
-    }
-  }
-
+  // Get seed by the uuid
   response->seed =
       common::crypto::CryptoManager::get().provider().getSeedFromUUID(
-          common::crypto::UUID(request->userId));
+          common::crypto::UUID(request->uuid));
 
   return common::cmd::OK;
 }

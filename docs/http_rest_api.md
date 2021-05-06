@@ -585,15 +585,15 @@
 - Arguments
 
 
-| Arg name | type   | Description           |
-| -------- | ------ | --------------------- |
-| userId   | string | The user's identifier |
+| Arg name | type   | Description                                |
+| -------- | ------ | ------------------------------------------ |
+| uuid     | string | The seed_uuid's in the hub_addresses table |
 
 - curl example:
     - Call:
         
     ``` 
-    curl  http://localhost:50051  -X POST   -H 'Content-Type: application/json'   -H 'X-IOTA-API-Version:  1'   -d '{"command": "GetSeedForUUID", "userId": "SomeUser"}'  
+    curl  http://localhost:50051  -X POST   -H 'Content-Type: application/json'   -H 'X-IOTA-API-Version:  1'   -d '{"command": "GetSeedForUUID", "uuid": "SomeUUID"}'  
     ```
     
     - Output:

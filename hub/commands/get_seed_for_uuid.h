@@ -16,7 +16,7 @@ namespace hub {
 namespace cmd {
 
 typedef struct GetSeedForUUIDRequest {
-  std::string userId;
+  std::string uuid;
 } GetSeedForUUIDRequest;
 
 typedef struct GetSeedForUUIDReply {
