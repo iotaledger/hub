@@ -22,9 +22,9 @@
 
 - Arguments
 
-|Arg name    |type          |Description                    |
-|------------|--------------|-------------------------------|
-| userId     |string        | unique user id                |
+| Arg name | type   | Description    |
+| -------- | ------ | -------------- |
+| userId   | string | unique user id |
 
 - curl example:
     - Call:
@@ -43,9 +43,9 @@
 
 - Arguments
 
-|Arg name    |type          |Description                    |
-|------------|--------------|-------------------------------|
-| userId     |string        | The user's identifier         |
+| Arg name | type   | Description           |
+| -------- | ------ | --------------------- |
+| userId   | string | The user's identifier |
 
 - curl example:
     - Call:
@@ -64,9 +64,9 @@
 
 - Arguments
 
-|Arg name    |type          |Description                    |
-|------------|--------------|-------------------------------|
-| userId     |string        |  The user's identifier        |
+| Arg name | type   | Description           |
+| -------- | ------ | --------------------- |
+| userId   | string | The user's identifier |
 
 - curl example:
     - Call:
@@ -85,9 +85,9 @@
 
 - Arguments
 
-|Arg name    |type              |Description                    |
-|------------|------------------|-------------------------------|
-| address    |string (81 trytes)| The address in question       |
+| Arg name | type               | Description             |
+| -------- | ------------------ | ----------------------- |
+| address  | string (81 trytes) | The address in question |
 
 - curl example:
     - Call:
@@ -107,11 +107,11 @@
 
 - Arguments
 
-|Arg name    |type          |Description                                         |
-|------------|--------------|----------------------------------------------------|
-| userId     |string        |  The user's identifier                             |
-| newerThan  |timestamp     | all returned events are newer than given timestamp,|
-|            |              | _timestamp_ _=_ _0_ means everything is retrieved  |
+| Arg name  | type      | Description                                         |
+| --------- | --------- | --------------------------------------------------- |
+| userId    | string    | The user's identifier                               |
+| newerThan | timestamp | all returned events are newer than given timestamp, |
+|           |           | _timestamp_ _=_ _0_ means everything is retrieved   |
 
 - curl example:
     - Call:
@@ -160,9 +160,9 @@
 
 - Arguments
 
-|Arg name    |type              |Description                               |
-|------------|------------------|------------------------------------------|
-| bundleHash |string (81 trytes)| The hash of the bundle in question       |
+| Arg name   | type               | Description                        |
+| ---------- | ------------------ | ---------------------------------- |
+| bundleHash | string (81 trytes) | The hash of the bundle in question |
 
 - curl example:
     - Call:
@@ -192,12 +192,12 @@
 
 - Arguments
 
-|Arg name        |type              |Description                                                    |
-|----------------|------------------|---------------------------------------------------------------|
-| bundleHash     |string (81 trytes)| The hash of the bundle in question                            |
-| requestByUuid  |boolean           | whether bundle should be queried by a withdrawal UUID    
-|                |                  | or by the bundle's hash
-| withdrawalUuid |string            | the withdrawal UUID to provide when `requestByUuid` is "true"
+| Arg name       | type               | Description                                                   |
+| -------------- | ------------------ | ------------------------------------------------------------- |
+| bundleHash     | string (81 trytes) | The hash of the bundle in question                            |
+| requestByUuid  | boolean            | whether bundle should be queried by a withdrawal UUID         |
+|                |                    | or by the bundle's hash                                       |
+| withdrawalUuid | string             | the withdrawal UUID to provide when `requestByUuid` is "true" |
 
 - curl example:
     - Call:
@@ -223,15 +223,15 @@
 
 - Arguments
 
-|Arg name            |type                 |Description                                                    |
-|--------------------|---------------------|---------------------------------------------------------------|
-| userId             |string               | The user's identifier
-| amount             |integer              | The amount to withdraw    
-| payoutAddress      |string (81/90 trytes)| The address to transfer the funds (_amount_) to
-| validateChecksum   |bool                 | Should set to true if _payoutAddress_ 
-|                    |                     | is 90 trytes long (81 + 9 checksum trytes)
-| tag                |string (27 trytes)   | Optional tag to include on the withdrawal 
-|                    |                     | transactions
+| Arg name         | type                  | Description                                     |
+| ---------------- | --------------------- | ----------------------------------------------- |
+| userId           | string                | The user's identifier                           |
+| amount           | integer               | The amount to withdraw                          |
+| payoutAddress    | string (81/90 trytes) | The address to transfer the funds (_amount_) to |
+| validateChecksum | bool                  | Should set to true if _payoutAddress_           |
+|                  |                       | is 90 trytes long (81 + 9 checksum trytes)      |
+| tag              | string (27 trytes)    | Optional tag to include on the withdrawal       |
+|                  |                       | transactions                                    |
 
 
 - curl example:
@@ -255,9 +255,9 @@
 
 - Arguments
 
-|Arg name            |type                 |Description                                         |
-|--------------------|---------------------|----------------------------------------------------|
-| uuid               |string               | The _uuid_ output of previous _UserWithdraw_ call
+| Arg name | type   | Description                                       |
+| -------- | ------ | ------------------------------------------------- |
+| uuid     | string | The _uuid_ output of previous _UserWithdraw_ call |
 
 
 
@@ -291,9 +291,9 @@
 
 - Arguments
 
-|Arg name            |type                 |Description                                         |
-|--------------------|---------------------|----------------------------------------------------|
-| uuid               |string               | The _uuid_ output of previous _UserWithdraw_ call
+| Arg name | type   | Description                                       |
+| -------- | ------ | ------------------------------------------------- |
+| uuid     | string | The _uuid_ output of previous _UserWithdraw_ call |
 
 
 
@@ -319,11 +319,11 @@
 
 - Arguments
 
-|Arg name            |type                 |Description                                                    |
-|--------------------|---------------------|---------------------------------------------------------------|
-| address            |string (81/90 trytes)| The address to transfer the funds (_amount_) to
-| validateChecksum   |bool                 | Should set to true if _address_ 
-|                    |                     | is 90 trytes long (81 + 9 checksum trytes)
+| Arg name         | type                  | Description                                     |
+| ---------------- | --------------------- | ----------------------------------------------- |
+| address          | string (81/90 trytes) | The address to transfer the funds (_amount_) to |
+| validateChecksum | bool                  | Should set to true if _address_                 |
+|                  |                       | is 90 trytes long (81 + 9 checksum trytes)      |
 
 
 
@@ -346,10 +346,10 @@
      
 ### SweepSubscription
 
-|Arg name             |type                 |Description                                                           |
-|---------------------|---------------------|----------------------------------------------------------------------|
-| newerThan           |timestamp            | all returned sweeps are newer than given timestamp,
-|                     |                     | _timestamp_ _=_ _0_ means everything is retrieved
+| Arg name  | type      | Description                                         |
+| --------- | --------- | --------------------------------------------------- |
+| newerThan | timestamp | all returned sweeps are newer than given timestamp, |
+|           |           | _timestamp_ _=_ _0_ means everything is retrieved   |
 
 
 
@@ -400,15 +400,15 @@
 
 - Arguments
 
-|Arg name             |type                 |Description                                                           |
-|---------------------|---------------------|----------------------------------------------------------------------|
-| address             |string (81/90 trytes)| The address whose signature is requested, must be an address returned
-|                     |                     | by a previous call to `GetDepositAddress` 
-| validateChecksum    |bool                 | Should set to true if _address_ 
-|                     |                     | is 90 trytes long (81 + 9 checksum trytes)
-| bundleHash          |string (81 trytes)   | The hash of the bundle to sign on
-| authenticationToken |string               | A token used to authenticate the request
-|                     |                     | (hub/docs/python/argon2_authentication_token.py)
+| Arg name            | type                  | Description                                                           |
+| ------------------- | --------------------- | --------------------------------------------------------------------- |
+| address             | string (81/90 trytes) | The address whose signature is requested, must be an address returned |
+|                     |                       | by a previous call to `GetDepositAddress`                             |
+| validateChecksum    | bool                  | Should set to true if _address_                                       |
+|                     |                       | is 90 trytes long (81 + 9 checksum trytes)                            |
+| bundleHash          | string (81 trytes)    | The hash of the bundle to sign on                                     |
+| authenticationToken | string                | A token used to authenticate the request                              |
+|                     |                       | (hub/docs/python/argon2_authentication_token.py)                      |
 
 
 - curl example:
@@ -436,15 +436,15 @@
 
 - Arguments
 
-|Arg name             |type                 |Description                                                           |
-|---------------------|---------------------|----------------------------------------------------------------------|
-| userId              |string               | The user's identifier
-| address             |string (81 trytes)   | The address with the locked funds, must be a result of
-|                     |                     | a previous call to `GetDepositAddress` 
-| payoutAddress       |string (81/90 trytes)| The address to send the tokens found in _address_ to
-|                     |                     |  
-| validateChecksum    |bool                 | Should set to true if _payoutAddress_ 
-|                     |                     | is 90 trytes long (81 + 9 checksum trytes)
+| Arg name         | type                  | Description                                            |
+| ---------------- | --------------------- | ------------------------------------------------------ |
+| userId           | string                | The user's identifier                                  |
+| address          | string (81 trytes)    | The address with the locked funds, must be a result of |
+|                  |                       | a previous call to `GetDepositAddress`                 |
+| payoutAddress    | string (81/90 trytes) | The address to send the tokens found in _address_ to   |
+|                  |                       |
+| validateChecksum | bool                  | Should set to true if _payoutAddress_                  |
+|                  |                       | is 90 trytes long (81 + 9 checksum trytes)             |
 
 
 - curl example:
@@ -468,10 +468,10 @@
 
  A list of transfers with each element of the form:
 
-|Arg name             |type                 |Description                                                           |
-|---------------------|---------------------|----------------------------------------------------------------------|
-| userId              |string               | The user's identifier
-| amount              |integer              | The address with the locked funds, must be a result of
+| Arg name | type    | Description                                            |
+| -------- | ------- | ------------------------------------------------------ |
+| userId   | string  | The user's identifier                                  |
+| amount   | integer | The address with the locked funds, must be a result of |
 
 
 
@@ -491,10 +491,10 @@
 
 - Returns a list of detailed balance events since a given timepoint
 
-|Arg name             |type                 |Description                                                           |
-|---------------------|---------------------|----------------------------------------------------------------------|
-| newerThan           |timestamp            | all returned balance events are newer than given timestamp,
-|                     |                     | _timestamp_ _=_ _0_ means everything is retrieved
+| Arg name  | type      | Description                                                 |
+| --------- | --------- | ----------------------------------------------------------- |
+| newerThan | timestamp | all returned balance events are newer than given timestamp, |
+|           |           | _timestamp_ _=_ _0_ means everything is retrieved           |
 
 
 
@@ -554,10 +554,10 @@
 - Arguments
 
 
-|Arg name            |type                 |Description                                                    |
-|--------------------|---------------------|---------------------------------------------------------------|
-| userId             |string               | The user's identifier
-| address            |string (81 trytes)   | The address
+| Arg name | type               | Description           |
+| -------- | ------------------ | --------------------- |
+| userId   | string             | The user's identifier |
+| address  | string (81 trytes) | The address           |
 
 
 - curl example:
@@ -578,7 +578,33 @@
     ```
 
 
+### GetSeedForUUID
+
+- Return the seed that is associated with the given uuid.
+
+- Arguments
+
+
+| Arg name | type   | Description                              |
+| -------- | ------ | ---------------------------------------- |
+| uuid     | string | The seed_uuid in the hub_addresses table |
+
+- curl example:
+    - Call:
+        
+    ``` 
+    curl  http://localhost:50051  -X POST   -H 'Content-Type: application/json'   -H 'X-IOTA-API-Version:  1'   -d '{"command": "GetSeedForUUID", "uuid": "SomeUUID"}'  
+    ```
     
+    - Output:
+
+    ```
+    {
+        "seed": "AUVEOUEVFHKZBKCSVWDQ9PJPDJZPZ9APNBLYCFLFLEBHMJUJYXEBSZFGTFDASHHGEKOHHEHIMUXKZWUTD"
+    }
+
+       
+    ```
     
 
      
