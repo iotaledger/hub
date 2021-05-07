@@ -35,11 +35,11 @@ class GetSeedForUUID
 
   static const std::string name() { return "GetSeedForUUID"; }
 
-  boost::property_tree::ptree doProcess(
-      const boost::property_tree::ptree& request) noexcept override;
-
   common::cmd::Error doProcess(const GetSeedForUUIDRequest* request,
                                GetSeedForUUIDReply* response) noexcept override;
+
+  boost::property_tree::ptree doProcess(
+      const boost::property_tree::ptree& request) noexcept override;
 };
 }  // namespace cmd
 }  // namespace hub
