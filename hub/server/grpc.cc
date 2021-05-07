@@ -23,6 +23,7 @@
 #include "hub/commands/get_balance.h"
 #include "hub/commands/get_deposit_address.h"
 #include "hub/commands/get_seed_for_address.h"
+#include "hub/commands/get_seed_for_uuid.h"
 #include "hub/commands/get_stats.h"
 #include "hub/commands/get_user_history.h"
 #include "hub/commands/process_transfer_batch.h"
@@ -422,6 +423,22 @@ grpc::Status HubImpl::GetSeedForAddress(
   cmd::GetSeedForAddressReply response;
   request.userId = rpcRequest->userid();
   request.address = rpcRequest->address();
+  auto status = common::cmd::errorToGrpcError(cmd.process(&request, &response));
+  if (status.ok()) {
+    rpcResponse->set_seed(response.seed);
+  }
+  return status;
+}
+
+grpc::Status HubImpl::GetSeedForUUID(
+    grpc::ServerContext* context,
+    const hub::rpc::GetSeedForUUIDRequest* rpcRequest,
+    hub::rpc::GetSeedForUUIDReply* rpcResponse) {
+  auto clientSession = std::make_shared<common::ClientSession>();
+  cmd::GetSeedForUUID cmd(clientSession);
+  cmd::GetSeedForUUIDRequest request;
+  cmd::GetSeedForUUIDReply response;
+  request.uuid = rpcRequest->uuid();
   auto status = common::cmd::errorToGrpcError(cmd.process(&request, &response));
   if (status.ok()) {
     rpcResponse->set_seed(response.seed);

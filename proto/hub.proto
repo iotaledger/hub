@@ -48,5 +48,7 @@ service Hub {
   rpc RecoverFunds (RecoverFundsRequest) returns (RecoverFundsReply);
   //Get the seed associated with the given address - this function can be used for backing up the seed
   rpc GetSeedForAddress (GetSeedForAddressRequest) returns (GetSeedForAddressReply);
+  //Get the seed associated with the given uuid - this function can be used for backing up the seed
+  rpc GetSeedForUUID (GetSeedForUUIDRequest) returns (GetSeedForUUIDReply);
 }
 
